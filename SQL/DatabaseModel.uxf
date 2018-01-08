@@ -27,7 +27,7 @@ cleaning_list_interval</panel_attributes>
       <x>441</x>
       <y>549</y>
       <w>189</w>
-      <h>225</h>
+      <h>234</h>
     </coordinates>
     <panel_attributes>Person
 --
@@ -43,7 +43,8 @@ phone_number
 birth_date
 is_verified
 gender
-profile_pic</panel_attributes>
+profile_pic
+last_active_timestamp</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -369,7 +370,7 @@ timestamp_purchased</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>621</x>
-      <y>738</y>
+      <y>765</y>
       <w>198</w>
       <h>27</h>
     </coordinates>
@@ -391,7 +392,7 @@ timestamp_purchased</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>648</x>
-      <y>783</y>
+      <y>810</y>
       <w>144</w>
       <h>45</h>
     </coordinates>
@@ -404,7 +405,7 @@ paid_amount</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>702</x>
-      <y>738</y>
+      <y>765</y>
       <w>27</w>
       <h>63</h>
     </coordinates>
@@ -538,7 +539,7 @@ role_name</panel_attributes>
       <w>135</w>
       <h>63</h>
     </coordinates>
-    <panel_attributes>Pool Options
+    <panel_attributes>Poll Options
 --
 _option_id_
 option_text</panel_attributes>
@@ -559,35 +560,35 @@ option_text</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>621</x>
-      <y>495</y>
-      <w>387</w>
-      <h>153</h>
+      <y>549</y>
+      <w>288</w>
+      <h>99</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>320.0;10.0;410.0;10.0;410.0;150.0;10.0;150.0</additional_attributes>
+    <additional_attributes>300.0;10.0;300.0;90.0;10.0;90.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1026</x>
-      <y>540</y>
+      <x>1008</x>
+      <y>567</y>
       <w>108</w>
       <h>45</h>
     </coordinates>
-    <panel_attributes>Pool Vote
+    <panel_attributes>Poll Vote
 --</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>981</x>
-      <y>558</y>
-      <w>63</w>
+      <x>882</x>
+      <y>576</y>
+      <w>144</w>
       <h>27</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;140.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
@@ -617,12 +618,12 @@ style=wordwrap</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>513</x>
-      <y>765</y>
+      <y>774</y>
       <w>693</w>
-      <h>126</h>
+      <h>117</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>750.0;80.0;750.0;120.0;10.0;120.0;10.0;10.0</additional_attributes>
+    <additional_attributes>750.0;70.0;750.0;110.0;10.0;110.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
@@ -640,7 +641,7 @@ style=wordwrap</panel_attributes>
     <id>Text</id>
     <coordinates>
       <x>522</x>
-      <y>774</y>
+      <y>783</y>
       <w>36</w>
       <h>27</h>
     </coordinates>
@@ -762,19 +763,19 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1071</x>
+      <x>1053</x>
       <y>477</y>
       <w>27</w>
-      <h>81</h>
+      <h>108</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;100.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>1080</x>
-      <y>522</y>
+      <x>1062</x>
+      <y>549</y>
       <w>36</w>
       <h>27</h>
     </coordinates>
@@ -785,12 +786,47 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>1080</x>
+      <x>1062</x>
       <y>486</y>
       <w>36</w>
       <h>18</h>
     </coordinates>
     <panel_attributes>1..1
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>621</x>
+      <y>720</y>
+      <w>198</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>200.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>774</x>
+      <y>729</y>
+      <w>36</w>
+      <h>18</h>
+    </coordinates>
+    <panel_attributes>1..1
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>630</x>
+      <y>729</y>
+      <w>36</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>0..1
 style=wordwrap</panel_attributes>
     <additional_attributes/>
   </element>
