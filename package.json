@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "start": "node NODE-SERVER/main.js",
-    "debug": "nodemon --ignore NODE-SERVER/public/ NODE-SERVER/main.js"
+    "debug": "nodemon --ignore NODE-SERVER/public/ NODE-SERVER/main.js",
+    "test": "cd NODE-SERVER && npm test && cd .."
   }
 }

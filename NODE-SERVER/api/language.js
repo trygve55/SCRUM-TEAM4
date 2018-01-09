@@ -1,3 +1,5 @@
 var router = require('express').Router();
 
-module.exports = router;
+module.exports = function(){
+    return "hei";
+};//router;
