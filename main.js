@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var app = express();
+require('./mysql');
 
 app.use(logger('[:date[web]] ":method :url" :status :res[content-length] - :response-time ms'));
 app.use(bodyParser.json());
