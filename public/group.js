@@ -5,8 +5,8 @@ $(document).ready(function() {
 	if (groups.length > 0) {changeGroup($(groups[0]).html());}
 	
 	// TEST
-	addGroupToList("Group E");
-	addGroupToList("Group 1");
+	//addGroupToList("Group E");
+	//addGroupToList("Group 1");
 });
 
 function changeTab(name) {
