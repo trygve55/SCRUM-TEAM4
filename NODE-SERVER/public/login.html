@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <meta charset="UTF-8">
+    <title>Register New User</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<div id="fb-root"></div>
+<script>
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId            : '548372472188099',
+            autoLogAppEvents : true,
+            xfbml            : true,
+            version          : 'v2.11'
+        });
+    };
+
+    (function(d, s, id){
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {return;}
+        js = d.createElement(s); js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<style>
+    div.transbox {
+        margin-top: 200px;
+        margin-right: 440px;
+        margin-left: 440px;
+        background-color: #ffffff;
+        opacity: 0.7;
+        height: auto;
+        filter: alpha(opacity=60); /* For IE8 and earlier */
+        border-style:solid;
+        border-radius: 15px;
+    }
+
+    .glyphicon.glyphicon-circle-arrow-right {
+        font-size: 50px;
+    }
+
+    a:link{
+        text-decoration: darkgray;
+    }
+</style>
+
+<body background="BackgroundImage.png">
+    <div class="transbox">
+        <br>
+            <h2 id="login-header" style="font-family: AppleGothic; font-style: inherit; font-size: x-large" align="center" >LOG IN</h2>
+        <br>
+
+        <div class="input-group" style="width:400px; margin-right:auto; margin-left:auto; border:1px solid #000;">
+            <input id="login-email" type="text" class="form-control"  placeholder="Username/Email">
+        </div>
+        <br>
+        <div class="input-group" style="width:400px; margin-right:auto; margin-left:auto; border:1px solid #000;">
+            <input id="login-password" type="text" class="form-control" placeholder="Password">
+        </div>
+        
+        <br>
+
+        <div class="moveOn" align="center">
+            <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true" style="color: #a3e6f7"></span>
+        </div>
+        <h4></h4>
+        <div class="Facebook" align="center">
+            <div class="fb-login-button" data-max-rows="1" data-size="medium" data-button-type="login_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="true"></div>
+        </div>
+        <br>
+    </div>
+</body>
+</html>
