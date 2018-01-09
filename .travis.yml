@@ -1,0 +1,20 @@
+language: node_js
+node_js:
+  - "node"
+
+notifications:
+  email: false
+
+script:
+  - cd NODE-SERVER
+  - npm test
+
+after_success:
+  - codecov --token=:c4742c4b-5945-42d3-92a6-38e86cac9538
+
+services:
+  - mysql
+
+before_install:
+  - mysql -e 'CREATE DATABASE test;'
+  - mysql -u root test < SQL/server.sql
