@@ -13,7 +13,7 @@ script:
   - npm test
 
 after_success:
-  - codecov --token=c4742c4b-5945-42d3-92a6-38e86cac9538
+  - bash <(curl -s https://codecov.io/bash) -t c4742c4b-5945-42d3-92a6-38e86cac9538
 
 services:
   - mysql
