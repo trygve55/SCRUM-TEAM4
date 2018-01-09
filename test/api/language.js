@@ -7,8 +7,9 @@ describe('#language.js', function(){
         request.get('/api/language').send({
 
         }).expect(200).end(function(err, res){
-            done(err);
+            console.log(res);
             chai.expect(res).to.equal("Username");
+            done(err);
         });
     });
 });
