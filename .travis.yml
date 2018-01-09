@@ -19,5 +19,4 @@ services:
   - mysql
 
 before_install:
-  - cd NODE-SERVER
   - mysql -e 'CREATE DATABASE test;'
