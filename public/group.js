@@ -44,6 +44,6 @@ function loadGroup(name) {
 function addGroupToList(name) {
 	var groups = $(".tablink"), i;
 	for (i = 0; i < groups.length; i++) {if ($(groups[i]).html() == name) {return;}}
-	$("#groupselection").append('<div class="tablink text-center" onclick="changeGroup(\'' + name + '\')">' + name + '</div>');
+	$("#groupselection").append('<div class="tablink text-center backvariant" onclick="changeGroup(\'' + name + '\')">' + name + '</div>');
 }
 

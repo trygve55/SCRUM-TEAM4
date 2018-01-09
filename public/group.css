@@ -1,32 +1,71 @@
-#groupselection{
-	background-color: rgb(5,5,100);
-	width: 15%;
+#groupselection {
+	width: 25%;
 	float: left;
-	height: 300px
+	height: 300px;
+	margin: 5px;
+	min-width: 150px;
+	max-width: 400px;
 }
 
-#groupwindow{
-	background-color: rgb(5,5,85);
-	width: 85%;
+#groupwindow {
+	width: 70%;
 	float: left;
+	margin: 5px;
+	min-width: 200px;
+	max-width: 700px;
+}
+
+#yourtasks {
+	float: left;
+	margin-left: 25px;
+	border-style: solid;
+	min-width: 150px;
+}
+
+#grouptasks {
+	float: left;
+	margin-left: 25px;
+	border-style: solid;
+	min-width: 200px;
 }
 
 .tablink {
-	background-color: rgb(200,200,200);
-	margin: 1px;
+	margin: 5px;
+	min-width: 100px;
 }
 
 .grouptablink {
-	background-color: rgb(200,200,200);
-	width: 25%;
-	margin: 1px;
+	width: 15%;
+	margin: 5px;
 	text-align: center;
+	float: left;
+	min-width: 100px;
 }
 
 .grouptab {
-	background-color: rgb(100,100,220);
-	height: 250px;
-	margin: auto;
+	height: 100%;
+	margin: 5px;
 	display: none;
-	align-items: center;
+	float: left;
+	border-radius: 0px 0px 10px 10px;
+	width: 100%;
 }
+
+.transparency {
+	margin-top: auto;
+	background-color: #ffffff;
+	opacity: 0.7;
+	height: auto;
+	filter: alpha(opacity=60);
+	border-style: solid;
+	border-radius: 15px;
+}
+
+.backvariant {background-color: rgb(200,200,200);}
+
+.backvariant:hover {
+	background-color: rgb(225,225,230);
+	cursor: pointer;
+}
+
+.chbox {margin: 1px;}
