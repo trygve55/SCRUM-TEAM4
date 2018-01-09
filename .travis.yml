@@ -6,7 +6,6 @@ notifications:
   email: false
 
 script:
-  - cd NODE-SERVER
   - npm test
 
 after_success:
@@ -16,4 +15,5 @@ services:
   - mysql
 
 before_install:
+  - cd NODE-SERVER
   - mysql -e 'CREATE DATABASE test;'
