@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Login</title>
     <meta charset="UTF-8">
-    <title>Register New User</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -50,6 +48,7 @@
     a:link{
         text-decoration: darkgray;
     }
+
 </style>
 
 <body background="BackgroundImage.png">
@@ -58,14 +57,18 @@
             <h2 id="login-header" style="font-family: AppleGothic; font-style: inherit; font-size: x-large" align="center" >LOG IN</h2>
         <br>
 
-        <div class="input-group" style="width:400px; margin-right:auto; margin-left:auto; border:1px solid #000;">
+        <div class="input-group" >
             <input id="login-email" type="text" class="form-control"  placeholder="Username/Email">
         </div>
         <br>
-        <div class="input-group" style="width:400px; margin-right:auto; margin-left:auto; border:1px solid #000;">
-            <input id="login-password" type="text" class="form-control" placeholder="Password">
+        <div class="col-sm-4">
+
+                <input id="login-password" type="text" class="form-control" placeholder="Password">
+
         </div>
-        
+        <div class="forgot_password" align="center">
+            <a style="font-style: oblique" href="#" target="_blank">Forgot password?</a>
+        </div>
         <br>
 
         <div class="moveOn" align="center">
