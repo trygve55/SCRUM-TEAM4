@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<link href="bootstrap_css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="group.css"> <!--Own CSS.-->
+	</head>
+
+	<body>
+		<div id="groupselection">
+			<div class="tablink text-center" onclick="changeGroup('Group 1')">Group 1</div>
+			<div class="tablink text-center" onclick="changeGroup('Group 2')">Group 2</div>
+		</div>
+		<div id="groupwindow">
+			<div id="grouptabs">
+				<div class="grouptablink" onclick="changeTab('tasks')">Tasks</div>
+				<div class="grouptablink" onclick="changeTab('feed')">Posts</div>
+				<div class="grouptablink" onclick="changeTab('shopping')">Shopping Lists</div>
+			</div>
+
+			<div id="tasks" class="grouptab text-center" style="display: block;">Tasks</div>
+
+			<div id="feed" class="grouptab text-center">Posts</div>
+
+			<div id="shopping" class="grouptab text-center">Shopping Lists</div>
+		</div>
+
+		<script src="jquery3.2.1.js"></script>
+		<script src="bootstrap_js/bootstrap.min.js"></script>
+		<script src="group.js"></script>
+	</body>
+</html>
