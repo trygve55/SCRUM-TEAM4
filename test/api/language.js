@@ -1,11 +1,14 @@
 'use strict';
 
-var chai = require('chai');
 var lang = require('../../api/language');
 
-describe('#language', function(){
-    it('should return hei', function(){
-        var res = lang();
-        chai.expect(res).to.equal("hei");
+describe('#language.js', function(){
+    it('should return username', function(){
+        request.get('/api/language').send({
+
+        }).expect(200).end(function(err, res){
+            done(err);
+            chai.expect(res).to.equal("Username");
+        });
     });
 });

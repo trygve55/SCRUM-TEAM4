@@ -20,3 +20,5 @@ app.get("*", function(req, res){
 
 app.listen(8000);
 console.log("Server listening on port 80");
+
+module.exports = app;

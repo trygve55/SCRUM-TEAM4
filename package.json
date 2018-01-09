@@ -23,6 +23,7 @@
     "net": "^1.0.2",
     "package.json": "^2.0.1",
     "path": "^0.12.7",
-    "socket.io": "^2.0.4"
+    "socket.io": "^2.0.4",
+    "supertest": "^3.0.0"
   }
 }
