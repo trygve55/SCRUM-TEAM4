@@ -1,6 +1,6 @@
 var mysql = require('mysql');
 
-module.exports = mysql.createPool({
+pool = mysql.createPool({
  connectionLimit : 2, // maks antall koblinger
  host : 'mysql.stud.iie.ntnu.no',
  user : 'g_tdat2003_t4',
@@ -8,3 +8,5 @@ module.exports = mysql.createPool({
  database : 'g_tdat2003_t4',
  debug : false
 });
+
+module.exports = "";
