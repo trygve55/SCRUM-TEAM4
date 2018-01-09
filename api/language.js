@@ -3,6 +3,7 @@ var path = require('path');
 var fs = require('fs');
 
 router.get('/', function(req, res){
+    console.log(req.query);
     var lang = req.query.lang;
     var pth = req.query.path;
     pth = pth.split('.')[0];
