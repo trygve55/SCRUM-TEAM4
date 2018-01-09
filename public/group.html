@@ -9,23 +9,57 @@
 		<link rel="stylesheet" type="text/css" href="group.css"> <!--Own CSS.-->
 	</head>
 
-	<body>
-		<div id="groupselection">
-			<div class="tablink text-center" onclick="changeGroup('Group 1')">Group 1</div>
-			<div class="tablink text-center" onclick="changeGroup('Group 2')">Group 2</div>
-		</div>
-		<div id="groupwindow">
-			<div id="grouptabs">
-				<div class="grouptablink" onclick="changeTab('tasks')">Tasks</div>
-				<div class="grouptablink" onclick="changeTab('feed')">Posts</div>
-				<div class="grouptablink" onclick="changeTab('shopping')">Shopping Lists</div>
+	<body background="wall.png">
+	
+		<div id="grouppage">
+			<div id="groupselection" class="transparency">
+				<div class="tablink text-center backvariant" onclick="changeGroup('Group 1')">Group 1</div>
+				<div class="tablink text-center backvariant" onclick="changeGroup('Group 2')">Group 2</div>
 			</div>
+			<div id="groupwindow" class="transparency">
+				<div id="grouptabs">
+					<div class="grouptablink backvariant" onclick="changeTab('tasks')">Tasks</div>
+					<div class="grouptablink backvariant" onclick="changeTab('feed')">Posts</div>
+					<div class="grouptablink backvariant" onclick="changeTab('shopping')">Shopping Lists</div>
+					<div class="grouptablink backvariant" onclick="changeTab('statistics')">Statistics</div>
+				</div>
 
-			<div id="tasks" class="grouptab text-center" style="display: block;">Tasks</div>
+				<br>
+				<div id="tasks" class="grouptab text-center" style="display: block;">
+					<hr width="90%">
+					<div id="yourtasks">
+						Your tasks
+						<div class="chbox">
+							<input class="form-check-input" type="checkbox" value="" id="checkn">
+							<label class="form-check-label" for="checkn">Task N</label>
+						</div>
+						<br>
+						<br>
+					</div>
 
-			<div id="feed" class="grouptab text-center">Posts</div>
+					<div id="grouptasks">
+						Group tasks
+						<br>
+						<br>
+						<br>
+					</div>
+				</div>
 
-			<div id="shopping" class="grouptab text-center">Shopping Lists</div>
+				<div id="feed" class="grouptab text-center">
+					<hr width="90%">
+					Posts
+				</div>
+
+				<div id="shopping" class="grouptab text-center">
+					<hr width="90%">
+					Shopping Lists
+				</div>
+
+				<div id="statistics" class="grouptab text-center">
+					<hr width="90%">
+					Statistics
+				</div>
+			</div>
 		</div>
 
 		<script src="jquery3.2.1.js"></script>
