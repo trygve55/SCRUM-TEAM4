@@ -1,0 +1,32 @@
+#groupselection{
+	background-color: rgb(5,5,100);
+	width: 15%;
+	float: left;
+	height: 300px
+}
+
+#groupwindow{
+	background-color: rgb(5,5,85);
+	width: 85%;
+	float: left;
+}
+
+.tablink {
+	background-color: rgb(200,200,200);
+	margin: 1px;
+}
+
+.grouptablink {
+	background-color: rgb(200,200,200);
+	width: 25%;
+	margin: 1px;
+	text-align: center;
+}
+
+.grouptab {
+	background-color: rgb(100,100,220);
+	height: 250px;
+	margin: auto;
+	display: none;
+	align-items: center;
+}
