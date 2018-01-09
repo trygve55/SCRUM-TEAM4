@@ -17,4 +17,3 @@ services:
 
 before_install:
   - mysql -e 'CREATE DATABASE test;'
-  - mysql -u root test < SQL/server.sql
