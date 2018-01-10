@@ -13,6 +13,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+    secret: "something cool",
+    resave: true,
+    saveUnitialized: false,
+    cookie: {
+        secure: true
+    }
+}));
 
 app.use('/api', require('./api'));
 
