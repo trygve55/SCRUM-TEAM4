@@ -18,7 +18,7 @@ window.fbAsyncInit = function() {
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
-$(function (){
+$(function () {
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -26,14 +26,54 @@ $(function (){
             lang: 'nb_NO',
             path: window.location.pathname
         },
-        success: function(data){
-            for(var p in data){
-                if(data.hasOwnProperty(p)){
+        success: function (data) {
+            for (var p in data) {
+                if (data.hasOwnProperty(p)) {
                     $("#" + p).html(data[p]);
                 }
             }
             $("#login-email").attr("placeholder", data["login-email"]);
             $("#login-password").attr("placeholder", data["login-password"]);
         }
+    });
+
+    $('#login-norway').click(function () {
+        $.ajax({
+            url: '/api/language',
+            method: 'GET',
+            data: {
+                lang: 'nb_NO',
+                path: window.location.pathname
+            },
+            success: function (data) {
+                for (var p in data) {
+                    if (data.hasOwnProperty(p)) {
+                        $("#" + p).html(data[p]);
+                    }
+                }
+                $("#login-email").attr("placeholder", data["login-email"]);
+                $("#login-password").attr("placeholder", data["login-password"]);
+            }
+        });
+    });
+
+    $('#login-england').click(function () {
+        $.ajax({
+            url: '/api/language',
+            method: 'GET',
+            data: {
+                lang: 'en_US',
+                path: window.location.pathname
+            },
+            success: function (data) {
+                for (var p in data) {
+                    if (data.hasOwnProperty(p)) {
+                        $("#" + p).html(data[p]);
+                    }
+                }
+                $("#login-email").attr("placeholder", data["login-email"]);
+                $("#login-password").attr("placeholder", data["login-password"]);
+            }
+        });
     });
 });
