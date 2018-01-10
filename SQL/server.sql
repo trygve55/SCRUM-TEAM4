@@ -47,7 +47,6 @@ CREATE TABLE person (
     reset_password_token VARCHAR(255),
     shopping_list_id INTEGER NOT NULL,
     user_language VARCHAR(5) NOT NULL DEFAULT 'nb_NO',
-    --CONSTRAINT person_shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT person_pk PRIMARY KEY(person_id)
 );
 
@@ -191,5 +190,5 @@ CREATE TABLE budget_entry (
     CONSTRAINT budget_entry_pk PRIMARY KEY(budget_entry_id)
 );
 
-INSERT INTO g_tdat2003_t4.person (email, username, password_hash, forename, middlename, lastname, phone, birth_date, is_verified, gender, profile_pic, last_active, reset_password_token, shopping_list_id, user_language) 
+INSERT INTO person(email, username, password_hash, forename, middlename, lastname, phone, birth_date, is_verified, gender, profile_pic, last_active, reset_password_token, shopping_list_id, user_language) 
 	VALUES ('test@test.com', 'testnavn', x'243261243130244c6b3943524f466835467471577158506756766c772e586b473269397a653473336d5a667a6a502e545131545162793945676b3647', 'test', NULL, 'test', '23456', CURRENT_DATE, true, 0, NULL, DEFAULT, NULL, 0, DEFAULT)
