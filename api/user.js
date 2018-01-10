@@ -25,7 +25,7 @@ router.post('/regUser', function(req, res){
         var values = [
             req.body.email,
             req.body.username,
-            req.body.password_hash,
+            req.body.password,
             req.body.forename,
             req.body.middlename,
             req.body.lastname,
