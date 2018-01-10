@@ -14,12 +14,17 @@ router.post('/regUser', function(req, res){
 
         var user = req.body;
 
+
+        console.log("test email");
         var emailRegex = new RegExp('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/');
-        if(!emailRegex.test(user[user.email])) throw err;
+        //if(!emailRegex.test(user[user.email])) throw err;
+
+        console.log("email ok");
 
         connection.query('SELECT username FROM person WHERE username = ?', [user.username], function (err, result) {
             if (err) throw err;
             if (result) console.log('username exists'); //return error
+            console.log("username");
 
             connection.query('SELECT email FROM person WHERE email = ?', [user.email], function (err, result) {
                 if (err) throw err;
@@ -33,7 +38,7 @@ router.post('/regUser', function(req, res){
                     user.middlename,
                     user.lastname,
                     user.phone_number,
-                    user.birth_day,
+                    new Date(user.birth_date).toISOString().slice(0, 19).replace('T', ' '),
                     user.is_verified,
                     user.gender,
                     user.profile_pic
@@ -41,7 +46,7 @@ router.post('/regUser', function(req, res){
 
                 connection.query('INSERT INTO person ' +
                     '(email, username, password_hash, forename, middlename,' +
-                    'lastname, phone_number, birth_day, is_verified,' +
+                    'lastname, phone, birth_date, is_verified,' +
                     'gender, profile_pic) VALUES(?,?,?,?,?,?,?,?,?,?,?)', values, function(err, result) {
                     if (err) throw err;
                     if (result) console.log(result);
