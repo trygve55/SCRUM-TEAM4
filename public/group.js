@@ -1,7 +1,6 @@
-// ***** Temporary test variables - delete when nolonger needed *****
+// ***** Temporary test variables - delete this section when no longer needed *****
 
 var person = "Person";
-
 var testtasks = {
 	"tasks":[
 		{"name":"Task A", "person":"Person", "completed":0, "time":"11/11/2011"}, 
@@ -141,7 +140,7 @@ function attachTasks(tasks) {
 			}
 			$("#grouptasks").append(
 				'<div class="task"><input type="checkbox" value=""><p>' + task.name + ' - ' + task.person + ' - ' + task.time + '</p></div>'
-			);
+			); // The format here is just temporary. Change if something better gets decided.
 		}
 	}
 }
