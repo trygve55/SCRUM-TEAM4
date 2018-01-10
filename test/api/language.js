@@ -22,6 +22,10 @@ describe('Language API', function(){
             });
     });
 
+    after(function(){
+        pool.end();
+    });
+
     /**
      * Check bad request handling
      */
