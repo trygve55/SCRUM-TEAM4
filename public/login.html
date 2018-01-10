@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Log In</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
 </head>
 
 <div id="fb-root"></div>
@@ -30,50 +32,54 @@
 
 <style>
     div.transbox {
-        margin-top: 200px;
-        margin-right: 440px;
-        margin-left: 440px;
+        margin-top: 50px;
         background-color: #ffffff;
-        opacity: 0.7;
+        opacity: 0.8;
         height: auto;
         filter: alpha(opacity=60); /* For IE8 and earlier */
-        border-style:solid;
         border-radius: 15px;
+        margin-bottom: 50px;
     }
 
     .glyphicon.glyphicon-circle-arrow-right {
         font-size: 50px;
+        color: inherit;
     }
 
     a:link{
         text-decoration: darkgray;
     }
+
 </style>
 
 <body background="BackgroundImage.png">
-    <div class="transbox">
-        <br>
-            <h2 id="login-header" style="font-family: AppleGothic; font-style: inherit; font-size: x-large" align="center" >LOG IN</h2>
-        <br>
 
-        <div class="input-group" style="width:400px; margin-right:auto; margin-left:auto; border:1px solid #000;">
-            <input id="login-email" type="text" class="form-control"  placeholder="Username/Email">
-        </div>
-        <br>
-        <div class="input-group" style="width:400px; margin-right:auto; margin-left:auto; border:1px solid #000;">
-            <input id="login-password" type="text" class="form-control" placeholder="Password">
-        </div>
-        
-        <br>
+<div align="center">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3 col-xs-offset-1 col-xs-10" style="margin: auto">
+            <div class="transbox">
+                <div align="center">
+                <br>
+                <h2 id="login-header" style="font-family: AppleGothic; font-style: inherit; font-size: x-large" align="center" >LOG IN</h2>
 
-        <div class="moveOn" align="center">
-            <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true" style="color: #a3e6f7"></span>
+            <div style="padding: 75px">
+                <input id="login-email" type="text" class="form-control"  placeholder="Username/Email">
+                <br>
+                <input id="login-password" type="text" class="form-control" placeholder="Password">
+                <a style="font-style: oblique" href="#" target="_blank">Forgot password?</a>
+                <br>
+                <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true" style="color: #a3e6f7"></span>
+                <h1></h1>
+                <div class="Facebook" align="center">
+                    <div class="fb-login-button" data-max-rows="1" data-size="medium" data-button-type="login_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="true"></div>
+                </div>
+                <br>
+                </div>
+            </div>
+            </div>
         </div>
-        <h4></h4>
-        <div class="Facebook" align="center">
-            <div class="fb-login-button" data-max-rows="1" data-size="medium" data-button-type="login_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="true"></div>
-        </div>
-        <br>
     </div>
+</div>
 </body>
 </html>
+
