@@ -17,17 +17,17 @@
 		<div id="grouppage">
 			<div id="groupselection" class="transparency text-center">
 				<!--These are the groups available to the user. The javascript will add entries here.-->
-				Your groups
+				<p class="langtext" id="desc_title0"></p>
 				<div class="tablink text-center backvariant" onclick="changeGroup('Group 1')">Group 1</div>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
 				<div class="tablink text-center backvariant" onclick="changeGroup('Group 2')">Group 2</div>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
 			</div>
 			<div id="groupwindow" class="transparency">
 				<div id="grouptabs">
 					<!--These are the tabs available once a group is selected.-->
-					<div class="grouptablink backvariant" onclick="changeTab('tasks')">Tasks</div>
-					<div class="grouptablink backvariant" onclick="changeTab('feed')">Posts</div>
-					<div class="grouptablink backvariant" onclick="changeTab('shopping')">Shopping Lists</div>
-					<div class="grouptablink backvariant" onclick="changeTab('statistics')">Statistics</div>
+					<div class="grouptablink backvariant" onclick="changeTab('tasks')"><p class="langtext" id="desc_title1"></p></div>
+					<div class="grouptablink backvariant" onclick="changeTab('feed')"><p class="langtext" id="desc_title2"></p></div>
+					<div class="grouptablink backvariant" onclick="changeTab('shopping')"><p class="langtext" id="desc_title3"></p></div>
+					<div class="grouptablink backvariant" onclick="changeTab('statistics')"><p class="langtext" id="desc_title4"></p></div>
 				</div>
 
 				<br>
@@ -36,7 +36,7 @@
 					<hr width="90%">
 					<div id="yourtasks" style="text-align:center;">
 						<!--These are the tasks assigned to the user. The javascript will add entries here.-->
-						Your tasks
+						<p class="langtext" id="desc_title5"></p>
 						<div class="chbox">
 							<input type="checkbox" value="">
 							<p>Task N</p>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
@@ -45,7 +45,7 @@
 
 					<div id="grouptasks">
 						<!--These are all the tasks in the group. The javascript will add entries here.-->
-						Group tasks
+						<p class="langtext" id="desc_title6"></p>
 						<div class="task">
 							<input type="checkbox" value="">
 							<!--The format here is just temporary. Change if something better gets decided.-->

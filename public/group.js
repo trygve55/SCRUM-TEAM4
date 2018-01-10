@@ -8,6 +8,15 @@ var testtasks = {
 		{"name":"Task C", "person":"None", "completed":1, "time":"13/13/2013"}
 	]
 }
+var language = {
+	"desc_title0": "Your Groups",
+	"desc_title1": "Tasks",
+	"desc_title2": "Posts",
+	"desc_title3": "Shopping Lists",
+	"desc_title4": "Statistics",
+	"desc_title5": "Your Tasks",
+	"desc_title6": "Group Tasks"
+};
 
 // ***** Code begins here *****
 
@@ -17,6 +26,7 @@ var activeTab = "tasks", currentGroup = "none";
 * When the page loads, the page must find the groups available to the user so they can be selected.
 */
 $(document).ready(function() {
+	loadLanguageText()
 	//getGroups();
 	
 	var groups = $("div.tablink");
@@ -31,7 +41,36 @@ $(document).ready(function() {
 	
 	//window.setInterval(getGroups, 5000);	// Every 5 seconds the groups will be loaded.
 	
+	
+	
 });
+
+/**
+* This method loads the language from the API.
+*/
+function loadLanguageText() {
+	// AJAX GET all text in this language.
+	var response;
+	/*$.ajax({
+		type:"GET",
+		data: {path: "/group.html"},
+		url:"/api/language",
+		contentType:"application/json",
+		dataType:"json",
+		success:function(result) {response = result;}
+	});*/
+	
+	response = language;	// Temporary, remove when using the AJAX
+	
+	for (var p in response) {$("#" + p).html(response[p]);}
+	
+	/*
+	// Alternative, probably slower.
+	$(".langtext").each(function() {
+		$(this).html(response[this.id]);
+	});
+	*/
+}
 
 /**
 * Get all the groups this user can access.
@@ -50,6 +89,7 @@ function getGroups() {
 	});	// GET all group names for this user.
 	*/
 	var names = response.groupnames;
+	
 	for (i = 0; i < names.length; i++) {addGroupToList(names[i]);}
 	removeDeletedGroups(names);
 }
