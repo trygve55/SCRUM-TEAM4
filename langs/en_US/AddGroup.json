@@ -1,0 +1,17 @@
+{
+  "addgroup-homepage": "Homepage",
+  "addgroup-groups": "Groups",
+  "addgroup-tasks": "Tasks",
+  "addgroup-shoppinglists": "Shoppinglists",
+  "addgroup-profile": "Profile",
+  "addgroup-registernewgroup": "Register new group",
+  "addgroup-groupname": "Groupname:",
+  "addgroup-currency": "Currency:",
+  "addgroup-picture": "Picture:",
+  "addgroup-administrator": "Administrator:",
+  "addgroup-adduser": "Add",
+  "addgroup-membersadded": "Members added:",
+  "addgroup-addmembers": "Add members:",
+  "addgroup-adminvalue": "Dina Rosvoll (you)"
+
+}
