@@ -1,5 +1,25 @@
 .profil{
     background-color: white;
-    border-radius: 3px;
+    border-radius: 10px;
     height: auto;
+}
+
+.newsfeed{
+    background-color: white;
+    border-radius: 10px;
+    height: auto;
+}
+
+body{
+    font-family: AppleGothic;
+    overflow-x: hidden;
+
+}
+
+.index-todo{
+    padding: 20px;
+    background-color: gainsboro;
+    margin: 25px;
+    width: 300px;
+    height: 310px;
 }
