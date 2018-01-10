@@ -25,6 +25,7 @@ CREATE TABLE currency (
 
 CREATE TABLE shopping_list (
     shopping_list_id INTEGER NOT NULL AUTO_INCREMENT,
+    shopping_list_name NVARCHAR(30) NOT NULL,
     specific_currency VARCHAR(3),
     CONSTRAINT shopping_list_currency_fk FOREIGN KEY(specific_currency) REFERENCES currency(currency_short),
     CONSTRAINT shopping_list_pk PRIMARY KEY(shopping_list_id)
