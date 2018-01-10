@@ -29,4 +29,13 @@ router.get('/', function(req, res){
     readStream.pipe(res);
 });
 
+router.post('/', function(req, res){
+    var lang = req.query.lang;
+    if(!lang) {
+        res.status(400).send("Bad request");
+        return;
+    }
+
+});
+
 module.exports = router;
