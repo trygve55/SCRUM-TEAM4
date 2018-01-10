@@ -38,5 +38,5 @@ describe('Language API', function(){
             })
             .expect(400)
             .end(done);
-    })
+    });
 });
