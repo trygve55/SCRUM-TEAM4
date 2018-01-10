@@ -36,8 +36,8 @@ router.post('/regUser', function(req, res){
             req.body.profile_pic
         ];
 
-        var emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        if(!emailRegex.test(values['req.body.email'])) throw err;
+        var emailRegex = '/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/';
+        if(!emailRegex.test(values[req.body.email])) throw err;
 
         connection.query('INSERT INTO person ' +
             '(email, username, password_hash, forename, middlename,' +
