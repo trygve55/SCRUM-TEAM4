@@ -40,7 +40,7 @@ CREATE TABLE person (
     lastname NVARCHAR(255) NOT NULL,
     phone VARCHAR(15),
     birth_date DATE,
-    is_verified BIT NOT NULL,
+    is_verified BIT NOT NULL DEFAULT 0,
     gender INTEGER NOT NULL DEFAULT 0,
     profile_pic BLOB,
     last_active TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
