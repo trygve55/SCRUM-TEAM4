@@ -1,4 +1,5 @@
 var router = require('express').Router();
+var auth = require('../auth');
 
 module.exports = router;
 
@@ -31,31 +32,33 @@ router.post('/regUser', function(req, res){
                 if (result) console.log('email already in use'); //return error
 
                 user.shopping_list_id = 0;
+                auth.hashPassword(user, function (user) {
 
-                var values = [
-                    user.email,
-                    user.username,
-                    user.password,
-                    user.forename,
-                    user.middlename,
-                    user.lastname,
-                    user.phone,
-                    new Date(user.birth_date).toISOString().slice(0, 19).replace('T', ' '),
-                    user.gender,
-                    user.profile_pic,
-                    user.shopping_list_id
-                ];
+                    var values = [
+                        user.email,
+                        user.username,
+                        user.password_hash,
+                        user.forename,
+                        user.middlename,
+                        user.lastname,
+                        user.phone,
+                        new Date(user.birth_date).toISOString().slice(0, 19).replace('T', ' '),
+                        user.gender,
+                        user.profile_pic,
+                        user.shopping_list_id
+                    ];
 
-                connection.query('INSERT INTO person ' +
-                    '(email, username, password_hash, forename, middlename,' +
-                    'lastname, phone, birth_date,' +
-                    'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function(err, result) {
-                    if (err) throw err;
-                    if (result) console.log(result);
-                    connection.release();
+                    connection.query('INSERT INTO person ' +
+                        '(email, username, password_hash, forename, middlename,' +
+                        'lastname, phone, birth_date,' +
+                        'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function(err, result) {
+                        if (err) throw err;
+                        if (result) console.log(result);
+                        connection.release();
 
-                    //svar på post request
-                    res.json({message: "true"});
+                        //svar på post request
+                        res.json({message: "true"});
+                    });
                 });
             });
         });
