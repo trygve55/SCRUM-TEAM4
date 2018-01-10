@@ -11,7 +11,7 @@
 	width: 70%;
 	float: left;
 	margin: 5px;
-	min-width: 300px;
+	min-width: 375px;
 	max-width: 700px;
 }
 
@@ -19,14 +19,14 @@
 	float: left;
 	margin-left: 25px;
 	border-style: solid;
-	min-width: 150px;
+	min-width: 200px;
 }
 
 #grouptasks {
 	float: left;
 	margin-left: 25px;
 	border-style: solid;
-	min-width: 200px;
+	min-width: 300px;
 }
 
 .tablink {
@@ -69,3 +69,18 @@
 }
 
 .chbox {margin: 1px;}
+
+.chbox input, .task input {
+	float: left;
+	margin: 5px;
+}
+
+.post {
+	float: top;
+	margin: 15px;
+	border-style: solid;
+	min-width: 150px;
+	min-height: 50px;
+	border-radius: 7px;
+	text-align: center;
+}
