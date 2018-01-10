@@ -47,7 +47,6 @@ CREATE TABLE person (
     reset_password_token VARCHAR(255),
     shopping_list_id INTEGER NOT NULL,
     user_language VARCHAR(5) NOT NULL DEFAULT 'nb_NO',
-    --CONSTRAINT person_shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT person_pk PRIMARY KEY(person_id)
 );
 
