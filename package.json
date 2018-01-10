@@ -1,0 +1,30 @@
+{
+  "name": "SCRUM-TEAM4",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node main.js",
+    "debug": "nodemon --ignore public/ main.js",
+    "test": "istanbul cover node_modules/mocha/bin/_mocha && codecov"
+  },
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "body-parser": "^1.18.2",
+    "chai": "^4.1.2",
+    "codecov": "^3.0.0",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.5.7",
+    "express": "^4.16.1",
+    "http": "0.0.0",
+    "istanbul": "^0.4.5",
+    "jquery": "^3.2.1",
+    "jsonwebtoken": "^8.1.0",
+    "mocha": "^4.1.0",
+    "morgan": "^1.9.0",
+    "mysql": "^2.15.0",
+    "net": "^1.0.2",
+    "package.json": "^2.0.1",
+    "path": "^0.12.7",
+    "socket.io": "^2.0.4",
+    "supertest": "^3.0.0"
+  }
+}
