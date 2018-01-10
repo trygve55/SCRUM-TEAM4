@@ -26,25 +26,48 @@ $(function () {
 
        });
     $('#register-done').click(function (e) {
+        var isValid = true;
         if( $('#register-username').val() === ""){
-            alert('empty');
-            e.preventDefault();
+            isValid = false;
+            $('#register-username').css({
+                "border": "1px solid red",
+                "background": "#FFCECE"
+            })
         }
-        if( $('#register-password').val()=== ""){
-            alert('empty');
-            e.preventDefault();
+        if( $('#register-password').val() === ""){
+            isValid = false;
+            $('#register-password').css({
+                "border": "1px solid red",
+                "background": "#FFCECE"
+            })
         }
-        if( $('#register-repeatpassword').val()=== ""){
-            alert('empty');
-            e.preventDefault();
+        if( $('#register-repeatpassword').val() === ""){
+            isValid = false;
+            $('#register-repeatpassword').css({
+                "border": "1px solid red",
+                "background": "#FFCECE"
+            })
         }
-        if( $('#register-firstname').val()=== ""){
-            alert('empty');
-            e.preventDefault();
+        if( $('#register-firstname').val() === ""){
+            isValid = false;
+            $('#register-firstname').css({
+                "border": "1px solid red",
+                "background": "#FFCECE"
+            })
         }
-        if( $('#register-email').val()=== ""){
-            alert('empty');
+        if( $('#register-email').val() === ""){
+            isValid = false;
+            $('#register-email').css({
+                "border": "1px solid red",
+                "background": "#FFCECE"
+            })
+        }
+
+        if(isValid == false){
             e.preventDefault();
+
+        } else {
+            alert("Working");
         }
 
     })
