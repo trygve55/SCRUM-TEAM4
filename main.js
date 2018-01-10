@@ -7,6 +7,8 @@ var http = require('http');
 var app = express();
 require('./mysql');
 
+var auth = require('./auth');
+
 app.use(logger('[:date[web]] ":method :url" :status :res[content-length] - :response-time ms'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -23,3 +25,6 @@ http.createServer(app);
 console.log("Server listening on port 80");
 
 module.exports = app;
+
+app.listen(8000);
+console.log("Server listening on port 80");

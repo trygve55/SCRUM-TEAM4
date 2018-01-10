@@ -9,7 +9,7 @@
       <w>168</w>
       <h>128</h>
     </coordinates>
-    <panel_attributes>Group
+    <panel_attributes>HomeGroup
 --
 _group_id_
 group_name
@@ -27,7 +27,7 @@ default_currency</panel_attributes>
       <x>264</x>
       <y>456</y>
       <w>168</w>
-      <h>224</h>
+      <h>232</h>
     </coordinates>
     <panel_attributes>Person
 --
@@ -35,7 +35,6 @@ _person_id_
 email
 username
 password_hash
-salt
 forename
 middlename
 lastname
@@ -45,7 +44,8 @@ is_verified
 gender
 profile_pic
 last_active
-reset_password_token</panel_attributes>
+reset_password_token
+user_language</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -571,12 +571,12 @@ style=wordwrap</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>328</x>
-      <y>672</y>
+      <y>688</y>
       <w>512</w>
-      <h>88</h>
+      <h>72</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>620.0;90.0;10.0;90.0;10.0;10.0</additional_attributes>
+    <additional_attributes>620.0;70.0;10.0;70.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
@@ -594,7 +594,7 @@ style=wordwrap</panel_attributes>
     <id>Text</id>
     <coordinates>
       <x>336</x>
-      <y>680</y>
+      <y>688</y>
       <w>32</w>
       <h>24</h>
     </coordinates>
@@ -909,18 +909,18 @@ style=wordwrap</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>288</x>
-      <y>672</y>
+      <y>688</y>
       <w>552</w>
-      <h>112</h>
+      <h>96</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>670.0;120.0;10.0;120.0;10.0;10.0</additional_attributes>
+    <additional_attributes>670.0;100.0;10.0;100.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
     <coordinates>
       <x>296</x>
-      <y>680</y>
+      <y>688</y>
       <w>32</w>
       <h>24</h>
     </coordinates>

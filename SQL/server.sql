@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS shopping_list;
 DROP TABLE IF EXISTS shopping_list_person;
 DROP TABLE IF EXISTS shopping_list_entry;
 DROP TABLE IF EXISTS cleaning_list_points;
-DROP TABLE IF EXISTS newsfeed_Post;
+DROP TABLE IF EXISTS newsfeed_post;
 DROP TABLE IF EXISTS poll_options;
 DROP TABLE IF EXISTS poll_vote;
 DROP TABLE IF EXISTS todo;
@@ -34,20 +34,20 @@ CREATE TABLE person (
     person_id INTEGER NOT NULL AUTO_INCREMENT,
     email VARCHAR(255) NOT NULL,
     username VARCHAR(20) UNIQUE NOT NULL,
-    password_hash VARBINARY(1024) NOT NULL,
-    salt VARBINARY(1024) NOT NULL,
+    password_hash VARCHAR(1024) NOT NULL,
     forename NVARCHAR(255) NOT NULL,
     middlename NVARCHAR(255),
     lastname NVARCHAR(255) NOT NULL,
-    phone VARCHAR(15) NOT NULL,
-    birth_date DATE NOT NULL,
+    phone VARCHAR(15),
+    birth_date DATE,
     is_verified BIT NOT NULL,
-    gender INTEGER NOT NULL,
+    gender INTEGER NOT NULL DEFAULT 0,
     profile_pic BLOB,
     last_active TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     reset_password_token VARCHAR(255),
     shopping_list_id INTEGER NOT NULL,
-    CONSTRAINT person_shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
+    user_language VARCHAR(5) NOT NULL DEFAULT 'nb_NO',
+    --CONSTRAINT person_shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT person_pk PRIMARY KEY(person_id)
 );
 
@@ -190,3 +190,6 @@ CREATE TABLE budget_entry (
     CONSTRAINT budget_entry_person_fk FOREIGN KEY(added_by_id) REFERENCES person(person_id),
     CONSTRAINT budget_entry_pk PRIMARY KEY(budget_entry_id)
 );
+
+INSERT INTO g_tdat2003_t4.person (email, username, password_hash, forename, middlename, lastname, phone, birth_date, is_verified, gender, profile_pic, last_active, reset_password_token, shopping_list_id, user_language) 
+	VALUES ('test@test.com', 'testnavn', x'243261243130244c6b3943524f466835467471577158506756766c772e586b473269397a653473336d5a667a6a502e545131545162793945676b3647', 'test', NULL, 'test', '23456', CURRENT_DATE, true, 0, NULL, DEFAULT, NULL, 0, DEFAULT)
