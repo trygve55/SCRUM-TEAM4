@@ -19,7 +19,7 @@ app.get("*", function(req, res){
     res.send(404, "Page not found");
 });
 
-http.createServer(app);
+http.createServer(app).listen(8000);
 console.log("Server listening on port 80");
 
 module.exports = app;

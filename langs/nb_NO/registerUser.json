@@ -1,0 +1,11 @@
+{
+  "register-header": "REGISTRER NY BRUKER",
+  "register-username": "Brukernavn",
+  "register-password": "Passord",
+  "register-repeatpassword": "Repeter passord",
+  "register-firstname": "Fornavn",
+  "register-lastname": "Etternavn",
+  "register-email": "Epost",
+  "register-phone": "Telefonnummer",
+  "register-fillIn": "Vennligst fyll inn hvert felt markert med *"
+}
