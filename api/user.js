@@ -30,6 +30,8 @@ router.post('/regUser', function(req, res){
                 if (err) throw err;
                 if (result) console.log('email already in use'); //return error
 
+                user.shopping_list_id = 0;
+
                 var values = [
                     user.email,
                     user.username,
@@ -37,17 +39,17 @@ router.post('/regUser', function(req, res){
                     user.forename,
                     user.middlename,
                     user.lastname,
-                    user.phone_number,
+                    user.phone,
                     new Date(user.birth_date).toISOString().slice(0, 19).replace('T', ' '),
-                    user.is_verified,
                     user.gender,
-                    user.profile_pic
+                    user.profile_pic,
+                    user.shopping_list_id
                 ];
 
                 connection.query('INSERT INTO person ' +
                     '(email, username, password_hash, forename, middlename,' +
-                    'lastname, phone, birth_date, is_verified,' +
-                    'gender, profile_pic) VALUES(?,?,?,?,?,?,?,?,?,?,?)', values, function(err, result) {
+                    'lastname, phone, birth_date,' +
+                    'gender, profile_pic) VALUES (?,?,?,?,?,?,?,?,?,?)', values, function(err, result) {
                     if (err) throw err;
                     if (result) console.log(result);
                     connection.release();
