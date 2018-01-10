@@ -2,15 +2,40 @@
 
 var lang = require('../../api/language');
 
-describe('#language.js', function(){
-    it('should return username', function(){
-        request.get('/api/language').query({
-            path: '/login.html',
-            lang: 'en_US'
-        }).expect(200).end(function(err, res){
-            console.log(res);
-            chai.expect(res).to.equal("Username");
-            done(err);
-        });
+/**
+ * Test for the language API
+ */
+describe('Language API', function(){
+    it('should return 400', function(done){
+        request.get('/api/language')
+            .expect(400)
+            .end(done);
     });
+
+    /**
+     * Testing the GET request with correct parameters
+     */
+    it('should return username', function(done){
+        request.get('/api/language')
+            .query({
+                path: '/test.html',
+                lang: 'test_lang'
+            })
+            .expect(200)
+            .expect({username: "Username"})
+            .end(done);
+    });
+
+    /**
+     * Testing if requesting non existing translation
+     */
+    it('should return 400', function(done){
+        request.get('/api/language')
+            .query({
+                path: '/test.html',
+                lang: 'en_US'
+            })
+            .expect(400)
+            .end(done);
+    })
 });

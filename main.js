@@ -3,6 +3,7 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
+var http = require('http');
 var app = express();
 require('./mysql');
 
@@ -18,7 +19,7 @@ app.get("*", function(req, res){
     res.send(404, "Page not found");
 });
 
-app.listen(8000);
+http.createServer(app);
 console.log("Server listening on port 80");
 
 module.exports = app;
