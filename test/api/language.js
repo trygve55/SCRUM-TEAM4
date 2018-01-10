@@ -1,11 +1,12 @@
 'use strict';
 
-var lang = require('../../api/language');
-
 /**
  * Test for the language API
  */
 describe('Language API', function(){
+    /**
+     * Check bad request handling
+     */
     it('should return 400', function(done){
         request.get('/api/language')
             .expect(400)

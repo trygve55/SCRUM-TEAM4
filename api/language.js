@@ -2,6 +2,9 @@ var router = require('express').Router();
 var path = require('path');
 var fs = require('fs');
 
+/**
+ * Read correct json file in langs and return it based on language and requested URL
+ */
 router.get('/', function(req, res){
     var lang = req.query.lang;
     var pth = req.query.path;
