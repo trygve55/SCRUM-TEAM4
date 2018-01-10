@@ -38,7 +38,7 @@ CREATE TABLE person (
     person_id INTEGER NOT NULL AUTO_INCREMENT,
     email VARCHAR(255) UNIQUE NOT NULL,
     username VARCHAR(20) UNIQUE NOT NULL,
-    password_hash CHAR(60),
+    password_hash VARCHAR(1024) NOT NULL,
     forename NVARCHAR(255) NOT NULL,
     middlename NVARCHAR(255),
     lastname NVARCHAR(255) NOT NULL,
@@ -46,27 +46,23 @@ CREATE TABLE person (
     birth_date DATE,
     is_verified BIT NOT NULL DEFAULT 0,
     gender INTEGER NOT NULL DEFAULT 0,
-    profile_pic MEDIUMBLOB,
-    profile_pic_tiny BLOB,
+    profile_pic BLOB,
     last_active TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     reset_password_token VARCHAR(255),
-    shopping_list_id INTEGER NOT NULL UNIQUE,
+    shopping_list_id INTEGER NOT NULL,
     user_language VARCHAR(5) NOT NULL DEFAULT 'nb_NO',
     user_deactivated BIT NOT NULL DEFAULT 0,
-    facebook_api_id BIGINT UNIQUE,
-    CONSTRAINT person_shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT person_pk PRIMARY KEY(person_id)
 );
 
 CREATE TABLE home_group ( 
     group_id INTEGER NOT NULL AUTO_INCREMENT,
     group_name NVARCHAR(50) NOT NULL,
-    group_desc NVARCHAR(200),
-    group_type INTEGER NOT NULL DEFAULT 0,
+    group_desc NVARCHAR(200) NOT NULL,
+    group_type INTEGER NOT NULL,
     created_datetime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    cleaning_list_interval INTEGER NOT NULL DEFAULT 0,
-    group_pic MEDIUMBLOB,
-    group_pic_tiny BLOB,
+    group_pic BLOB,
+    cleaning_list_inerval INTEGER NOT NULL,
     default_currency_id INTEGER NOT NULL,
     shopping_list_id INTEGER NOT NULL,
     CONSTRAINT group_currency_fk FOREIGN KEY(default_currency_id) REFERENCES currency(currency_id),
@@ -75,7 +71,7 @@ CREATE TABLE home_group (
 );
 
 CREATE TABLE home_role ( 
-    role_id INTEGER NOT NULL,
+    role_id INTEGER NOT NULL AUTO_INCREMENT,
     role_name VARCHAR(20) NOT NULL,
     CONSTRAINT role_pk PRIMARY KEY(role_id)
 );
@@ -84,9 +80,7 @@ CREATE TABLE group_person (
     person_id INTEGER NOT NULL,
     group_id INTEGER NOT NULL,
     joined_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    role_id INTEGER NOT NULL DEFAULT 1,
-    invite_accepted BIT NOT NULL DEFAULT 0,
-    invite_sent_datetime DATE,
+    role_id INTEGER NOT NULL,
     CONSTRAINT person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
     CONSTRAINT group_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
     CONSTRAINT role_fk FOREIGN KEY(role_id) REFERENCES home_role(role_id),
@@ -96,18 +90,14 @@ CREATE TABLE group_person (
 CREATE TABLE shopping_list_person (
     shopping_list_id INTEGER NOT NULL,
     person_id INTEGER NOT NULL,
-    paid_amount INTEGER NOT NULL DEFAULT 0,
-    pay_amount_points INTEGER NOT NULL DEFAULT 100,
-    invite_accepted BIT NOT NULL DEFAULT 0,
-    invite_sent_datetime DATE,
-    is_hidden BIT NOT NULL DEFAULT 0,
+    paid_amount INTEGER NOT NULL,
     CONSTRAINT shopping_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
     CONSTRAINT shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT shopping_list_persons_pk PRIMARY KEY(shopping_list_id, person_id)
 );
 
 CREATE TABLE shopping_list_entry (
-    shopping_list_entry_id INTEGER NOT NULL AUTO_INCREMENT,
+    shopping_list_entry_id INTEGER NOT NULL,
     shopping_list_id INTEGER NOT NULL,
     entry_text NVARCHAR(25) NOT NULL,
     added_by_person_id INTEGER NOT NULL,
@@ -182,7 +172,7 @@ CREATE TABLE todo_person (
 );
 
 CREATE TABLE budget_entry_type ( 
-    budget_entry_type_id INTEGER NOT NULL AUTO_INCREMENT,
+    budget_entry_type_id INTEGER NOT NULL,
     group_id INTEGER NOT NULL,
     entry_type_name NVARCHAR(20) NOT NULL,
     entry_type_color VARCHAR(6) NOT NULL,
@@ -195,18 +185,18 @@ CREATE TABLE budget_entry (
     budget_entry_type_id INTEGER NOT NULL,
     group_id INTEGER NOT NULL,
     added_by_id INTEGER NOT NULL,
-    amount INTEGER NOT NULL,
+    amout INTEGER NOT NULL,
     text_note NVARCHAR(30),
     entry_datetime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    receipt_pic BLOB,
+    peceipt_pic BLOB NOT NULL,
     CONSTRAINT budget_entry_type_fk FOREIGN KEY(budget_entry_type_id) REFERENCES budget_entry_type(budget_entry_type_id),
     CONSTRAINT budget_entry_group_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
     CONSTRAINT budget_entry_person_fk FOREIGN KEY(added_by_id) REFERENCES person(person_id),
     CONSTRAINT budget_entry_pk PRIMARY KEY(budget_entry_id)
 );
 
-INSERT INTO home_role(role_id, role_name) VALUES (1, 'Member');
-INSERT INTO home_role(role_id, role_name) VALUES (2, 'Admin');
+INSERT INTO person(email, username, password_hash, forename, middlename, lastname, phone, birth_date, is_verified, gender, profile_pic, last_active, reset_password_token, shopping_list_id, user_language) 
+	VALUES ('test@test.com', 'testnavn', x'243261243130244c6b3943524f466835467471577158506756766c772e586b473269397a653473336d5a667a6a502e545131545162793945676b3647', 'test', NULL, 'test', '23456', CURRENT_DATE, true, 0, NULL, DEFAULT, NULL, 0, DEFAULT);
 
 INSERT INTO currency(currency_short, currency_long, currency_sign) VALUES ('AED', 'UAE Dirham', NULL);
 INSERT INTO currency(currency_short, currency_long, currency_sign) VALUES ('AFN', 'Afghani', '؋');
@@ -370,33 +360,3 @@ INSERT INTO currency(currency_short, currency_long, currency_sign) VALUES ('ZAR'
 INSERT INTO currency(currency_short, currency_long, currency_sign) VALUES ('ZAR', 'LSL Rand Loti', NULL);
 INSERT INTO currency(currency_short, currency_long, currency_sign) VALUES ('ZAR', 'NAD Rand Namibia Dollar', NULL);
 INSERT INTO currency(currency_short, currency_long, currency_sign) VALUES ('ZMK', 'Zambian Kwacha', NULL);
-
-INSERT INTO shopping_list (shopping_list_name, currency_id) 
-	VALUES ('', 100);
-
-INSERT INTO shopping_list (shopping_list_name, currency_id) 
-	VALUES ('', 100);
-
-INSERT INTO shopping_list (shopping_list_name, currency_id) 
-	VALUES ('', 100);
-
-INSERT INTO shopping_list (shopping_list_name, currency_id) 
-	VALUES ('test', 100);
-
-INSERT INTO person(email, username, password_hash, forename, middlename, lastname, phone, birth_date, is_verified, gender, profile_pic, last_active, reset_password_token, shopping_list_id, user_language) 
-	VALUES ('test@test.com', 'testnavn', x'243261243130244c6b3943524f466835467471577158506756766c772e586b473269397a653473336d5a667a6a502e545131545162793945676b3647', 'test', NULL, 'test', '23456', CURRENT_DATE, true, 0, NULL, DEFAULT, NULL, 1, DEFAULT);
-
-INSERT INTO person (email, username, password_hash, forename, middlename, lastname, phone, birth_date, is_verified, gender, profile_pic, last_active, reset_password_token, shopping_list_id, user_language, user_deactivated, facebook_api_id) 
-	VALUES ('facebook@test.com', 'facebook', NULL, 'test', NULL, 'test', '', CURRENT_DATE, DEFAULT, DEFAULT, NULL, DEFAULT, NULL, 2, DEFAULT, DEFAULT, 123456);
-
-INSERT INTO home_group (group_name, group_desc, group_type, created_datetime, group_pic, cleaning_list_interval, default_currency_id, shopping_list_id) 
-	VALUES ('test group', 'lol', DEFAULT, DEFAULT, NULL, DEFAULT, 100, 3);
-
-INSERT INTO group_person (person_id, group_id, joined_timestamp, role_id) 
-	VALUES (1, 1, DEFAULT, 2);
-
-INSERT INTO group_person (person_id, group_id, joined_timestamp, role_id) 
-	VALUES (2, 1, DEFAULT, DEFAULT);
-
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) 
-	VALUES (4, 1, 0, true, CURRENT_DATE)
