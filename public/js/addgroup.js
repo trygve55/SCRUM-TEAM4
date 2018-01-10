@@ -1,3 +1,14 @@
+$('#addgroup-checkbutton').click(function(){
+   var groupname = addgroup-groupname-input.valueOf();
+   if(groupname=""){
+       alert("Tom gruppenavn");
+   }else{
+       var currency = currency.valueOf();
+       var picture = picture-input.valueOf();
+   }
+});
+
+
 $(function (){
     $.ajax({
         url: '/api/language',
@@ -13,6 +24,8 @@ $(function (){
                 }
             }
             $("#addgroup-adminvalue").attr("placeholder", data["addgroup-adminvalue"]);
+            $("#addgroup-member").attr("placeholder", data["addgroup-member"]);
         }
     });
 });
+
