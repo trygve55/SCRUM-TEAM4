@@ -2,54 +2,100 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Log In</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <nav class="navbar navbar-inverse bg-inverse" >
-        <a class="navbar-brand" href="#">Navbar w/ text</a>
-
-    </nav>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
 </head>
 
 <style>
-    div.borders {
+    body{
+        height: 100%;
+    }
+
+    div.listborder {
+        background-color: white;
+        border-style: solid;
+        border-radius: 15px;
+        min-height: 400px;
+        max-height: 500px;
+    }
+
+    div.personaliaborder{
+        background-color: white;
+        border-style: solid;
+        border-radius: 15px;
+    }
+
+    div.debtborder{
+        background-color: white;
         border-style: solid;
         border-radius: 15px;
     }
 </style>
 
-<div class="container">
-    <div class="col-md-6 sidenav" style="padding-left: 20px; padding-right: 20px;">
-        <div class="borders">
-            <img src="http://www.freeiconspng.com/uploads/profile-icon-9.png" height="150px" width="150"/>
-            <p><strong>Name</strong></p>
-        </div>
-        <br>
-        <div class="borders">
-            <p><strong>test</strong></p>
+<body background="BackgroundImage.png">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#" style="color: #a3e6f7">
+        <img src="logo.png" width="30" height="30" alt="">
+        Household Manager
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+            <a class="nav-item nav-link" href="#">Homepage</a>
+            <a class="nav-item nav-link" href="#">Groups</a>
+            <a class="nav-item nav-link" href="#">Tasks</a>
+            <a class="nav-item nav-link" href="#">Shoppinglists</a>
         </div>
     </div>
+</nav>
 
-    <div class="col-md-3 sidenav" style="padding-left: 20px; padding-right: 20px;">
-    <div class="form-group">
-        <div class="borders">
-        <div align="center">
-            <p>My shoppinglist</p>
-        </div>
-        </div>
-    </div>
-    </div>
 
-    <div class="col-md-3 sidenav" style="padding-left: 20px; padding-right: 20px;">
-        <div class="borders" div align="center">
-            <p>My tasks</p>
+<div class="container grid-custom">
+    <div class="row">
+        <div class="col-md-6 sidenav" style="padding-left: 20px; padding-right: 20px;">
+            <br>
+            <div class="personaliaborder">
+                <div class="row col-sm">
+                    <br>
+                    <div class="col-xs-4 col-md-4">
+                        <img src="http://www.freeiconspng.com/uploads/profile-icon-9.png" class="pull-left" height="150px" width="150px">
+                    </div>
+                    <div class="col-xs-7 col-md-7">
+                        <p>Name</p>
+                        <p>phone:</p>
+                        <p>username:</p>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="debtborder" align="center">
+                <p>Debt list</p>
+                <button id="settle">Settle</button>
+
+            </div>
+        </div>
+        <div class="col-md-3 sidenav" style="padding-left: 20px; padding-right: 20px;">
+            <br>
+            <div class="listborder" align="center">
+                <p>My shoppinglist</p>
+                <button id="gotoshoppinglists">Go to All shoppinglists</button>
+            </div>
+        </div>
+        <div class="col-md-3 sidenav" style="padding-left: 20px; padding-right: 20px;">
+            <br>
+            <div class="listborder" align="center">
+                <p>My tasks</p>
+                <button id="gototasks">Go to All tasks</button>
+            </div>
         </div>
     </div>
 </div>
-
-<body>
-
 </body>
 </html>
 
