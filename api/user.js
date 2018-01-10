@@ -49,13 +49,13 @@ router.post('/regUser', function(req, res){
                 connection.query('INSERT INTO person ' +
                     '(email, username, password_hash, forename, middlename,' +
                     'lastname, phone, birth_date,' +
-                    'gender, profile_pic) VALUES (?,?,?,?,?,?,?,?,?,?)', values, function(err, result) {
+                    'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function(err, result) {
                     if (err) throw err;
                     if (result) console.log(result);
                     connection.release();
 
                     //svar på post request
-                    //res.
+                    res.json({message: "true"});
                 });
             });
         });
