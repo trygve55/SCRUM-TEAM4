@@ -5,6 +5,17 @@
  */
 describe('Language API', function(){
     /**
+     * Prepare server for test language
+     */
+    beforeEach(function(done){
+        request.post('/api/language')
+            .send({
+                lang: 'test_lang'
+            })
+            .end(done);
+    });
+
+    /**
      * Check bad request handling
      */
     it('should return 400', function(done){
@@ -19,8 +30,7 @@ describe('Language API', function(){
     it('should return username', function(done){
         request.get('/api/language')
             .query({
-                path: '/test.html',
-                lang: 'test_lang'
+                path: '/test.html'
             })
             .expect(200)
             .expect({username: "Username"})
@@ -28,13 +38,16 @@ describe('Language API', function(){
     });
 
     /**
-     * Testing if requesting non existing translation
+     * Testing if requesting non existing translation and change language request
      */
     it('should return 400', function(done){
+        request.post('/api/language')
+            .send({
+                lang: 'en_US'
+            });
         request.get('/api/language')
             .query({
-                path: '/test.html',
-                lang: 'en_US'
+                path: '/test.html'
             })
             .expect(400)
             .end(done);
