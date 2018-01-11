@@ -8,6 +8,25 @@ window.fbAsyncInit = function() {
         xfbml            : true,
         version          : 'v2.11'
     });
+    FB.getLoginStatus(function (response) {
+        if(response.status === 'connected'){
+            document.getElementById('status').innerHTML = 'We are connected';
+            document.getElementById('login').style.visibility = 'hidden';
+            window.top.location = "http://localhost:8000/index.html";
+
+        } else if(response.status === 'not_authorized'){
+            document.getElementById('status').innerHTML = 'We are not logged in';
+
+        } else{
+            document.getElementById('status').innerHTML = 'You are not logged in to facebook'
+
+        }
+    });
+
+    FB.Event.subscribe('auth.login', function () {
+        location.reload();
+        console.log('test');
+    });
 };
 
 (function(d, s, id){
@@ -17,6 +36,42 @@ window.fbAsyncInit = function() {
     js.src = "https://connect.facebook.net/en_US/sdk.js";
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
+
+function login() {
+    FB.login(function (response) {
+        if(response.status === 'connected'){
+            document.getElementById('status').innerHTML = 'We are connected';
+            document.getElementById('login').style.visibility = 'hidden';
+            console.log('1');
+        } else if(response.status === 'not_authorized'){
+            document.getElementById('status').innerHTML = 'We are not logged in';
+            console.log('2');
+        } else{
+            document.getElementById('status').innerHTML = 'You are not logged in to facebook'
+            console.log('3');
+        }
+    }, {scope: 'email'});
+
+}
+
+function getInfo(){
+    FB.api('/me', 'GET', {fields: 'first_name,last_name,name,id,email'}, function(response) {
+        document.getElementById('status').innerHTML = response.id;
+    });
+    FB.api('/me', 'GET', {
+        fields: 'first_name,last_name,name,id,email'
+    }, function(response) {
+        document.getElementById('status2').innerHTML = response.name;
+    });
+    FB.api('/me', 'GET', {
+        fields: 'first_name,last_name,name,id,email'
+    }, function(response) {
+        document.getElementById('status').innerHTML = response.email;
+    });
+}
+
+
+
 
 $(function () {
     $.ajax({

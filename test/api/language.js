@@ -1,31 +1,29 @@
-'use strict';
+/**
+ * Prepare server for test language
+ */
+before(function(done){
+    request.post('/api/language')
+        .send({
+            lang: 'test_lang'
+        })
+        .expect(200)
+        .end(function(err, res) {
+            if (err)
+                return done(err);
+            Cookies = res.headers['set-cookie'].pop().split(';')[0];
+            console.log(Cookies);
+            return done();
+        });
+});
+
+after(function(){
+    pool.end();
+});
 
 /**
  * Test for the language API
  */
 describe('Language API', function(){
-    var Cookies;
-    /**
-     * Prepare server for test language
-     */
-    before(function(done){
-        request.post('/api/language')
-            .send({
-                lang: 'test_lang'
-            })
-            .expect(200)
-            .end(function(err, res) {
-                if (err)
-                    return done(err);
-                Cookies = res.headers['set-cookie'].pop().split(';')[0];
-                return done();
-            });
-    });
-
-    after(function(){
-        pool.end();
-    });
-
     /**
      * Check bad request handling
      */

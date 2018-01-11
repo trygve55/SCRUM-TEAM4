@@ -1,29 +1,7 @@
-$('document').ready(function(){
-    $('#addgroup-checkbutton').click(function(){
-        var groupname = $('#addgroup-groupname-input').val();
-        if(groupname==""){
-            alert("Groupname invalid");
-        }else{
-            var currency = $("#currency-input option:selected").text();
-            var picture = $('input[type=file]').val();
-            alert("curr:"+ currency + ", fil: " + picture +", gn: "+groupname);
-            document.location.href = "index.html";
-        }
-    });
-
-    $('#addgroup-adduser').click(function(){
-        addmember();
-    });
-    $('#addgroup-member').keypress(function(event) {
-        if(event.keyCode == 13 || event.which == 13){
-            addmember();
-        }
-    });
-    function addmember(){
-        var member = $('#addgroup-member').val();
-        $('ul').prepend('<li class="list-group-item">'+member+'</li>');
-        $('#addgroup-member').val('');
-    }
+/**
+ * Created by odasteinlandskaug on 10.01.2018.
+ */
+$(function () {
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -39,7 +17,6 @@ $('document').ready(function(){
             }
         }
     });
-
 
     $('#login-norway').click(function () {
         $.ajax({
@@ -77,3 +54,8 @@ $('document').ready(function(){
         });
     });
 });
+
+<<<<<<< HEAD
+
+=======
+>>>>>>> 5d15ac4df8e0a877860677071ea23f3cd94eca30

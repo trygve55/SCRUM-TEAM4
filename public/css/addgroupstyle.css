@@ -1,12 +1,30 @@
 .space {
     padding-top: 40px;
-    padding-right: 100px;
+    padding-right: 4%;
     padding-bottom: 40px;
-    padding-left: 100px;
+    padding-left: 4%;
     border-radius: 15px;
+    height: 600px;
+    overflow: auto;
 }
 
 body {
-    font-family: AppleGothic;
+    font-family: Trebuchet MS;
     font-style: inherit;
 }
+.maxh{
+    max-height: 10%;
+}
+.list-group {
+    max-height: 280px;
+    overflow-y: scroll;
+
+}
+#addgroup-checkbutton {
+    color: #a3e6f7;
+}
+#addgroup-checkbutton:hover{
+    font-size: 55px;
+    color: #7ebccc;
+}
+

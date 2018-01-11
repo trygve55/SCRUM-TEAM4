@@ -4,6 +4,7 @@
   "addgroup-tasks": "Tasks",
   "addgroup-shoppinglists": "Shoppinglists",
   "addgroup-profile": "Profile",
+  "addgroup-logout": "Log out",
   "addgroup-registernewgroup": "Register new group",
   "addgroup-groupname": "Groupname:",
   "addgroup-currency": "Currency:",
@@ -12,6 +13,6 @@
   "addgroup-adduser": "Add",
   "addgroup-membersadded": "Members added:",
   "addgroup-addmembers": "Add members:",
-  "addgroup-adminvalue": "Dina Rosvoll (you)"
-
+  "addgroup-adminvalue": "Dina Rosvoll (you)",
+  "addgroup-member": "Search by username"
 }
