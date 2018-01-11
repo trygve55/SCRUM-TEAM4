@@ -64,7 +64,7 @@ CREATE TABLE home_group (
     group_type INTEGER NOT NULL DEFAULT 0,
     created_datetime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     group_pic BLOB,
-    cleaning_list_inerval INTEGER NOT NULL DEFAULT 0,
+    cleaning_list_interval INTEGER NOT NULL DEFAULT 0,
     default_currency_id INTEGER NOT NULL,
     shopping_list_id INTEGER NOT NULL,
     CONSTRAINT group_currency_fk FOREIGN KEY(default_currency_id) REFERENCES currency(currency_id),
