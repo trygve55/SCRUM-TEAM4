@@ -1,0 +1,9 @@
+
+body {
+    font-family: Trebuchet MS;
+    font-style: inherit;
+}
+.col-sm-4{
+    background-color: white;
+    margin: 1%;
+}
