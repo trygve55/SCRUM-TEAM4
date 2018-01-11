@@ -8,7 +8,9 @@ Returns the requested user's data in an array in the following format:
 TODO test that group_ids are added properly
  */
 
-router.post('/getUser', function(req, res) { // TODO add authentication
+router.post('/getUser', function(req, res) {
+    if(!req.session.person_id)
+        return res.status(400).send("Bad Request");
     pool.getConnection(function(err, connection) {
         if(err) {
             res.status(500);
