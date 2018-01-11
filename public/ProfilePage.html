@@ -4,53 +4,25 @@
     <meta charset="UTF-8">
     <title>Log In</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="list.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
     <script src="ProfilePage.js"></script>
     <script src="list.js"></script>
-    <link rel="stylesheet" href="list.css">
 
-    <link rel="stylesheet" href="jquery-ui.min.css">
-
-    <link rel="stylesheet" href="bootstrap.min.css">
-
-    <link rel="stylesheet" href="dist/lobilist.min.css">
 </head>
 
 <style>
-    body{
-        height: 100%;
+    k{
+        font-size: 10px;
     }
-    div.listborder {
-        background-color: white;
-        border-style: solid;
-        border-radius: 15px;
-        min-height: 500px;
-        max-height: 500px;
-    }
-    div.personaliaborder{
-        background-color: white;
-        border-style: solid;
-        border-radius: 15px;
-    }
-    div.debtborder{
-        background-color: white;
-        border-style: solid;
-        border-radius: 15px;
-        min-height: 250px;
-        max-height: 300px;
-    }
+
+
 </style>
 
 <body background="BackgroundImage.png">
-<script src="jquery.min.js"></script>
-<script src="lib/jquery/jquery-ui.min.js"></script>
-<script src="lib/jquery/jquery.ui.touch-punch-improved.js"></script>
-<script src="lib/bootstrap/js/bootstrap.min.js"></script>
-<script src="dist/lobilist.min.js"></script>
-
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#" style="color: #a3e6f7">
         <img src="logo.png" width="30" height="30" alt="">
@@ -69,18 +41,17 @@
     </div>
 </nav>
 
-<div class="container grid-custom">
-    <div class="row">
-        <div class="col-md-6 sidenav" style="padding-left: 20px; padding-right: 20px;">
-            <br>
+<br>
+<div class="container containerr grid-custom pad" align="center">
+    <div class="row parent">
+        <div class="col-md-6 sidenav" style="padding-left: 10px; padding-right: 10px;">
             <div class="personaliaborder">
-                <div class="row col-sm">
-                    <br>
+                <br>
+                <div class="row subRow col-sm">
                     <div class="col-xs-4 col-md-4">
                         <img src="http://www.freeiconspng.com/uploads/profile-icon-9.png" class="pull-left" height="150px" width="150px">
                     </div>
-                    <div class="col-xs-7 col-md-7">
-                        <br>
+                    <div class="col-xs-6 col-md-6" align="left">
                         <p>Name</p>
                         <p>email:</p>
                         <p>phone:</p>
@@ -90,23 +61,30 @@
             </div>
             <br>
             <div class="debtborder" align="center">
-                <h1>Dept list</h1>
+                <h2 class="farge">Dept list</h2>
                 <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-                    <div class="carousel-inner" role="listbox">
+                    <ol class="carousel-indicators">
+                        <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                        <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                        <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                    </ol>
+                    <div class="carousel-inner" role="listbox" >
                         <div class="carousel-item active">
-                            <img class="d-block img-fluid" src="https://scontent-arn2-1.xx.fbcdn.net/v/t35.0-12/26735944_10209502369551129_864503125_o.png?oh=e96e53fba085adc54344d76b92cab4ce&oe=5A576CF1" alt="Third slide" height="200px">
+
+                            <h4 class="farge">DINA</h4>
+                            <h6 class="farge">BALANCE</h6>
+                            <h6 class="farge">+ 50</h6>
+
                         </div>
                         <div class="carousel-item">
-                            <img class="d-block img-fluid" src="https://media.istockphoto.com/photos/cute-baby-piglet-picture-id586714878?k=6&m=586714878&s=612x612&w=0&h=eDrRTPxK0bcz9BzzShQDnI-6fylF6BBUGLDbaWGeEhc=" alt="Second slide" height="200px">
+                            <h4 class="farge">DINA</h4>
+                            <h6 class="farge">BALANCE</h6>
+                            <h6 class="farge">+ 50</h6>
                         </div>
                         <div class="carousel-item">
-                            <br>
-                            <h3>Name</h3>
-                            <br>
-                            <h3>Balance</h3>
-                            <h3>krkrkr</h3>
-                            <div id="button">Settle</div>
-                            <br><br><br>
+                            <h4 class="farge">DINA</h4>
+                            <h6 class="farge">BALANCE</h6>
+                            <h6 class="farge">+ 50</h6>
                         </div>
                     </div>
                     <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
@@ -123,70 +101,57 @@
         <div class="col-md-3 sidenav" style="padding-left: 20px; padding-right: 20px;">
             <br>
             <div class="listborder" align="center">
-                <div class="container2">
-                    <p>My shoppinglist</p>
+                <div class="container subRow">
+                    <h2 style="font-size: medium">My shoppinglist</h2>
+                    <ul class="list-group" id="shoppinglist">
+                        <li class="list-group-item">hri</li>
+                        <li class="list-group-item">hei</li>
+                        <li class="list-group-item">hri</li>
+                        <li class="list-group-item">hei</li>
+                        <li class="list-group-item">hei</li>
+                        <li class="list-group-item">hri</li>
+                        <li class="list-group-item">hei</li>
+                        <li class="list-group-item">hei</li>
+                        <li class="list-group-item">hri</li>
+                        <li class="list-group-item">hei</li>
+                        <li class="list-group-item">hei</li>
+                        <li class="list-group-item">hri</li>
+                        <li class="list-group-item">hei</li>
+                    </ul>
+                </div>
 
-
+                <div class="container row">
+                    <div class="col-sm-7"><input class="form-control" id="add-item" name="item"></div>
+                    <div class="col-sm-1"><button type="button" class="btn btn-info" id="add-item-button">Add</button></div>
                 </div>
             </div>
         </div>
         <div class="col-md-3 sidenav" style="padding-left: 20px; padding-right: 20px;">
             <br>
             <div class="listborder" align="center">
-                <script src="../lib/lobibox/js/lobibox.min.js"></script>
-                <script>
-                    $(function () {
-                        $('#todo-lists-basic-demo').lobiList({
-                            lists: [
-                                {
-                                    id: 'todo',
-                                    title: 'TODO',
-                                    defaultStyle: 'lobilist-info',
-                                    items: [
-                                        {
-                                            title: 'Floor cool cinders',
-                                            description: 'Thunder fulfilled travellers folly, wading, lake.',
-                                            dueDate: '2015-01-31'
-                                        },
-                                        {
-                                            title: 'Periods pride',
-                                            description: 'Accepted was mollis',
-                                            done: true
-                                        },
-                                        {
-                                            title: 'Flags better burns pigeon',
-                                            description: 'Rowed cloven frolic thereby, vivamus pining gown intruding strangers prank treacherously darkling.'
-                                        },
-                                        {
-                                            title: 'Accepted was mollis',
-                                            description: 'Rowed cloven frolic thereby, vivamus pining gown intruding strangers prank treacherously darkling.',
-                                            dueDate: '2015-02-02'
-                                        }
-                                    ]
-                                },
-                                {
-                                    id: 'doing',
-                                    title: 'DOING',
-                                    items: [
-                                        {
-                                            title: 'Composed trays',
-                                            description: 'Hoary rattle exulting suspendisse elit paradises craft wistful. Bayonets allures prefer traits wrongs flushed. Tent wily matched bold polite slab coinage celerities gales beams.'
-                                        },
-                                        {
-                                            title: 'Chic leafy'
-                                        },
-                                        {
-                                            title: 'Guessed interdum armies chirp writhes most',
-                                            description: 'Came champlain live leopards twilight whenever warm read wish squirrel rock.',
-                                            dueDate: '2015-02-04',
-                                            done: true
-                                        }
-                                    ]
-                                }
-                            ]
-                        });
-                    });
-                </script>
+                <div class="container subRow">
+                        <h2 style="font-size: medium">My tasks</h2>
+                        <ul class="list-group" id="taskList">
+                            <li class="list-group-item">hri</li>
+                            <li class="list-group-item">hei</li>
+                            <li class="list-group-item">hri</li>
+                            <li class="list-group-item">hei</li>
+                            <li class="list-group-item">hei</li>
+                            <li class="list-group-item">hri</li>
+                            <li class="list-group-item">hei</li>
+                            <li class="list-group-item">hei</li>
+                            <li class="list-group-item">hri</li>
+                            <li class="list-group-item">hei</li>
+                            <li class="list-group-item">hei</li>
+                            <li class="list-group-item">hri</li>
+                            <li class="list-group-item">hei</li>
+                        </ul>
+                    </div>
+                    <div class="container row">
+                        <div class="col-sm-8"><input class="form-control" id="add-task" name="task"></div>
+                        <div class="col-sm-1"><button type="button" class="btn btn-info" id="add-task-button">Add</button></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
