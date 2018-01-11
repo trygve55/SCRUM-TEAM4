@@ -94,18 +94,10 @@ router.post('/setShoppingListCurrency', function(req, res){
 
 // ---------------------
 
-
-
 router.post('/addItemToList', function(req, res){
 	var data = req.body;
 	
-	var entryText = data.entryText;
-	var addedByPerson_id = req.session.person_id;	// This might be incorrect as this variable is not decided at this time.
-	var cost = data.cost;
-	var datetimeAdded = new Date();
-	
-	var datetimePurchased;
-	var purchasedByPersonId;
+	var datetimePurchased = null, purchasedByPersonId = null;
 	
 	if (data.purchasedByPersonId) {purchasedByPersonId = data.purchased_by_person_id}
 	if (data.datetimePurchased) {datetimePurchased = data.datetime_purchased;}
@@ -119,13 +111,32 @@ router.post('/addItemToList', function(req, res){
 		}
 		console.log('Connection to database established');
 
-		connection.query('INSERT INTO shopping_list ' + '(specific_currency) VALUES (?)', [shopping_list_currency], function(err, result) {
-			if (err) throw err;
-			if (result) console.log(result);
-			connection.release();
+		connection.query(
+			'INSERT INTO shopping_list_entry( ' +
+			'shopping_list_id, ' +
+			'entry_text, ' +
+			'added_by_person_id,' +
+			'purchased_by_person_id, ' +
+			'datetime_added, ' +
+			'cost, ' +
+			'datetime_purchased) ' +
+			'VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?);',
+			
+			[
+				data.shopping_list_id,
+				data.entry_text,
+				data.added_by_person_id,	// This might be incorrect as this variable is not decided at this time.
+				purchasedByPersonId,
+				data.cost,
+				datetimePurchased
+			],
+			function(err, result) {
+				if (err) throw err;
+				if (result) console.log(result);
+				connection.release();
 
-			//svar på post request
-			res.json({message: "true"});
+				//response post request
+				res.json({message: "true"});
 		});
 	});
 });
