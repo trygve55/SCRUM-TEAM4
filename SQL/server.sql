@@ -97,7 +97,7 @@ CREATE TABLE shopping_list_person (
 );
 
 CREATE TABLE shopping_list_entry (
-    shopping_list_entry_id INTEGER NOT NULL,
+    shopping_list_entry_id INTEGER NOT NULL AUTO_INCREMENT,
     shopping_list_id INTEGER NOT NULL,
     entry_text NVARCHAR(25) NOT NULL,
     added_by_person_id INTEGER NOT NULL,
