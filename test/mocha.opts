@@ -2,3 +2,4 @@
 --ui bdd
 --recursive
 --require ./test_init.js
+--exit
