@@ -15,6 +15,7 @@ router.post('/regUser', function(req, res){
         var user = req.body;
 
         if(!checkValidUsername(user.username) && !checkValidEmail(user.email)){
+            connection.release();
             res.status(400).send("Bad request");
         }
 
@@ -55,11 +56,24 @@ router.post('/regUser', function(req, res){
                         user.shopping_list_id
                     ];
 
+                    if(user.phone){
+                        if(!checkValidPhone(user.phone)){
+                            connection.release();
+                            return res.status(400).send("Check phone number");
+                        }
+                    }
+
+                    if(!checkValidName(user.name) && !checkValidName(user.middlename) && !checkValidName(user.lastname)){
+                        connection.release();
+                        return rest.status(400).send("Forename, middlename or lastname wrong");
+                    }
+
+
                     connection.query('INSERT INTO person ' +
                         '(email, username, password_hash, forename, middlename,' +
                         'lastname, phone, birth_date,' +
                         'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function(err, result) {
-                        if (err) throw err;
+                        if (err) console.log(err);
                         connection.release();
                         res.json({message: "true"});
                     });
@@ -70,7 +84,6 @@ router.post('/regUser', function(req, res){
 });
 
 router.get('/okUser', function (req, res) {
-
     pool.getConnection(function (err, connection) {
         if(err) {
             res.status(500);
@@ -97,7 +110,6 @@ router.get('/okUser', function (req, res) {
 });
 
 router.get('/okEmail', function (req, res) {
-
     pool.getConnection(function (err, connection) {
         if(err) {
             res.status(500);
@@ -124,17 +136,26 @@ router.get('/okEmail', function (req, res) {
     });
 });
 
-//returns true if valid
+function checkValidPhone(phonenumber){
+    var regex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+    return regex.test(phonenumber);
+}
+
+function checkValidName(nameString) {
+    //best regex
+    var regex = /[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
+    return regex.test(nameString);
+}
+
 function checkValidUsername(username) {
     var usernameRegex = /^[a-zA-Z0-9]+$/;
     return usernameRegex.test(username.toLowerCase());
 }
-//returns true if valid
+
 function checkValidEmail(email) {
     var emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return emailRegex.test(email.toLowerCase());
 }
-
 
 
 // ---------------------
