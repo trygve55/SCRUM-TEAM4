@@ -1,10 +1,19 @@
+.space {
+    padding-top: 40px;
+    padding-right: 100px;
+    padding-bottom: 40px;
+    padding-left: 100px;
+    border-radius: 15px;
+}
 
 body {
     font-family: Trebuchet MS;
     font-style: inherit;
 }
-.liste{
-    background-color: white;
-    margin: 1%;
-    min-height: 70%;
+.maxh{
+    max-height: 10%;
+}
+.list-group {
+    max-height: 280px;
+    overflow-y: scroll;
 }

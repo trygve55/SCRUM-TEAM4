@@ -1,14 +1,14 @@
 $('document').ready(function(){
     $('#addgroup-checkbutton').click(function(){
-       var groupname = $('#addgroup-groupname-input').val();
-       if(groupname==""){
-           alert("Groupname invalid");
-       }else{
-           var currency = $("#currency-input option:selected").text();
-           var picture = $('input[type=file]').val();
-           alert("curr:"+ currency + ", fil: " + picture +", gn: "+groupname);
-           document.location.href = "index.html";
-       }
+        var groupname = $('#addgroup-groupname-input').val();
+        if(groupname==""){
+            alert("Groupname invalid");
+        }else{
+            var currency = $("#currency-input option:selected").text();
+            var picture = $('input[type=file]').val();
+            alert("curr:"+ currency + ", fil: " + picture +", gn: "+groupname);
+            document.location.href = "index.html";
+        }
     });
 
     $('#addgroup-adduser').click(function(){
@@ -37,10 +37,6 @@ $('document').ready(function(){
                     $("#" + p).html(data[p]);
                 }
             }
-<<<<<<< HEAD
-            $("#addgroup-member").attr("placeholder", data["addgroup-member"]);
-=======
->>>>>>> 5d15ac4df8e0a877860677071ea23f3cd94eca30
         }
     });
 
@@ -59,10 +55,6 @@ $('document').ready(function(){
                         $("#" + p).html(data[p]);
                     }
                 }
-<<<<<<< HEAD
-                $("#addgroup-member").attr("placeholder", data["addgroup-member"]);
-=======
->>>>>>> 5d15ac4df8e0a877860677071ea23f3cd94eca30
             }
         });
     });
@@ -81,10 +73,6 @@ $('document').ready(function(){
                         $("#" + p).html(data[p]);
                     }
                 }
-<<<<<<< HEAD
-                $("#addgroup-member").attr("placeholder", data["addgroup-member"]);
-=======
->>>>>>> 5d15ac4df8e0a877860677071ea23f3cd94eca30
             }
         });
     });
