@@ -2,17 +2,22 @@
     background-color: white;
     border-radius: 10px;
     height: auto;
+    margin-top: 2%;
+    overflow: auto;
 }
 
 .newsfeed{
     background-color: white;
     border-radius: 10px;
     height: auto;
+    margin-top: 2%;
+    overflow: auto;
 }
 
 body{
-    font-family: AppleGothic;
-    overflow-x: hidden;
+    font-family: Trebuchet MS;
+    font-style: inherit;
+    overflow: hidden;
 
 }
 

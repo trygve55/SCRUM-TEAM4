@@ -1,3 +1,10 @@
 {
-  "index-todolist": "TODAY"
+  "index-homepageNavbar": "Homepage",
+  "index-groupsNavbar": "Groups",
+  "index-tasksNavbar": "Tasks",
+  "index-shoppinglistsNavbar": "Shoppinglists",
+  "index-profileNavbar": "Profile",
+  "index-todolist": "TODAY",
+  "index-logout": "Log out",
+  "index-logoutNavbar": "Log out"
 }

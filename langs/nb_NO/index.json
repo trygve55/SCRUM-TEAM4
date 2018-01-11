@@ -1,3 +1,10 @@
 {
-  "index-todolist": "IDAG"
+  "index-homepageNavbar": "Hjem",
+  "index-groupsNavbar": "Grupper",
+  "index-tasksNavbar": "Gjøremål",
+  "index-shoppinglistsNavbar": "Handlelister",
+  "index-profileNavbar": "Profil",
+  "index-todolist": "IDAG",
+  "index-logout": "Logg ut",
+  "index-logoutNavbar":"Logg ut"
 }

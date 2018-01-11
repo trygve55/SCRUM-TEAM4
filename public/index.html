@@ -15,7 +15,7 @@
     </head>
     <body background="BackgroundImage.png">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#" style="color: #a3e6f7">
+            <a class="navbar-brand" href="#" style="color: dimgray">
                 <img src="logo.png" width="30" height="30" alt="">
                 Household Manager
             </a>
@@ -24,15 +24,25 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a class="nav-item nav-link" href="#">Homepage</a>
-                    <a class="nav-item nav-link" href="#">Groups</a>
-                    <a class="nav-item nav-link" href="#">Tasks</a>
-                    <a class="nav-item nav-link" href="#">Shoppinglists</a>
-                    <a class="nav-item nav-link" href="#">Profile</a>
+                    <a id="index-homepageNavbar" class="nav-item nav-link" href="#"></a>
+                    <a id="index-groupsNavbar" class="nav-item nav-link" href="#"></a>
+                    <a id="index-tasksNavbar" class="nav-item nav-link" href="#"></a>
+                    <a id="index-shoppinglistsNavbar" class="nav-item nav-link" href="#"></a>
+                </div>
+                <div class="navbar-nav ml-auto">
+                    <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
+                    <a id="index-profileNavbar" class="nav-item nav-link" href="#"></a>
+                    
+                    <i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
+                    <a class="nav-item nav-link" href="login.html" id="index-logoutNavbar"></a>
                 </div>
             </div>
         </nav>
         <br>
+        <div class="flag" style="background-color: white">
+            <img id="login-norway" style="position:fixed; right:15px" src="norwegianflag.jpg" width="20" height="12">
+            <img id="login-england" style="position:fixed; right: 40px" src="engelskflagg.png" width="20" height="12">
+        </div>
 <div class="row" align="center">
     <div style="width: 40px"></div>
     <div class="profil col-sm-3">
@@ -45,7 +55,7 @@
         <div class ="index-todo" id="index-todolist"></div>
 
         <i style="color:#a3e6f7;" class="fa fa-sign-out" aria-hidden="true"></i>
-        <a style="color:#a3e6f7;" id="index-logout">Log out</a>
+        <a href="login.html" style="color: dimgray" id="index-logout"></a>
 
     </div>
 
@@ -57,9 +67,4 @@
 </div>
 
     </body>
-<style>
-    .container {
-        background-color: white;
-    }
-</style>
 </html>
