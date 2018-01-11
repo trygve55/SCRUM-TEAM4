@@ -15,6 +15,7 @@
 
 </head>
 <body background="BackgroundImage.png">
+<<<<<<< HEAD
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#" style="color: dimgray">
             <img src="logo.png" width="30" height="30" alt="">
@@ -57,6 +58,49 @@
                             <div class="col-sm-6">
                                 <input class="form-control" id="addgroup-groupname-input">
                             </div>
+=======
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#" style="color: dimgray">
+        <img src="logo.png" width="30" height="30" alt="">
+        Household Manager
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+            <a id="addgroup-homepage" class="nav-item nav-link" href="#"></a>
+            <a id="addgroup-groups" class="nav-item nav-link active" href="#"></a>
+            <a id="addgroup-tasks" class="nav-item nav-link" href="#"></a>
+            <a id="addgroup-shoppinglists" class="nav-item nav-link" href="#"></a>
+        </div>
+        <div class="navbar-nav ml-auto">
+            <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
+            <a id="addgroup-profile" class="nav-item nav-link" href="#"></a>
+
+            <i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
+            <a class="nav-item nav-link" href="login.html" id="addgroup-logout"></a>
+        </div>
+    </div>
+</nav>
+<br>
+<div class="flag" style="background-color: white">
+    <img id="login-norway" style="position:fixed; right:15px" src="norwegianflag.jpg" width="20" height="12">
+    <img id="login-england" style="position:fixed; right: 40px" src="engelskflagg.png" width="20" height="12">
+</div>
+
+    <br>
+    <div class="space container" style="background-color: white">
+        <div class="container" align="center"><h2 align="center" id="addgroup-registernewgroup"></h2></div>
+            <br>
+            <div class="row">
+                <div class="col-sm-6">
+                    <br>
+                    <div class="form-group row">
+                        <label id="addgroup-groupname"  class="col-sm-4 col-form-label"></label>
+                        <div class="col-sm-6">
+                            <input class="form-control" id="addgroup-groupname-input">
+>>>>>>> 5d15ac4df8e0a877860677071ea23f3cd94eca30
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label" id="addgroup-currency" ></label>
@@ -77,6 +121,7 @@
                                 <input type="file" class="form-control-file" id="picture-input">
                             </div>
                         </div>
+<<<<<<< HEAD
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label" id="addgroup-administrator"></label>
                             <div class="col-sm-8">
@@ -110,5 +155,41 @@
         </div>
     <br>
     <br>
+=======
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label" id="addgroup-administrator"></label>
+                        <div class="col-sm-8">
+                            <input type="text" readonly class="form-control-plaintext" id="addgroup-adminvalue" value="You">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <br>
+                        <label id="addgroup-addmembers" ></label>
+                        <div class="row">
+                            <div class="col-sm-6"><input class="form-control" id="addgroup-member"></div>
+                            <div class="col-sm-1"><button type="button" class="btn btn-info" id="addgroup-adduser" ></button></div>
+                        </div>
+                    </div>
+
+
+            </div>
+                <div class="col-sm-1" style="border-left: 1px solid grey;"></div>
+                <div class="col-sm-4 maxh" >
+                <h4 style="font-size: large" id="addgroup-membersadded"></h4>
+                <ul class="list-group" id="memberslist">
+                    <li class="list-group-item">You (administrator)</li>
+                </ul>
+            </div>
+            </div>
+            <br>
+            <div class="container" align="center">
+                <i class="fa fa-check-circle fa-3x" aria-hidden="true" style="color: #a3e6f7" id="addgroup-checkbutton"></i>
+            </div>
+
+    </div>
+<br>
+<br>
+>>>>>>> 5d15ac4df8e0a877860677071ea23f3cd94eca30
 </body>
 </html>

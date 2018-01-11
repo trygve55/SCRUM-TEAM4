@@ -18,6 +18,7 @@ body {
 .list-group {
     max-height: 280px;
     overflow-y: scroll;
+<<<<<<< HEAD
 }
 #addgroup-checkbutton {
     color: #a3e6f7;
@@ -26,3 +27,6 @@ body {
     color: #7ebccc;
     font-size: 55px;
 }
+=======
+}
+>>>>>>> 5d15ac4df8e0a877860677071ea23f3cd94eca30

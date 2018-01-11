@@ -37,7 +37,10 @@ $('document').ready(function(){
                     $("#" + p).html(data[p]);
                 }
             }
+<<<<<<< HEAD
             $("#addgroup-member").attr("placeholder", data["addgroup-member"]);
+=======
+>>>>>>> 5d15ac4df8e0a877860677071ea23f3cd94eca30
         }
     });
 
@@ -56,7 +59,10 @@ $('document').ready(function(){
                         $("#" + p).html(data[p]);
                     }
                 }
+<<<<<<< HEAD
                 $("#addgroup-member").attr("placeholder", data["addgroup-member"]);
+=======
+>>>>>>> 5d15ac4df8e0a877860677071ea23f3cd94eca30
             }
         });
     });
@@ -75,7 +81,10 @@ $('document').ready(function(){
                         $("#" + p).html(data[p]);
                     }
                 }
+<<<<<<< HEAD
                 $("#addgroup-member").attr("placeholder", data["addgroup-member"]);
+=======
+>>>>>>> 5d15ac4df8e0a877860677071ea23f3cd94eca30
             }
         });
     });
