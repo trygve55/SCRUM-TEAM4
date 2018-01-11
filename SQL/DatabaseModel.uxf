@@ -27,7 +27,7 @@ default_currency_id</panel_attributes>
       <x>664</x>
       <y>456</y>
       <w>168</w>
-      <h>232</h>
+      <h>240</h>
     </coordinates>
     <panel_attributes>Person
 --
@@ -573,12 +573,12 @@ style=wordwrap</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>728</x>
-      <y>680</y>
+      <y>688</y>
       <w>512</w>
-      <h>80</h>
+      <h>72</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>620.0;80.0;10.0;80.0;10.0;10.0</additional_attributes>
+    <additional_attributes>620.0;70.0;10.0;70.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
@@ -596,7 +596,7 @@ style=wordwrap</panel_attributes>
     <id>Text</id>
     <coordinates>
       <x>736</x>
-      <y>688</y>
+      <y>696</y>
       <w>32</w>
       <h>24</h>
     </coordinates>
@@ -915,18 +915,18 @@ style=wordwrap</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>688</x>
-      <y>680</y>
+      <y>688</y>
       <w>552</w>
-      <h>104</h>
+      <h>96</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>670.0;110.0;10.0;110.0;10.0;10.0</additional_attributes>
+    <additional_attributes>670.0;100.0;10.0;100.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
     <coordinates>
       <x>696</x>
-      <y>688</y>
+      <y>696</y>
       <w>32</w>
       <h>24</h>
     </coordinates>
