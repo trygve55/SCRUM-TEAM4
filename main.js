@@ -4,7 +4,7 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
-var http = require('http');
+var session = require('express-session');
 var app = express();
 require('./mysql');
 
@@ -16,19 +16,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     secret: "something cool",
     resave: true,
-    saveUnitialized: false,
+    saveUninitialized: true,
     cookie: {
-        secure: true
+        secure: false
     }
 }));
 
 app.use('/api', require('./api'));
 
 app.get("*", function(req, res){
-    res.send(404, "Page not found");
+    res.status(404).send("Page not found");
 });
-
-http.createServer(app).listen(8000);
-console.log("Server listening on port 8000");
 
 module.exports = app;
