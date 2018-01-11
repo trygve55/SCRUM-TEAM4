@@ -2,7 +2,7 @@ var router = require('express').Router();
 
 module.exports = router;
 
-router.post('/createShoppingList', function(req, res){
+router.post('/', function(req, res){
     console.log('POST-request established');
     pool.getConnection(function(err, connection) {
         if(err) {
@@ -16,11 +16,11 @@ router.post('/createShoppingList', function(req, res){
 
         var values = [
             shopping_list.shopping_list_name,
-            shopping_list.spesific_currency
+            shopping_list.currency_id
         ];
 
         connection.query('INSERT INTO shopping_list ' +
-            '(shopping_list_name, specific_currency) VALUES (?,?)', values, function(err, result) {
+            '(shopping_list_name, currency_id) VALUES (?,?)', values, function(err, result) {
             connection.release();
 
             if(err) {
@@ -28,16 +28,16 @@ router.post('/createShoppingList', function(req, res){
                 res.json({'Error' : 'connecting to database: ' } + err);
                 return;
             }
-            if (result) console.log(result);
+            if (result) console.log("Added shopping list id: " + result.insertId);
 
             //svar på post request
-            res.json({success: "true", shopping_list_id: result});
+            res.json({success: "true", shopping_list_id: result.insertId});
         });
     });
 });
 
-router.post('/editShoppingListName', function(req, res){
-    console.log('POST-request established');
+router.put('/:shopping_list_id', function(req, res){
+    console.log('PUT-request established');
     pool.getConnection(function(err, connection) {
         if(err) {
             res.status(500);
@@ -46,8 +46,10 @@ router.post('/editShoppingListName', function(req, res){
         }
         console.log('Connected to database');
 
+        console.log(req.params.shopping_list_id);
+
         connection.query('UPDATE shopping_list ' +
-            'SET VALUES shopping_list_name = ? WHERE shopping_list_id = ?;', [req.body.shopping_list_name, req.body.shopping_list_name], function(err, result) {
+            'SET VALUES shopping_list_name = ?, currency_id = ?  WHERE shopping_list_id = ?', [req.body.shopping_list_name, req.body.currency_id, req.params.shopping_list_id], function(err, result) {
             connection.release();
 
             if(err) {
@@ -63,8 +65,8 @@ router.post('/editShoppingListName', function(req, res){
     });
 });
 
-router.post('/setShoppingListCurrency', function(req, res){
-    console.log('POST-request established');
+router.get('/:shopping_list_id', function(req, res){
+    console.log('GET-request established');
     pool.getConnection(function(err, connection) {
         if(err) {
             res.status(500);
@@ -73,8 +75,8 @@ router.post('/setShoppingListCurrency', function(req, res){
         }
         console.log('Connected to database');
 
-        connection.query('UPDATE shopping_list ' +
-            'SET VALUES currency_id = ? WHERE shopping_list_id = ?;', [req.body.shopping_list_name, req.body.shopping_list_name], function(err, result) {
+        connection.query('SELECT shopping_list_id, shopping_list_name, currency_id ' +
+            'FROM shopping_list WHERE shopping_list_id = ?;', [req.params.shopping_list_id], function(err, result) {
             connection.release();
 
             if(err) {
@@ -82,17 +84,13 @@ router.post('/setShoppingListCurrency', function(req, res){
                 res.json({'Error' : 'connecting to database: ' } + err);
                 return;
             }
-
             if (result) console.log(result);
 
             //svar på post request
-            res.json({success: "true"});
+            res.json({success: result});
         });
     });
 });
-
-
-// ---------------------
 
 router.post('/addItemToList', function(req, res){
 	var data = req.body;

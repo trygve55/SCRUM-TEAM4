@@ -12,7 +12,7 @@ router.get('/currencies', function(req, res){
         }
         console.log('Connected to database');
 
-        connection.query('SELECT * FROM currency ', function(err, result) {
+        connection.query('SELECT * FROM currency ORDER BY', function(err, result) {
             connection.release();
 
             if(err) {
