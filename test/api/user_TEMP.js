@@ -2,76 +2,55 @@
 
 var chai = require('chai').expect;
 var user = require('../../api/user_TEMP'); //TODO change back to user.js after manual merge
-var mysql = require('../../mysql');
+var mysql = require('mysql');
 
-describe('hooks', function() {
-    //before(function() {});
-
-    after(function() {
-        pool.getConnection(function(err, connection) {
-            if(err) throw err;
-            deleteTestPerson(connection);
-        });
-    });
-
-    //beforeEach(function() {});
-    //afterEach(function() {});
+var pool = mysql.createPool({
+    connectionLimit : 2,
+    host : 'localhost',
+    user : 'root',
+    password : '',
+    database : 'test',
+    debug : false
 });
 
-
-/*describe('getUserdata()', function() {
-    it('Should return the specified user\'s data', function() {
-        var con;
-        pool.getConnection(function(err, connection){
-            if(err) throw err;
-            con = connection;
-        });
-        var data = ['fn@fake.no', 'Fridtjof', 'Dudleif', 'Nansen', '10101861', insertTestPerson(con)];
-        var sqlUpdate = 'UPDATE person SET email = ?, firstname = ?, middlename = ?, lastname = ?, phone = ? WHERE person_id = ?';
-        con.query(sqlUpdate, [data], function(err) {
-            if(err) throw err;
-        });
-        var selData = getUserdata('TEST_USERNAME_M', con);
-        console.log(selData);
-        expect(data[0]).to.equal(selData[0]);
-        deleteTestPerson(con);
-    });
-});*/
-
-describe('getUsername()', function() {
-    it('Should return the specified email\'s corresponding username', function() {
+describe('#user_TEMP.js', function() {
+    it('should return the requested user\'s data', function(done) {
         pool.getConnection(function(err, connection) {
-            if(err) {
-                throw err;
-                console.log('An error occurred!');
-            }
-            console.log('connection acquired');
-            insertTestPerson(connection);
-
-            var email = getUsername('TEST_EMAIL', connection);
-            console.log(email);
-
-
+            if(err) throw err;
             deleteTestPerson(connection);
+            insertTestPerson(connection);
+            request.post('/api/user_TEMP/getUser').send({
+                username: 'TEST_USERNAME_M'
+            }).expect(function(res) {
+                res.body[0].person_id = 2;
+            }).expect([{email: "TEST_EMAIL",
+                forename: 'TEST_FORENAME',
+                middlename: null,
+                lastname: 'TEST_SURNAME',
+                phone: 'TEST_PHONE',
+                person_id: 2
+            }]).end(done);
         });
-        console.log('potato');
     });
 });
 
 function insertTestPerson(connection) {
+    console.log('insertTestPerson() called');
     var binary = 0x01010100010001010101001101010100;
-    var data = ['TEST_EMAIL','TEST_USERNAME_M',binary,binary, 'TEST_FORENAME','TEST_SURNAME','TEST_PHONE','1970-01-01',
-        0x0,0,0];
-    var sql = 'INSERT INTO person (email, username, password_hash, salt, forename, lastname, phone, birth_date, ' +
+    var data = [['TEST_EMAIL','TEST_USERNAME_M',binary, 'TEST_FORENAME','TEST_SURNAME','TEST_PHONE','1970-01-01',
+        0x0,0,0]];
+    var sql = 'INSERT INTO person (email, username, password_hash, forename, lastname, phone, birth_date, ' +
         'is_verified, gender, shopping_list_id) VALUES ?';
     connection.query(sql, [data], function(err, result) {
         if(err) {
-            throw err;
             console.log('An error occurred!');
+            throw err;
+        } else {
+            console.log('query succesfully sent');
         }
     });
     var personid;
-    con.query('SELECT LAST_INSERT_ID()', function(err, result) {
+    connection.query('SELECT LAST_INSERT_ID()', function(err, result) {
         if(err) throw err;
         personid = result;
     });
