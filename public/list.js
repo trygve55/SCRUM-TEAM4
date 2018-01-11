@@ -1,4 +1,6 @@
 $(document).ready(
+
+
     function(){
         $('#add-item-button').click(
             function(){
@@ -11,6 +13,13 @@ $(document).ready(
                 var toAdd = $('input[name=task]').val();
                 $('#taskList').append('<li class="list-group-item">' + toAdd + '</li>');
             });
+
+        $(document).ready(function() {
+            $('#media').carousel({
+                pause: false,
+                interval: true,
+            });
+        });
 
         $("input[name=item]").keyup(function(event){
             if(event.keyCode == 13){
