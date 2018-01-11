@@ -95,3 +95,37 @@ router.post('/setShoppingListCurrency', function(req, res){
 // ---------------------
 
 
+
+router.post('/addItemToList', function(req, res){
+	var data = req.body;
+	
+	var entryText = data.entryText;
+	var addedByPerson_id = req.session.person_id;	// This might be incorrect as this variable is not decided at this time.
+	var cost = data.cost;
+	var datetimeAdded = new Date();
+	
+	var datetimePurchased;
+	var purchasedByPersonId;
+	
+	if (data.purchasedByPersonId) {purchasedByPersonId = data.purchased_by_person_id}
+	if (data.datetimePurchased) {datetimePurchased = data.datetime_purchased;}
+	
+	console.log('POST-request initiating');
+	pool.getConnection(function(err, connection) {
+		if(err) {
+			res.status(500);
+			res.json({'Error' : 'connecting to database: ' } + err);
+			return;
+		}
+		console.log('Connection to database established');
+
+		connection.query('INSERT INTO shopping_list ' + '(specific_currency) VALUES (?)', [shopping_list_currency], function(err, result) {
+			if (err) throw err;
+			if (result) console.log(result);
+			connection.release();
+
+			//svar på post request
+			res.json({message: "true"});
+		});
+	});
+});
