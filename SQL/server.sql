@@ -72,7 +72,7 @@ CREATE TABLE home_group (
 );
 
 CREATE TABLE home_role ( 
-    role_id INTEGER NOT NULL AUTO_INCREMENT,
+    role_id INTEGER NOT NULL,
     role_name VARCHAR(20) NOT NULL,
     CONSTRAINT role_pk PRIMARY KEY(role_id)
 );
@@ -81,7 +81,7 @@ CREATE TABLE group_person (
     person_id INTEGER NOT NULL,
     group_id INTEGER NOT NULL,
     joined_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    role_id INTEGER NOT NULL,
+    role_id INTEGER NOT NULL DEFAULT 0,
     CONSTRAINT person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
     CONSTRAINT group_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
     CONSTRAINT role_fk FOREIGN KEY(role_id) REFERENCES home_role(role_id),
@@ -198,6 +198,9 @@ CREATE TABLE budget_entry (
 
 INSERT INTO person(email, username, password_hash, forename, middlename, lastname, phone, birth_date, is_verified, gender, profile_pic, last_active, reset_password_token, shopping_list_id, user_language) 
 	VALUES ('test@test.com', 'testnavn', x'243261243130244c6b3943524f466835467471577158506756766c772e586b473269397a653473336d5a667a6a502e545131545162793945676b3647', 'test', NULL, 'test', '23456', CURRENT_DATE, true, 0, NULL, DEFAULT, NULL, 0, DEFAULT);
+
+INSERT INTO home_role(role_id, role_name) VALUES (0, 'Member');
+INSERT INTO home_role(role_id, role_name) VALUES (1, 'Admin');
 
 INSERT INTO currency(currency_short, currency_long, currency_sign) VALUES ('AED', 'UAE Dirham', NULL);
 INSERT INTO currency(currency_short, currency_long, currency_sign) VALUES ('AFN', 'Afghani', '؋');
@@ -362,3 +365,11 @@ INSERT INTO currency(currency_short, currency_long, currency_sign) VALUES ('ZAR'
 INSERT INTO currency(currency_short, currency_long, currency_sign) VALUES ('ZAR', 'NAD Rand Namibia Dollar', NULL);
 INSERT INTO currency(currency_short, currency_long, currency_sign) VALUES ('ZMK', 'Zambian Kwacha', NULL);
 
+INSERT INTO shopping_list (shopping_list_name, currency_id) 
+	VALUES ('', 100);
+
+INSERT INTO home_group (group_name, group_desc, group_type, created_datetime, group_pic, cleaning_list_inerval, default_currency_id, shopping_list_id) 
+	VALUES ('test group', 'lol', DEFAULT, DEFAULT, NULL, DEFAULT, 100, 1);
+
+INSERT INTO group_person (person_id, group_id, joined_timestamp, role_id) 
+	VALUES (1, 1, DEFAULT, DEFAULT);
