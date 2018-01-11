@@ -10,3 +10,10 @@ body {
     font-family: Trebuchet MS;
     font-style: inherit;
 }
+.maxh{
+    max-height: 10%;
+}
+.list-group {
+    max-height: 280px;
+    overflow-y: scroll;
+}
