@@ -92,7 +92,7 @@ router.get('/:shopping_list_id', function(req, res){
     });
 });
 
-router.post('/addItemToList', function(req, res){
+router.post('/entry', function(req, res) {
 	var data = req.body;
 	
 	var datetimePurchased = null, purchasedByPersonId = null;
@@ -129,6 +129,30 @@ router.post('/addItemToList', function(req, res){
 				datetimePurchased
 			],
 			function(err, result) {
+				if (err) throw err;
+				if (result) console.log(result);
+				connection.release();
+
+				//response post request
+				res.json({message: "true"});
+		});
+	});
+});
+
+router.delete('/entry/:shopping_list_entry_id', function(req, res) {	// Delete
+	console.log('POST-request initiating');
+	pool.getConnection(function(err, connection) {
+		if(err) {
+			res.status(500);
+			res.json({'Error' : 'connecting to database: ' } + err);
+			return;
+		}
+		console.log('Connection to database established');
+
+		//DELETE FROM shopping_list_entry WHERE shopping_list_id = listId AND shopping_list_entry_id = entryId;
+		connection.query(
+			'DELETE FROM shopping_list_entry WHERE shopping_list_entry_id = ?',
+			[req.params.shopping_list_entry_id], function(err, result) {
 				if (err) throw err;
 				if (result) console.log(result);
 				connection.release();
