@@ -70,7 +70,6 @@ router.post('/regUser', function(req, res){
 });
 
 router.get('/okUser', function (req, res) {
-    var username = req.query.username;
 
     pool.getConnection(function (err, connection) {
         if(err) {
@@ -79,24 +78,25 @@ router.get('/okUser', function (req, res) {
             return;
         }
 
-        if(checkValidUsername(username)){
-            return res.status(400);
+        var username = req.query.username;
+
+        if(!checkValidUsername(username)){
+            connection.release();
+            return res.status(400).send("Bad Request");
         }
 
         connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?', [username], function (err, result){
             if(result[0].counted === 1) {
                 connection.release();
-                return res.status(400);
-            } else {
-                connection.release();
-                return res.status(200);
+                return res.status(400).send("Bad Request");
             }
+            connection.release();
+            res.status(200).send("OK");
         });
     });
 });
 
 router.get('/okEmail', function (req, res) {
-    var email = req.query.email;
 
     pool.getConnection(function (err, connection) {
         if(err) {
@@ -105,17 +105,20 @@ router.get('/okEmail', function (req, res) {
             return;
         }
 
-        if(checkValidEmail(email)){
-            return res.status(400);
+        var email = req.query.email;
+
+        if(!checkValidEmail(email)){
+            connection.release();
+            return res.status(400).send("Bad Request");
         }
 
         connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?', [email], function (err, result){
             if(result[0].counted === 1) {
                 connection.release();
-                return res.status(400).send("bad request");
+                return res.status(400).send("Bad Request");
             } else {
                 connection.release();
-                return res.status(200);
+                res.status(200).send("OK");
             }
         });
     });
@@ -128,7 +131,6 @@ function checkValidUsername(username) {
 }
 //returns true if valid
 function checkValidEmail(email) {
-    console.log(email);
     var emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return emailRegex.test(email.toLowerCase());
 }
