@@ -36,35 +36,6 @@ router.post('/', function(req, res){
     });
 });
 
-router.put('/:shopping_list_id', function(req, res){
-    console.log('PUT-request established');
-    pool.getConnection(function(err, connection) {
-        if(err) {
-            res.status(500);
-            res.json({'Error' : 'connecting to database: ' } + err);
-            return;
-        }
-        console.log('Connected to database');
-
-        console.log(req.params.shopping_list_id);
-
-        connection.query('UPDATE shopping_list ' +
-            'SET VALUES shopping_list_name = ?, currency_id = ?  WHERE shopping_list_id = ?', [req.body.shopping_list_name, req.body.currency_id, req.params.shopping_list_id], function(err, result) {
-            connection.release();
-
-            if(err) {
-                res.status(500);
-                res.json({'Error' : 'connecting to database: ' } + err);
-                return;
-            }
-            if (result) console.log(result);
-
-            //svar på post request
-            res.json({success: "true"});
-        });
-    });
-});
-
 router.get('/:shopping_list_id', function(req, res){
     console.log('GET-request established');
     pool.getConnection(function(err, connection) {
@@ -92,6 +63,50 @@ router.get('/:shopping_list_id', function(req, res){
     });
 });
 
+router.put('/:shopping_list_id', function(req, res){
+	console.log('PUT-request initiating');
+	pool.getConnection(function(err, connection) {
+		if(err) {
+			res.status(500);
+			res.json({'Error' : 'connecting to database: ' } + err);
+			return;
+		}
+		console.log('Database connection established');
+
+		var listId = req.params.shopping_list_id;
+		if(!listId) {
+			res.status(400);
+			res.json({'Error' : 'shopping_list_id not specified: ' } + err);
+			return;
+		}
+		var parameters = [], data = req.body, request = 'UPDATE shopping_list SET ';
+		for (var k in data) {
+			request += k + ' = ?, ';
+			parameters.push(data[k]);
+		}
+		request += 'shopping_list_id = ?';
+		parameters.push(listId);
+
+//'UPDATE shopping_list SET shopping_list_name = ?, currency_id = ? WHERE shopping_list_id = ?'
+		connection.query(
+			request,
+			parameters,
+			function(err, result) {
+				connection.release();
+
+				if(err) {
+					res.status(500);
+					res.json({'Error' : 'connecting to database: ' } + err);
+					return;
+				}
+				if (result) console.log(result);
+
+				// Respond put request
+				res.json({success: "Success"});
+		});
+	});
+});
+
 router.post('/entry', function(req, res) {
 	var data = req.body;
 	
@@ -107,7 +122,7 @@ router.post('/entry', function(req, res) {
 			res.json({'Error' : 'connecting to database: ' } + err);
 			return;
 		}
-		console.log('Connection to database established');
+		console.log('Database connection established');
 
 		connection.query(
 			'INSERT INTO shopping_list_entry( ' +
@@ -131,10 +146,10 @@ router.post('/entry', function(req, res) {
 			function(err, result) {
 				if (err) throw err;
 				if (result) console.log(result);
-				connection.release();
+				connection.release()
 
-				//response post request
-				res.json({message: "true"});
+				// Respond post request
+				res.json({message: "Success"});
 		});
 	});
 });
@@ -147,7 +162,7 @@ router.delete('/entry/:shopping_list_entry_id', function(req, res) {	// Delete
 			res.json({'Error' : 'connecting to database: ' } + err);
 			return;
 		}
-		console.log('Connection to database established');
+		console.log('Database connection established');
 
 		//DELETE FROM shopping_list_entry WHERE shopping_list_id = listId AND shopping_list_entry_id = entryId;
 		connection.query(
@@ -157,8 +172,13 @@ router.delete('/entry/:shopping_list_entry_id', function(req, res) {	// Delete
 				if (result) console.log(result);
 				connection.release();
 
+<<<<<<< HEAD
 				//response post request
 				res.json({message: "true"});
+=======
+				// Respond post request
+				res.json({message: "Success"});
+>>>>>>> Fix put request.
 		});
 	});
 });
