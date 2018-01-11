@@ -3,7 +3,7 @@ var mysql = require('mysql');
 app = require('./main');
 
 chai = require('chai');
-request = require('supertest')(app);
+request = require('supertest-session')(app);
 
 pool = mysql.createPool({
     connectionLimit : 2,
