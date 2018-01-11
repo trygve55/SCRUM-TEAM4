@@ -3,7 +3,8 @@ body {
     font-family: Trebuchet MS;
     font-style: inherit;
 }
-.col-sm-4{
+.liste{
     background-color: white;
     margin: 1%;
+    min-height: 70%;
 }
