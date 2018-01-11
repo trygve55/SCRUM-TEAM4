@@ -1,31 +1,79 @@
-$('#addgroup-checkbutton').click(function(){
-   var groupname = addgroup-groupname-input.valueOf();
-   if(groupname=""){
-       alert("Tom gruppenavn");
-   }else{
-       var currency = currency.valueOf();
-       var picture = picture-input.valueOf();
-   }
-});
+$('document').ready(function(){
+    $('#addgroup-checkbutton').click(function(){
+       var groupname = $('#addgroup-groupname-input').val();
+       if(groupname==""){
+           alert("Groupname invalid");
+       }else{
+           var currency = $("#currency-input option:selected").text();
+           var picture = $('input[type=file]').val();
+           alert("curr:"+ currency + ", fil: " + picture +", gn: "+groupname);
+           document.location.href = "index.html";
+       }
+    });
 
-
-$(function (){
+    $('#addgroup-adduser').click(function(){
+        addmember();
+    });
+    $('#addgroup-member').keypress(function(event) {
+        if(event.keyCode == 13 || event.which == 13){
+            addmember();
+        }
+    });
+    function addmember(){
+        var member = $('#addgroup-member').val();
+        $('ul').prepend('<li class="list-group-item">'+member+'</li>');
+        $('#addgroup-member').val('');
+    }
     $.ajax({
         url: '/api/language',
         method: 'GET',
         data: {
-            lang: 'en_US',
+            lang: 'nb_NO',
             path: window.location.pathname
         },
-        success: function(data){
-            for(var p in data){
-                if(data.hasOwnProperty(p)){
+        success: function (data) {
+            for (var p in data) {
+                if (data.hasOwnProperty(p)) {
                     $("#" + p).html(data[p]);
                 }
             }
-            $("#addgroup-adminvalue").attr("placeholder", data["addgroup-adminvalue"]);
-            $("#addgroup-member").attr("placeholder", data["addgroup-member"]);
         }
     });
-});
 
+
+    $('#login-norway').click(function () {
+        $.ajax({
+            url: '/api/language',
+            method: 'GET',
+            data: {
+                lang: 'nb_NO',
+                path: window.location.pathname
+            },
+            success: function (data) {
+                for (var p in data) {
+                    if (data.hasOwnProperty(p)) {
+                        $("#" + p).html(data[p]);
+                    }
+                }
+            }
+        });
+    });
+
+    $('#login-england').click(function () {
+        $.ajax({
+            url: '/api/language',
+            method: 'GET',
+            data: {
+                lang: 'en_US',
+                path: window.location.pathname
+            },
+            success: function (data) {
+                for (var p in data) {
+                    if (data.hasOwnProperty(p)) {
+                        $("#" + p).html(data[p]);
+                    }
+                }
+            }
+        });
+    });
+});
