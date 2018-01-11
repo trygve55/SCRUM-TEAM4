@@ -1,6 +1,7 @@
 var mysql = require('mysql');
 
 app = require('./main');
+Cookies = null;
 
 chai = require('chai');
 request = require('supertest-session')(app);

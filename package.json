@@ -4,7 +4,8 @@
   "scripts": {
     "start": "node server.js",
     "debug": "nodemon --ignore public/ server.js",
-    "test": "istanbul cover node_modules/mocha/bin/_mocha && codecov"
+    "test": "istanbul test node_modules/mocha/bin/_mocha",
+    "tst": "istanbul cover node_modules/mocha/bin/_mocha && codecov"
   },
   "dependencies": {
     "bcrypt": "^1.0.3",
