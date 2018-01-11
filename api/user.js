@@ -128,10 +128,9 @@ router.get('/okEmail', function (req, res) {
             if(result[0].counted === 1) {
                 connection.release();
                 return res.status(400).send("Bad Request");
-            } else {
-                connection.release();
-                res.status(200).send("OK");
             }
+            connection.release();
+            res.status(200).send("OK");
         });
     });
 });
