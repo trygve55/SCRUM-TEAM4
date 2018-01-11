@@ -38,7 +38,7 @@ CREATE TABLE person (
     person_id INTEGER NOT NULL AUTO_INCREMENT,
     email VARCHAR(255) UNIQUE NOT NULL,
     username VARCHAR(20) UNIQUE NOT NULL,
-    password_hash VARCHAR(1024) NOT NULL,
+    password_hash CHAR(60),
     forename NVARCHAR(255) NOT NULL,
     middlename NVARCHAR(255),
     lastname NVARCHAR(255) NOT NULL,
@@ -52,17 +52,18 @@ CREATE TABLE person (
     shopping_list_id INTEGER NOT NULL,
     user_language VARCHAR(5) NOT NULL DEFAULT 'nb_NO',
     user_deactivated BIT NOT NULL DEFAULT 0,
+    facebook_api_id BIGINT,
     CONSTRAINT person_pk PRIMARY KEY(person_id)
 );
 
 CREATE TABLE home_group ( 
     group_id INTEGER NOT NULL AUTO_INCREMENT,
     group_name NVARCHAR(50) NOT NULL,
-    group_desc NVARCHAR(200) NOT NULL,
-    group_type INTEGER NOT NULL,
+    group_desc NVARCHAR(200),
+    group_type INTEGER NOT NULL DEFAULT 0,
     created_datetime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     group_pic BLOB,
-    cleaning_list_inerval INTEGER NOT NULL,
+    cleaning_list_inerval INTEGER NOT NULL DEFAULT 0,
     default_currency_id INTEGER NOT NULL,
     shopping_list_id INTEGER NOT NULL,
     CONSTRAINT group_currency_fk FOREIGN KEY(default_currency_id) REFERENCES currency(currency_id),
@@ -360,3 +361,4 @@ INSERT INTO currency(currency_short, currency_long, currency_sign) VALUES ('ZAR'
 INSERT INTO currency(currency_short, currency_long, currency_sign) VALUES ('ZAR', 'LSL Rand Loti', NULL);
 INSERT INTO currency(currency_short, currency_long, currency_sign) VALUES ('ZAR', 'NAD Rand Namibia Dollar', NULL);
 INSERT INTO currency(currency_short, currency_long, currency_sign) VALUES ('ZMK', 'Zambian Kwacha', NULL);
+
