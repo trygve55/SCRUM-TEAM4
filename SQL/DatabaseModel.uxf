@@ -27,7 +27,7 @@ default_currency_id</panel_attributes>
       <x>664</x>
       <y>456</y>
       <w>168</w>
-      <h>240</h>
+      <h>256</h>
     </coordinates>
     <panel_attributes>Person
 --
@@ -47,7 +47,8 @@ last_active
 reset_password_token
 user_language
 user_deactivated
-default_currency_id</panel_attributes>
+default_currency_id
+facebook_api_id</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -573,12 +574,12 @@ style=wordwrap</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>728</x>
-      <y>688</y>
+      <y>704</y>
       <w>512</w>
-      <h>72</h>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>620.0;70.0;10.0;70.0;10.0;10.0</additional_attributes>
+    <additional_attributes>620.0;50.0;10.0;50.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
@@ -596,7 +597,7 @@ style=wordwrap</panel_attributes>
     <id>Text</id>
     <coordinates>
       <x>736</x>
-      <y>696</y>
+      <y>712</y>
       <w>32</w>
       <h>24</h>
     </coordinates>
@@ -915,18 +916,18 @@ style=wordwrap</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>688</x>
-      <y>688</y>
+      <y>704</y>
       <w>552</w>
-      <h>96</h>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>670.0;100.0;10.0;100.0;10.0;10.0</additional_attributes>
+    <additional_attributes>670.0;80.0;10.0;80.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
     <coordinates>
       <x>696</x>
-      <y>696</y>
+      <y>712</y>
       <w>32</w>
       <h>24</h>
     </coordinates>
