@@ -84,6 +84,7 @@ CREATE TABLE group_person (
     joined_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     role_id INTEGER NOT NULL DEFAULT 1,
     invite_accepted BIT NOT NULL DEFAULT 0,
+    invite_sent_datetime DATE,
     CONSTRAINT person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
     CONSTRAINT group_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
     CONSTRAINT role_fk FOREIGN KEY(role_id) REFERENCES home_role(role_id),
@@ -93,8 +94,10 @@ CREATE TABLE group_person (
 CREATE TABLE shopping_list_person (
     shopping_list_id INTEGER NOT NULL,
     person_id INTEGER NOT NULL,
-    paid_amount INTEGER NOT NULL,
+    paid_amount INTEGER NOT NULL DEFAULT 0,
     invite_accepted BIT NOT NULL DEFAULT 0,
+    invite_sent_datetime DATE,
+    is_hidden BIT NOT NULL DEFAULT 0,
     CONSTRAINT shopping_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
     CONSTRAINT shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT shopping_list_persons_pk PRIMARY KEY(shopping_list_id, person_id)
@@ -374,6 +377,9 @@ INSERT INTO shopping_list (shopping_list_name, currency_id)
 INSERT INTO shopping_list (shopping_list_name, currency_id) 
 	VALUES ('', 100);
 
+INSERT INTO shopping_list (shopping_list_name, currency_id) 
+	VALUES ('test', 100);
+
 INSERT INTO person(email, username, password_hash, forename, middlename, lastname, phone, birth_date, is_verified, gender, profile_pic, last_active, reset_password_token, shopping_list_id, user_language) 
 	VALUES ('test@test.com', 'testnavn', x'243261243130244c6b3943524f466835467471577158506756766c772e586b473269397a653473336d5a667a6a502e545131545162793945676b3647', 'test', NULL, 'test', '23456', CURRENT_DATE, true, 0, NULL, DEFAULT, NULL, 1, DEFAULT);
 
@@ -388,3 +394,6 @@ INSERT INTO group_person (person_id, group_id, joined_timestamp, role_id)
 
 INSERT INTO group_person (person_id, group_id, joined_timestamp, role_id) 
 	VALUES (2, 1, DEFAULT, DEFAULT);
+
+INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) 
+	VALUES (4, 1, 0, true, CURRENT_DATE)
