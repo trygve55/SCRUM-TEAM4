@@ -53,11 +53,10 @@
 
 .transparency {
 	margin-top: auto;
-	background-color: #ffffff;
-	opacity: 0.8;
+	background-color: white;
 	height: auto;
 	filter: alpha(opacity=60);
-	border-style: solid;
+
 	border-radius: 15px;
 }
 
@@ -83,4 +82,10 @@
 	min-height: 50px;
 	border-radius: 7px;
 	text-align: center;
+}
+
+body{
+	font-family: Trebuchet MS;
+	font-style: inherit;
+	overflow: hidden;
 }
