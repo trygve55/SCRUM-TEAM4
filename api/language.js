@@ -7,7 +7,7 @@ var fs = require('fs');
  */
 router.get('/', function(req, res){
     var lang = req.session.lang;
-    var pth = req.query.path;
+    var pth = req.header('referer').split(":8000")[1];
     if(!lang){
         req.session.lang = "nb_NO";
         req.session.save();
@@ -19,7 +19,6 @@ router.get('/', function(req, res){
     }
     pth = pth.split('.')[0];
     var p = path.join(__dirname, '../langs/' + lang + pth + '.json');
-    console.log(p);
     if(!fs.existsSync(p)){
         res.status(400).send("Non existing translation");
         return;
