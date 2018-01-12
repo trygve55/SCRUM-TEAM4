@@ -3,5 +3,6 @@
   "login-email": "Brukernavn/Epost",
   "login-password": "Passord",
   "login-registerNewUser": "Registrer ny bruker",
-  "login-forgotpassword": "Glemt passord?"
+  "login-forgotpassword": "Glemt passord?",
+  "login-facebook": "Logg inn med Facebook"
 }
