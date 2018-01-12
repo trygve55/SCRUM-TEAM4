@@ -62,7 +62,7 @@ router.post('/', function(req, res){
                                     res.status(200).json(results);
                                 });
                             });
-                    });
+                        });
                 });
         });
     });
@@ -73,6 +73,24 @@ router.get('/', function(req, res){
 
     pool.getConnection(function (err, connection) {
         connection.query("SELECT profile_pic FROM person WHERE person_id = 1;", [], function (error, results, fields) {
+            connection.release();
+            if(err) {
+                res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                return;
+            }
+
+            if(results.length) res.status(404).json({error: 'no profile picture.'});
+
+            if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
+        });
+    });
+});
+
+router.get('/tiny', function(req, res){
+    console.log('GET-request established');
+
+    pool.getConnection(function (err, connection) {
+        connection.query("SELECT profile_pic_tiny FROM person WHERE person_id = 1;", [], function (error, results, fields) {
             connection.release();
             if(err) {
                 res.status(500).json({'Error' : 'connecting to database: ' } + err);
