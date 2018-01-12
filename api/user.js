@@ -1,8 +1,10 @@
-var router = require('express').Router();
-var auth = require('../auth');
+var router = require('express').Router(),
+    auth = require('../auth'),
+    router = require('express').Router(),
+    formidable = require('formidable'),
+    Jimp = require("jimp");
 
 module.exports = router;
-
 
 //register user
 router.post('/register', function(req, res){
@@ -211,4 +213,111 @@ router.put('/profile/:person_id', function(req, res){
 
     });
 
+});
+
+router.post('/:person_id/picture', function(req, res){
+    console.log('POST-request established');
+
+    var form = new formidable.IncomingForm();
+    form.parse(req, function(err, fields, files) {
+
+        var path = files.file.path,
+            file_size = files.file.size;
+
+        if (file_size > 4000000) {
+            res.status(400).json({'error': 'image file over 4MB'});
+            return;
+        }
+
+        console.log("Loading image");
+        Jimp.read(path, function (err, img) {
+            if (err) {
+                res.status(500).json({'Error': err});
+                return;
+            }
+
+            var img_tiny = img.clone();
+            console.log("Processing image");
+
+            img.background(0xFFFFFFFF)
+                .contain(500, 500)
+                .quality(70)
+                .getBuffer(Jimp.MIME_JPEG, function (err, data) {
+                    if (err) {
+                        res.status(500).json({'Error': err});
+                        return;
+                    }
+                    img_tiny.cover(128, 128)
+                        .quality(60)
+                        .getBuffer(Jimp.MIME_JPEG, function (err, data_tiny) {
+                            if (err) {
+                                res.status(500).json({'Error': err});
+                                return;
+                            }
+                            pool.getConnection(function (err, connection) {
+                                if (err) {
+                                    res.status(500).json({'Error': err});
+                                    return;
+                                }
+
+                                console.log("Uploading image");
+
+                                connection.query("UPDATE person SET profile_pic = ?, profile_pic_tiny = ? WHERE person_id = ?;", [data, data_tiny, req.params.person_id], function (err, results, fields) {
+                                    connection.release();
+                                    if (err) {
+                                        res.status(500).json({'Error': err});
+                                        return;
+                                    }
+                                    console.log("Uploading image complete");
+
+
+                                    res.status(200).json(results);
+                                });
+                            });
+                        });
+                });
+        });
+    });
+});
+
+router.get('/:person_id/picture', function(req, res){
+    console.log('GET-request established');
+
+    pool.getConnection(function (err, connection) {
+        connection.query("SELECT profile_pic FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
+            connection.release();
+            if(err) {
+                res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                return;
+            }
+
+            if(results.length == 0) {
+                res.status(404).json({error: 'no profile picture.'});
+                return;
+            }
+
+            if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
+        });
+    });
+});
+
+router.get('/:person_id/picture_tiny', function(req, res){
+    console.log('GET-request established');
+
+    pool.getConnection(function (err, connection) {
+        connection.query("SELECT profile_pic_tiny FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
+            connection.release();
+            if(err) {
+                res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                return;
+            }
+
+            if(results.length == 0) {
+                res.status(404).json({error: 'no profile picture.'});
+                return;
+            }
+
+            if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
+        });
+    });
 });
