@@ -1,8 +1,6 @@
-var router = require('express').Router();
-var formidable = require('formidable'),
-    fs = require('fs'),
-    path = require('path');
-
+var router = require('express').Router()
+    formidable = require('formidable'),
+    Jimp = require("jimp");
 
 module.exports = router;
 
@@ -11,71 +9,79 @@ router.post('/', function(req, res){
 
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
-        // `file` is the name of the <input> field of type `file`
-        console.log(files);
 
-        //res.status(200).json(files);
+        var path = files.file.path,
+            file_size = files.file.size;
 
-        //return;
+        if (file_size > 2000000) {
+            res.status(400).json({'error': 'image file over 2MB'});
+            return;
+        }
 
-        var old_path = files.file.path,
-            file_size = files.file.size,
-            index = old_path.lastIndexOf('/') + 1;
+        console.log("Loading image");
+        Jimp.read(path, function (err, img) {
+            if (err) {
+                res.status(500).json({'Error': err});
+                return;
+            }
 
-        console.log("Reading file");
+            var img_tiny = img.clone();
+            console.log("Processing image");
 
-        fs.readFile(old_path, function (err, data) {
-
-            console.log("connecting");
-
-            pool.getConnection(function (err, connection) {
-
-                console.log("uploading");
-
-                connection.query("UPDATE person SET profile_pic = ? WHERE person_id = 1;", [data], function (error, results, fields) {
-
-                    console.log("uploading2");
-                    connection.release();
+            img.scaleToFit(2000, 1500)
+                .quality(70)
+                .getBuffer(Jimp.MIME_JPEG, function (err, data) {
                     if (err) {
-                        res.status(500);
-                        res.json({'Error': 'connecting to database: '} + err);
+                        res.status(500).json({'Error': err});
                         return;
                     }
+                    img_tiny.cover(128, 128)
+                        .quality(60)
+                        .getBuffer(Jimp.MIME_JPEG, function (err, data_tiny) {
+                            if (err) {
+                                res.status(500).json({'Error': err});
+                                return;
+                            }
+                            pool.getConnection(function (err, connection) {
+                                if (err) {
+                                    res.status(500).json({'Error': err});
+                                    return;
+                                }
 
-                    res.status(200).json(results);
+                                console.log("Uploading image");
+
+                                connection.query("UPDATE person SET profile_pic = ?, profile_pic_tiny = ? WHERE person_id = 1;", [data, data_tiny], function (err, results, fields) {
+                                    connection.release();
+                                    if (err) {
+                                        res.status(500).json({'Error': err});
+                                        return;
+                                    }
+                                    console.log("Uploading image complete");
+
+
+                                    res.status(200).json(results);
+                                });
+                            });
+                    });
                 });
-            });
         });
     });
+});
 
-    return;
+router.get('/', function(req, res){
+    console.log('GET-request established');
 
-    pool.getConnection(function(err, connection) {
+    pool.getConnection(function (err, connection) {
+        connection.query("SELECT profile_pic FROM person WHERE person_id = 1;", [], function (error, results, fields) {
+            connection.release();
+            if(err) {
+                res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                return;
+            }
 
-        pool.getConnection(function (err, connection) {
-            connection.query("SELECT person_id, password_hash FROM person WHERE ?? = ?;", [loginVariable, username], function (error, results, fields) {
-                connection.release();
-                if(err) {
-                    res.status(500);
-                    res.json({'Error' : 'connecting to database: ' } + err);
-                    return;
-                }
+            if(results.length) res.status(404).json({error: 'no profile picture.'});
 
-                bcrypt.compare(password, results[0].password_hash, function(err, hash_res) {
-                    console.log("bcrypt" + res);
-
-                    if (hash_res) {
-                        console.log("login for person id: " + results[0].person_id);
-                        req.session.person_id = results[0].person_id;
-                        req.session.save();
-                        res.status(200).json({login: true, person_id: results[0].person_id});
-
-                    } else {
-                        console.log("Login failed username: " + username);
-                        res.status(400).json({login: false, error: "login failed"});
-                    }
-                });
-            });
+            if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
         });
     });
 });
