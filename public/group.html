@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<script src="https://use.fontawesome.com/dea62227f7.js"></script>
+
+		<!--These below are needed for this window to appear correctly.-->
+		<script src="/js/group.js"></script>
+		<link rel="stylesheet" type="text/css" href="/css/group.css"> <!--Own CSS.-->
+	</head>
+
+	<body background="wall.png">
+
+		<!--This is the div that is the entire window. It is a separate div so it can be moved into a different HMTL file.-->
+		<div id="grouppage">
+			<div id="groupselection" class="transparency text-center">
+				<!--These are the groups available to the user. The javascript will add entries here.-->
+				<p class="langtext" id="desc_title0"></p>
+				<div class="tablink text-center backvariant" onclick="changeGroup('Group 1')">Group 1</div>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
+				<div class="tablink text-center backvariant" onclick="changeGroup('Group 2')">Group 2</div>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
+			</div>
+			<div id="groupwindow" class="transparency">
+				<div id="grouptabs">
+					<!--These are the tabs available once a group is selected.-->
+
+					<div class="grouptablink backvariant" onclick="changeTab('tasks')"><p class="langtext" id="desc_title1"></p></div>
+					<div class="grouptablink backvariant" onclick="changeTab('feed')"><p class="langtext" id="desc_title2"></p></div>
+					<div class="grouptablink backvariant" onclick="changeTab('shopping')"><p class="langtext" id="desc_title3"></p></div>
+					<div class="grouptablink backvariant" onclick="changeTab('statistics')"><p class="langtext" id="desc_title4"></p></div>
+				</div>
+
+				<br>
+				<!--This is the tasks tab.-->
+				<div id="tasks" class="grouptab text-center" style="display: block;">
+					<hr width="90%">
+					<div id="yourtasks" style="text-align:center;">
+						<!--These are the tasks assigned to the user. The javascript will add entries here.-->
+
+						<p class="langtext" id="desc_title5"></p>
+						<div class="chbox">
+							<input type="checkbox" value="">
+							<p>Task N</p>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
+						</div>
+					</div>
+
+					<div id="grouptasks">
+						<!--These are all the tasks in the group. The javascript will add entries here.-->
+						<p class="langtext" id="desc_title6"></p>
+						<div class="task">
+							<input type="checkbox" value="">
+							<!--The format here is just temporary. Change if something better gets decided.-->
+							<p>Task N - Person - Time</p>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
+						</div>
+					</div>
+				</div>
+
+				<!--This is the news tab.-->
+				<div id="feed" class="grouptab text-center">
+					<hr width="90%">
+					<!--Here the Javascript will put the posts.-->
+					<div><p class="post">A POST</p></div>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
+				</div>
+
+				<!--This is the shopping lists tab.-->
+				<div id="shopping" class="grouptab text-center">
+					<hr width="90%">
+					<!--Here the Javascript will put the lists.-->
+					Shopping Lists
+				</div>
+
+				<!--This is the statistics lists tab.-->
+				<div id="statistics" class="grouptab text-center">
+					<hr width="90%">
+					<!--Here the is the space for the statistics.-->
+					Statistics
+				</div>
+			</div>
+		</div>
+
+	</body>
+</html>
