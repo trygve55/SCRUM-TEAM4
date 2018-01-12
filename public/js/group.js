@@ -7,8 +7,8 @@ var testtasks = {
 		{"name":"Task B", "person":"Someone", "completed":0, "time":"12/12/2012"},
 		{"name":"Task C", "person":"None", "completed":1, "time":"13/13/2013"}
 	]
-}
-<<<<<<< HEAD
+};
+
 var language = {
 	"desc_title0": "Your Groups",
 	"desc_title1": "Tasks",
@@ -18,8 +18,6 @@ var language = {
 	"desc_title5": "Your Tasks",
 	"desc_title6": "Group Tasks"
 };
-=======
->>>>>>> 576b3848f5785555e2062d2f8b66b52ea9609d88
 
 // ***** Code begins here *****
 
@@ -29,10 +27,7 @@ var activeTab = "tasks", currentGroup = "none";
 * When the page loads, the page must find the groups available to the user so they can be selected.
 */
 $(document).ready(function() {
-<<<<<<< HEAD
 	loadLanguageText()
-=======
->>>>>>> 576b3848f5785555e2062d2f8b66b52ea9609d88
 	//getGroups();
 	
 	var groups = $("div.tablink");
@@ -46,8 +41,7 @@ $(document).ready(function() {
 	// Add some updating system here.
 	
 	//window.setInterval(getGroups, 5000);	// Every 5 seconds the groups will be loaded.
-	
-<<<<<<< HEAD
+
 	
 	
 });
@@ -96,10 +90,6 @@ function getGroups() {
 	});	// GET all group names for this user.
 	*/
 	var names = response.groupnames;
-<<<<<<< HEAD
-	
-=======
->>>>>>> 576b3848f5785555e2062d2f8b66b52ea9609d88
 	for (i = 0; i < names.length; i++) {addGroupToList(names[i]);}
 	removeDeletedGroups(names);
 }
