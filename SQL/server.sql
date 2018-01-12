@@ -97,6 +97,7 @@ CREATE TABLE shopping_list_person (
     shopping_list_id INTEGER NOT NULL,
     person_id INTEGER NOT NULL,
     paid_amount INTEGER NOT NULL DEFAULT 0,
+    pay_amount_points INTEGER NOT NULL DEFAULT 100,
     invite_accepted BIT NOT NULL DEFAULT 0,
     invite_sent_datetime DATE,
     is_hidden BIT NOT NULL DEFAULT 0,
@@ -388,7 +389,7 @@ INSERT INTO person(email, username, password_hash, forename, middlename, lastnam
 INSERT INTO person (email, username, password_hash, forename, middlename, lastname, phone, birth_date, is_verified, gender, profile_pic, last_active, reset_password_token, shopping_list_id, user_language, user_deactivated, facebook_api_id) 
 	VALUES ('facebook@test.com', 'facebook', NULL, 'test', NULL, 'test', '', CURRENT_DATE, DEFAULT, DEFAULT, NULL, DEFAULT, NULL, 2, DEFAULT, DEFAULT, 123456);
 
-INSERT INTO home_group (group_name, group_desc, group_type, created_datetime, group_pic, cleaning_list_inerval, default_currency_id, shopping_list_id) 
+INSERT INTO home_group (group_name, group_desc, group_type, created_datetime, group_pic, cleaning_list_interval, default_currency_id, shopping_list_id) 
 	VALUES ('test group', 'lol', DEFAULT, DEFAULT, NULL, DEFAULT, 100, 3);
 
 INSERT INTO group_person (person_id, group_id, joined_timestamp, role_id) 
