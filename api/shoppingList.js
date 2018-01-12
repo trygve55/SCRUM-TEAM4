@@ -4,6 +4,12 @@ module.exports = router;
 
 router.post('/', function(req, res) {
 	console.log('POST-request established');
+
+	if (!req.session.person_id) {
+        res.status(400).json({'Error' : 'no accsess' });
+		return;
+	}
+
 	pool.getConnection(function(err, connection) {
 		checkConnectionError(err, connection, res);
         if(err) {
@@ -55,7 +61,7 @@ router.get('/:shopping_list_id', function(req, res) {
 			'FROM shopping_list LEFT JOIN currency USING(currency_id) ' +
 			'LEFT JOIN shopping_list_entry USING(shopping_list_id) WHERE ' +
 			'shopping_list.shopping_list_id = ?',
-			[req.params.shopping_list_id],
+			[checkRange(req.params.shopping_list_id, 1, null)],
 			function(err, result) {
 				connection.release();
 				if (err) {throw err;}
