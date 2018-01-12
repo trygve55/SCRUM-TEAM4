@@ -373,7 +373,7 @@ Request body:
 }
 If the session ID stored on the server matches the requested user's ID, the info is provided. If it does not, or more
 than one ID is provided in the req.body.users, the server will respond with a 403 Forbidden status code, since the
-info is only available to the user with the ID 300, when they are logged in.
+info is only available to the user with the ID 300, when they are logged in. webstorm big doodoo
  */
 
 var publicVars = ['username', 'forename', 'middlename', 'lastname', 'gender', 'profile_pic',
