@@ -242,13 +242,17 @@ router.get('/:person_id/picture_tiny', function(req, res){
     });
 });
 
+/*
 router.all('/profile/1/picture', function(req, res, next) {
     console.log("session test");
     console.log(req.session);
     next();
 });
 
-router.put('/profile/:person_id', function(req, res){
+*/
+
+//update profile
+router.put('/:person_id', function(req, res){
     console.log("put-request");
     pool.getConnection(function (err, connection) {
         if(err) {
@@ -256,24 +260,35 @@ router.put('/profile/:person_id', function(req, res){
         }
 
         var parameter = req.params;
-        var sql = 'SELECT * FROM person WHERE person_id = ?';
-        var values = [req.body.person_id];
 
-        //req.params.userid
-
-        connection.query(sql, parameter.person_id, function (err, result){
-            if (err) console.log(err);
-            if (result) res.json(result);
+        var query = putRequestSetup(parameter.person_id, req.body, connection, "person");
+        connection.query(query[0], query[1], function (err, result) {
+            connection.release();
+            if (err) console.log("" + err);
+            if (result) console.log(result);
+            return res.status(200).json({"success" : query[1] + " updated"});
         });
-
-
-        connection.release();
-        console.log("Why crashing")
-        return res.status(200).send("jaja");
-
     });
-
 });
+
+function putRequestSetup(iD, data, connection, tableName) {
+    if(!iD) {
+        connection.release();
+        res.status(400);
+        res.json({'Error' : (tableName + '_id not specified: ') } + err);
+        return;
+    }
+    var parameters = [], request = 'UPDATE ' + tableName + ' SET ';
+    var first = true;
+    for (var k in data) {
+        if (!first) {request += ', ';}
+        else {first = false;}
+        request += k + ' = ?';
+        parameters.push(data[k]);
+    }
+    request += ' WHERE ' + tableName + '_id = ' + iD;
+    return [request, parameters];
+}
 
 router.post('/:person_id/picture', function(req, res){
     console.log('POST-request established');
@@ -310,8 +325,7 @@ router.post('/:person_id/picture', function(req, res){
                     img_tiny.cover(128, 128)
                         .quality(60)
                         .getBuffer(Jimp.MIME_JPEG, function (err, data_tiny) {
-                            if (err) {
-                                res.status(500).json({'Error': err});
+                            if (err) { res.status(500).json({'Error': err});
                                 return;
                             }
                             pool.getConnection(function (err, connection) {
