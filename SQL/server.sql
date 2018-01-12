@@ -30,6 +30,7 @@ CREATE TABLE shopping_list (
     shopping_list_id INTEGER NOT NULL AUTO_INCREMENT,
     shopping_list_name NVARCHAR(30),
     currency_id INTEGER NOT NULL,
+    color_hex INTEGER,
     CONSTRAINT shopping_list_currency_fk FOREIGN KEY(currency_id) REFERENCES currency(currency_id),
     CONSTRAINT shopping_list_pk PRIMARY KEY(shopping_list_id)
 );
