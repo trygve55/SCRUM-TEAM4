@@ -60,22 +60,43 @@ router.post('/facebook', function(req, res){
     console.log('POST-request established');
     pool.getConnection(function (err, connection) {
         connection.query("SELECT person_id FROM person WHERE facebook_api_id = ?;", [req.body.facebook_api_id], function (error, results, fields) {
-            connection.release();
             if(err) {
                 res.status(500);
                 res.json({'Error' : 'connecting to database: ' } + err);
                 return;
             }
-
             if (results.length == 1) {
+                connection.release();
                 console.log("login for person id: " + results[0].person_id);
                 req.session.person_id = results[0].person_id;
                 req.session.save();
                 console.log(req.session);
                 res.status(200).json({login: true, person_id: results[0].person_id});
             } else {
-                console.log("Login failed username: " + req.body.facebook_api_id);
-                res.status(400).json({login: false, error: "login failed"});
+                var values = [
+                    req.body.email,
+                    req.body.id,
+                    req.body.forename,
+                    req.body.lastname,
+                    1, // shopping list id
+                    req.body.facebook_api_id
+                ];
+                connection.query('INSERT INTO person ' +
+                    '(email, username, forename,' +
+                    'lastname, shopping_list_id, facebook_api_id) VALUES (?,?,?,?,?,?)', values, function(err, result) {
+                    if (err) {
+                        res.status(500).json({'error': 'connecting to database'} + err);
+                        console.log(err);
+                    }
+                    connection.query('SELECT person_id FROM person WHERE facebook_api_id = ?', [req.body.facebook_api_id], function(err, result){
+                        connection.release();
+                        if(err)
+                            return res.status(500).send("Fail");
+                        req.session.person_id = result[0].person_id;
+                        req.session.save();
+                        res.status(200).send(true);
+                    });
+                });
             }
         });
     });
