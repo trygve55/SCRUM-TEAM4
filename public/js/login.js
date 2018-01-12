@@ -12,11 +12,6 @@ window.fbAsyncInit = function() {
     FB.getLoginStatus(function (response) {
         if(response.status === 'connected'){
             connected = true;
-<<<<<<< HEAD
-            document.getElementById('status').innerHTML = '';
-=======
-            document.getElementById('status').innerHTML = '1';
->>>>>>> e52935f93e309431b6a12152eef689932a24dbed
             document.getElementById('login').style.visibility = 'hidden';
             $.ajax({
                 url: '/api/login',
@@ -31,28 +26,17 @@ window.fbAsyncInit = function() {
         } else if(response.status === 'not_authorized'){
             document.getElementById('status').innerHTML = '2';
 
-        } else{
-<<<<<<< HEAD
-            document.getElementById('status').innerHTML = '';
-=======
-            document.getElementById('status').innerHTML = '3';
->>>>>>> e52935f93e309431b6a12152eef689932a24dbed
         }
     });
 
     FB.Event.subscribe('auth.login', function () {
         //location.reload();
-<<<<<<< HEAD
         FB.api('/me', 'GET', {fields: 'first_name,last_name,id,email'}, function (response) {
-=======
-        FB.api('/me', 'GET', {fields: 'first_name,last_name,name,id,email'}, function (response) {
->>>>>>> e52935f93e309431b6a12152eef689932a24dbed
             console.log(response);
             $.ajax({
                 url: '/api/login/facebook',
                 method: 'POST',
                 data: {
-<<<<<<< HEAD
                     facebook_api_id: response.id,
                     email: response.email,
                     forename: response.first_name,
@@ -60,12 +44,6 @@ window.fbAsyncInit = function() {
                 },
                 success: function (data) {
                     window.top.location = "http://localhost:8000/index.html";
-=======
-                    facebook_api_id: response.id
-                },
-                success: function (data) {
-                    alert("yiughk");
->>>>>>> e52935f93e309431b6a12152eef689932a24dbed
                 },
                 error: console.error
             });
