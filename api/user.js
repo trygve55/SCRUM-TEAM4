@@ -392,7 +392,10 @@ function reqForPrivateVars(reqVars) {
     return result;
 }
 
-router.post('/getUser', function(req, res) { // TODO add authentication
+router.post('/getUser', function(req, res) {
+    if(!req.body.hasOwnProperty('users')) {
+        req.body.users = [req.session.person_id];
+    }
     if(!req.session.person_id || checkRequestArray(req.body.variables) > 0 ||
         (reqForPrivateVars(req.body.variables) && (req.body.users.length > 1 || req.session.person_id != req.body.users[0]))) {
         return res.status(403).send("Forbidden request");
