@@ -11,10 +11,20 @@ router.get('/all', function(req, res){
         if(err)
             return res.status(500).send("Error");
         connection.query("SELECT person_id, forename, middlename, lastname, username FROM person", function(err, result){
+            connection.release();
             if(err)
                 res.status(500).send(err.code);
-            else
-                res.json(result);
+            else {
+                if(!req.query.slim)
+                    res.json(result);
+                else {
+                    var r = [];
+                    for(var i = 0; i < result.length; i++){
+                        r.push(result[i].forename + " " + (result[i].middlename ? result[i].middlename + " " : "") + result[i].lastname)
+                    }
+                    res.json(r);
+                }
+            }
         });
     });
 });
