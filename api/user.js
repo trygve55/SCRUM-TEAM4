@@ -210,8 +210,55 @@ router.post('/search', function(req, res){
 	});
 });
 
-//update profile
-router.put('/:person_id', function(req, res){
+router.get('/:person_id/picture', function(req, res){
+    console.log('GET-request established');
+
+    pool.getConnection(function (err, connection) {
+        connection.query("SELECT profile_pic FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
+            connection.release();
+            if(err) {
+                res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                return;
+            }
+
+            if(results.length == 0) {
+                res.status(404).json({error: 'no profile picture.'});
+                return;
+            }
+
+            if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
+        });
+    });
+});
+
+router.get('/:person_id/picture_tiny', function(req, res){
+    console.log('GET-request established');
+
+    pool.getConnection(function (err, connection) {
+        connection.query("SELECT profile_pic_tiny FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
+            connection.release();
+            if(err) {
+                res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                return;
+            }
+
+            if(results.length == 0) {
+                res.status(404).json({error: 'no profile picture.'});
+                return;
+            }
+
+            if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
+        });
+    });
+});
+
+router.all('/profile/1/picture', function(req, res, next) {
+    console.log("session test");
+    console.log(req.session);
+    next();
+});
+
+router.put('/profile/:person_id', function(req, res){
     console.log("put-request");
     pool.getConnection(function (err, connection) {
         if(err) {
