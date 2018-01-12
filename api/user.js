@@ -66,43 +66,51 @@ router.post('/register', function(req, res){
                     return res.status(400).send("Bad request");
                 }
 
-                user.shopping_list_id = 0;
-                auth.hashPassword(user, function (user) {
+                connection.query('INSERT INTO shopping_list (currency_id) VALUES(?)', [100], function (err, result){
+                    if(err){
+                        console.log(err);
+                    }
+                    
 
-                    var values = [
-                        user.email,
-                        user.username,
-                        user.password_hash,
-                        user.forename,
-                        user.middlename,
-                        user.lastname,
-                        user.phone,
-                        new Date(user.birth_day).toISOString().slice(0, 10),
-                        user.gender,
-                        user.profile_pic,
-                        user.shopping_list_id
-                    ];
+                    console.log(result.insertId);
+                    user.shopping_list_id = result.insertId;
+                    auth.hashPassword(user, function (user) {
 
-                    if(user.phone){
-                        if(!checkValidPhone(user.phone)){
-                            connection.release();
-                            return res.status(400).send("Check phone number");
+                        var values = [
+                            user.email,
+                            user.username,
+                            user.password_hash,
+                            user.forename,
+                            user.middlename,
+                            user.lastname,
+                            user.phone,
+                            new Date(user.birth_day).toISOString().slice(0, 10),
+                            user.gender,
+                            user.profile_pic,
+                            user.shopping_list_id
+                        ];
+
+                        if(user.phone){
+                            if(!checkValidPhone(user.phone)){
+                                connection.release();
+                                return res.status(400).send("Check phone number");
+                            }
                         }
-                    }
 
-                    if(!checkValidName(user.name) && !checkValidName(user.middlename) && !checkValidName(user.lastname)){
-                        connection.release();
-                        return rest.status(400).send("Forename, middlename or lastname wrong");
-                    }
+                        if(!checkValidName(user.name) && !checkValidName(user.middlename) && !checkValidName(user.lastname)){
+                            connection.release();
+                            return rest.status(400).send("Forename, middlename or lastname wrong");
+                        }
 
 
-                    connection.query('INSERT INTO person ' +
-                        '(email, username, password_hash, forename, middlename,' +
-                        'lastname, phone, birth_date,' +
-                        'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function(err, result) {
-                        if (err) console.log(err);
-                        connection.release();
-                        res.json({message: "true"});
+                        connection.query('INSERT INTO person ' +
+                            '(email, username, password_hash, forename, middlename,' +
+                            'lastname, phone, birth_date,' +
+                            'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function(err, result) {
+                            if (err) console.log(err);
+                            connection.release();
+                            res.json({message: "true"});
+                        });
                     });
                 });
             });
