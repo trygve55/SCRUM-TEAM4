@@ -17,7 +17,9 @@
 		<link rel="stylesheet" type="text/css" href="/css/group.css"> <!--Own CSS.-->
 	</head>
 
-	<body background="/img/wall.png">
+
+	<body background="/img/BackgroundImage.png">
+
 
 		<!--This is the div that is the entire window. It is a separate div so it can be moved into a different HMTL file.-->
 		<div id="grouppage">
@@ -28,14 +30,22 @@
 				<div class="tablink text-center backvariant" onclick="changeGroup('Group 2')">Group 2</div>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
 			</div>
 			<div id="groupwindow" class="transparency">
-				<div id="grouptabs">
-					<!--These are the tabs available once a group is selected.-->
 
-					<div class="grouptablink backvariant" onclick="changeTab('tasks')"><p class="langtext" id="desc_title1"></p></div>
-					<div class="grouptablink backvariant" onclick="changeTab('feed')"><p class="langtext" id="desc_title2"></p></div>
-					<div class="grouptablink backvariant" onclick="changeTab('shopping')"><p class="langtext" id="desc_title3"></p></div>
-					<div class="grouptablink backvariant" onclick="changeTab('statistics')"><p class="langtext" id="desc_title4"></p></div>
+
+				<!--These are the tabs available once a group is selected.-->
+				<div id="grouptabs">
+					<div class="container">
+						<ul class="nav nav-tabs">
+							<div class="grouptablink backvariant" onclick="changeTab('tasks')"><p class="langtext" id="desc_title1"></p></div>
+							<div class="grouptablink backvariant" onclick="changeTab('feed')"><p class="langtext" id="desc_title2"></p></div>
+							<div class="grouptablink backvariant" onclick="changeTab('shopping')"><p class="langtext" id="desc_title3"></p></div>
+							<div class="grouptablink backvariant" onclick="changeTab('statistics')"><p class="langtext" id="desc_title4"></p></div>
+						</ul>
+					</div>
 				</div>
+
+
+
 
 				<br>
 				<!--This is the tasks tab.-->
