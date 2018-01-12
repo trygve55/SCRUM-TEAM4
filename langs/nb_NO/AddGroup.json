@@ -1,0 +1,18 @@
+{
+  "addgroup-homepage": "Hjem",
+  "addgroup-groups": "Grupper",
+  "addgroup-tasks": "Gjørelister",
+  "addgroup-shoppinglists": "Handlelister",
+  "addgroup-profile": "Profil",
+  "addgroup-logout": "Logg ut",
+  "addgroup-registernewgroup": "Register ny gruppe",
+  "addgroup-groupname": "Gruppenavn:",
+  "addgroup-currency": "Valuta:",
+  "addgroup-picture": "Bilde:",
+  "addgroup-administrator": "Administrator:",
+  "addgroup-adduser": "Legg til",
+  "addgroup-membersadded": "Medlemmer lagt til:",
+  "addgroup-addmembers": "Legg til medlem:",
+  "addgroup-adminvalue": "Dina Rosvoll (deg)",
+  "addgroup-member": "Søk etter brukernavn"
+}

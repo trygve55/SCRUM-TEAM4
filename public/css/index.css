@@ -1,0 +1,30 @@
+.profil{
+    background-color: white;
+    border-radius: 10px;
+    height: auto;
+    margin-top: 2%;
+    overflow: auto;
+}
+
+.newsfeed{
+    background-color: white;
+    border-radius: 10px;
+    height: auto;
+    margin-top: 2%;
+    overflow: auto;
+}
+
+body{
+    font-family: Trebuchet MS;
+    font-style: inherit;
+    overflow: hidden;
+
+}
+
+.index-todo{
+    padding: 20px;
+    background-color: gainsboro;
+    margin: 25px;
+    width: 300px;
+    height: 310px;
+}

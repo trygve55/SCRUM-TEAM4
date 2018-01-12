@@ -19,6 +19,7 @@ router.get('/', function(req, res){
     }
     pth = pth.split('.')[0];
     var p = path.join(__dirname, '../langs/' + lang + pth + '.json');
+    console.log(p);
     if(!fs.existsSync(p)){
         res.status(400).send("Non existing translation");
         return;
@@ -35,13 +36,14 @@ router.get('/', function(req, res){
 });
 
 router.post('/', function(req, res){
-    var lang = req.query.lang;
+    var lang = req.body.lang;
     if(!lang) {
         res.status(400).send("Bad request");
         return;
     }
     req.session.lang = lang;
     req.session.save();
+    res.status(200).send("OK");
 });
 
 module.exports = router;

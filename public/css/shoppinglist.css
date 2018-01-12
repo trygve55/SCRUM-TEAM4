@@ -1,0 +1,11 @@
+body {
+    font-family: Trebuchet MS;
+    font-style: inherit;
+}
+.liste {
+    margin: 2%;
+    padding: 2%;
+    background-color: white;
+    border-radius: 15px;
+    height: 550px;
+}
