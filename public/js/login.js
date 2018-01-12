@@ -24,26 +24,6 @@ window.fbAsyncInit = function() {
         }
     });
 
-    FB.Event.subscribe('auth.login', function () {
-        //location.reload();
-        FB.api('/me', 'GET', {fields: 'first_name,last_name,id,email'}, function (response) {
-
-            console.log(response);
-            $.ajax({
-                url: '/api/login/facebook',
-                method: 'POST',
-                data: {
-                    facebook_api_id: response.id,
-                    email: response.email,
-                    forename: response.first_name,
-                    lastname: response.last_name
-                },
-                success: function (data) {
-                    window.top.location = "http://localhost:8000/index.html";
-                },
-                error: console.error
-    });
-
     FB.Event.subscribe('auth.statusChange', function (res) {
         console.log("hei");
         if(res.status === "connected") {
@@ -66,8 +46,7 @@ window.fbAsyncInit = function() {
             });
         }
     });
-
-});
+};
 
 (function(d, s, id){
     var js, fjs = d.getElementsByTagName(s)[0];
@@ -144,4 +123,5 @@ $(function () {
             }
         });
     });
+    $("#login-button").click(alert);
 });
