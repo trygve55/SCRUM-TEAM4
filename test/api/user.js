@@ -1,24 +1,9 @@
-'use strict';
-
-var chai = require('chai').expect;
-//var user = require('../../api/user_TEMP'); //TODO change back to user.js after manual merge
-var mysql = require('mysql');
-
-var pool = mysql.createPool({
-    connectionLimit : 2,
-    host : 'localhost',
-    user : 'root',
-    password : '',
-    database : 'test',
-    debug : false
-});
-
-describe('#user_TEMP.js', function() {
-    describe('/api/user_TEMP/getUser', function() {
+describe('User API', function() {
+    describe('/api/user/getUser', function() {
         it('should return the requested user\'s data', function(done) {
             pool.getConnection(function(err, connection) {
                 if(err) throw err;
-                request.post('/api/user_TEMP/getUser').send({
+                request.post('/api/user/getUser').send({
                     variables: ['username', 'forename', 'lastname'],
                     users: [1,2]
                 }).expect([{
@@ -34,15 +19,15 @@ describe('#user_TEMP.js', function() {
         });
         it('should return 403 "Forbidden request" on invalid request', function(done) {
             // TODO set session ID to 300, test will not work correctly until this is applied
-            request.post('/api/user_TEMP/getUser').send({
+            request.post('/api/user/getUser').send({
                 variables: ['username', 'forename', 'lastname', 'email'],
                 users: [300, 403]
             }).expect(403).end();
-            request.post('/api/user_TEMP/getUser').send({
+            request.post('/api/user/getUser').send({
                 variables: ['username', 'forename', 'lastname', 'email'],
                 users: [300, 403]
             }).expect(403).end(done);
-            request.post('/api/user_TEMP/getUser').send({
+            request.post('/api/user/getUser').send({
                 variables: ['username', 'forename', 'lastname'],
                 users: [300, 403]
             }).expect(200).end(done);

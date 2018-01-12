@@ -400,7 +400,10 @@ function reqForPrivateVars(reqVars) {
     return result;
 }
 
-router.post('/getUser', function(req, res) { // TODO add authentication
+router.post('/getUser', function(req, res) {
+    if(!req.body.hasOwnProperty('users')) {
+        req.body.users = [req.session.person_id];
+    }
     if(!req.session.person_id || checkRequestArray(req.body.variables) > 0 ||
         (reqForPrivateVars(req.body.variables) && (req.body.users.length > 1 || req.session.person_id != req.body.users[0]))) {
         return res.status(403).send("Forbidden request");
@@ -438,6 +441,19 @@ router.post('/getUser', function(req, res) { // TODO add authentication
     });
 });
 
+function checkRequestArray(inputArray) {
+    var validInput = ['person_id', 'email', 'username',
+        'forename', 'middlename',
+        'lastname', 'phone', 'birth_date', 'is_verified',
+        'gender', 'profile_pic', 'profile_pic_tiny',
+        'last_active', 'shopping_list_id',
+        'user_language', 'user_deactivated', 'facebook_api_id'];
+    var errors = 0;
+    inputArray.forEach(function(element) {
+        if(validInput.indexOf(element) < 0) errors++;
+    });
+    return errors;
+}
 
 
 function putRequestSetup(iD, data, connection, tableName) {
