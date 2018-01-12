@@ -30,3 +30,7 @@ body {
     color: #7ebccc;
 }
 
+#scrollable-dropdown-menu .tt-dropdown-menu {
+    max-height: 150px;
+    overflow-y: auto;
+}

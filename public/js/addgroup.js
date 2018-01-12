@@ -14,6 +14,14 @@ $('document').ready(function(){
     $('#addgroup-adduser').click(function(){
         addmember();
     });
+    $.ajax({
+
+    })
+    $('#scrollable-dropdown-menu .typeahead').typeahead(null, {
+        name: 'users',
+        limit: 10,
+        source: countries
+    });
     $('#addgroup-member').keypress(function(event) {
         if(event.keyCode == 13 || event.which == 13){
             addmember();
