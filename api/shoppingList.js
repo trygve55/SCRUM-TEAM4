@@ -2,29 +2,26 @@ var router = require('express').Router();
 
 module.exports = router;
 
-router.post('/', function(req, res){
-    console.log('POST-request established');
-    pool.getConnection(function(err, connection) {
+router.post('/', function(req, res) {
+	console.log('POST-request established');
+	pool.getConnection(function(err, connection) {
 		checkConnectionError(err, connection, res);
+		var data = req.body;
 
-        var shopping_list = req.body;
+		connection.query('INSERT INTO shopping_list ' +
+			'(shopping_list_name, currency_id) VALUES (?,?)',
+			[data.shopping_list_name, checkRange(data.currency_id, 1, null)],
+			function(err, result) {
+				connection.release();
 
-        var values = [
-            shopping_list.shopping_list_name,
-            shopping_list.currency_id
-        ];
-
-        connection.query('INSERT INTO shopping_list ' +
-            '(shopping_list_name, currency_id) VALUES (?,?)', values, function(err, result) {
-            connection.release();
-
-            if (err) {throw err;}
-            if (result) {res.json({success: "true", shopping_list_id: result.insertId});}
-        });
-    });
+				if (err) {throw err;}
+				if (result) {res.json({success: "true", shopping_list_id: result.insertId});}
+			}
+		);
+	});
 });
 
-router.get('/:shopping_list_id', function(req, res){
+router.get('/:shopping_list_id', function(req, res) {
 	console.log('GET-request established');
 	pool.getConnection(function(err, connection) {
 		checkConnectionError(err, connection, res);
@@ -70,10 +67,11 @@ router.get('/:shopping_list_id', function(req, res){
 
 router.post('/entry', function(req, res) {
 	console.log('POST-request initiating');
+	var data = req.body, purchased = null;
+	if (data.purchased_by_person_id) {purchased = checkRange(data.purchased_by_person_id, 1, null);}
 
 	pool.getConnection(function(err, connection) {
 		checkConnectionError(err, connection, res);
-		var data = req.body;
 		connection.query(
 			'INSERT INTO shopping_list_entry( ' +
 			'shopping_list_id, ' +
@@ -86,10 +84,10 @@ router.post('/entry', function(req, res) {
 			'VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?);',
 			
 			[
-				data.shopping_list_id,
+				checkRange(data.shopping_list_id, 1, null),
 				data.entry_text,
-				data.added_by_person_id,	// This might be incorrect in the future.
-				data.purchased_by_person_id,
+				checkRange(data.added_by_person_id, 1, null),	// This might be incorrect.
+				purchased,
 				data.cost,
 				data.datetime_purchased
 			],
@@ -99,8 +97,8 @@ router.post('/entry', function(req, res) {
 
 router.post('/:shopping_list_id', function(req, res) {
 	var data = req.body;
-	var people = data.persons;	// Array
-	
+//	var people = data.persons;	// Array
+
 	console.log('POST-request initiating');
 	pool.getConnection(function(err, connection) {
 		checkConnectionError(err, connection, res);
@@ -114,13 +112,13 @@ router.post('/:shopping_list_id', function(req, res) {
 			'home_group.shopping_list_id = @listID) OR NOT EXISTS ' +
 			'(SELECT person_id FROM shopping_list_person WHERE shopping_list_id = @listID) LIMIT 1;',
 			[
-				req.params.shopping_list_id,
-				data.person_id,
+				checkRange(req.params.shopping_list_id, 1, null),
+				checkRange(data.person_id, 1, null),
 				data.paid_amount,
 				data.invite_accepted,
 				new Date(data.invite_sent_datetime).toISOString().slice(0, 19).replace('T', ' '),
 				data.is_hidden,
-				data.pay_amount_points
+				checkRange(data.pay_amount_points, 0, null)
 			],
 			function(err, result) {checkResult(err, result, connection, res);});
 	});
@@ -162,7 +160,7 @@ router.delete('/entry/:shopping_list_entry_id', function(req, res) {
 		//DELETE FROM shopping_list_entry WHERE shopping_list_id = listId AND shopping_list_entry_id = entryId;
 		connection.query(
 			'DELETE FROM shopping_list_entry WHERE shopping_list_entry_id = ?',
-			[req.params.shopping_list_entry_id],
+			[checkRange(req.params.shopping_list_entry_id, 1, null)],
 			function(err, result) {checkResult(err, result, connection, res);}
 		);
 		
@@ -213,4 +211,14 @@ function checkResult(err, result, connection, res) {
 	connection.release();
 	if (err) {throw err;}
 	if (result) {res.json({success: "Success"});}
+}
+
+/**
+* This is a separate method so the response to invalid
+* values can be changed easily, like throw errors.
+*/
+function checkRange(value, min, max) {
+	if (min != null) {if (value < min) {return min;}}
+	if (max != null) {if (value > max) {return max;}}
+	return value;
 }
