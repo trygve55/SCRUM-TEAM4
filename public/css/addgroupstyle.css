@@ -17,3 +17,11 @@ body {
     max-height: 280px;
     overflow-y: scroll;
 }
+
+#addgroup-checkbutton {
+    color: #a3e6f7;
+}
+#addgroup-checkbutton:hover{
+    font-size: 55px;
+    color: #7ebccc;
+}
