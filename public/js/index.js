@@ -18,7 +18,7 @@ $(function () {
         }
     });
 
-    $('#login-norway').click(function () {
+    $('#index-norway').click(function () {
         $.ajax({
             url: '/api/language',
             method: 'GET',
@@ -36,7 +36,7 @@ $(function () {
         });
     });
 
-    $('#login-england').click(function () {
+    $('#index-england').click(function () {
         $.ajax({
             url: '/api/language',
             method: 'GET',

@@ -1,0 +1,86 @@
+#groupselection {
+	width: 25%;
+	float: left;
+	height: 300px;
+	margin: 5px;
+	min-width: 150px;
+	max-width: 400px;
+}
+
+#groupwindow {
+	width: 70%;
+	float: left;
+	margin: 5px;
+	min-width: 375px;
+	max-width: 700px;
+}
+
+#yourtasks {
+	float: left;
+	margin-left: 25px;
+	border-style: solid;
+	min-width: 200px;
+}
+
+#grouptasks {
+	float: left;
+	margin-left: 25px;
+	border-style: solid;
+	min-width: 300px;
+}
+
+.tablink {
+	margin: 5px;
+	min-width: 100px;
+}
+
+.grouptablink {
+	width: 15%;
+	margin: 5px;
+	text-align: center;
+	float: left;
+	min-width: 100px;
+}
+
+.grouptab {
+	height: 100%;
+	margin: 5px;
+	display: none;
+	float: left;
+	border-radius: 0px 0px 10px 10px;
+	width: 100%;
+}
+
+.transparency {
+	margin-top: auto;
+	background-color: #ffffff;
+	opacity: 0.8;
+	height: auto;
+	filter: alpha(opacity=60);
+	border-style: solid;
+	border-radius: 15px;
+}
+
+.backvariant {background-color: rgb(200,200,200);}
+
+.backvariant:hover {
+	background-color: rgb(225,225,230);
+	cursor: pointer;
+}
+
+.chbox {margin: 1px;}
+
+.chbox input, .task input {
+	float: left;
+	margin: 5px;
+}
+
+.post {
+	float: top;
+	margin: 15px;
+	border-style: solid;
+	min-width: 150px;
+	min-height: 50px;
+	border-radius: 7px;
+	text-align: center;
+}

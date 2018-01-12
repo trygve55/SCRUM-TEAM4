@@ -11,13 +11,14 @@
     <link rel="stylesheet" type="text/css" href="css/addgroupstyle.css">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" ></script>
     <script src="https://use.fontawesome.com/dea62227f7.js"></script>
-    <script src="js/addgroup.js"></script>
+    <script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
+    <script src="/js/addgroup.js"></script>
 
 </head>
-<body background="BackgroundImage.png">
+<body background="/img/BackgroundImage.png">
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#" style="color: dimgray">
-        <img src="logo.png" width="30" height="30" alt="">
+        <img src="/img/logo.png" width="30" height="30" alt="">
         Household Manager
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,8 +42,8 @@
 </nav>
 <br>
 <div class="flag" style="background-color: white">
-    <img id="login-norway" style="position:fixed; right:15px" src="norwegianflag.jpg" width="20" height="12">
-    <img id="login-england" style="position:fixed; right: 40px" src="engelskflagg.png" width="20" height="12">
+    <img id="login-norway" style="position:fixed; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+    <img id="login-england" style="position:fixed; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
 </div>
 
 <br>
@@ -87,7 +88,7 @@
                 <br>
                 <label id="addgroup-addmembers" ></label>
                 <div class="row">
-                    <div class="col-sm-6"><input class="form-control" id="addgroup-member"></div>
+                    <div id="scrollable-dropdown-menu" class="col-sm-8"><input class="typeahead form-control" id="addgroup-member"></div>
                     <div class="col-sm-1"><button type="button" class="btn btn-info" id="addgroup-adduser" ></button></div>
                 </div>
             </div>

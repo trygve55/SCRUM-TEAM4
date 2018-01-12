@@ -1,11 +1,34 @@
 body {
     font-family: Trebuchet MS;
     font-style: inherit;
+    overflow: hidden;
 }
 .liste {
     margin: 2%;
     padding: 2%;
     background-color: white;
-    border-radius: 15px;
-    height: 550px;
+    border-radius: 25px;
+    height: 600px;
+}
+.adde {
+    margin: 2%;
+    padding: 2%;
+    background-color: white;
+    border-radius: 25px;
+    height: 600px;
+    opacity: 0.4;
+}
+.list-group{
+    text-align: left;
+    margin-inside: 4%;
+}
+.state-icon {
+    left: -5px;
+}
+.list-group-item-primary {
+    color: rgb(255, 255, 255);
+    background-color: rgb(66, 139, 202);
+}
+#additem:hover{
+    background-color: lightgrey;
 }

@@ -1,0 +1,34 @@
+body {
+    font-family: Trebuchet MS;
+    font-style: inherit;
+    overflow: hidden;
+}
+
+.accounting-table{
+    background-color: white;
+    border: 20px;
+    margin: 2%;
+    border-radius: 10px;
+}
+.accounting-box{
+    background-color: white;
+    height: auto;
+    border-radius: 10px;
+    overflow: auto;
+    margin: 5%;
+}
+
+.accounting-settlement{
+    background-color: white;
+    border: 20px;
+    margin: 2%;
+    border-radius: 10px;
+}
+
+.accounting-boxSettlement{
+    background-color: white;
+    height: auto;
+    border-radius: 10px;
+    overflow: auto;
+    margin: 5%;
+}
