@@ -3,7 +3,9 @@ var auth = require('../auth');
 
 module.exports = router;
 
-router.post('/regUser', function(req, res){
+
+//register user
+router.post('/register', function(req, res){
     console.log('POST-request established');
     pool.getConnection(function(err, connection) {
         if(err) {
@@ -83,7 +85,8 @@ router.post('/regUser', function(req, res){
     });
 });
 
-router.get('/okUser', function (req, res) {
+//call for checking if username is valid
+router.get('/user', function (req, res) {
     pool.getConnection(function (err, connection) {
         if(err) {
             res.status(500);
@@ -109,7 +112,8 @@ router.get('/okUser', function (req, res) {
     });
 });
 
-router.get('/okEmail', function (req, res) {
+//call for checking if email is valid
+router.get('/mail', function (req, res) {
     pool.getConnection(function (err, connection) {
         if(err) {
             res.status(500);
@@ -136,7 +140,7 @@ router.get('/okEmail', function (req, res) {
 });
 
 function checkValidPhone(phonenumber){
-    var regex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+    var regex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im; //TODO: find better solution for regex
     return regex.test(phonenumber);
 }
 
@@ -156,13 +160,15 @@ function checkValidEmail(email) {
     return emailRegex.test(email.toLowerCase());
 }
 
-router.post('/searchUser', function(req, res){
+//search for user
+router.post('/search', function(req, res){
 	var search = req.body.searchString;
 	console.log('Searching for ' + search);
 	pool.getConnection(function(err, connection) {
 		if (err) {
 			res.status(500);
 			res.json({'Error' : 'connecting to database: ' } + err);
+			connection.release();
 			return;
 		}
 		console.log('Connected to database');
@@ -171,7 +177,35 @@ router.post('/searchUser', function(req, res){
 			[search],
 			function (err, result) {
 				if (err) {throw err;}
-				if (result) {res.json{result};} //return resulting person id.
+				if (result) {
+				    connection.release();
+				    console.log(result); //TODO: get method to return results from sql-search
+                }
 		});
 	});
+});
+
+
+router.put('/profile/:person_id', function(req, res){
+    console.log("put-request");
+    console.log(req.params.person_id);
+    pool.getConnection(function (err, connection) {
+
+        //req.params.userid
+
+        var parameter = req.params;
+        var sql = 'SELECT * FROM person WHERE person_id = ?';
+        var values = [req.body.person_id];
+
+        connection.query(sql, parameter.person_id, function (err, result){
+            if (err) console.log(err);
+            if (result) res.json(result);
+        });
+
+        connection.release();
+
+        return res.status(200).send("jaja");
+
+    });
+
 });
