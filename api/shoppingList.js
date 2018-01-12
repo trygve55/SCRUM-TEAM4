@@ -152,7 +152,7 @@ router.put('/entry/:shopping_list_entry_id', function(req, res) {
 	});
 });
 
-router.delete('/entry/:shopping_list_entry_id', function(req, res) {	// Delete
+router.delete('/entry/:shopping_list_entry_id', function(req, res) {
 	console.log('POST-request initiating');
 	pool.getConnection(function(err, connection) {
 		checkConnectionError(err, connection, res);
