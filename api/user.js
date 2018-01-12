@@ -344,4 +344,3 @@ router.get('/:person_id/picture_tiny', function(req, res){
         });
     });
 });
->>>>>>> 483a2493574985d978ef18720b4442ddcdd43bef
