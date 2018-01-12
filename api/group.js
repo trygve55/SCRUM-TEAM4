@@ -1,4 +1,8 @@
-var router = require('express').Router();
+var router = require('express').Router(),
+    formidable = require('formidable'),
+    Jimp = require("jimp");
+
+module.exports = router;
 
 router.post('/', function(req, res){
     if(!req.body.group_name)
@@ -163,4 +167,109 @@ router.put('/userPrivileges', function(req, res){
     });
 });
 
-module.exports = router;
+router.post('/:group_id/picture', function(req, res){
+    console.log('POST-request established');
+
+    var form = new formidable.IncomingForm();
+    form.parse(req, function(err, fields, files) {
+
+        var path = files.file.path,
+            file_size = files.file.size;
+
+        if (file_size > 4000000) {
+            res.status(400).json({'error': 'image file over 4MB'});
+            return;
+        }
+
+        console.log("Loading image");
+        Jimp.read(path, function (err, img) {
+            if (err) {
+                res.status(500).json({'Error': err});
+                return;
+            }
+
+            var img_tiny = img.clone();
+            console.log("Processing image");
+
+            img.background(0xFFFFFFFF)
+                .cover(1200, 400)
+                .quality(70)
+                .getBuffer(Jimp.MIME_JPEG, function (err, data) {
+                    if (err) {
+                        res.status(500).json({'Error': err});
+                        return;
+                    }
+                    img_tiny.cover(128, 128)
+                        .quality(60)
+                        .getBuffer(Jimp.MIME_JPEG, function (err, data_tiny) {
+                            if (err) {
+                                res.status(500).json({'Error': err});
+                                return;
+                            }
+                            pool.getConnection(function (err, connection) {
+                                if (err) {
+                                    res.status(500).json({'Error': err});
+                                    return;
+                                }
+
+                                console.log("Uploading image");
+
+                                connection.query("UPDATE home_group SET group_pic = ?, group_pic_tiny = ? WHERE group_id = ?;", [data, data_tiny, req.params.group_id], function (err, results, fields) {
+                                    connection.release();
+                                    if (err) {
+                                        res.status(500).json({'Error': err});
+                                        return;
+                                    }
+                                    console.log("Uploading image complete");
+
+
+                                    res.status(200).json(results);
+                                });
+                            });
+                        });
+                });
+        });
+    });
+});
+
+router.get('/:group_id/picture', function(req, res){
+    console.log('GET-request established');
+
+    pool.getConnection(function (err, connection) {
+        connection.query("SELECT group_pic FROM home_group WHERE group_id = ?;", [req.params.group_id], function (error, results, fields) {
+            connection.release();
+            if(err) {
+                res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                return;
+            }
+
+            if(results.length == 0) {
+                res.status(404).json({error: 'no profile picture.'});
+                return;
+            }
+
+            if(results) res.contentType('jpeg').status(200).end(results[0].group_pic, 'binary');
+        });
+    });
+});
+
+router.get('/:group_id/picture_tiny', function(req, res){
+    console.log('GET-request established');
+
+    pool.getConnection(function (err, connection) {
+        connection.query("SELECT group_pic_tiny FROM home_group WHERE group_id = ?;", [req.params.group_id], function (error, results, fields) {
+            connection.release();
+            if(err) {
+                res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                return;
+            }
+
+            if(results.length == 0) {
+                res.status(404).json({error: 'no profile picture.'});
+                return;
+            }
+
+            if(results) res.contentType('jpeg').status(200).end(results[0].group_pic_tiny, 'binary');
+        });
+    });
+});
