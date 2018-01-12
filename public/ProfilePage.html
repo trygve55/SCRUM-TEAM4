@@ -32,8 +32,8 @@
 
 <body background="img/BackgroundImage.png">
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#" style="color: #a3e6f7">
-        <img src="logo.png" width="30" height="30" alt="">
+    <a class="navbar-brand" href="#" style="color: dimgray">
+        <img src="/img/logo.png" width="30" height="30" alt="">
         Household Manager
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,10 +41,17 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-            <a class="nav-item nav-link" href="#">Homepage</a>
-            <a class="nav-item nav-link" href="#">Groups</a>
-            <a class="nav-item nav-link" href="#">Tasks</a>
-            <a class="nav-item nav-link" href="#">Shoppinglists</a>
+            <a id="addgroup-homepage" class="nav-item nav-link" href="#"></a>
+            <a id="addgroup-groups" class="nav-item nav-link active" href="#"></a>
+            <a id="addgroup-tasks" class="nav-item nav-link" href="#"></a>
+            <a id="addgroup-shoppinglists" class="nav-item nav-link" href="#"></a>
+        </div>
+        <div class="navbar-nav ml-auto">
+            <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
+            <a id="addgroup-profile" class="nav-item nav-link" href="#"></a>
+
+            <i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
+            <a class="nav-item nav-link" href="login.html" id="addgroup-logout"></a>
         </div>
     </div>
 </nav>
