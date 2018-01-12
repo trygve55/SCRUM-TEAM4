@@ -8,6 +8,7 @@ $(document).ready(
 
         function inits(){
             $('#inputitem').hide();
+            $('#inputtask').hide();
         }
 
         $('#additem').click(function () {
