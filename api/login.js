@@ -78,16 +78,14 @@ router.post('/facebook', function(req, res){
                     req.body.facebook_api_id,
                     req.body.forename,
                     req.body.lastname,
-                    5, // shopping list id
+                    7, // shopping list id
                     req.body.facebook_api_id
                 ];
                 connection.query('INSERT INTO person ' +
                     '(email, username, forename,' +
                     'lastname, shopping_list_id, facebook_api_id) VALUES (?,?,?,?,?,?)', values, function(err, result) {
-                    if (err) {
-                        res.status(500).json({'error': 'connecting to database'} + err);
-                        console.log(err);
-                    }
+                    if (err)
+                        return res.status(500).json({'error': 'connecting to database'} + err);
                     connection.query('SELECT person_id FROM person WHERE facebook_api_id = ?', [req.body.facebook_api_id], function(err, result){
                         connection.release();
                         if(err)
