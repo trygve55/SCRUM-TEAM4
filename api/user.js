@@ -6,6 +6,19 @@ var router = require('express').Router(),
 
 module.exports = router;
 
+router.get('/all', function(req, res){
+    pool.getConnection(function(err, connection){
+        if(err)
+            return res.status(500).send("Error");
+        connection.query("SELECT person_id, forename, middlename, lastname, username FROM person", function(err, result){
+            if(err)
+                res.status(500).send(err.code);
+            else
+                res.json(result);
+        });
+    });
+});
+
 //register user
 router.post('/register', function(req, res){
     console.log('POST-request established');
