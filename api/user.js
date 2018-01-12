@@ -347,6 +347,91 @@ router.post('/:person_id/picture', function(req, res){
 });
 
 
+/*
+Returns the requested information about the requested users. The request body must contain two variables: req.body.variables and
+req.body.users, both arrays. The first one is a list of the variables you'd like to retrieve, while the second is a list of
+user IDs for which you'd like to retrieve those variables' data.
+Sensitive data variables are only available to the current session's user.
+
+Variables available to all logged in users:
+username, forename, middlename, lastname, gender, profile_pic, profile_pic_tiny and last_active
+Variables available to users about themselves:
+email, phone, birth_date, is_verified, shopping_list_id, user_language, user_deactivated, facebook_api_id
+
+Example 1: the client needs to know the full names, gender, and profile_pic_tiny (all public) of some person_ids
+Request body:
+{
+    variables: ['forename', 'middlename', 'lastname', 'gender', 'profile_pic_tiny'],
+    users: [309, 482, 100, 2]
+}
+
+Example 2: the client needs to know the email, phone, and user_language of the currently logged in user
+Request body:
+{
+    variables: ['email', 'phone', 'user_language'],
+    users: [300]
+}
+If the session ID stored on the server matches the requested user's ID, the info is provided. If it does not, or more
+than one ID is provided in the req.body.users, the server will respond with a 403 Forbidden status code, since the
+info is only available to the user with the ID 300, when they are logged in.
+ */
+
+var publicVars = ['username', 'forename', 'middlename', 'lastname', 'gender', 'profile_pic',
+    'profile_pic_tiny', 'last_active'];
+var privateVars = ['email', 'phone', 'birth_date', 'is_verified', 'shopping_list_id', 'user_language',
+    'user_deactivated', 'facebook_api_id'];
+
+function reqForPrivateVars(reqVars) {
+    var result = false;
+    reqVars.forEach(function(element) {
+        if(privateVars.indexOf(element) > -1) {
+            result = true;
+            return;
+        }
+    });
+    return result;
+}
+
+router.post('/getUser', function(req, res) { // TODO add authentication
+    if(!req.session.person_id || checkRequestArray(req.body.variables) > 0 ||
+        (reqForPrivateVars(req.body.variables) && (req.body.users.length > 1 || req.session.person_id != req.body.users[0]))) {
+        return res.status(403).send("Forbidden request");
+    }
+    console.log('API: authentication passed');
+    var sqlQuery = 'SELECT ?';
+    for(i = 1; i < req.body.variables.length; i++) {
+        sqlQuery += ',?';
+    }
+    sqlQuery += ' FROM person WHERE person_id = ?';
+    for(i = 1; i < req.body.users.length; i++) {
+        sqlQuery += ' OR person_id = ?';
+    }
+    var values = req.body.variables;
+    req.body.users.forEach(function(element) {
+        values.push(element);
+    });
+
+    pool.getConnection(function(err, connection) {
+        if(err) {
+            res.status(500);
+            res.json({"error": "Error connecting to database" + err});
+            return;
+        }
+
+        connection.query(sqlQuery, values, function(err, result) {
+            if(err) {
+                res.status(500);
+                res.json({"error": "Error in query to database" + err});
+                return;
+            }
+            res.status(200);
+            res.send(result);
+        });
+    });
+});
+
+
+
 function putRequestSetup(iD, data, connection, tableName) {
     if(!iD) {
         connection.release();
