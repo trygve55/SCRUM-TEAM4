@@ -1,4 +1,5 @@
 $('document').ready(function (){
+    $('#inputitem').hide();
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -52,18 +53,13 @@ $('document').ready(function (){
         });
     });
     $('#additem').click(function () {
-        var myElem = document.getElementById('newitem');
-        if (myElem === null) {
-            $('#itemlist').append("<li class=\"list-group-item\" id=\"listitem\"> <input type=\"text\" class=\"form-control\" id=\"newitem\"></li>");
-        }
+        $('#inputitem').show();
     });
-    $('#newitem').click(function () {
-       alert("ok");
-    });
+
     $('#newitem').keypress(function(event) {
         if (event.keyCode == 13 || event.which == 13) {
-            $('#itemlist').remove();
-            console.log("removed?");
+            $('#inputitem').hide();
+            var
         }
     });
 });
