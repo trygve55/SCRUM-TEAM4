@@ -1,7 +1,58 @@
 $(document).ready(
 
 
+
     function(){
+
+        inits();
+
+        function inits(){
+            $('#inputitem').hide();
+        }
+
+        $('#additem').click(function () {
+            if( $('#inputitem').is(":visible")){
+                $('#inputitem').hide();
+                var item = $('#newitem').val();
+                $('#newitem').val('');
+                $('#itemlist').append("<li class=\"list-group-item\"><div class=\"checkbox\"> <label><input type=\"checkbox\">  "+item+"</label> </div> </li>");
+
+            }
+            $('#inputitem').show();
+        });
+
+        $('#newitem').keypress(function(event) {
+            if (event.keyCode == 13 || event.which == 13) {
+                $('#inputitem').hide();
+                var item = $('#newitem').val();
+                $('#newitem').val('');
+                $('#itemlist').append("<li class=\"list-group-item\"><div class=\"checkbox\"> <label><input type=\"checkbox\">  "+item+"</label> </div> </li>");
+
+            }
+        });
+
+        $('#addtask').click(function () {
+            if( $('#inputtask').is(":visible")){
+                $('#inputtask').hide();
+                var item = $('#newtask').val();
+                $('#newtask').val('');
+                $('#itemtask').append("<li class=\"list-group-item\"><div class=\"checkbox\"> <label><input type=\"checkbox\">  "+item+"</label> </div> </li>");
+
+            }
+            $('#inputitem').show();
+        });
+
+        $('#newtask').keypress(function(event) {
+            if (event.keyCode == 13 || event.which == 13) {
+                $('#inputitem').hide();
+                var item = $('#newtask').val();
+                $('#newtask').val('');
+                $('#tasklist').append("<li class=\"list-group-item\"><div class=\"checkbox\"> <label><input type=\"checkbox\">  "+item+"</label> </div> </li>");
+
+            }
+        });
+
+
         $('#add-item-button').click(
             function(){
                 var toAdd = $('input[name=item]').val();
@@ -36,6 +87,8 @@ $(document).ready(
         });
 
         $('ol').sortable();
+
+
 
     }
 );

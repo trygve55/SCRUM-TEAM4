@@ -2,18 +2,14 @@ body{
     font-family: "Trebuchet MS";
     font-style: inherit;
     background-attachment: fixed;
-
 }
 
 div.containerr{
+    max-width: 90%;
+    height: 40%;
     background-color: white;
     border-radius: 15px;
-    margin-top: 20px;
-    margin-bottom: 0px;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    padding-left: 30px;
-    padding-right: 20px;
+    padding: 3%;
 }
 
 div.background1{
@@ -23,51 +19,41 @@ div.background1{
 
 div.listborder {
     background-color: white;
-
+    padding: 5%;
 }
+
+#okok{
+    overflow-y: scroll;
+}
+
 div.personaliaborder{
+    margin:20px;
+    padding: 10px;
     background-color: white;
-
+    height: 46%;
+    padding: 2%;
     -moz-box-shadow:    inset 0 0 3px grey;
     -webkit-box-shadow: inset 0 0 3px grey;
     box-shadow:         inset 0 0 3px grey;
 }
+
 div.debtborder{
-    padding-top: 20px;
-    padding-bottom: 10px;
     background-color: white;
-    min-height: 45%;
+    height: 46%;
+    padding: 2%;
 
-    -moz-box-shadow:    inset 0 0 3px grey;
-    -webkit-box-shadow: inset 0 0 3px grey;
-    box-shadow:         inset 0 0 3px grey;
-
-
-}
-
-.carousel-control-next-icon, .carousel-control-prev-icon{
-    border-radius: 15px;
-    border-color: black;
-}
-.glyphicon-chevron-left .glyphicon-chevron-right{
-    background-color: aqua;
-}
-.farge{
-    color: white;
-}
-
-.carousel-indicator li{
-    background-color: hotpink;
-}
-
-.carousel-indicator .active{
-    background-color: aqua;
 }
 
 .list-group{
     overflow-y:scroll;
+    text-align: left;
+    max-height: 235px;
+}
+
+.list-groups{
+    overflow-y:scroll;
     width: 100%;
-    min-height: 200px;
+    min-height: 200px; /* MÅ VÆRE PROSENT */
     max-height: 300px;
 }
 
@@ -78,54 +64,45 @@ div.debtborder{
 }
 
 h4 {
-    font-size: 50%;
+    font-size: 40%;
 }
 
 h6{
     font-size: 90%
-
 }
-
-
 
 /* carousel */
 .media-carousel
 {
     margin-bottom: 0;
-    padding: 0 40px 30px 40px;
-    margin-top: 30px;
 }
 /* Previous button  */
 .media-carousel .carousel-control.left
 {
     left: -12px;
     background-image: none;
-    background: none repeat scroll 0 0 #222222;
+    background: none repeat scroll 0 0 #00BFF3;
     border: 4px solid #FFFFFF;
     border-radius: 23px 23px 23px 23px;
     height: 40px;
     width : 40px;
-    margin-top: 30px
 }
 /* Next button  */
 .media-carousel .carousel-control.right
 {
     right: -12px !important;
     background-image: none;
-    background: none repeat scroll 0 0 #222222;
+    background: none repeat scroll 0 0 #00BFF3;
     border: 4px solid #FFFFFF;
     border-radius: 23px 23px 23px 23px;
     height: 40px;
     width : 40px;
-    margin-top: 30px
 }
 /* Changes the position of the indicators */
 .media-carousel .carousel-indicators
 {
-    right: 50%;
     top: auto;
-    bottom: 0px;
-    margin-right: -19px;
+    bottom: -15%;
 }
 /* Changes the colour of the indicators */
 .media-carousel .carousel-indicators li
@@ -136,9 +113,21 @@ h6{
 {
     background: #333333;
 }
-.media-carousel img
-{
-    width: 250px;
-    height: 100px
-}
+
 /* End carousel */
+
+div.shadow{
+    width: 60%;
+    height: 130px;
+    margin-top: 2%;
+    margin-bottom:2%;
+    /*position:relative;*/
+    -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+}
+
+.buttonstyle{
+    margin-bottom: 5%;
+}
+

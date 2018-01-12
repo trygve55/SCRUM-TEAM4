@@ -9,6 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+    <script src="https://use.fontawesome.com/dea62227f7.js"></script>
     <script src="ProfilePage.js"></script>
     <script src="list.js"></script>
 
@@ -49,15 +50,15 @@
 </nav>
 
 <br>
-<div class="container containerr grid-custom pad" align="center">
+<div class="container containerr" align="center">
     <div class="row parent">
         <div class="col-md-6 sidenav">
             <div class="personaliaborder">
-                <div class="row subRow col-sm">
-                    <div class="col-xs-4 col-md-4">
-                        <img src="http://www.freeiconspng.com/uploads/profile-icon-9.png" class="pull-left" height="150px" width="150px">
+                <div class="row subRow">
+                    <div class="col-xs-2 col-md-4">
+                        <img src="profilPicture.png"  float=left; height="150px" width="150px">
                     </div>
-                    <div class="col-xs-6 col-md-6" align="left">
+                    <div class="col-xs-3 col-md-4" align="left">
                         <p>Name</p>
                         <p>email:</p>
                         <p>phone:</p>
@@ -66,8 +67,7 @@
                 </div>
             </div>
             <br>
-            <div class="debtborder" align="center">
-                <h2 style="font-size: larger">Dept list</h2>
+            <div class="container debtborder">
                 <div id="media" class="carousel slide media-carousel" data-ride="carousel">
                     <ol class="carousel-indicators">
                         <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
@@ -76,19 +76,28 @@
                     </ol>
                     <div class="carousel-inner" role="listbox" >
                             <div class="carousel-item active">
-                                <h4> DINA</h4>
+                                <div class="shadow container" align="center">
+                                <h4>DIN ROSORVOLIS</h4>
                                 <h6>BALANCE</h6>
                                 <h6>+ 50</h6>
+                                    <button type="button" class="btn btn-default buttonstyle">Settle</button>
+                                </div>
                             </div>
                             <div class="carousel-item">
-                                <h4> DINA</h4>
+                                <div class="container shadow" align="center">
+                                <h4> ODIS</h4>
                                 <h6>BALANCE</h6>
                                 <h6>+ 50</h6>
+                                    <button type="button" class="btn btn-default buttonstyle">Settle</button>
+                                </div>
                             </div>
                             <div class="carousel-item">
-                                <h4> DINA</h4>
+                                <div class="container shadow" align="center">
+                                <h4> DINASO S</h4>
                                 <h6>BALANCE</h6>
-                                <h6>+ 50</h6>
+                                <h6>- 100000</h6>
+                                    <button type="button" class="btn btn-default">Settle</button>
+                                </div>
                             </div>
                     </div>
                     <a class="carousel-control-prev" href="#media" role="button" data-slide="prev">
@@ -103,59 +112,43 @@
             </div>
         </div>
         <div class="col-md-3 sidenav">
-            <br>
             <div class="listborder" align="center">
-                <div class="container subRow">
-                    <h2 style="font-size: larger">My shoppinglist</h2>
-                    <ul class="list-group" id="shoppinglist">
-                        <li class="list-group-item">hri</li>
-                        <li class="list-group-item">hei</li>
-                        <li class="list-group-item">hri</li>
-                        <li class="list-group-item">hei</li>
-                        <li class="list-group-item">hei</li>
-                        <li class="list-group-item">hri</li>
-                        <li class="list-group-item">hei</li>
-                        <li class="list-group-item">hei</li>
-                        <li class="list-group-item">hri</li>
-                        <li class="list-group-item">hei</li>
-                        <li class="list-group-item">hei</li>
-                        <li class="list-group-item">hri</li>
-                        <li class="list-group-item">hei</li>
-                    </ul>
-                </div>
-
-                <div class="container row">
-                    <div class="col-sm-7"><input class="form-control" id="add-item" name="item"></div>
-                    <div class="col-sm-1"><button type="button" class="btn btn-info" id="add-item-button">Add</button></div>
-                </div>
+                <h5>My shoppinglist</h5>
+                <ul class="list-group" id="itemlist">
+                    <li class="list-group-item">
+                        <div class="checkbox">
+                            <label><input type="checkbox" value=""> Option 1</label>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="list-group">
+                    <div id="inputitem">
+                        <li class="list-group-item" id="listitem">
+                            <input type="text" class="form-control" id="newitem">
+                        </li>
+                    </div>
+                    <li class="list-group-item" id="additem"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add item</li>
+                </ul>
             </div>
         </div>
         <div class="col-md-3 sidenav">
-            <br>
             <div class="listborder" align="center">
-                <div class="container subRow">
-                        <h2 style="font-size: larger">My tasks</h2>
-                        <ul class="list-group" id="taskList">
-                            <li class="list-group-item">hri</li>
-                            <li class="list-group-item">hei</li>
-                            <li class="list-group-item">hri</li>
-                            <li class="list-group-item">hei</li>
-                            <li class="list-group-item">hei</li>
-                            <li class="list-group-item">hri</li>
-                            <li class="list-group-item">hei</li>
-                            <li class="list-group-item">hei</li>
-                            <li class="list-group-item">hri</li>
-                            <li class="list-group-item">hei</li>
-                            <li class="list-group-item">hei</li>
-                            <li class="list-group-item">hri</li>
-                            <li class="list-group-item">hei</li>
-                        </ul>
+                <h5>My to do list</h5>
+                <ul class="list-group" id="tasklist">
+                    <li class="list-group-item">
+                        <div class="checkbox">
+                            <label><input type="checkbox" value=""> Option 1</label>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="list-group">
+                    <div id="inputtask">
+                        <li class="list-group-item" id="listtask">
+                            <input type="text" class="form-control" id="newtask">
+                        </li>
                     </div>
-                    <div class="container row">
-                        <div class="col-sm-7"><input class="form-control" id="add-task" name="task"></div>
-                        <div class="col-sm-1"><button type="button" class="btn btn-info" id="add-task-button">Add</button></div>
-                    </div>
-                </div>
+                    <li class="list-group-item" id="addtask"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add item</li>
+                </ul>
             </div>
         </div>
     </div>
