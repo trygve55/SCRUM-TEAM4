@@ -75,11 +75,12 @@ posted_datetime</panel_attributes>
       <x>480</x>
       <y>392</y>
       <w>168</w>
-      <h>56</h>
+      <h>64</h>
     </coordinates>
     <panel_attributes>Group Person
 --
 joined_datetime
+invite_sent_datetime
 invite accepted</panel_attributes>
     <additional_attributes/>
   </element>
@@ -349,14 +350,16 @@ datetime_purchased</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>848</x>
-      <y>688</y>
+      <y>664</y>
       <w>128</w>
-      <h>48</h>
+      <h>72</h>
     </coordinates>
     <panel_attributes>Shopping List persons
 --
 paid_amount
-invite accepted</panel_attributes>
+invite_sent_datetime
+invite accepted
+is_hidden</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -365,10 +368,10 @@ invite accepted</panel_attributes>
       <x>896</x>
       <y>648</y>
       <w>24</w>
-      <h>56</h>
+      <h>32</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;20.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
