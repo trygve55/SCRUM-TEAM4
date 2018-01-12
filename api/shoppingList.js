@@ -77,8 +77,8 @@ router.post('/:shopping_list_id', function(req, res) {
 		connection.query(
 			'INSERT INTO shopping_list_person(' +
 			'shopping_list_id, person_id, paid_amount, ' +
-			'invite_accepted, invite_sent_datetime, is_hidden) ' +
-			'SELECT @listID:=?,?,?,?,?,? FROM shopping_list ' +
+			'invite_accepted, invite_sent_datetime, is_hidden, pay_amount_points) ' +
+			'SELECT @listID:=?,?,?,?,?,?,? FROM shopping_list ' +
 			'WHERE NOT EXISTS (SELECT shopping_list.shopping_list_id FROM ' +
 			'home_group,person,shopping_list WHERE person.shopping_list_id = @listID OR ' +
 			'home_group.shopping_list_id = @listID) OR NOT EXISTS ' +
@@ -89,7 +89,8 @@ router.post('/:shopping_list_id', function(req, res) {
 				data.paid_amount,
 				data.invite_accepted,
 				new Date(data.invite_sent_datetime).toISOString().slice(0, 10),
-				data.is_hidden
+				data.is_hidden,
+				data.pay_amount_points
 			],
 			function(err, result) {checkResult(err, result, connection, res);});
 	});
@@ -111,17 +112,11 @@ router.put('/:shopping_list_id', function(req, res) {
 });
 
 router.post('/entry', function(req, res) {
-	var data = req.body;
-	
-	var datetimePurchased = null, purchasedByPersonId = null;
-	
-	if (data.purchasedByPersonId) {purchasedByPersonId = data.purchased_by_person_id}
-	if (data.datetimePurchased) {datetimePurchased = data.datetime_purchased;}
-	
 	console.log('POST-request initiating');
+
 	pool.getConnection(function(err, connection) {
 		checkConnectionError(err, connection, res);
-
+		var data = req.body;
 		connection.query(
 			'INSERT INTO shopping_list_entry( ' +
 			'shopping_list_id, ' +
@@ -136,10 +131,10 @@ router.post('/entry', function(req, res) {
 			[
 				data.shopping_list_id,
 				data.entry_text,
-				data.added_by_person_id,	// This might be incorrect as this variable is not decided at this time.
-				purchasedByPersonId,
+				data.added_by_person_id,	// This might be incorrect in the future.
+				data.purchased_by_person_id,
 				data.cost,
-				datetimePurchased
+				data.datetime_purchased
 			],
 			function(err, result) {checkResult(err, result, connection, res);});
 	});
