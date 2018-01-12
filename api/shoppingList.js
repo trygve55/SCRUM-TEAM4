@@ -67,49 +67,6 @@ router.get('/:shopping_list_id', function(req, res){
 	});
 });
 
-router.post('/:shopping_list_id', function(req, res) {
-	var data = req.body;
-	var people = data.persons;	// Array
-	
-	console.log('POST-request initiating');
-	pool.getConnection(function(err, connection) {
-		checkConnectionError(err, connection, res);
-		connection.query(
-			'INSERT INTO shopping_list_person(' +
-			'shopping_list_id, person_id, paid_amount, ' +
-			'invite_accepted, invite_sent_datetime, is_hidden, pay_amount_points) ' +
-			'SELECT @listID:=?,?,?,?,?,?,? FROM shopping_list ' +
-			'WHERE NOT EXISTS (SELECT shopping_list.shopping_list_id FROM ' +
-			'home_group,person,shopping_list WHERE person.shopping_list_id = @listID OR ' +
-			'home_group.shopping_list_id = @listID) OR NOT EXISTS ' +
-			'(SELECT person_id FROM shopping_list_person WHERE shopping_list_id = @listID) LIMIT 1;',
-			[
-				req.params.shopping_list_id,
-				data.person_id,
-				data.paid_amount,
-				data.invite_accepted,
-				new Date(data.invite_sent_datetime).toISOString().slice(0, 10),
-				data.is_hidden,
-				data.pay_amount_points
-			],
-			function(err, result) {checkResult(err, result, connection, res);});
-	});
-});
-
-router.put('/:shopping_list_id', function(req, res) {
-	console.log('PUT-request initiating');
-	pool.getConnection(function(err, connection) {
-		checkConnectionError(err, connection, res);
-
-		//'UPDATE shopping_list SET shopping_list_name = ?, currency_id = ? WHERE shopping_list_id = ?'
-		var query = putRequestSetup(req.params.shopping_list_id, req.body, connection, "shopping_list");
-		connection.query(
-			query[0],
-			query[1],
-			function(err, result) {checkResult(err, result, connection, res);}
-		);
-	});
-});
 
 router.post('/entry', function(req, res) {
 	console.log('POST-request initiating');
@@ -137,6 +94,50 @@ router.post('/entry', function(req, res) {
 				data.datetime_purchased
 			],
 			function(err, result) {checkResult(err, result, connection, res);});
+	});
+});
+
+router.post('/:shopping_list_id', function(req, res) {
+	var data = req.body;
+	var people = data.persons;	// Array
+	
+	console.log('POST-request initiating');
+	pool.getConnection(function(err, connection) {
+		checkConnectionError(err, connection, res);
+		connection.query(
+			'INSERT INTO shopping_list_person(' +
+			'shopping_list_id, person_id, paid_amount, ' +
+			'invite_accepted, invite_sent_datetime, is_hidden, pay_amount_points) ' +
+			'SELECT @listID:=?,?,?,?,?,?,? FROM shopping_list ' +
+			'WHERE NOT EXISTS (SELECT shopping_list.shopping_list_id FROM ' +
+			'home_group,person,shopping_list WHERE person.shopping_list_id = @listID OR ' +
+			'home_group.shopping_list_id = @listID) OR NOT EXISTS ' +
+			'(SELECT person_id FROM shopping_list_person WHERE shopping_list_id = @listID) LIMIT 1;',
+			[
+				req.params.shopping_list_id,
+				data.person_id,
+				data.paid_amount,
+				data.invite_accepted,
+				new Date(data.invite_sent_datetime).toISOString().slice(0, 19).replace('T', ' '),
+				data.is_hidden,
+				data.pay_amount_points
+			],
+			function(err, result) {checkResult(err, result, connection, res);});
+	});
+});
+
+router.put('/:shopping_list_id', function(req, res) {
+	console.log('PUT-request initiating');
+	pool.getConnection(function(err, connection) {
+		checkConnectionError(err, connection, res);
+
+		//'UPDATE shopping_list SET shopping_list_name = ?, currency_id = ? WHERE shopping_list_id = ?'
+		var query = putRequestSetup(req.params.shopping_list_id, req.body, connection, "shopping_list");
+		connection.query(
+			query[0],
+			query[1],
+			function(err, result) {checkResult(err, result, connection, res);}
+		);
 	});
 });
 
