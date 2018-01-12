@@ -1,5 +1,5 @@
 /**
- * Created by odasteinlandskaug on 10.01.2018.
+ * Created by odasteinlandskaug on 11.01.2018.
  */
 $(function () {
     $.ajax({
@@ -18,7 +18,7 @@ $(function () {
         }
     });
 
-    $('#index-norway').click(function () {
+    $('#accounting-norway').click(function () {
         $.ajax({
             url: '/api/language',
             method: 'GET',
@@ -36,7 +36,7 @@ $(function () {
         });
     });
 
-    $('#index-england').click(function () {
+    $('#accounting-england').click(function () {
         $.ajax({
             url: '/api/language',
             method: 'GET',
@@ -55,7 +55,3 @@ $(function () {
     });
 });
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 5d15ac4df8e0a877860677071ea23f3cd94eca30
