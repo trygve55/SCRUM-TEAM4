@@ -188,22 +188,25 @@ router.post('/search', function(req, res){
 
 router.put('/profile/:person_id', function(req, res){
     console.log("put-request");
-    console.log(req.params.person_id);
     pool.getConnection(function (err, connection) {
-
-        //req.params.userid
+        if(err) {
+            return res.status(500).send({"Error" : "Connecting to database"} + err);
+        }
 
         var parameter = req.params;
         var sql = 'SELECT * FROM person WHERE person_id = ?';
         var values = [req.body.person_id];
+
+        //req.params.userid
 
         connection.query(sql, parameter.person_id, function (err, result){
             if (err) console.log(err);
             if (result) res.json(result);
         });
 
-        connection.release();
 
+        connection.release();
+        console.log("Why crashing")
         return res.status(200).send("jaja");
 
     });
