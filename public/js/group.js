@@ -71,7 +71,9 @@ function getGroups() {
 	});	// GET all group names for this user.
 	*/
 	var names = response.groupnames;
-	for (i = 0; i < names.length; i++) {addGroupToList(names[i]);}
+	for (i = 0; i < names.length; i++) {
+		addGroupToList(names[i]);
+	}
 	removeDeletedGroups(names);
 }
 

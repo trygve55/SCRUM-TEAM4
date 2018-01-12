@@ -7,7 +7,7 @@ var fs = require('fs');
  */
 router.get('/', function(req, res){
     var lang = req.session.lang;
-    var pth = req.header('referer').split(":8000")[1];
+    var pth = req.query.path || req.header('referer').split(":8000")[1];
     if(!lang){
         req.session.lang = "nb_NO";
         req.session.save();
@@ -40,6 +40,7 @@ router.post('/', function(req, res){
         res.status(400).send("Bad request");
         return;
     }
+    console.log("Lang is set");
     req.session.lang = lang;
     req.session.save();
     res.status(200).send("OK");
