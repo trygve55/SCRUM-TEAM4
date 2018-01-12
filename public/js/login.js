@@ -12,7 +12,7 @@ window.fbAsyncInit = function() {
     FB.getLoginStatus(function (response) {
         if(response.status === 'connected'){
             connected = true;
-            document.getElementById('status').innerHTML = '1';
+            document.getElementById('status').innerHTML = '';
             document.getElementById('login').style.visibility = 'hidden';
             $.ajax({
                 url: '/api/login',
@@ -25,25 +25,28 @@ window.fbAsyncInit = function() {
             });
 
         } else if(response.status === 'not_authorized'){
-            document.getElementById('status').innerHTML = '2';
+            document.getElementById('status').innerHTML = '';
 
         } else{
-            document.getElementById('status').innerHTML = '3';
+            document.getElementById('status').innerHTML = '';
         }
     });
 
     FB.Event.subscribe('auth.login', function () {
         //location.reload();
-        FB.api('/me', 'GET', {fields: 'first_name,last_name,name,id,email'}, function (response) {
+        FB.api('/me', 'GET', {fields: 'first_name,last_name,id,email'}, function (response) {
             console.log(response);
             $.ajax({
                 url: '/api/login/facebook',
                 method: 'POST',
                 data: {
-                    facebook_api_id: response.id
+                    facebook_api_id: response.id,
+                    email: response.email,
+                    forename: response.first_name,
+                    lastname: response.last_name
                 },
                 success: function (data) {
-                    alert("yiughk");
+                    window.top.location = "http://localhost:8000/index.html";
                 },
                 error: console.error
             });

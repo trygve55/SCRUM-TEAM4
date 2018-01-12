@@ -75,10 +75,10 @@ router.post('/facebook', function(req, res){
             } else {
                 var values = [
                     req.body.email,
-                    req.body.id,
+                    req.body.facebook_api_id,
                     req.body.forename,
                     req.body.lastname,
-                    1, // shopping list id
+                    5, // shopping list id
                     req.body.facebook_api_id
                 ];
                 connection.query('INSERT INTO person ' +
