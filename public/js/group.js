@@ -40,28 +40,18 @@ $(document).ready(function() {
 * This method loads the language from the API.
 */
 function loadLanguageText() {
-	// AJAX GET all text in this language.
-	var response;
 	$.ajax({
 		type:"GET",
 		url:"/api/language",
 		contentType:"application/json",
 		dataType:"json",
 		success:function(result) {
-		    response = result;
-            for (var p in response) {$("#" + p).html(response[p]);}
+            for (var p in result) {
+                if(result.hasOwnProperty(p))
+                    $("#" + p).html(result[p]);
+            }
 		}
 	});
-		// Temporary, remove when using the AJAX
-	
-	for (var p in response) {$("#" + p).html(response[p]);}
-	
-	/*
-	// Alternative, probably slower.
-	$(".langtext").each(function() {
-		$(this).html(response[this.id]);
-	});
-	*/
 }
 
 /**
