@@ -71,7 +71,7 @@ $(function () {
     $.ajax({
         url:'',
         method:'',
-        
+
 
 
     })

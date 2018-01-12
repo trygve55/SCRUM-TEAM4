@@ -21,7 +21,6 @@ window.fbAsyncInit = function() {
                 },
                 error: console.error
             });
-
         }
     });
 
@@ -43,11 +42,32 @@ window.fbAsyncInit = function() {
                     window.top.location = "http://localhost:8000/index.html";
                 },
                 error: console.error
-            });
-        });
     });
 
-};
+    FB.Event.subscribe('auth.statusChange', function (res) {
+        console.log("hei");
+        if(res.status === "connected") {
+            FB.api('/me', 'GET', {fields: 'first_name,last_name,id,email'}, function (response) {
+                console.log(response);
+                $.ajax({
+                    url: '/api/login/facebook',
+                    method: 'POST',
+                    data: {
+                        facebook_api_id: response.id,
+                        email: response.email,
+                        forename: response.first_name,
+                        lastname: response.last_name
+                    },
+                    success: function (data) {
+                        window.top.location = "http://localhost:8000/index.html";
+                    },
+                    error: console.error
+                });
+            });
+        }
+    });
+
+});
 
 (function(d, s, id){
     var js, fjs = d.getElementsByTagName(s)[0];
@@ -58,33 +78,19 @@ window.fbAsyncInit = function() {
 }(document, 'script', 'facebook-jssdk'));
 
 function login() {
-    console.log("ee");
-    if(connected) {
-        console.log("e");
+    FB.login(function (response) {
+        if (response.status === 'connected') {
+        } else if (response.status === 'not_authorized') {
 
-    }
-    else {
-        FB.login(function (response) {
-            if (response.status === 'connected') {
-                document.getElementById('status').innerHTML = '';
-                document.getElementById('login').style.visibility = 'hidden';
-                console.log('1');
-            } else if (response.status === 'not_authorized') {
-                document.getElementById('status').innerHTML = '';
-                console.log('2');
-            } else {
-                document.getElementById('status').innerHTML = 'kkk';
-                console.log('3');
-            }
-        }, {scope: 'email'});
-    }
+        }
+    }, {scope: 'email'});
 }
 
 function logout(){
     FB.logout(function(response){
         alert('You are now logged out');
         console.log("Response goes here!");
-    })
+    });
 }
 
 function getInfo(){
