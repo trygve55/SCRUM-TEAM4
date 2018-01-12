@@ -1,6 +1,7 @@
 /**
  * Created by odasteinlandskaug on 10.01.2018.
  */
+var connected = false;
 window.fbAsyncInit = function() {
     FB.init({
         appId            : '548372472188099',
@@ -10,30 +11,43 @@ window.fbAsyncInit = function() {
     });
     FB.getLoginStatus(function (response) {
         if(response.status === 'connected'){
-            document.getElementById('status').innerHTML = '';
+            connected = true;
+            document.getElementById('status').innerHTML = '1';
             document.getElementById('login').style.visibility = 'hidden';
             $.ajax({
                 url: '/api/login',
                 method: "GET",
                 success: function(data){
-                    if(data)
+                    if(data.login)
                         window.top.location = "http://localhost:8000/index.html";
                 },
                 error: console.error
             });
 
         } else if(response.status === 'not_authorized'){
-            document.getElementById('status').innerHTML = '';
+            document.getElementById('status').innerHTML = '2';
 
         } else{
-            document.getElementById('status').innerHTML = '';
-
+            document.getElementById('status').innerHTML = '3';
         }
     });
 
     FB.Event.subscribe('auth.login', function () {
-        location.reload();
-        console.log('test');
+        //location.reload();
+        FB.api('/me', 'GET', {fields: 'first_name,last_name,name,id,email'}, function (response) {
+            console.log(response);
+            $.ajax({
+                url: '/api/login/facebook',
+                method: 'POST',
+                data: {
+                    facebook_api_id: response.id
+                },
+                success: function (data) {
+                    alert("yiughk");
+                },
+                error: console.error
+            });
+        });
     });
 
 };
@@ -47,20 +61,26 @@ window.fbAsyncInit = function() {
 }(document, 'script', 'facebook-jssdk'));
 
 function login() {
-    FB.login(function (response) {
-        if(response.status === 'connected'){
-            document.getElementById('status').innerHTML = '';
-            document.getElementById('login').style.visibility = 'hidden';
-            console.log('1');
-        } else if(response.status === 'not_authorized'){
-            document.getElementById('status').innerHTML = '';
-            console.log('2');
-        } else{
-            document.getElementById('status').innerHTML = ''
-            console.log('3');
-        }
-    }, {scope: 'email'});
+    console.log("ee");
+    if(connected) {
+        console.log("e");
 
+    }
+    else {
+        FB.login(function (response) {
+            if (response.status === 'connected') {
+                document.getElementById('status').innerHTML = '';
+                document.getElementById('login').style.visibility = 'hidden';
+                console.log('1');
+            } else if (response.status === 'not_authorized') {
+                document.getElementById('status').innerHTML = '';
+                console.log('2');
+            } else {
+                document.getElementById('status').innerHTML = 'kkk';
+                console.log('3');
+            }
+        }, {scope: 'email'});
+    }
 }
 
 function logout(){
@@ -69,6 +89,7 @@ function logout(){
         console.log("Response goes here!");
     })
 }
+
 function getInfo(){
     FB.api('/me', 'GET', {fields: 'first_name,last_name,name,id,email'}, function(response) {
         document.getElementById('status').innerHTML = response.id;

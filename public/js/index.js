@@ -53,9 +53,20 @@ $(function () {
             }
         });
     });
+
+    $('#index-logoutNavbar').click(function () {
+        $.ajax({
+            url: '/api/login/logout',
+            method: 'POST',
+            success: function (data) {
+                if(!data.login){
+                    window.top.location="http://localhost:8000/login.html";
+                }
+            }
+        })
+
+    })
+
 });
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 5d15ac4df8e0a877860677071ea23f3cd94eca30

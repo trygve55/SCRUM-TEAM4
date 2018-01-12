@@ -170,3 +170,4 @@ function attachTasks(tasks) {
 
 //function countNewPosts() {} // From last login date, display a number of new posts
 //function countNewTasks() {} // From last login date, display a number of new tasks
+
