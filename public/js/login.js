@@ -10,15 +10,23 @@ window.fbAsyncInit = function() {
     });
     FB.getLoginStatus(function (response) {
         if(response.status === 'connected'){
-            document.getElementById('status').innerHTML = 'We are connected';
+            document.getElementById('status').innerHTML = '';
             document.getElementById('login').style.visibility = 'hidden';
-            window.top.location = "http://localhost:8000/index.html";
+            $.ajax({
+                url: '/api/login',
+                method: "GET",
+                success: function(data){
+                    if(data)
+                        window.top.location = "http://localhost:8000/index.html";
+                },
+                error: console.error
+            });
 
         } else if(response.status === 'not_authorized'){
-            document.getElementById('status').innerHTML = 'We are not logged in';
+            document.getElementById('status').innerHTML = '';
 
         } else{
-            document.getElementById('status').innerHTML = 'You are not logged in to facebook'
+            document.getElementById('status').innerHTML = '';
 
         }
     });
@@ -27,6 +35,7 @@ window.fbAsyncInit = function() {
         location.reload();
         console.log('test');
     });
+
 };
 
 (function(d, s, id){
@@ -40,20 +49,26 @@ window.fbAsyncInit = function() {
 function login() {
     FB.login(function (response) {
         if(response.status === 'connected'){
-            document.getElementById('status').innerHTML = 'We are connected';
+            document.getElementById('status').innerHTML = '';
             document.getElementById('login').style.visibility = 'hidden';
             console.log('1');
         } else if(response.status === 'not_authorized'){
-            document.getElementById('status').innerHTML = 'We are not logged in';
+            document.getElementById('status').innerHTML = '';
             console.log('2');
         } else{
-            document.getElementById('status').innerHTML = 'You are not logged in to facebook'
+            document.getElementById('status').innerHTML = ''
             console.log('3');
         }
     }, {scope: 'email'});
 
 }
 
+function logout(){
+    FB.logout(function(response){
+        alert('You are now logged out');
+        console.log("Response goes here!");
+    })
+}
 function getInfo(){
     FB.api('/me', 'GET', {fields: 'first_name,last_name,name,id,email'}, function(response) {
         document.getElementById('status').innerHTML = response.id;
