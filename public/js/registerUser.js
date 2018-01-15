@@ -55,7 +55,6 @@ $(function () {
                         $("#register-email").attr("placeholder", data["register-email"]);
                         $("#register-phone").attr("placeholder", data["register-phone"]);
                     }
-
                 });
             },
             error: console.error
@@ -94,7 +93,9 @@ $(function () {
         });
     });
 
+    $("#register-username").focusout(function(){
 
+    });
 
     $('#register-done').click(function (e) {
         var isValid = true;
@@ -148,7 +149,7 @@ $(function () {
             alert("Working");
         }
 
-    })
+    });
 
 });
 
