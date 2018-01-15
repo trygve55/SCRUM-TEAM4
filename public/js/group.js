@@ -124,6 +124,12 @@ function loadGroup(name) {
 /**
 * When a group is created, it must be added to the list.
 */
+
+$.ajax({
+	url:'/api/group',
+	method:'',
+	data:''
+})
 function addGroupToList(name) {
 	var groups = $(".tablink");
 	for (i = 0; i < groups.length; i++) {if ($(groups[i]).html() == name) {return;}}

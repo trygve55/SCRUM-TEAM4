@@ -6,11 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/ProfilePage.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
     <script src="https://use.fontawesome.com/dea62227f7.js"></script>
     <script src="js/ProfilePage.js"></script>
+    <script src="/redirect.js"></script>
 
 </head>
 
@@ -40,24 +41,24 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-            <a id="addgroup-homepage" class="nav-item nav-link" href="#"></a>
-            <a id="addgroup-groups" class="nav-item nav-link active" href="#"></a>
-            <a id="addgroup-tasks" class="nav-item nav-link" href="#"></a>
-            <a id="addgroup-shoppinglists" class="nav-item nav-link" href="#"></a>
+            <a id="profile-homepage" class="nav-item nav-link" href="#"></a>
+            <a id="profile-groups" class="nav-item nav-link active" href="#"></a>
+            <a id="profile-tasks" class="nav-item nav-link" href="#"></a>
+            <a id="profile-shoppinglists" class="nav-item nav-link" href="#"></a>
         </div>
         <div class="navbar-nav ml-auto">
             <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
-            <a id="addgroup-profile" class="nav-item nav-link" href="#"></a>
+            <a id="profile-profile" class="nav-item nav-link" href="#"></a>
 
             <i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
-            <a class="nav-item nav-link" href="login.html" id="addgroup-logout"></a>
+            <a class="nav-item nav-link" href="login.html" id="profile-logout"></a>
         </div>
     </div>
 </nav>
 
 <div class="flag" style="background-color: white">
-    <img id="login-norway" style="position:fixed; right:15px; margin-top: 1%" src="/img/norwegianflag.jpg" width="20" height="12">
-    <img id="login-england" style="position:fixed; right: 40px; margin-top: 1%" src="/img/engelskflagg.png" width="20" height="12">
+    <img id="profile-norway" style="position:fixed; right:15px; margin-top: 1%" src="/img/norwegianflag.jpg" width="20" height="12">
+    <img id="profile-england" style="position:fixed; right: 40px; margin-top: 1%" src="/img/engelskflagg.png" width="20" height="12">
 </div>
 
 <br>
@@ -72,10 +73,10 @@
                             <img src="img/profilPicture.png" height="130px" width="130px" style="padding-top: 4%">
                         </div>
                         <div class="col-7" align="left">
-                            <div class="okoko">Eline Marie Mentdddddddddddddddddddddddddddzoni Kristiansen Eline Marie Mentzoni Kristiansen</div>
-                            <div class="okoko">email: elinemmk@hotmail.com</div>
-                            <div>phone: 12345678</div>
-                            <div>username: ripinpeace</div>
+                            <div id="profile-name" class="okoko"></div>
+                            <div id="profile-email" class="okoko"></div>
+                            <div id="profile-phone"></div>
+                            <div id="profile-username"></div>
                         </div>
                     <br>
                 </div>
