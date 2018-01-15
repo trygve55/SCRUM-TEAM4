@@ -2,23 +2,28 @@ var router = require('express').Router();
 
 module.exports = router;
 
+/**
+* The POST request for adding a new task.
+* Required parameters: group_id, todo_text, created_by_id.
+* Optional parameters: datetime_deadline, datetime_done, done_by_id.
+*/
 router.post('/', function(req, res) {
 	console.log('POST-request established');
 	var data = req.body, done = null;
 	if (data.datetime_done) {done = data.datetime_done;}
+
 	pool.getConnection(function(err, connection) {
 		if (!checkConnectionError(err, connection, res)) {return;}
 		connection.query(
 			'INSERT INTO todo (' +
-			'group_id, todo_text, datetime_deadline, datetime_done, ' +
-			'datetime_added, created_by_id, done_by_id) ' +
-			'VALUES (?,?,?,?,CURRENT_TIMESTAMP,?,?);',
+			'group_id, todo_text, datetime_deadline, datetime_done, created_by_id, done_by_id' +
+			') VALUES (?,?,?,?,?,?);',
 			[
 				checkRange(data.group_id, 1, null),
 				data.todo_text,
 				data.datetime_deadline,
 				done,
-				checkRange(data.created_by_id, 1, null),	// req.session.person_id
+				checkRange(req.session.person_id, 1, null),	// data.created_by_id to test this.
 				checkRange(data.done_by_id, 1, null)
 			],
 			function(err, result) {checkResult(err, result, connection, res);}
@@ -26,6 +31,10 @@ router.post('/', function(req, res) {
 	});
 });
 
+/**
+* The POST request for adding a person to the task.
+* Required parameters: todo_id, person_id.
+*/
 router.post('/person/', function(req, res) {
 	console.log('POST-request established');
 	pool.getConnection(function(err, connection) {
@@ -43,13 +52,16 @@ router.post('/person/', function(req, res) {
 	});
 });
 
+/**
+* The GET request for getting the task details and all people assigned.
+* Required parameters: todo_id(URL).
+*/
 router.get('/:todo_id', function(req, res) {
 console.log('GET-request established');
 	pool.getConnection(function(err, connection) {
 		if (!checkConnectionError(err, connection, res)) {return;}
 
-		connection.query('SELECT * FROM todo LEFT JOIN todo_person USING(todo_id) ' +
-			'WHERE todo.todo_id = ?',
+		connection.query('SELECT * FROM todo LEFT JOIN todo_person USING(todo_id) WHERE todo.todo_id = ?',
 			[req.params.todo_id],
 			function(err, result) {
 				connection.release();
@@ -59,50 +71,50 @@ console.log('GET-request established');
 					for (i = 0; i < result.length; i++) {people.push({"person_id":result[i].person_id});}
 					var values = {};
 					for (var p in result[0]) {values[p] = result[0][p];}
+					delete values.person_id;
 					values.people = people;
-					res.json(value);
+					res.json(values);
 				}
 			}
 		);
 	});
 });
 
+/**
+* The GET request for all tasks for a user.
+* Required parameters: person_id(URL).
+*/
 router.get('/person/:person_id', function(req, res) {
 	console.log('GET-request established');
 	pool.getConnection(function(err, connection) {
 		if (!checkConnectionError(err, connection, res)) {return;}
 
 		connection.query(
-			'SELECT person_id, todo_id, todo_text, datetime_deadline, ' +
-			'datetime_added, datetime_done, created_by_id, done_by_id ' +
-			'FROM todo LEFT JOIN todo_person USING(todo_id) WHERE todo_person.person_id = ?;',
+			'SELECT * FROM todo LEFT JOIN todo_person USING(todo_id) WHERE todo_person.person_id = ?;',
 			[checkRange(req.params.person_id, 1, null)],
 			function(err, result) {
 				connection.release();
 				if (err) {throw err;}
 				if (result) {
-					var length = result.length, entries = [];
+					var entries = [];
 					for (i = 0; i < result.length; i++) {
-						entries.push({
-							"todo_id":result[i].todo_id,
-							"todo_text":result[i].todo_text,
-							"datetime_deadline":result[i].datetime_deadline,
-							"datetime_added":result[i].datetime_added,
-							"datetime_done":result[i].datetime_done,
-							"created_by_id":result[i].created_by_id,
-							"done_by_id":result[i].done_by_id
-						});
+						var values = {};
+						for (var p in result[i]) {values[p] = result[i][p];}
+						delete values.person_id;
+						entries.push(values);
 					}
-					res.json({
-						"person_id":checkRange(req.params.person_id, 1, null),
-						"person_tasks":entries
-					});
+					res.json(entries);
 				}
 			}
 		);
 	});
 });
 
+/**
+* The PUT request for updating a task.
+* Required parameters: todo_id(URL).
+* Optional parameters: Any parameters that tasks use.
+*/
 router.put('/:todo_id', function(req, res) {
 	console.log('PUT-request initiating');
 	pool.getConnection(function(err, connection) {
@@ -117,6 +129,10 @@ router.put('/:todo_id', function(req, res) {
 	});
 });
 
+/**
+* The DELETE request for deleting a user from the task.
+* Required parameters: person_id(URL).
+*/
 router.delete('/person/:person_id', function(req, res) {
 	console.log('POST-request initiating');
 	pool.getConnection(function(err, connection) {
