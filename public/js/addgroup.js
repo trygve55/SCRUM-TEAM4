@@ -5,7 +5,6 @@ $('document').ready(function(){
         url: '/api/currency',
         mthod: 'GET',
         success: function (data){
-            console.log(data);
             var h = "";
             for(var i = 0; i < data.length; i++){
                 h += '<option value="' + data[i].currency_id + '">' + data[i].currency_long + '</option>';
@@ -31,7 +30,7 @@ $('document').ready(function(){
     });
 
     $.ajax({
-        'url': '/api/user/all',
+        url: '/api/user/all',
         method: "GET",
         success: function(data){
             var cnt = [];
@@ -129,18 +128,19 @@ $('document').ready(function(){
             data: {
                 group_name: $(this).val()
             },
-            success: function(){
-                $("#addgroup-groupname-input").css({
-                    "border": "1px solid #ced4da",
-                    "background": "white"
-                });
+            success: function(data){
+                if(data)
+                    $("#addgroup-groupname-input").css({
+                        "border": "1px solid #ced4da",
+                        "background": "white"
+                    });
+                else
+                    $('#addgroup-groupname-input').css({
+                        "border": "1px solid red",
+                        "background": "#FFCECE"
+                    });
             },
-            error: function(){
-                $('#addgroup-groupname-input').css({
-                    "border": "1px solid red",
-                    "background": "#FFCECE"
-                });
-            }
-        })
+            error: console.error
+        });
     })
 });

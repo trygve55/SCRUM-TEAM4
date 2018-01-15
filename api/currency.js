@@ -12,7 +12,7 @@ router.get('/', function(req, res){
                 return res.status(500).json({'Error' : 'connecting to database: ' } + err);
 
             //svar på GET request
-            res.json(result);
+            res.status(200).json(result);
         });
     });
 });
