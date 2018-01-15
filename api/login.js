@@ -61,8 +61,7 @@ router.post('/facebook', function(req, res){
     pool.getConnection(function (err, connection) {
         connection.query("SELECT person_id FROM person WHERE facebook_api_id = ?;", [req.body.facebook_api_id], function (error, results, fields) {
             if(err) {
-                res.status(500);
-                res.json({'Error' : 'connecting to database: ' } + err);
+                res.status(500).json({'Error' : 'connecting to database: ' } + err);
                 return;
             }
             if (results.length == 1) {

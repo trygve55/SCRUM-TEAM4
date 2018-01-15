@@ -1,0 +1,160 @@
+body{
+    font-family: "Trebuchet MS";
+    font-style: inherit;
+    background-attachment: fixed;
+    height: 500px;
+}
+
+div.containerr{
+    max-width: 90%;
+    height: 100%;
+    background-color: white;
+    border-radius: 15px;
+    padding: 1%
+}
+
+div.background1{
+    background-color: white;
+    border-radius: 15px;
+}
+
+div.personaliaborder{
+    padding-bottom: 0%;
+}
+
+div.listborder {
+    background-color: white;
+    padding: 1%;
+}
+
+div.textarea{
+    width: 95%;
+    padding: 3%;
+    font-size: 90%;
+    background-color: white;
+    -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    border-radius: 15px;
+}
+
+#okok{
+
+    overflow-y: scroll;
+}
+
+.okoko{
+    width: 95%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 17px;
+
+}
+
+div.debtborder{
+    height: 46%;
+    padding-top: 5%;
+    padding-bottom: 3%;
+}
+
+.list-group{
+    overflow-y:scroll;
+    text-align: left;
+    min-height: 100%;
+    max-height: 230px;
+    width: 100%;
+}
+
+
+
+.b{
+    position: absolute;
+    bottom: 0;
+    align: center;
+}
+
+.list-groups{
+    overflow-y:scroll;
+    width: 100%;
+    min-height: 200px; /* MÅ VÆRE PROSENT */
+    max-height: 300px;
+}
+
+.force-to-bottom {
+    position:absolute;
+    bottom: 0%;
+    width: 100%;
+}
+
+h4 {
+    font-size: 90%;
+}
+
+h6{
+    font-size: 30%
+}
+
+/* carousel */
+.media-carousel
+{
+    margin-bottom: 0;
+}
+/* Previous button  */
+.media-carousel .carousel-control.left
+{
+    left: -12px;
+    background-image: none;
+    background: none repeat scroll 0 0 #00BFF3;
+    border: 4px solid #FFFFFF;
+    border-radius: 23px 23px 23px 23px;
+    height: 40px;
+    width : 40px;
+}
+/* Next button  */
+.media-carousel .carousel-control.right
+{
+    right: -12px !important;
+    background-image: none;
+    background: none repeat scroll 0 0 #00BFF3;
+    border: 4px solid #FFFFFF;
+    border-radius: 23px 23px 23px 23px;
+    height: 40px;
+    width : 40px;
+}
+/* Changes the position of the indicators */
+.media-carousel .carousel-indicators
+{
+    top: auto;
+    bottom: -15%;
+}
+/* Changes the colour of the indicators */
+.media-carousel .carousel-indicators li
+{
+    background: #c0c0c0;
+}
+.media-carousel .carousel-indicators .active
+{
+    background: #00BFF3;
+}
+
+/* End carousel */
+
+div.shadow{
+    width: 60%;
+    height: 100%;
+    margin-top: 2%;
+    margin-bottom:2%;
+    -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    padding: 2%;
+
+
+}
+
+.buttonstyle{
+    margin-bottom: 5%;
+
+}
+
