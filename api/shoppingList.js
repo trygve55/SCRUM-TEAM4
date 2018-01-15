@@ -4,18 +4,49 @@ module.exports = router;
 
 router.post('/', function(req, res) {
 	console.log('POST-request established');
+
+	if (!req.session.person_id) {
+        res.status(400).json({'Error' : 'no accsess' });
+		return;
+	}
+
 	pool.getConnection(function(err, connection) {
 		checkConnectionError(err, connection, res);
+        if(err) {
+            res.status(500).json({'Error' : 'connecting to database: ' } + err);
+            return;
+        }
+
 		var data = req.body;
 
 		connection.query('INSERT INTO shopping_list ' +
 			'(shopping_list_name, currency_id) VALUES (?,?)',
 			[data.shopping_list_name, checkRange(data.currency_id, 1, null)],
-			function(err, result) {
-				connection.release();
+			function(err, result1) {
 
-				if (err) {throw err;}
-				if (result) {res.json({success: "true", shopping_list_id: result.insertId});}
+                if(err) {
+                	connection.release();
+                    res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                    return;
+                }
+
+                connection.query(
+                    'INSERT INTO shopping_list_person(' +
+                    'shopping_list_id, person_id, invite_accepted) ' +
+                    '(?,?,?);',
+                    [
+                        result1.insertId,
+                        req.session.person_id,
+                        true
+                    ],
+                    function(err, result) {
+                        connection.release();
+                        if(err) {
+                            res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                            return;
+                        }
+                        if (result) {res.json({success: "true", shopping_list_id: result.insertId});}
+                    });
 			}
 		);
 	});
@@ -30,7 +61,7 @@ router.get('/:shopping_list_id', function(req, res) {
 			'FROM shopping_list LEFT JOIN currency USING(currency_id) ' +
 			'LEFT JOIN shopping_list_entry USING(shopping_list_id) WHERE ' +
 			'shopping_list.shopping_list_id = ?',
-			[req.params.shopping_list_id],
+			[checkRange(req.params.shopping_list_id, 1, null)],
 			function(err, result) {
 				connection.release();
 				if (err) {throw err;}
@@ -106,7 +137,7 @@ router.post('/:shopping_list_id', function(req, res) {
 			'INSERT INTO shopping_list_person(' +
 			'shopping_list_id, person_id, paid_amount, ' +
 			'invite_accepted, invite_sent_datetime, is_hidden, pay_amount_points) ' +
-			'SELECT @listID:=?,?,?,?,?,?,? FROM shopping_list ' +
+			'SELECT @listID:=?,?,?,?, CURRENT_TIMESTAMP,?,? FROM shopping_list ' +
 			'WHERE NOT EXISTS (SELECT shopping_list.shopping_list_id FROM ' +
 			'home_group,person,shopping_list WHERE person.shopping_list_id = @listID OR ' +
 			'home_group.shopping_list_id = @listID) OR NOT EXISTS ' +
@@ -116,11 +147,11 @@ router.post('/:shopping_list_id', function(req, res) {
 				checkRange(data.person_id, 1, null),
 				data.paid_amount,
 				data.invite_accepted,
-				new Date(data.invite_sent_datetime).toISOString().slice(0, 19).replace('T', ' '),
 				data.is_hidden,
 				checkRange(data.pay_amount_points, 0, null)
 			],
-			function(err, result) {checkResult(err, result, connection, res);});
+			function(err, result) {checkResult(err, result, connection, res);}
+		);
 	});
 });
 
