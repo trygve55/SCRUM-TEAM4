@@ -70,7 +70,9 @@ router.post('/register', function(req, res){
                     if(err){
                         console.log(err);
                     }
-                    
+
+                    req.session.person_id = result.insertId;
+                    req.session.save();
 
                     console.log(result.insertId);
                     user.shopping_list_id = result.insertId;
