@@ -90,11 +90,38 @@ router.get('/person/:person_id', function(req, res) {
 						});
 					}
 					res.json({
-						"person_id":req.params.person_id,
+						"person_id":checkRange(req.params.person_id, 1, null),
 						"person_tasks":entries
 					});
 				}
 			}
+		);
+	});
+});
+
+router.put('/:todo_id', function(req, res) {
+	console.log('PUT-request initiating');
+	pool.getConnection(function(err, connection) {
+		checkConnectionError(err, connection, res);
+
+		var query = putRequestSetup(checkRange(req.params.todo_id, 1, null), req.body, connection, "todo");
+		connection.query(
+			query[0],
+			query[1],
+			function(err, result) {checkResult(err, result, connection, res);}
+		);
+	});
+});
+
+router.delete('/person/:person_id', function(req, res) {
+	console.log('POST-request initiating');
+	pool.getConnection(function(err, connection) {
+		checkConnectionError(err, connection, res);
+
+		connection.query(
+			'DELETE FROM todo_person WHERE todo_id = ? AND person_id = ?',
+			[checkRange(req.params.person_id, 1, null), checkRange(req.body.todo_id, 1, null)],
+			function(err, result) {checkResult(err, result, connection, res);}
 		);
 	});
 });
@@ -104,7 +131,7 @@ router.get('/person/:person_id', function(req, res) {
 /**
 * Make the neccesary setup for a put request.
 */
-/*function putRequestSetup(iD, data, connection, tableName) {
+function putRequestSetup(iD, data, connection, tableName) {
 	if(!iD) {
 		connection.release();
 		res.status(400);
@@ -121,12 +148,12 @@ router.get('/person/:person_id', function(req, res) {
 	}
 	request += ' WHERE ' + tableName + '_id = ' + iD;
 	return [request, parameters];
-}*/
+}
 
 /**
 * Check for a database connection error and report if connected.
 */
-/*function checkConnectionError(err, connection, res) {
+function checkConnectionError(err, connection, res) {
 	if(err) {
 		connection.release();
 		res.status(500);
@@ -135,7 +162,7 @@ router.get('/person/:person_id', function(req, res) {
 	}
 	console.log('Database connection established');
 	return true;
-}*/
+}
 
 /**
 * Check the result, release connection and return.
