@@ -21,11 +21,7 @@ router.post('/', function(req, res) {
 				checkRange(data.created_by_id, 1, null),	// req.session.person_id
 				checkRange(data.done_by_id, 1, null)
 			],
-			function(err, result) {
-				connection.release();
-				if (err) {throw err;}
-				if (result) {res.json({success: "Success", todo_id: result.insertId});}
-			}
+			function(err, result) {checkResult(err, result, connection, res);}
 		);
 	});
 });
@@ -48,16 +44,24 @@ router.post('/person/', function(req, res) {
 });
 
 router.get('/:todo_id', function(req, res) {
-	console.log('GET-request established');
+console.log('GET-request established');
 	pool.getConnection(function(err, connection) {
 		if (!checkConnectionError(err, connection, res)) {return;}
 
-		connection.query('SELECT * FROM todo WHERE todo.todo_id = ?;',
-			[checkRange(req.params.todo_id, 1, null)],
+		connection.query('SELECT * FROM todo LEFT JOIN todo_person USING(todo_id) ' +
+			'WHERE todo.todo_id = ?',
+			[req.params.todo_id],
 			function(err, result) {
 				connection.release();
 				if (err) {throw err;}
-				if (result) {res.json({result});}
+				if (result) {
+					var people = [];
+					for (i = 0; i < result.length; i++) {people.push({"person_id":result[i].person_id});}
+					var values = {};
+					for (var p in result[0]) {values[p] = result[0][p];}
+					values.people = people;
+					res.json(value);
+				}
 			}
 		);
 	});
