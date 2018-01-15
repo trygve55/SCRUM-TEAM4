@@ -1,7 +1,4 @@
-/**
- * Created by odasteinlandskaug on 10.01.2018.
- */
-$(function () {
+$('document').ready(function () {
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -18,7 +15,9 @@ $(function () {
         }
     });
 
-    $('#index-norway').click(function () {
+
+    $('#tasks-norway').click(function () {
+        console.log("norsk");
         $.ajax({
             url: '/api/language',
             method: 'GET',
@@ -36,7 +35,8 @@ $(function () {
         });
     });
 
-    $('#index-england').click(function () {
+    $('#tasks-england').click(function () {
+        console.log("english");
         $.ajax({
             url: '/api/language',
             method: 'GET',
@@ -53,27 +53,4 @@ $(function () {
             }
         });
     });
-
-    $('#index-logoutNavbar').click(function () {
-        $.ajax({
-            url: '/api/login/logout',
-            method: 'POST',
-            success: function (data) {
-                if(!data.login){
-                    window.top.location="http://localhost:8000/login.html";
-                }
-            }
-        })
-
-    })
-
-
-    $.ajax({
-        url:'',
-        method:'',
-
-
-
-    })
-
 });
