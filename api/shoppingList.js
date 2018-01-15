@@ -52,6 +52,56 @@ router.post('/', function(req, res) {
 	});
 });
 
+router.post('/invite', function(req, res) {
+    console.log('POST-request established');
+
+    if (!req.session.person_id) {
+        res.status(400).json({'Error' : 'no accsess' });
+        return;
+    }
+
+    pool.getConnection(function(err, connection) {
+        checkConnectionError(err, connection, res);
+        if(err) {
+            res.status(500).json({'Error' : 'connecting to database: ' } + err);
+            return;
+        }
+
+        var data = req.body;
+
+        connection.query('INSERT INTO shopping_list ' +
+            '(shopping_list_name, currency_id) VALUES (?,?)',
+            [data.shopping_list_name, checkRange(data.currency_id, 1, null)],
+            function(err, result1) {
+
+                if(err) {
+                    connection.release();
+                    res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                    return;
+                }
+
+                connection.query(
+                    'INSERT INTO shopping_list_person(' +
+                    'shopping_list_id, person_id, invite_accepted) ' +
+                    '(?,?,?);',
+                    [
+                        result1.insertId,
+                        req.session.person_id,
+                        true
+                    ],
+                    function(err, result) {
+                        connection.release();
+                        if(err) {
+                            res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                            return;
+                        }
+                        if (result) {res.json({success: "true", shopping_list_id: result.insertId});}
+                    });
+            }
+        );
+    });
+});
+
 router.get('/:shopping_list_id', function(req, res) {
 	console.log('GET-request established');
 	pool.getConnection(function(err, connection) {

@@ -161,14 +161,14 @@ CREATE TABLE poll_vote (
 );
 
 CREATE TABLE todo (
-    todo_id INTEGER NOT NULL,
+    todo_id INTEGER NOT NULL AUTO_INCREMENT,
     group_id INTEGER NOT NULL,
     todo_text NVARCHAR(200) NOT NULL,
     datetime_deadline DATETIME,
     datetime_added DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     datetime_done DATETIME DEFAULT NULL,
     created_by_id INTEGER NOT NULL,
-    done_by_id INTEGER NOT NULL,
+    done_by_id INTEGER,
     CONSTRAINT created_by_fk FOREIGN KEY(created_by_id) REFERENCES person(person_id),
     CONSTRAINT done_by_fk FOREIGN KEY(done_by_id) REFERENCES person(person_id),
     CONSTRAINT todo_pk PRIMARY KEY(todo_id)
