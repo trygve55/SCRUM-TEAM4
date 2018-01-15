@@ -1,6 +1,19 @@
 var users = [];
 
 $('document').ready(function(){
+    $.ajax({
+        url: '/api/currency',
+        mthod: 'GET',
+        success: function (data){
+            console.log(data);
+            var h = "";
+            for(var i = 0; i < data.length; i++){
+                h += '<option value="' + data[i].currency_id + '">' + data[i].currency_long + '</option>';
+            }
+            $("#currency-input").html(h);
+        }
+    });
+
     $('#addgroup-checkbutton').click(function(){
         var groupname = $('#addgroup-groupname-input').val();
         if(groupname==""){
@@ -16,6 +29,7 @@ $('document').ready(function(){
     $('#addgroup-adduser').click(function(){
         addmember();
     });
+
     $.ajax({
         'url': '/api/user/all',
         method: "GET",
@@ -48,11 +62,13 @@ $('document').ready(function(){
             addmember();
         }
     });
+
     function addmember(){
         var member = $('#addgroup-member').val();
         $('ul').prepend('<li class="list-group-item">'+member+'</li>');
         $('#addgroup-member').val('');
     }
+
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -105,26 +121,26 @@ $('document').ready(function(){
             }
         });
     });
-});
 
-function memberSearchValidator(strs){
-    return function findMatches(q, cb) {
-        var matches, substringRegex;
-
-        // an array that will be populated with substring matches
-        matches = [];
-
-        // regex used to determine if a string contains the substring `q`
-        substrRegex = new RegExp(q, 'i');
-
-        // iterate through the pool of strings and for any string that
-        // contains the substring `q`, add it to the `matches` array
-        $.each(strs, function(i, str) {
-            if (substrRegex.test(str)) {
-                matches.push(str);
+    $("#addgroup-groupname-input").focusout(function(){
+        $.ajax({
+            url: '/api/group/name',
+            method: 'GET',
+            data: {
+                group_name: $(this).val()
+            },
+            success: function(){
+                $("#addgroup-groupname-input").css({
+                    "border": "1px solid #ced4da",
+                    "background": "white"
+                });
+            },
+            error: function(){
+                $('#addgroup-groupname-input').css({
+                    "border": "1px solid red",
+                    "background": "#FFCECE"
+                });
             }
-        });
-
-        cb(matches);
-    };
-}
+        })
+    })
+});

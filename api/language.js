@@ -7,18 +7,19 @@ var fs = require('fs');
  */
 router.get('/', function(req, res){
     var lang = req.session.lang;
+    if(!req.query.path && !req.header('referer'))
+        return res.status(400).send();
     var pth = req.query.path || req.header('referer').split(":8000")[1];
     if(!lang){
         req.session.lang = "nb_NO";
         req.session.save();
         lang = "nb_NO";
     }
-    if(!pth){
-        res.status(400).send("Bad request");
-        return;
-    }
+    if(!pth)
+        return res.status(400).send("Bad request");
     pth = pth.split('.')[0];
     var p = path.join(__dirname, '../langs/' + lang + pth + '.json');
+    console.log(p);
     if(!fs.existsSync(p)){
         res.status(400).send("Non existing translation");
         return;
@@ -36,10 +37,8 @@ router.get('/', function(req, res){
 
 router.post('/', function(req, res){
     var lang = req.body.lang;
-    if(!lang) {
-        res.status(400).send("Bad request");
-        return;
-    }
+    if(!lang)
+        return res.status(400).send("Bad request");
     console.log("Lang is set");
     req.session.lang = lang;
     req.session.save();
