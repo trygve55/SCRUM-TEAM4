@@ -2,32 +2,17 @@ var router = require('express').Router();
 
 module.exports = router;
 
-router.get('/currencies', function(req, res){
-    console.log('POST-request established');
+router.get('/', function(req, res){
     pool.getConnection(function(err, connection) {
-        if(err) {
-            res.status(500);
-            res.json({'Error' : 'connecting to database: ' } + err);
-            return;
-        }
-        console.log('Connected to database');
-
+        if(err)
+            return res.status(500).json({'Error' : 'connecting to database: ' } + err);
         connection.query('SELECT * FROM currency ORDER BY currency_major DESC, currency_long ASC;', function(err, result) {
             connection.release();
+            if(err)
+                return res.status(500).json({'Error' : 'connecting to database: ' } + err);
 
-            if(err) {
-                res.status(500);
-                res.json({'Error' : 'connecting to database: ' } + err);
-                return;
-            }
-
-            //svar på post request
+            //svar på GET request
             res.json(result);
         });
     });
 });
-
-
-// ---------------------
-
-

@@ -4,6 +4,21 @@ var router = require('express').Router(),
 
 module.exports = router;
 
+router.get('/name', function(req, res){
+    if(!req.query.group_name)
+        return res.status(400).send("Bad Request");
+    pool.getConnection(function(err, connection){
+        if(err)
+            return res.status(500).send("Error");
+        connection.query("SELECT COUNT(*) FROM home_group WHERE group_name = ?", [req.query.group_name], function (err, result){
+            connection.release();
+            if(err)
+                return res.status(500).send(err.code);
+            res.status(200).send(result[0]["COUNT(*)"] == 0);
+        });
+    });
+});
+
 router.post('/', function(req, res){
     if(!req.body.group_name)
         return res.status(400).send("Bad Request");
@@ -19,7 +34,7 @@ router.post('/', function(req, res){
             }
             if(result.length > 0) {
                 connection.release();
-                return res.status(400).send("Group already exists");
+                return res.status(200).send(false);
             }
             qry = "INSERT INTO home_group (shopping_list_id";
             var values = [1];
@@ -48,8 +63,22 @@ router.post('/', function(req, res){
                     return res.status(400).send(err.code + "\n" + err.sqlMessage);
                 }
                 else
-                    return res.json(result);
+                    return res.send(result.insertId);
             });
+        });
+    });
+});
+
+router.get('/me', function(req, res){
+    if(!req.session.person_id)
+        return res.status(500).send();
+    pool.getConnection(function(err, connection){
+        if(err)
+            return res.status(500).send();
+        connection.query('SELECT * FROM home_group WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?)', [req.session.person_id], function(err, result){
+            if(err)
+                return res.status(500).send();
+            res.json(result);
         });
     });
 });
@@ -128,48 +157,55 @@ router.post('/user', function(req, res){
 
 router.delete('/user', function(req, res){
     if(!req.body.person_id || !req.body.group_id || !req.body.role_id)
-        return res.status(400).send("");
+        return res.status(400).send();
     pool.getConnection(function(err, connection){
         if(err)
             return res.status(500).send("Internal Error");
         connection.query("DELETE FROM group_person WHERE group_id = 1 AND person_id = 1", [req.body.group_id, req.body.person_id], function(err, result){
-
+            connection.release();
+            if(err)
+                return res.status(500).send();
+            res.status(200).send();
         });
     });
 });
 
 router.put('/userPrivileges', function(req, res){
     if(!req.body.person_id || !req.body.group_id || !req.body.role_id)
-        return res.status(400).send("");
+        return res.status(400).send();
     pool.getConnection(function(err, connection){
         if(err)
             return res.status(500).send("Internal Error");
         connection.query("SELECT COUNT(*) FROM home_group WHERE group_id = ?", [req.body.group_id], function(err, result){
-            if(err || result[0]["COUNT(*)"] == 0) {
-                console.error(err || result);
+            if(err) {
                 connection.release();
-                return res.status(400).send("");
+                return res.status(500).send();
+            }
+            else if(result[0]["COUNT(*)"] == 0){
+                connection.release();
+                return res.status(400).send();
             }
             connection.query("SELECT COUNT(*) FROM person WHERE person_id = ?", [req.body.person_id], function(err, result){
-                if(err || result[0]["COUNT(*)"] == 0) {
-                    console.error(err || result);
+                if(err) {
                     connection.release();
-                    return res.status(400).send("");
+                    return res.status(500).send();
+                }
+                else if(result[0]["COUNT(*)"] == 0){
+                    connection.release();
+                    return res.status(400).send();
                 }
                 connection.query("UPDATE group_person SET role_id = ? WHERE group_id = ? AND person_ID = ?", [req.body.role_id, req.body.group_id, req.body.person_id], function(err, result){
                     connection.release();
                     if(err)
-                        return res.status(400).send("");
+                        return res.status(500).send();
                     res.json(result);
-                })
+                });
             });
         });
     });
 });
 
 router.post('/:group_id/picture', function(req, res){
-    console.log('POST-request established');
-
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
 
@@ -180,8 +216,6 @@ router.post('/:group_id/picture', function(req, res){
             res.status(400).json({'error': 'image file over 4MB'});
             return;
         }
-
-        console.log("Loading image");
         Jimp.read(path, function (err, img) {
             if (err) {
                 res.status(500).json({'Error': err});
