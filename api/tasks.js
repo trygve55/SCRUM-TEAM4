@@ -68,7 +68,7 @@ console.log('GET-request established');
 				if (err) {throw err;}
 				if (result) {
 					var people = [];
-					for (i = 0; i < result.length; i++) {people.push({"person_id":result[i].person_id});}
+					for (var i = 0; i < result.length; i++) {people.push({"person_id":result[i].person_id});}
 					var values = {};
 					for (var p in result[0]) {values[p] = result[0][p];}
 					delete values.person_id;
@@ -97,7 +97,7 @@ router.get('/person/:person_id', function(req, res) {
 				if (err) {throw err;}
 				if (result) {
 					var entries = [];
-					for (i = 0; i < result.length; i++) {
+					for (var i = 0; i < result.length; i++) {
 						var values = {};
 						for (var p in result[i]) {values[p] = result[i][p];}
 						delete values.person_id;
