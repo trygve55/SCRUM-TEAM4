@@ -74,8 +74,9 @@ router.post('/register', function(req, res) {
                     connection.query('INSERT INTO shopping_list (currency_id) VALUES(?)', [100], function (err, result) {
                         if (err) {
                             return connection.rollback(function () {
+                                connection.release();
                                 console.log(err);
-                            }).release();
+                            });
                         }
 
                         req.session.person_id = result.insertId;
@@ -119,7 +120,8 @@ router.post('/register', function(req, res) {
                                 if (err) {
                                     return connection.rollback(function () {
                                         console.log(err);
-                                    }).release();
+                                        connection.release();
+                                    });
                                 }
                                 connection.commit(function (err) {
                                     if (err) {
@@ -194,13 +196,13 @@ router.get('/mail', function (req, res) {
 
 function checkValidPhone(phonenumber){
     var regex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im; //TODO: find better solution for regex
-    return regex.test(phonenumber);
+    if (phonenumber) return regex.test(phonenumber);
 }
 
 function checkValidName(nameString) {
     //best regex
     var regex = /[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
-    return regex.test(nameString);
+    if (nameString) return regex.test(nameString);
 }
 
 function checkValidUsername(username) {
