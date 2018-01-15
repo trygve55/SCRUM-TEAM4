@@ -16,33 +16,12 @@ window.fbAsyncInit = function() {
                 url: '/api/login',
                 method: "GET",
                 success: function(data){
-                    if(data.login)
-                        window.top.location = "http://localhost:8000/index.html";
+                    if(data.login) {
+                        console.log("Facebook auto");
+                        window.top.location = "/index.html";
+                    }
                 },
                 error: console.error
-            });
-        }
-    });
-
-    FB.Event.subscribe('auth.statusChange', function (res) {
-        console.log("hei");
-        if(res.status === "connected") {
-            FB.api('/me', 'GET', {fields: 'first_name,last_name,id,email'}, function (response) {
-                console.log(response);
-                $.ajax({
-                    url: '/api/login/facebook',
-                    method: 'POST',
-                    data: {
-                        facebook_api_id: response.id,
-                        email: response.email,
-                        forename: response.first_name,
-                        lastname: response.last_name
-                    },
-                    success: function (data) {
-                        window.top.location = "http://localhost:8000/index.html";
-                    },
-                    error: console.error
-                });
             });
         }
     });
@@ -59,6 +38,24 @@ window.fbAsyncInit = function() {
 function login() {
     FB.login(function (response) {
         if (response.status === 'connected') {
+            FB.api('/me', 'GET', {fields: 'first_name,last_name,id,email'}, function (response) {
+                console.log(response);
+                $.ajax({
+                    url: '/api/login/facebook',
+                    method: 'POST',
+                    data: {
+                        facebook_api_id: response.id,
+                        email: response.email,
+                        forename: response.first_name,
+                        lastname: response.last_name
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        window.location = "/index.html";
+                    },
+                    error: console.error
+                });
+            });
         } else if (response.status === 'not_authorized') {
 
         }
