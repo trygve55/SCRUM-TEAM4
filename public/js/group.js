@@ -9,16 +9,6 @@ var testtasks = {
 	]
 };
 
-var language = {
-	"desc_title0": "Your Groups",
-	"desc_title1": "Tasks",
-	"desc_title2": "Posts",
-	"desc_title3": "Shopping Lists",
-	"desc_title4": "Statistics",
-	"desc_title5": "Your Tasks",
-	"desc_title6": "Group Tasks"
-};
-
 // ***** Code begins here *****
 
 var activeTab = "tasks", currentGroup = "none";
@@ -27,7 +17,7 @@ var activeTab = "tasks", currentGroup = "none";
 * When the page loads, the page must find the groups available to the user so they can be selected.
 */
 $(document).ready(function() {
-	loadLanguageText()
+	loadLanguageText();
 	//getGroups();
 	
 	var groups = $("div.tablink");
@@ -50,27 +40,18 @@ $(document).ready(function() {
 * This method loads the language from the API.
 */
 function loadLanguageText() {
-	// AJAX GET all text in this language.
-	var response;
-	/*$.ajax({
+	$.ajax({
 		type:"GET",
-		data: {path: "/group.html"},
 		url:"/api/language",
 		contentType:"application/json",
 		dataType:"json",
-		success:function(result) {response = result;}
-	});*/
-	
-	response = language;	// Temporary, remove when using the AJAX
-	
-	for (var p in response) {$("#" + p).html(response[p]);}
-	
-	/*
-	// Alternative, probably slower.
-	$(".langtext").each(function() {
-		$(this).html(response[this.id]);
+		success:function(result) {
+            for (var p in result) {
+                if(result.hasOwnProperty(p))
+                    $("#" + p).html(result[p]);
+            }
+		}
 	});
-	*/
 }
 
 /**
@@ -90,7 +71,9 @@ function getGroups() {
 	});	// GET all group names for this user.
 	*/
 	var names = response.groupnames;
-	for (i = 0; i < names.length; i++) {addGroupToList(names[i]);}
+	for (i = 0; i < names.length; i++) {
+		addGroupToList(names[i]);
+	}
 	removeDeletedGroups(names);
 }
 
@@ -187,3 +170,4 @@ function attachTasks(tasks) {
 
 //function countNewPosts() {} // From last login date, display a number of new posts
 //function countNewTasks() {} // From last login date, display a number of new tasks
+
