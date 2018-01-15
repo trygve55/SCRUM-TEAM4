@@ -30,24 +30,24 @@ router.get('/all', function(req, res){
 });
 
 //register user
-router.post('/register', function(req, res){
+router.post('/register', function(req, res) {
     console.log('POST-request established');
-    pool.getConnection(function(err, connection) {
-        if(err) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
             res.status(500);
-            res.json({'Error' : 'connecting to database: ' } + err);
+            res.json({'Error': 'connecting to database: '} + err);
             return;
         }
         console.log('Connected to database');
         var user = req.body;
 
-        if(!checkValidUsername(user.username) && !checkValidEmail(user.email)){
+        if (!checkValidUsername(user.username) && !checkValidEmail(user.email)) {
             connection.release();
             res.status(400).send("Bad request");
         }
 
         connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?', [user.username], function (err, result) {
-            if(err) {
+            if (err) {
                 console.log(err);
             }
 
@@ -57,7 +57,7 @@ router.post('/register', function(req, res){
             }
 
             connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?', [user.email], function (err, result) {
-                if(err) {
+                if (err) {
                     console.log(err);
                 }
 
@@ -66,52 +66,72 @@ router.post('/register', function(req, res){
                     return res.status(400).send("Bad request");
                 }
 
-                connection.query('INSERT INTO shopping_list (currency_id) VALUES(?)', [100], function (err, result){
-                    if(err){
-                        console.log(err);
+
+                connection.beginTransaction(function (err) {
+                    if (err) {
+                        throw err;
                     }
-
-                    req.session.person_id = result.insertId;
-                    req.session.save();
-
-                    console.log(result.insertId);
-                    user.shopping_list_id = result.insertId;
-                    auth.hashPassword(user, function (user) {
-
-                        var values = [
-                            user.email,
-                            user.username,
-                            user.password_hash,
-                            user.forename,
-                            user.middlename,
-                            user.lastname,
-                            user.phone,
-                            new Date(user.birth_day).toISOString().slice(0, 10),
-                            user.gender,
-                            user.profile_pic,
-                            user.shopping_list_id
-                        ];
-
-                        if(user.phone){
-                            if(!checkValidPhone(user.phone)){
+                    connection.query('INSERT INTO shopping_list (currency_id) VALUES(?)', [100], function (err, result) {
+                        if (err) {
+                            return connection.rollback(function () {
                                 connection.release();
-                                return res.status(400).send("Check phone number");
+                                console.log(err);
+                            });
+                        }
+
+                        req.session.person_id = result.insertId;
+                        req.session.save();
+
+                        console.log(result.insertId);
+                        user.shopping_list_id = result.insertId;
+                        auth.hashPassword(user, function (user) {
+
+                            var values = [
+                                user.email,
+                                user.username,
+                                user.password_hash,
+                                user.forename,
+                                user.middlename,
+                                user.lastname,
+                                user.phone,
+                                new Date(user.birth_day).toISOString().slice(0, 10),
+                                user.gender,
+                                user.profile_pic,
+                                user.shopping_list_id
+                            ];
+
+                            if (user.phone) {
+                                if (!checkValidPhone(user.phone)) {
+                                    connection.release();
+                                    return res.status(400).send("Check phone number");
+                                }
                             }
-                        }
 
-                        if(!checkValidName(user.name) && !checkValidName(user.middlename) && !checkValidName(user.lastname)){
-                            connection.release();
-                            return rest.status(400).send("Forename, middlename or lastname wrong");
-                        }
+                            if (!checkValidName(user.name) && !checkValidName(user.middlename) && !checkValidName(user.lastname)) {
+                                connection.release();
+                                return res.status(400).send("Forename, middlename or lastname wrong");
+                            }
 
 
-                        connection.query('INSERT INTO person ' +
-                            '(email, username, password_hash, forename, middlename,' +
-                            'lastname, phone, birth_date,' +
-                            'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function(err, result) {
-                            if (err) console.log(err);
-                            connection.release();
-                            res.json({message: "true"});
+                            connection.query('INSERT INTO person ' +
+                                '(email, username, password_hash, forename, middlename,' +
+                                'lastname, phone, birth_date,' +
+                                'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function (err, result) {
+                                if (err) {
+                                    return connection.rollback(function () {
+                                        console.log(err);
+                                        connection.release();
+                                    });
+                                }
+                                connection.commit(function (err) {
+                                    if (err) {
+                                        return connection.rollback(function () {
+                                        }).release();
+                                    }
+                                    connection.release();
+                                    res.json({message: "Transaction successfull"});
+                                });
+                            });
                         });
                     });
                 });
@@ -176,23 +196,23 @@ router.get('/mail', function (req, res) {
 
 function checkValidPhone(phonenumber){
     var regex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im; //TODO: find better solution for regex
-    return regex.test(phonenumber);
+    if (phonenumber) return regex.test(phonenumber);
 }
 
 function checkValidName(nameString) {
     //best regex
     var regex = /[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
-    return regex.test(nameString);
+    if (nameString) return regex.test(nameString);
 }
 
 function checkValidUsername(username) {
     var usernameRegex = /^[a-zA-Z0-9]+$/;
-    return usernameRegex.test(username.toLowerCase());
+    if(username) return usernameRegex.test(username.toLowerCase());
 }
 
 function checkValidEmail(email) {
     var emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return emailRegex.test(email.toLowerCase());
+    if (email) return emailRegex.test(email.toLowerCase());
 }
 
 //search for user
@@ -476,3 +496,7 @@ function putRequestSetup(iD, data, connection, tableName) {
     request += ' WHERE ' + tableName + '_id = ' + iD;
     return [request, parameters];
 }
+
+
+
+
