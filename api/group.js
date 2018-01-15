@@ -78,7 +78,7 @@ router.get('/me', function(req, res){
         connection.query('SELECT * FROM home_group WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?)', [req.session.person_id], function(err, result){
             if(err)
                 return res.status(500).send();
-            res.json(result);
+            res.status(200).json(result);
         });
     });
 });
@@ -98,7 +98,7 @@ router.get('/', function(req, res){
                 connection.release();
                 return res.status(400).send(err.code + "\n" + err.sqlMessage);
             }
-            res.json(result);
+            res.status(200).json(result);
         });
     });
 });
@@ -129,7 +129,7 @@ router.put('/', function(req, res){
             connection.release();
             if(err)
                 return res.status(400).send(err.code + "\n" + err.sqlMessage);
-            return res.json(result);
+            return res.status(200).json(result);
         });
     });
 });
@@ -150,7 +150,7 @@ router.post('/user', function(req, res){
             connection.release();
             if(err)
                 return res.status(500).send(err.code);
-            res.json(result);
+            res.status(200).json(result);
         });
     });
 });
@@ -198,7 +198,7 @@ router.put('/userPrivileges', function(req, res){
                     connection.release();
                     if(err)
                         return res.status(500).send();
-                    res.json(result);
+                    res.status(200).json(result);
                 });
             });
         });

@@ -7,6 +7,8 @@ var router = require('express').Router(),
 module.exports = router;
 
 router.get('/all', function(req, res){
+    if(!req.session.person_id)
+        return res.status(500).send();
     pool.getConnection(function(err, connection){
         if(err)
             return res.status(500).send("Error");
@@ -16,13 +18,13 @@ router.get('/all', function(req, res){
                 res.status(500).send(err.code);
             else {
                 if(!req.query.slim)
-                    res.json(result);
+                    res.status(200).json(result);
                 else {
                     var r = [];
                     for(var i = 0; i < result.length; i++){
                         r.push(result[i].forename + " " + (result[i].middlename ? result[i].middlename + " " : "") + result[i].lastname)
                     }
-                    res.json(r);
+                    res.status(200).json(r);
                 }
             }
         });

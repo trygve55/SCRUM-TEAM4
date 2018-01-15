@@ -107,7 +107,6 @@ router.post('/facebook', function(req, res){
                                             if(err)
                                                 return res.status(500).send("Transaction fail");
                                         });
-                                    connection.release();
                                     res.status(200).send(true);
                                 });
                             });

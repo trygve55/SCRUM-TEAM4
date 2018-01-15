@@ -128,7 +128,7 @@ router.get('/:shopping_list_id', function(req, res) {
 							"datetime_purchased":result[i].datetime_purchased
 						});
 					}
-					res.json({
+					res.status(200).json({
 						"shopping_list_id":result[0].shopping_list_id,
 						"shopping_list_name":result[0].shopping_list_name,
 						"currency_id":result[0].currency_id,
@@ -290,7 +290,7 @@ function checkConnectionError(err, connection, res) {
 function checkResult(err, result, connection, res) {
 	connection.release();
 	if (err) {throw err;}
-	if (result) {res.json({success: "Success"});}
+	if (result) {res.status(200).json({success: "Success"});}
 }
 
 /**

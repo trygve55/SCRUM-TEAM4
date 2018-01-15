@@ -37,7 +37,6 @@ $('document').ready(function(){
             prefetch: '/api/user/all?slim=1'
         })
     });
-    error: console.error
 
     $('#addgroup-member').keypress(function(event) {
         if(event.keyCode == 13 || event.which == 13){
