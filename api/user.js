@@ -422,7 +422,7 @@ function reqForPrivateVars(reqVars) {
     return result;
 }
 
-router.post('/getUser', function(req, res) {
+router.get('/getUser', function(req, res) {
     if(!req.body.hasOwnProperty('users')) {
         req.body.users = [req.session.person_id];
     }
