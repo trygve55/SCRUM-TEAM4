@@ -278,7 +278,19 @@ $(function () {
 
         if(isValid){
             $.ajax({
-                url: '/api/user/register'
+                url: '/api/user/register',
+                method: 'POST',
+                data:{
+                    email: $('#register-email').val(),
+                    username: $('#register-username').val(),
+                    password: $('#register-password').val(),
+                    forename: $('#register-firstname').val(),
+                    lastname: $('#register-lastname').val(),
+                    phone: $('#register-phone').val()
+                },
+                success: function (data) {
+                    window.location='/index.html';
+                }
             })
         }
     });

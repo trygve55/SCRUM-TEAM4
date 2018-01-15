@@ -423,24 +423,26 @@ function reqForPrivateVars(reqVars) {
 }
 
 router.get('/getUser', function(req, res) {
-    if(!req.body.hasOwnProperty('users')) {
-        req.body.users = [req.session.person_id];
+    console.log(req.query);
+    if(!req.query.hasOwnProperty('users')) {
+        req.query.users = [req.session.person_id];
     }
-    if(!req.session.person_id || checkRequestArray(req.body.variables) > 0 ||
-        (reqForPrivateVars(req.body.variables) && (req.body.users.length > 1 || req.session.person_id != req.body.users[0]))) {
+    console.log(req.query);
+    if(!req.session.person_id || checkRequestArray(req.query.variables) > 0 ||
+        (reqForPrivateVars(req.query.variables) && (req.query.users.length > 1 || req.session.person_id != req.query.users[0]))) {
         return res.status(403).send("Forbidden request");
     }
     console.log('API: authentication passed');
     var sqlQuery = 'SELECT ?';
-    for(i = 1; i < req.body.variables.length; i++) {
+    for(i = 1; i < req.query.variables.length; i++) {
         sqlQuery += ',?';
     }
     sqlQuery += ' FROM person WHERE person_id = ?';
-    for(i = 1; i < req.body.users.length; i++) {
+    for(i = 1; i < req.query.users.length; i++) {
         sqlQuery += ' OR person_id = ?';
     }
-    var values = req.body.variables;
-    req.body.users.forEach(function(element) {
+    var values = req.query.variables;
+    req.query.users.forEach(function(element) {
         values.push(element);
     });
 
