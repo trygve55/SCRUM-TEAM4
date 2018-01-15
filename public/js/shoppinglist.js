@@ -1,5 +1,6 @@
 $('document').ready(function (){
-    $('#inputitem').hide();
+    var count = 0;
+    inits();
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -52,93 +53,108 @@ $('document').ready(function (){
             }
         });
     });
-    $('#additem').click(function () {
-        $('#inputitem').show();
-    });
 
-    $('#newitem').keypress(function(event) {
-        if (event.keyCode == 13 || event.which == 13) {
-            $('#inputitem').hide();
-            var
-        }
-    });
-});
 
-$(function () {
-    $('.list-group.checked-list-box .list-group-item').each(function () {
 
-        // Settings
-        var $widget = $(this),
-            $checkbox = $('<input type="checkbox" class="hidden" />'),
-            color = ($widget.data('color') ? $widget.data('color') : "primary"),
-            style = ($widget.data('style') == "button" ? "btn-" : "list-group-item-"),
-            settings = {
-                on: {
-                    icon: 'glyphicon glyphicon-check'
-                },
-                off: {
-                    icon: 'glyphicon glyphicon-unchecked'
-                }
-            };
 
-        $widget.css('cursor', 'pointer');
-        $widget.prepend($checkbox);
+    function inits(){
+        $('.inpi').hide();
+        //$('#more').hide();
 
-        // Event Handlers
-        $widget.on('click', function () {
-            $checkbox.prop('checked', !$checkbox.is(':checked'));
-            $checkbox.triggerHandler('change');
-            updateDisplay();
+    }
+    $('#addlist').click(function () {
+
+        count++;
+        $("<div class=\"col-sm liste\" id='listenr"+count+"'><div class='row'>" +
+            "<div class='col-sm-7' style='text-align: left'><h4>Liste "+count+"</h4></div>"+
+            "<div class='col-sm-5' style='text-align: right'>" +
+            "    <h4><i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: white; text-shadow: 0px 0px 3px #000;' id='whitebutt"+count+"'></i>" +
+            "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: lightpink; text-shadow: 0px 0px 3px #000;' id='pinkbutt"+count+"'></i> " +
+            "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: #ffec8e; text-shadow: 0px 0px 3px #000;' id='yellowbutt"+count+"'></i> " +
+            "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: lightgreen; text-shadow: 0px 0px 3px #000;' id='greenbutt"+count+"'></i></h4></div>" +
+            "</div>" +
+            "<ul class=\"list-group\" id=\"itemlist"+count+"\"> </ul>"+
+            "<ul class=\"list-group\">"+
+            "<div class=\"inpi\" id=\"inputitem"+count+"\"><li class=\"list-group-item\" id=\"listitem"+count+"\">" +
+            "<input type=\"text\" class=\"form-control ni\" id=\"newitem"+count+"\">" +
+            "</li></div><li class=\"list-group-item addi\" id=\"additem"+count+"\"><i class=\"fa fa-plus-circle\" aria-hidden=\"true\"></i> Add item</li>" +
+            "</ul><br><button type=\"button\" class=\"btn btn-light\">Buy selected items</button></div>").insertAfter("#addlist");
+        $('#inputitem'+count).hide();
+        var itemcount = 0;
+
+        $('#pinkbutt'+count).click(function () {
+            var navn = this.id;
+            var ide = navn.split("t").pop(); //listeid
+            var name = "listenr"+ide;
+
+            $('#'+name).removeClass("pink green white yellow");
+            $('#'+name).addClass("pink");
         });
-        $checkbox.on('change', function () {
-            updateDisplay();
+        $('#yellowbutt'+count).click(function () {
+            var navn = this.id;
+            var ide = navn.split("t").pop(); //listeid
+            var name = "listenr"+ide;
+            $('#'+name).removeClass("pink green white yellow");
+            $('#'+name).addClass("yellow");
+        });
+        $('#greenbutt'+count).click(function () {
+            var navn = this.id;
+            var ide = navn.split("t").pop(); //listeid
+            var name = "listenr"+ide;
+            $('#'+name).removeClass("pink green white yellow");
+            $('#'+name).addClass("green");
+        });
+        $('#whitebutt'+count).click(function () {
+            var navn = this.id;
+            var ide = navn.split("t").pop(); //listeid
+            var name = "listenr"+ide;
+            $('#'+name).removeClass("pink green white yellow");
+            $('#'+name).addClass("white");
         });
 
+        $('#additem'+count).click(function () {
+            var navn = this.id;
+            var ide = navn.split("m").pop(); //listeid
+            $('#additem'+ide).hide();
+            //Add item in input if input is visible
+            if($('#inputitem'+ide).is(":visible")){
+                itemcount++;
+                var item = $('#newitem'+ide).val();
+                $('#newitem'+ide).val('');
+                $('#itemlist'+ide).append("<li class=\"list-group-item\" id=\"elem"+itemcount+"\"><div class='row'><div class=\"checkbox col-sm\"> <label><input type=\"checkbox\"> "+item+"</div><div class='col-sm' style='text-align: right'><i class=\"fa fa-times\" aria-hidden=\"true\" id=\"crossout" + itemcount + "\"></i></label> </div></div></li>");
+                $('#inputitem'+ide).hide();
+                console.log("Itemcount: " + itemcount + " on count " + ide);
 
-        // Actions
-        function updateDisplay() {
-            var isChecked = $checkbox.is(':checked');
-
-            // Set the button's state
-            $widget.data('state', (isChecked) ? "on" : "off");
-
-            // Set the button's icon
-            $widget.find('.state-icon')
-                .removeClass()
-                .addClass('state-icon ' + settings[$widget.data('state')].icon);
-
-            // Update the button's color
-            if (isChecked) {
-                $widget.addClass(style + color + ' active');
-            } else {
-                $widget.removeClass(style + color + ' active');
-            }
-        }
-
-        // Initialization
-        function init() {
-
-            if ($widget.data('checked') == true) {
-                $checkbox.prop('checked', !$checkbox.is(':checked'));
+                $('#crossout'+itemcount).click(function () {
+                    var iden = "elem"+itemcount;
+                    document.getElementById(iden).remove();
+                    itemcount--;
+                });
             }
 
-            updateDisplay();
-
-            // Inject the icon if applicable
-            if ($widget.find('.state-icon').length == 0) {
-                $widget.prepend('<span class="state-icon ' + settings[$widget.data('state')].icon + '"></span>');
-            }
-        }
-        init();
-    });
-
-    $('#get-checked-data').on('click', function(event) {
-        event.preventDefault();
-        var checkedItems = {}, counter = 0;
-        $("#check-list-box li.active").each(function(idx, li) {
-            checkedItems[counter] = $(li).text();
-            counter++;
+            $('#inputitem'+ide).show();
         });
-        $('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
+        $('#newitem'+count).keypress(function(event) {
+            if (event.keyCode == 13 || event.which == 13) {
+                itemcount++;
+                var navn = this.id;
+                var ide = navn.split("m").pop(); //listeid
+
+                $('#inputitem'+ide).hide();
+                var item = $('#newitem'+ide).val();
+                $('#newitem'+ide).val('');
+                $('#itemlist'+ide).append("<li class=\"list-group-item\" id=\"elem"+itemcount+"\"><div class='row'><div class=\"checkbox col-sm\"> <label><input type=\"checkbox\"> "+item+"</div><div class='col-sm' style='text-align: right'><i class=\"fa fa-times\" aria-hidden=\"true\" id=\"crossout" + itemcount + "\"></i></label> </div></div></li>");
+                console.log("Itemcount: " + itemcount + " on count " + ide);
+
+                $('#crossout'+itemcount).click(function () {
+                    var iden = "elem"+itemcount;
+                    document.getElementById(iden).remove();
+                    itemcount--;
+                });
+                $('#additem'+ide).show();
+            }
+        });
+
     });
+
 });
