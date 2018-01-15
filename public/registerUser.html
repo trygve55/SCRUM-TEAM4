@@ -28,24 +28,25 @@
                 <div class="transbox">
                     <br>
                         <h2 id="register-header" style="font-style: inherit; font-size: x-large" align="center" ></h2>
-
-
-                    <div style="padding: 75px">
-                            <input id="register-username" type="text" class="form-control" name="msg" >
-                    <br>
-                            <input id="register-password" type="text" class="form-control" name="msg" >
-                    <br>
-                            <input id="register-repeatpassword" type="text" class="form-control" name="msg" >
-                    <br>
+                    <div style="padding: 35px">
+                        <p id="register-username-error" style="color: red; font-style: italic; margin: 0; display: none;">Invalid username/username already in use (no special characters)</p>
+                        <p id="register-password-error" style="color: red; font-style: italic; margin: 0; display: none;">Passwords not matching</p>
+                        <p id="register-email-error" style="color: red; font-style: italic; display: none;">Invalid email/email is already in use</p>
                             <input id="register-firstname" type="text" class="form-control" name="msg" >
-                    <br>
+                        <br>
                             <input id="register-lastname" type="text" class="form-control" name="msg" >
-                    <br>
-                            <input id="register-email" type="text" class="form-control" name="msg">
-                    <br>
+                        <br>
+                            <input id="register-username" type="text" class="form-control" name="msg" >
+                        <br>
+                            <input id="register-email" type="email" class="form-control" name="msg">
+                        <br>
+                            <input id="register-password" type="password" class="form-control" name="msg" >
+                        <br>
+                            <input id="register-repeatpassword" type="password" class="form-control" name="msg" >
+                        <br>
                             <input id="register-phone" type="text" class="form-control" name="msg">
                             <h4 style="font-size: small; font-style: oblique" align="left" id="register-fillIn"></h4>
-                    <br>
+                        <br>
                         <a href="login.html">
                             <i id="register-done" class="fa fa-check-square-o" aria-hidden="true"></i>
                         </a>
