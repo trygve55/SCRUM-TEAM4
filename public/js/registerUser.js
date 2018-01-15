@@ -290,7 +290,8 @@ $(function () {
                 },
                 success: function (data) {
                     window.location='/index.html';
-                }
+                },
+                error: console.error
             })
         }
     });

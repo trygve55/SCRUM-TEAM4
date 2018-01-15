@@ -78,7 +78,7 @@ router.get('/me', function(req, res){
         connection.query('SELECT * FROM home_group WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?)', [req.session.person_id], function(err, result){
             if(err)
                 return res.status(500).send();
-            res.json(result);
+            res.status(200).json(result);
         });
     });
 });
