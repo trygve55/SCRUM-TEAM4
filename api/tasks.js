@@ -4,21 +4,21 @@ module.exports = router;
 
 router.post('/', function(req, res) {
 	console.log('POST-request established');
+	var data = req.body, done = null;
+	if (data.datetime_done) {done = data.datetime_done;}
 	pool.getConnection(function(err, connection) {
-		checkConnectionError(err, connection, res);
-		var data = req.body;
-
+		if (!checkConnectionError(err, connection, res)) {return;}
 		connection.query(
 			'INSERT INTO todo (' +
 			'group_id, todo_text, datetime_deadline, datetime_done, ' +
 			'datetime_added, created_by_id, done_by_id) ' +
-			'VALUES (?,?,?,?,CURRENT_TIMESTAMP,?,?)',
+			'VALUES (?,?,?,?,CURRENT_TIMESTAMP,?,?);',
 			[
 				checkRange(data.group_id, 1, null),
 				data.todo_text,
 				data.datetime_deadline,
-				data.datetime_done,
-				checkRange(req.session.person_id, 1, null),
+				done,
+				checkRange(data.created_by_id, 1, null),	// req.session.person_id
 				checkRange(data.done_by_id, 1, null)
 			],
 			function(err, result) {
@@ -30,13 +30,30 @@ router.post('/', function(req, res) {
 	});
 });
 
+router.post('/person/', function(req, res) {
+	console.log('POST-request established');
+	pool.getConnection(function(err, connection) {
+		if (!checkConnectionError(err, connection, res)) {return;}
+		var data = req.body;
+		connection.query(
+			'INSERT INTO todo_person (todo_id, person_id) VALUES (?, ?);',
+			[checkRange(data.todo_id, 1, null), checkRange(data.person_id, 1, null)],
+			function(err, result) {
+				connection.release();
+				if (err) {throw err;}
+				if (result) {res.json({success: "Success", id: result.insertId});}
+			}
+		);
+	});
+});
+
 router.get('/:todo_id', function(req, res) {
 	console.log('GET-request established');
 	pool.getConnection(function(err, connection) {
-		checkConnectionError(err, connection, res);
+		if (!checkConnectionError(err, connection, res)) {return;}
 
-		connection.query('SELECT * FROM todo WHERE todo.todo_id = ?',
-			[checkRange(req.params.todo_id, 1, null))],
+		connection.query('SELECT * FROM todo WHERE todo.todo_id = ?;',
+			[checkRange(req.params.todo_id, 1, null)],
 			function(err, result) {
 				connection.release();
 				if (err) {throw err;}
@@ -49,14 +66,13 @@ router.get('/:todo_id', function(req, res) {
 router.get('/person/:person_id', function(req, res) {
 	console.log('GET-request established');
 	pool.getConnection(function(err, connection) {
-		checkConnectionError(err, connection, res);
+		if (!checkConnectionError(err, connection, res)) {return;}
 
 		connection.query(
 			'SELECT person_id, todo_id, todo_text, datetime_deadline, ' +
-			'datetime_added, datetime_done, created_by_id, done_by_id' +
-			'FROM person LEFT JOIN todo_person USING(person_id) ' +
-			'LEFT JOIN todo USING(todo_id) WHERE todo_person.person_id = ?',
-			[checkRange(req.params.person_id, 1, null))],
+			'datetime_added, datetime_done, created_by_id, done_by_id ' +
+			'FROM todo LEFT JOIN todo_person USING(todo_id) WHERE todo_person.person_id = ?;',
+			[checkRange(req.params.person_id, 1, null)],
 			function(err, result) {
 				connection.release();
 				if (err) {throw err;}
@@ -74,7 +90,7 @@ router.get('/person/:person_id', function(req, res) {
 						});
 					}
 					res.json({
-						"person_id":result[0].person_id,
+						"person_id":req.params.person_id,
 						"person_tasks":entries
 					});
 				}
@@ -110,15 +126,16 @@ router.get('/person/:person_id', function(req, res) {
 /**
 * Check for a database connection error and report if connected.
 */
-function checkConnectionError(err, connection, res) {
+/*function checkConnectionError(err, connection, res) {
 	if(err) {
 		connection.release();
 		res.status(500);
 		res.json({'Error' : 'connecting to database: ' } + err);
-		return;
+		return false;
 	}
 	console.log('Database connection established');
-}
+	return true;
+}*/
 
 /**
 * Check the result, release connection and return.
