@@ -126,6 +126,13 @@ $(function () {
                 "background": "#FFCECE"
             })
         }
+        if( $('#register-lastname').val() === ""){
+            isValid = false;
+            $('#register-lastname').css({
+                "border": "1px solid red",
+                "background": "#FFCECE"
+            })
+        }
         if( $('#register-email').val() === ""){
             isValid = false;
             $('#register-email').css({
