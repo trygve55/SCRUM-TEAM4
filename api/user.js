@@ -34,105 +34,127 @@ router.post('/register', function(req, res) {
     console.log('POST-request established');
     pool.getConnection(function (err, connection) {
         if (err) {
-            res.status(500);
-            res.json({'Error': 'connecting to database: '} + err);
+            connection.release();
+            res.status(500).json({'Error': 'connecting to database: '} + err);
             return;
         }
+
         console.log('Connected to database');
         var user = req.body;
 
         if (!checkValidUsername(user.username) && !checkValidEmail(user.email)) {
             connection.release();
-            res.status(400).send("Bad request");
+            res.status(400).json({message:"Syntax-error"})
         }
 
         connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?', [user.username], function (err, result) {
             if (err) {
-                console.log(err);
+                connection.release();
+                res.status(500).json({error: err});
             }
 
             if (result[0].counted === 1) {
                 connection.release();
-                return res.status(400).send("Bad request");
+                return res.status(200).json({message:"Username already in use"});
             }
 
             connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?', [user.email], function (err, result) {
                 if (err) {
-                    console.log(err);
+                    connection.release();
+                    res.status(500).json({error: err});
                 }
 
                 if (result[0].counted === 1) {
                     connection.release();
-                    return res.status(400).send("Bad request");
+                    return res.status(200).json({message: "E-mail in use"});
                 }
 
 
                 connection.beginTransaction(function (err) {
                     if (err) {
-                        throw err;
-                    }
-                    connection.query('INSERT INTO shopping_list (currency_id) VALUES(?)', [100], function (err, result) {
+                        connection.release();
+                        console.log(err);
+                        res.status(500).json({message: "database connection failed"});
+                    } else connection.query('INSERT INTO shopping_list (currency_id) VALUES(?)', [100], function (err, result) {
                         if (err) {
-                            return connection.rollback(function () {
+                                connection.rollback(function () {
                                 connection.release();
                                 console.log(err);
+                                res.status(500).json({error: err});
                             });
-                        }
+                        } else {
 
-                        req.session.person_id = result.insertId;
-                        req.session.save();
+                            user.shopping_list_id = result.insertId;
+                            auth.hashPassword(user, function (user) {
 
-                        console.log(result.insertId);
-                        user.shopping_list_id = result.insertId;
-                        auth.hashPassword(user, function (user) {
+                                var values = [
+                                    user.email,
+                                    user.username,
+                                    user.password_hash,
+                                    user.forename,
+                                    user.middlename,
+                                    user.lastname,
+                                    user.phone,
+                                    new Date(user.birth_day).toISOString().slice(0, 10),
+                                    user.gender,
+                                    user.profile_pic,
+                                    user.shopping_list_id
+                                ];
 
-                            var values = [
-                                user.email,
-                                user.username,
-                                user.password_hash,
-                                user.forename,
-                                user.middlename,
-                                user.lastname,
-                                user.phone,
-                                new Date(user.birth_day).toISOString().slice(0, 10),
-                                user.gender,
-                                user.profile_pic,
-                                user.shopping_list_id
-                            ];
-
-                            if (user.phone) {
-                                if (!checkValidPhone(user.phone)) {
-                                    connection.release();
-                                    return res.status(400).send("Check phone number");
-                                }
-                            }
-
-                            if (!checkValidName(user.name) && !checkValidName(user.middlename) && !checkValidName(user.lastname)) {
-                                connection.release();
-                                return res.status(400).send("Forename, middlename or lastname wrong");
-                            }
-
-
-                            connection.query('INSERT INTO person ' +
-                                '(email, username, password_hash, forename, middlename,' +
-                                'lastname, phone, birth_date,' +
-                                'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function (err, result) {
-                                if (err) {
-                                    return connection.rollback(function () {
-                                        console.log(err);
+                                if (user.phone) {
+                                    if (!checkValidPhone(user.phone)) {
                                         connection.release();
-                                    });
-                                }
-                                connection.commit(function (err) {
-                                    if (err) {
-                                        return connection.rollback(function () {
-                                        }).release();
+                                        return res.status(400).send("Phone number is not valid");
                                     }
+                                }
+
+                                if (user.middlename) {
+                                    if (!checkValidName(user.middlename)) {
+                                        connection.release();
+                                        return res.status(400).send("Middlename is not valid");
+                                    }
+                                }
+
+                                if (!checkValidName(user.forename)) {
+                                        connection.release();
+                                        return res.status(400).json({message:"Invalid forename"});
+                                }
+
+                                if (!checkValidName(user.lastname)){
                                     connection.release();
-                                    res.json({message: "Transaction successfull"});
+                                    return res.status(400).json({message:"Invalid lastname"});
+                                };
+
+
+                                connection.query('INSERT INTO person ' +
+                                    '(email, username, password_hash, forename, middlename,' +
+                                    'lastname, phone, birth_date,' +
+                                    'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function (err, result) {
+                                    if (err) {
+                                            connection.rollback(function () {
+                                            connection.release();
+                                            console.log(err);
+                                            res.status(500).json({error: err});
+                                        });
+                                    } else {
+                                        connection.commit(function (err) {
+                                            if (err) {
+                                                connection.rollback(function () {
+                                                    connection.release();
+                                                    console.log(err);
+                                                    res.status(500).json({error: err});
+                                                });
+                                            } else {
+                                                connection.release();
+                                                req.session.person_id = result.insertId;
+                                                req.session.save();
+                                                res.status(200).json({message: "Transaction successful"});
+                                            }
+                                        });
+                                    }
                                 });
                             });
-                        });
+                        }
                     });
                 });
             });
@@ -144,8 +166,7 @@ router.post('/register', function(req, res) {
 router.get('/user', function (req, res) {
     pool.getConnection(function (err, connection) {
         if(err) {
-            res.status(500);
-            res.json({'Error' : 'connecting to database: ' } + err);
+            res.status(500).json({'Error' : 'connecting to database: ' } + err);
             return;
         }
 
@@ -153,16 +174,16 @@ router.get('/user', function (req, res) {
 
         if(!checkValidUsername(username)){
             connection.release();
-            return res.status(400).send("Bad Request");
+            return res.status(400).json({message:"Syntax-error"});
         }
 
         connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?', [username], function (err, result){
             if(result[0].counted === 1) {
                 connection.release();
-                return res.status(400).send("Bad Request");
+                return res.status(200).json({message:"Username already exists"});
             }
             connection.release();
-            res.status(200).send("OK");
+            res.status(200).send("Username valid");
         });
     });
 });
@@ -171,8 +192,7 @@ router.get('/user', function (req, res) {
 router.get('/mail', function (req, res) {
     pool.getConnection(function (err, connection) {
         if(err) {
-            res.status(500);
-            res.json({'Error' : 'connecting to database: ' } + err);
+            res.status(500).json({'Error' : 'connecting to database: ' } + err);
             return;
         }
 
@@ -180,29 +200,30 @@ router.get('/mail', function (req, res) {
 
         if(!checkValidEmail(email)){
             connection.release();
-            return res.status(400).send("Bad Request");
+            return res.status(400).json({message:'Syntax-error'});
         }
 
         connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?', [email], function (err, result){
             if(result[0].counted === 1) {
                 connection.release();
-                return res.status(400).send("Bad Request");
+                return res.status(200).json({message:'E-mail already exists'});
             }
             connection.release();
-            res.status(200).send("OK");
+            res.status(200).json({message:'E-mail valid'});
         });
     });
 });
 
 function checkValidPhone(phonenumber){
-    var regex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im; //TODO: find better solution for regex
-    if (phonenumber) return regex.test(phonenumber);
+    var phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im; //TODO: find better solution for regex
+    return phoneRegex.test(phonenumber);
 }
 
+//returns true if valid
 function checkValidName(nameString) {
     //best regex
-    var regex = /[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
-    if (nameString) return regex.test(nameString);
+    var nameRegex = /^\S[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
+    if (nameString) return nameRegex.test(nameString);
 }
 
 function checkValidUsername(username) {
