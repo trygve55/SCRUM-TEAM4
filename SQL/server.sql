@@ -46,7 +46,7 @@ CREATE TABLE person (
     phone VARCHAR(15),
     birth_date DATE,
     is_verified BIT NOT NULL DEFAULT 0,
-    gender INTEGER NOT NULL DEFAULT 0,
+    gender INTEGER DEFAULT 0,
     profile_pic MEDIUMBLOB,
     profile_pic_tiny BLOB,
     last_active TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -169,6 +169,7 @@ CREATE TABLE todo (
     datetime_done DATETIME DEFAULT NULL,
     created_by_id INTEGER NOT NULL,
     done_by_id INTEGER,
+    is_deactivated BIT NOT NULL DEFAULT 0,
     CONSTRAINT created_by_fk FOREIGN KEY(created_by_id) REFERENCES person(person_id),
     CONSTRAINT done_by_fk FOREIGN KEY(done_by_id) REFERENCES person(person_id),
     CONSTRAINT todo_pk PRIMARY KEY(todo_id)
@@ -401,3 +402,7 @@ INSERT INTO group_person (person_id, group_id, joined_timestamp, role_id)
 
 INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) 
 	VALUES (4, 1, 0, true, CURRENT_DATE);
+
+INSERT INTO todo (group_id, todo_text, created_by_id) VALUES (1, 'test task', 1);
+
+INSERT INTO todo_person(person_id, todo_id) VALUES (1, 1);
