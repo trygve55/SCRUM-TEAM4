@@ -2,7 +2,7 @@ body{
     font-family: "Trebuchet MS";
     font-style: inherit;
     background-attachment: fixed;
-    height: 100%;
+    height: 500px;
 }
 
 div.containerr{
@@ -10,7 +10,7 @@ div.containerr{
     height: 100%;
     background-color: white;
     border-radius: 15px;
-    padding: 3%;
+    padding: 1%
 }
 
 div.background1{
@@ -19,17 +19,17 @@ div.background1{
 }
 
 div.personaliaborder{
-    padding-bottom: 10%;
+    padding-bottom: 0%;
 }
 
 div.listborder {
     background-color: white;
-    padding: 5%;
+    padding: 1%;
 }
 
 div.textarea{
     width: 95%;
-    padding: 1%;
+    padding: 3%;
     font-size: 90%;
     background-color: white;
     -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
@@ -39,21 +39,39 @@ div.textarea{
 }
 
 #okok{
+
     overflow-y: scroll;
 }
 
+.okoko{
+    width: 95%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 17px;
+
+}
+
 div.debtborder{
-    background-color: white;
     height: 46%;
-    padding-top: 1%;
-    padding-bottom: 2%;
+    padding-top: 5%;
+    padding-bottom: 3%;
 }
 
 .list-group{
     overflow-y:scroll;
     text-align: left;
     min-height: 100%;
-    max-height: 235px;
+    max-height: 230px;
+    width: 100%;
+}
+
+
+
+.b{
+    position: absolute;
+    bottom: 0;
+    align: center;
 }
 
 .list-groups{

@@ -4,14 +4,13 @@
     <meta charset="UTF-8">
     <title>Log In</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="list.css">
+    <link rel="stylesheet" href="css/ProfilePage.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
     <script src="https://use.fontawesome.com/dea62227f7.js"></script>
-    <script src="ProfilePage.js"></script>
-    <script src="list.js"></script>
+    <script src="js/ProfilePage.js"></script>
 
 </head>
 
@@ -58,6 +57,7 @@
 
 <br>
 <div class="container containerr" align="center">
+    <br>
     <div class="row parent">
         <div class="col-md-6 sidenav">
 
@@ -67,10 +67,10 @@
                             <img src="img/profilPicture.png" height="130px" width="130px" style="padding-top: 4%">
                         </div>
                         <div class="col-7" align="left">
-                            <marquee behavior="scroll" direction="right">Eline Mentzoni</marquee>
-                            <p>email: elinemmk@hotmail.com</p>
-                            <p>phone: 12345678</p>
-                            <p>username: ripinpeace</p>
+                            <div class="okoko">Eline Marie Mentdddddddddddddddddddddddddddzoni Kristiansen Eline Marie Mentzoni Kristiansen</div>
+                            <div class="okoko">email: elinemmk@hotmail.com</div>
+                            <div>phone: 12345678</div>
+                            <div>username: ripinpeace</div>
                         </div>
                     <br>
                 </div>
@@ -122,24 +122,26 @@
                 </div>
         </div>
         <div class="col-md-3 sidenav">
-            <div class="listborder" align="center">
-                <h5>My shoppinglist</h5>
-                <ul class="list-group" id="itemlist">
-                    <li class="list-group-item">
-                        <div class="checkbox">
-                            <label><input type="checkbox" value=""> Option 1</label>
-                        </div>
-                    </li>
-                </ul>
-                <ul class="list-group">
-                    <div id="inputitem">
-                        <li class="list-group-item" id="listitem">
-                            <input type="text" class="form-control" id="newitem">
-                        </li>
-                    </div>
-                    <li class="list-group-item" id="additem"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add item</li>
-                </ul>
-            </div>
+                <div class="listborder" align="center">
+                        <h5>My shoppinglist</h5>
+                        <ul class="list-group" id="itemlist">
+                            <li class="list-group-item">
+                                <div class="checkbox">
+                                    <label><input type="checkbox" value=""> Option 1</label>
+                                </div>
+                            </li>
+                        </ul>
+                        <ul class="list-group">
+                            <div id="inputitem">
+                                <li class="list-group-item" id="listitem">
+                                    <input type="text" class="form-control" id="newitem">
+                                </li>
+                            </div>
+                            <li class="list-group-item" id="additem"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add item</li>
+                        </ul>
+                            <button type="button" class="btn btn-default buttonstyle" style="align:center;">All shoppinglists</button>
+
+                </div>
         </div>
         <div class="col-md-3 sidenav">
             <div class="listborder" align="center">
@@ -159,6 +161,8 @@
                     </div>
                     <li class="list-group-item" id="addtask"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add item</li>
                 </ul>
+                <button type="button" class="btn btn-default buttonstyle" style="align:center;">All shoppinglists</button>
+
             </div>
         </div>
     </div>

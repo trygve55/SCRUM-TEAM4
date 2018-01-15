@@ -37,15 +37,15 @@ $(document).ready(
                 $('#inputtask').hide();
                 var item = $('#newtask').val();
                 $('#newtask').val('');
-                $('#itemtask').append("<li class=\"list-group-item\"><div class=\"checkbox\"> <label><input type=\"checkbox\">  "+item+"</label> </div> </li>");
+                $('#tasklist').append("<li class=\"list-group-item\"><div class=\"checkbox\"> <label><input type=\"checkbox\">  "+item+"</label> </div> </li>");
 
             }
-            $('#inputitem').show();
+            $('#inputtask').show();
         });
 
         $('#newtask').keypress(function(event) {
             if (event.keyCode == 13 || event.which == 13) {
-                $('#inputitem').hide();
+                $('#inputtask').hide();
                 var item = $('#newtask').val();
                 $('#newtask').val('');
                 $('#tasklist').append("<li class=\"list-group-item\"><div class=\"checkbox\"> <label><input type=\"checkbox\">  "+item+"</label> </div> </li>");
