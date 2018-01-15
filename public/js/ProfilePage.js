@@ -70,8 +70,25 @@ $(function () {
             },
             error: console.error
         });
-
     });
+
+    $.ajax({
+        url: '/api/user/getUser',
+        method: 'GET',
+        data: {
+            variables: [
+            'forename',
+            'lastname' ,
+            'email' ,
+            'phone'
+            ]
+        },
+        success: function (data) {
+            $('#profile-name').text(data[0].forename + '' + data[0].lastname);
+            $('#profile-email').text('' + data[0].email);
+            $('#profile-phone').text('' + data[0].phone);
+        }
+    })
 
 });
 
