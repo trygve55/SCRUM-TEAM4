@@ -44,17 +44,24 @@ describe('Tasks API', function() {
 				"is_deactivated": false,
 				"people": [{"person_id": 1}]
 			};
-		var req = request.get('/person/1').query({path: '/test.html'});
+		var req = request.get('/api/tasks/person').query({person_id: '1'});
 		req.cookies = Cookies;
 		req.expect(200).expect(expected).end(done);
 	);
-	
 	it('should return a task for person with id 1', function(done) {
-		var req = request.get('/api/tasks').query({path: '/test.html'});
+		var expected = {
+			"todo_id": 1,
+			"group_id": 1,
+			"todo_text": "test task",
+			"datetime_deadline": null,
+			"datetime_added": "2018-01-15T14:09:42.000Z",
+			"datetime_done": null,
+			"created_by_id": 1,
+			"done_by_id": null,
+			"is_deactivated": false
+		};
+		var req = request.get('/api/tasks').query({todo:id: '1'});
 		req.cookies = Cookies;
-		req.expect(200).expect({todo_text: "Tiberium Harvesting"}).end(done);
+		req.expect(200).expect(expected).end(done);
 	});
-
-	
-	
 });
