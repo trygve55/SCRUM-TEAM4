@@ -1,26 +1,29 @@
 body {
     font-family: Trebuchet MS;
     font-style: inherit;
-    overflow: hidden;
+
 }
 .liste {
-    margin: 2%;
+    margin: 1%;
     padding: 2%;
     background-color: white;
     border-radius: 25px;
-    height: 600px;
+    max-height: 670px;
+    min-width: 29%
 }
 .adde {
-    margin: 2%;
+    margin: 1%;
     padding: 2%;
     background-color: white;
     border-radius: 25px;
-    height: 600px;
+    height: 670px;
     opacity: 0.4;
 }
 .list-group{
     text-align: left;
     margin-inside: 4%;
+    max-height: 450px;
+    overflow-y: scroll;
 }
 .state-icon {
     left: -5px;
@@ -31,4 +34,37 @@ body {
 }
 #additem:hover{
     background-color: lightgrey;
+}
+#listsss{
+    overflow-y: scroll;
+}
+.addi:hover{
+    background-color: grey;
+}
+.fa-circle:hover{
+    filter: brightness(85%);
+}
+.pink{
+    background-color: lightpink;
+}
+.yellow{
+    background-color: #ffec8e;
+}
+
+.green{
+    background-color: lightgreen;
+
+}
+.white{
+    background-color: white;
+}
+.fa-shopping-cart, .fa-users{
+    color: dimgrey;
+    text-shadow: 1px 1px 1px #ccc;
+    margin: 10px;
+    font-size: 60px;
+}
+.fa-shopping-cart:hover, .fa-users:hover{
+    filter: brightness(70%);
+    text-shadow: 0px 0px 0px #ccc;
 }

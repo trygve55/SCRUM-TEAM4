@@ -34,105 +34,127 @@ router.post('/register', function(req, res) {
     console.log('POST-request established');
     pool.getConnection(function (err, connection) {
         if (err) {
-            res.status(500);
-            res.json({'Error': 'connecting to database: '} + err);
+            connection.release();
+            res.status(500).json({'Error': 'connecting to database: '} + err);
             return;
         }
+
         console.log('Connected to database');
         var user = req.body;
 
         if (!checkValidUsername(user.username) && !checkValidEmail(user.email)) {
             connection.release();
-            res.status(400).send("Bad request");
+            res.status(400).json({message:"Syntax-error"})
         }
 
         connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?', [user.username], function (err, result) {
             if (err) {
-                console.log(err);
+                connection.release();
+                res.status(500).json({error: err});
             }
 
             if (result[0].counted === 1) {
                 connection.release();
-                return res.status(400).send("Bad request");
+                return res.status(200).json({message:"Username already in use"});
             }
 
             connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?', [user.email], function (err, result) {
                 if (err) {
-                    console.log(err);
+                    connection.release();
+                    res.status(500).json({error: err});
                 }
 
                 if (result[0].counted === 1) {
                     connection.release();
-                    return res.status(400).send("Bad request");
+                    return res.status(200).json({message: "E-mail in use"});
                 }
 
 
                 connection.beginTransaction(function (err) {
                     if (err) {
-                        throw err;
-                    }
-                    connection.query('INSERT INTO shopping_list (currency_id) VALUES(?)', [100], function (err, result) {
+                        connection.release();
+                        console.log(err);
+                        res.status(500).json({message: "database connection failed"});
+                    } else connection.query('INSERT INTO shopping_list (currency_id) VALUES(?)', [100], function (err, result) {
                         if (err) {
-                            return connection.rollback(function () {
+                                connection.rollback(function () {
                                 connection.release();
                                 console.log(err);
+                                res.status(500).json({error: err});
                             });
-                        }
+                        } else {
 
-                        req.session.person_id = result.insertId;
-                        req.session.save();
+                            user.shopping_list_id = result.insertId;
+                            auth.hashPassword(user, function (user) {
 
-                        console.log(result.insertId);
-                        user.shopping_list_id = result.insertId;
-                        auth.hashPassword(user, function (user) {
+                                var values = [
+                                    user.email,
+                                    user.username,
+                                    user.password_hash,
+                                    user.forename,
+                                    user.middlename,
+                                    user.lastname,
+                                    user.phone,
+                                    new Date(user.birth_day).toISOString().slice(0, 10),
+                                    user.gender,
+                                    user.profile_pic,
+                                    user.shopping_list_id
+                                ];
 
-                            var values = [
-                                user.email,
-                                user.username,
-                                user.password_hash,
-                                user.forename,
-                                user.middlename,
-                                user.lastname,
-                                user.phone,
-                                new Date(user.birth_day).toISOString().slice(0, 10),
-                                user.gender,
-                                user.profile_pic,
-                                user.shopping_list_id
-                            ];
-
-                            if (user.phone) {
-                                if (!checkValidPhone(user.phone)) {
-                                    connection.release();
-                                    return res.status(400).send("Check phone number");
-                                }
-                            }
-
-                            if (!checkValidName(user.name) && !checkValidName(user.middlename) && !checkValidName(user.lastname)) {
-                                connection.release();
-                                return res.status(400).send("Forename, middlename or lastname wrong");
-                            }
-
-
-                            connection.query('INSERT INTO person ' +
-                                '(email, username, password_hash, forename, middlename,' +
-                                'lastname, phone, birth_date,' +
-                                'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function (err, result) {
-                                if (err) {
-                                    return connection.rollback(function () {
-                                        console.log(err);
+                                if (user.phone) {
+                                    if (!checkValidPhone(user.phone)) {
                                         connection.release();
-                                    });
-                                }
-                                connection.commit(function (err) {
-                                    if (err) {
-                                        return connection.rollback(function () {
-                                        }).release();
+                                        return res.status(400).send("Phone number is not valid");
                                     }
+                                }
+
+                                if (user.middlename) {
+                                    if (!checkValidName(user.middlename)) {
+                                        connection.release();
+                                        return res.status(400).send("Middlename is not valid");
+                                    }
+                                }
+
+                                if (!checkValidName(user.forename)) {
+                                        connection.release();
+                                        return res.status(400).json({message:"Invalid forename"});
+                                }
+
+                                if (!checkValidName(user.lastname)){
                                     connection.release();
-                                    res.json({message: "Transaction successfull"});
+                                    return res.status(400).json({message:"Invalid lastname"});
+                                };
+
+
+                                connection.query('INSERT INTO person ' +
+                                    '(email, username, password_hash, forename, middlename,' +
+                                    'lastname, phone, birth_date,' +
+                                    'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function (err, result) {
+                                    if (err) {
+                                            connection.rollback(function () {
+                                            connection.release();
+                                            console.log(err);
+                                            res.status(500).json({error: err});
+                                        });
+                                    } else {
+                                        connection.commit(function (err) {
+                                            if (err) {
+                                                connection.rollback(function () {
+                                                    connection.release();
+                                                    console.log(err);
+                                                    res.status(500).json({error: err});
+                                                });
+                                            } else {
+                                                connection.release();
+                                                req.session.person_id = result.insertId;
+                                                req.session.save();
+                                                res.status(200).json({message: "Transaction successful"});
+                                            }
+                                        });
+                                    }
                                 });
                             });
-                        });
+                        }
                     });
                 });
             });
@@ -144,8 +166,7 @@ router.post('/register', function(req, res) {
 router.get('/user', function (req, res) {
     pool.getConnection(function (err, connection) {
         if(err) {
-            res.status(500);
-            res.json({'Error' : 'connecting to database: ' } + err);
+            res.status(500).json({'Error' : 'connecting to database: ' } + err);
             return;
         }
 
@@ -153,16 +174,16 @@ router.get('/user', function (req, res) {
 
         if(!checkValidUsername(username)){
             connection.release();
-            return res.status(400).send("Bad Request");
+            return res.status(400).json({message:"Syntax-error"});
         }
 
         connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?', [username], function (err, result){
             if(result[0].counted === 1) {
                 connection.release();
-                return res.status(400).send("Bad Request");
+                return res.status(200).json({message:"Username already exists"});
             }
             connection.release();
-            res.status(200).send("OK");
+            res.status(200).send("Username valid");
         });
     });
 });
@@ -171,8 +192,7 @@ router.get('/user', function (req, res) {
 router.get('/mail', function (req, res) {
     pool.getConnection(function (err, connection) {
         if(err) {
-            res.status(500);
-            res.json({'Error' : 'connecting to database: ' } + err);
+            res.status(500).json({'Error' : 'connecting to database: ' } + err);
             return;
         }
 
@@ -180,29 +200,30 @@ router.get('/mail', function (req, res) {
 
         if(!checkValidEmail(email)){
             connection.release();
-            return res.status(400).send("Bad Request");
+            return res.status(400).json({message:'Syntax-error'});
         }
 
         connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?', [email], function (err, result){
             if(result[0].counted === 1) {
                 connection.release();
-                return res.status(400).send("Bad Request");
+                return res.status(200).json({message:'E-mail already exists'});
             }
             connection.release();
-            res.status(200).send("OK");
+            res.status(200).json({message:'E-mail valid'});
         });
     });
 });
 
 function checkValidPhone(phonenumber){
-    var regex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im; //TODO: find better solution for regex
-    if (phonenumber) return regex.test(phonenumber);
+    var phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im; //TODO: find better solution for regex
+    return phoneRegex.test(phonenumber);
 }
 
+//returns true if valid
 function checkValidName(nameString) {
     //best regex
-    var regex = /[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
-    if (nameString) return regex.test(nameString);
+    var nameRegex = /^\S[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
+    if (nameString) return nameRegex.test(nameString);
 }
 
 function checkValidUsername(username) {
@@ -378,32 +399,29 @@ router.post('/:person_id/picture', function(req, res){
 
 
 /*
-Returns the requested information about the requested users. The request body must contain two variables: req.body.variables and
-req.body.users, both arrays. The first one is a list of the variables you'd like to retrieve, while the second is a list of
-user IDs for which you'd like to retrieve those variables' data.
+Returns the requested information about the requested user(s). The request can contain two variables: variables (required) and
+users, both arrays. The first one is a list of the variables you would like to retrieve, while the second is a list of
+user IDs for which you would like to retrieve those variables' data. To request data for the currently logged in session,
+you only send the variables you'd like.
 Sensitive data variables are only available to the current session's user.
 
 Variables available to all logged in users:
 username, forename, middlename, lastname, gender, profile_pic, profile_pic_tiny and last_active
-Variables available to users about themselves:
+Variables only available to users about themselves:
 email, phone, birth_date, is_verified, shopping_list_id, user_language, user_deactivated, facebook_api_id
 
-Example 1: the client needs to know the full names, gender, and profile_pic_tiny (all public) of some person_ids
-Request body:
+Example 1: the client needs to know the first and last names, gender, and profile_pic_tiny (all public) of some person_ids
+Request URL : /api/user/getUser?variables=forename&variables=lastname&variables=gender&variables=profile_pic_tiny&users=309&users=49
 {
-    variables: ['forename', 'middlename', 'lastname', 'gender', 'profile_pic_tiny'],
-    users: [309, 482, 100, 2]
+    variables: ['forename', 'lastname', 'gender', 'profile_pic_tiny'],
+    users: [309, 49]
 }
 
-Example 2: the client needs to know the email, phone, and user_language of the currently logged in user
-Request body:
+Example 2: the client needs to know the email, phone, and user_language (all private) of the currently logged in user
+Request URL : /api/user/getUser?variables=email&variables=phone&variables=user_language
 {
     variables: ['email', 'phone', 'user_language'],
-    users: [300]
 }
-If the session ID stored on the server matches the requested user's ID, the info is provided. If it does not, or more
-than one ID is provided in the req.body.users, the server will respond with a 403 Forbidden status code, since the
-info is only available to the user with the ID 300, when they are logged in. webstorm big doodoo
  */
 
 var publicVars = ['username', 'forename', 'middlename', 'lastname', 'gender', 'profile_pic',
@@ -426,46 +444,45 @@ router.get('/getUser', function(req, res) {
     console.log(req.query);
     if(!req.query.hasOwnProperty('users')) {
         req.query.users = [req.session.person_id];
+    } else if(reqForPrivateVars(req.query.variables) && (req.query.users.length > 1 || req.session.person_id != req.query.users[0])) {
+        return res.status(403).send("Forbidden request (private data are only available to the owner)");
     }
-    console.log(req.query);
-    if(!req.session.person_id || checkRequestArray(req.query.variables) > 0 ||
-        (reqForPrivateVars(req.query.variables) && (req.query.users.length > 1 || req.session.person_id != req.query.users[0]))) {
-        return res.status(403).send("Forbidden request");
+    if(!req.session.person_id) {
+        return res.status(403).send("Forbidden request (session not found)");
     }
-    console.log('API: authentication passed');
-    var sqlQuery = 'SELECT ?';
-    for(i = 1; i < req.query.variables.length; i++) {
-        sqlQuery += ',?';
+    if(checkRequestArray(req.query.variables, req.query.users) > 0) {
+        return res.status(400).send("Bad request (bad variable names");
     }
-    sqlQuery += ' FROM person WHERE person_id = ?';
-    for(i = 1; i < req.query.users.length; i++) {
-        sqlQuery += ' OR person_id = ?';
-    }
-    var values = req.query.variables;
-    req.query.users.forEach(function(element) {
-        values.push(element);
-    });
-
+    var users = req.query.users,
+        variables = req.query.variables;
     pool.getConnection(function(err, connection) {
         if(err) {
-            res.status(500);
-            res.json({"error": "Error connecting to database" + err});
-            return;
+            res.status(500).send("Internal database error");
         }
-
-        connection.query(sqlQuery, values, function(err, result) {
+        //result = getVariables(req.query.variables, req.query.users, connection);
+        var sqlQuery = "SELECT";
+        variables.forEach(function(element) {
+            sqlQuery += ' ' + element + ',';
+        });
+        sqlQuery = sqlQuery.slice(0,-1);
+        sqlQuery += ' FROM person WHERE';
+        users.forEach(function(element) {
+            sqlQuery += ' person_id = ' + element + ' OR'
+        });
+        sqlQuery = sqlQuery.slice(0,-3);
+        connection.query(sqlQuery, function(err, result) {
             if(err) {
-                res.status(500);
-                res.json({"error": "Error in query to database" + err});
+                res.status(500).send("Error in SQL query");
+                connection.release();
                 return;
             }
-            res.status(200);
-            res.send(result);
+            connection.release();
+            res.status(200).send(result);
         });
     });
 });
 
-function checkRequestArray(inputArray) {
+function checkRequestArray(variables, users) {
     var validInput = ['person_id', 'email', 'username',
         'forename', 'middlename',
         'lastname', 'phone', 'birth_date', 'is_verified',
@@ -473,8 +490,11 @@ function checkRequestArray(inputArray) {
         'last_active', 'shopping_list_id',
         'user_language', 'user_deactivated', 'facebook_api_id'];
     var errors = 0;
-    inputArray.forEach(function(element) {
+    variables.forEach(function(element) {
         if(validInput.indexOf(element) < 0) errors++;
+    });
+    users.forEach(function(element) {
+        if(isNaN(element)) errors++;
     });
     return errors;
 }
