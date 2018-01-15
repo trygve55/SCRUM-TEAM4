@@ -18,7 +18,7 @@ window.fbAsyncInit = function() {
                 success: function(data){
                     if(data.login) {
                         console.log("Facebook auto");
-                        window.top.location = "/index.html";
+                        window.location = "/index.html";
                     }
                 },
                 error: console.error
