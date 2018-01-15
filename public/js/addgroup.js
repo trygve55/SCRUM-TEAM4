@@ -21,40 +21,23 @@ $('document').ready(function(){
             var currency = $("#currency-input option:selected").text();
             var picture = $('input[type=file]').val();
             alert("curr:"+ currency + ", fil: " + picture +", gn: "+groupname);
-            document.location.href = "index.html";
+            document.location.href = "/group.html";
         }
     });
 
     $('#addgroup-adduser').click(function(){
         addmember();
     });
-
-    $.ajax({
-        url: '/api/user/all',
-        method: "GET",
-        success: function(data){
-            var cnt = [];
-            for(var i = 0; i < data.length; i++){
-                var u = {
-                    id: data[i].person_id,
-                    name: data[i].forename + " " + (data[i].middlename ? data[i].middlename + " " : "") + data[i].lastname,
-                    username: data[i].username
-                };
-                users.push(u);
-                cnt.push(u.name);
-            }
-            $('#scrollable-dropdown-menu .typeahead').typeahead(null, {
-                name: 'users',
-                limit: 10,
-                source: new Bloodhound({
-                    datumTokenizer: Bloodhound.tokenizers.whitespace,
-                    queryTokenizer: Bloodhound.tokenizers.whitespace,
-                    prefetch: '/api/user/all?slim=1'
-                })
-            });
-        },
-        error: console.error
+    $('#scrollable-dropdown-menu .typeahead').typeahead(null, {
+        name: 'users',
+        limit: 10,
+        source: new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            prefetch: '/api/user/all?slim=1'
+        })
     });
+    error: console.error
 
     $('#addgroup-member').keypress(function(event) {
         if(event.keyCode == 13 || event.which == 13){
