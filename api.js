@@ -4,6 +4,7 @@ router.use('/language', require('./api/language'));
 router.use('/login', require('./api/login'));
 router.use('/user', require('./api/user'));
 router.use('*', function(req, res, next){
+    console.log(req.session.person_id);
     if(!req.session.person_id)
         return res.status(200).json({redirect: '/login.html'});
     next();

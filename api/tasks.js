@@ -46,7 +46,7 @@ router.post('/person/', function(req, res) {
 			function(err, result) {
 				connection.release();
 				if (err) {throw err;}
-				if (result) {res.json({success: "Success", id: result.insertId});}
+				if (result) {res.status(200).json({success: "Success", id: result.insertId});}
 			}
 		);
 	});
@@ -73,7 +73,7 @@ console.log('GET-request established');
 					for (var p in result[0]) {values[p] = result[0][p];}
 					delete values.person_id;
 					values.people = people;
-					res.json(values);
+					res.status(200).json(values);
 				}
 			}
 		);
@@ -103,7 +103,7 @@ router.get('/person/:person_id', function(req, res) {
 						delete values.person_id;
 						entries.push(values);
 					}
-					res.json(entries);
+					res.status(200).json(entries);
 				}
 			}
 		);
@@ -190,7 +190,7 @@ function checkConnectionError(err, connection, res) {
 function checkResult(err, result, connection, res) {
 	connection.release();
 	if (err) {throw err;}
-	if (result) {res.json({success: "Success"});}
+	if (result) {res.status(200).json({success: "Success"});}
 }
 
 /**
