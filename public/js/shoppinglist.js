@@ -1,4 +1,7 @@
 $('document').ready(function (){
+
+
+
     var count = 0;
     inits();
     $.ajax({
@@ -14,6 +17,7 @@ $('document').ready(function (){
                     $("#" + p).html(data[p]);
                 }
             }
+            $("#shoppingcart").attr('title', data["shoppingcart"]);
         }
     });
 
@@ -32,6 +36,7 @@ $('document').ready(function (){
                         $("#" + p).html(data[p]);
                     }
                 }
+                $("#shoppingcart").attr('title', data["shoppingcart"]);
             }
         });
     });
@@ -50,6 +55,7 @@ $('document').ready(function (){
                         $("#" + p).html(data[p]);
                     }
                 }
+                $("#shoppingcart").attr('title', data["shoppingcart"]);
             }
         });
     });
@@ -59,14 +65,15 @@ $('document').ready(function (){
 
     function inits(){
         $('.inpi').hide();
-        //$('#more').hide();
 
     }
     $('#addlist').click(function () {
 
         count++;
         $("<div class=\"col-sm liste\" id='listenr"+count+"'><div class='row'>" +
-            "<div class='col-sm-7' style='text-align: left'><h4>Liste "+count+"</h4></div>"+
+            "<div class='col-sm-7' style='text-align: left'>" +
+            "<div id='listname"+count+"' style='margin: 6px'><input type='text' class='form-control ni' id='listnameinput"+count+"'></div>" +
+            "<div id='nameforlist"+count+"'<h4>Liste"+count+"</h4></div></div>"+
             "<div class='col-sm-5' style='text-align: right'>" +
             "    <h4><i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: white; text-shadow: 0px 0px 3px #000;' id='whitebutt"+count+"'></i>" +
             "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: lightpink; text-shadow: 0px 0px 3px #000;' id='pinkbutt"+count+"'></i> " +
@@ -78,9 +85,31 @@ $('document').ready(function (){
             "<div class=\"inpi\" id=\"inputitem"+count+"\"><li class=\"list-group-item\" id=\"listitem"+count+"\">" +
             "<input type=\"text\" class=\"form-control ni\" id=\"newitem"+count+"\">" +
             "</li></div><li class=\"list-group-item addi\" id=\"additem"+count+"\"><i class=\"fa fa-plus-circle\" aria-hidden=\"true\"></i> Add item</li>" +
-            "</ul><br><button type=\"button\" class=\"btn btn-light\">Buy selected items</button></div>").insertAfter("#addlist");
+            "</ul><i class=\"fa fa-shopping-cart\" aria-hidden=\"true\" id='shoppingcart"+count+"' style='font-size: 20px'> Buy</i><i class=\"fa fa-users\" aria-hidden=\"true\" style='font-size: 20px'> Share</i></div>").insertAfter("#addlist");
         $('#inputitem'+count).hide();
+        $('#listname'+count).hide();
         var itemcount = 0;
+
+        $('#nameforlist'+count).click(function(){
+            var navn = this.id;
+            var ide = navn.split("t").pop();
+            console.log(ide + " name for list clicked");
+            $('#nameforlist'+ide).hide();
+            $('#listname'+ide).show();
+            $('#listnameinput'+ide).focus();
+
+        });
+        $('#listname'+count).keypress(function(event) {
+            var navn = this.id;
+            var ide = navn.split("e").pop();
+            console.log(ide + " listname entered");
+            if (event.keyCode == 13 || event.which == 13) {
+                var name = $('#listnameinput'+ide).val();
+                $('#nameforlist'+ide).show();
+                $('#nameforlist'+ide).text(name);
+                $('#listname'+ide).hide();
+            }
+        });
 
         $('#pinkbutt'+count).click(function () {
             var navn = this.id;
@@ -116,23 +145,9 @@ $('document').ready(function (){
             var navn = this.id;
             var ide = navn.split("m").pop(); //listeid
             $('#additem'+ide).hide();
-            //Add item in input if input is visible
-            if($('#inputitem'+ide).is(":visible")){
-                itemcount++;
-                var item = $('#newitem'+ide).val();
-                $('#newitem'+ide).val('');
-                $('#itemlist'+ide).append("<li class=\"list-group-item\" id=\"elem"+itemcount+"\"><div class='row'><div class=\"checkbox col-sm\"> <label><input type=\"checkbox\"> "+item+"</div><div class='col-sm' style='text-align: right'><i class=\"fa fa-times\" aria-hidden=\"true\" id=\"crossout" + itemcount + "\"></i></label> </div></div></li>");
-                $('#inputitem'+ide).hide();
-                console.log("Itemcount: " + itemcount + " on count " + ide);
-
-                $('#crossout'+itemcount).click(function () {
-                    var iden = "elem"+itemcount;
-                    document.getElementById(iden).remove();
-                    itemcount--;
-                });
-            }
-
             $('#inputitem'+ide).show();
+            $('#newitem'+ide).focus();
+
         });
         $('#newitem'+count).keypress(function(event) {
             if (event.keyCode == 13 || event.which == 13) {
@@ -140,18 +155,43 @@ $('document').ready(function (){
                 var navn = this.id;
                 var ide = navn.split("m").pop(); //listeid
 
-                $('#inputitem'+ide).hide();
+                //$('#inputitem'+ide).hide();
                 var item = $('#newitem'+ide).val();
                 $('#newitem'+ide).val('');
-                $('#itemlist'+ide).append("<li class=\"list-group-item\" id=\"elem"+itemcount+"\"><div class='row'><div class=\"checkbox col-sm\"> <label><input type=\"checkbox\"> "+item+"</div><div class='col-sm' style='text-align: right'><i class=\"fa fa-times\" aria-hidden=\"true\" id=\"crossout" + itemcount + "\"></i></label> </div></div></li>");
-                console.log("Itemcount: " + itemcount + " on count " + ide);
+                $('#itemlist'+ide).append("<li class=\"list-group-item\" id=\"elem"+count+itemcount+"\"><div class='row'><div class=\"checkbox col-sm\"> <label id='labelitem"+count+itemcount+"'><input class='checkboxx' type=\"checkbox\" id='checkbox"+count+itemcount+"'> "+item+"</div><div class='col-sm' style='text-align: right'><i class=\"fa fa-times\" aria-hidden=\"true\" id=\"crossout" + itemcount + "\"></i></label> </div></div></li>");
 
                 $('#crossout'+itemcount).click(function () {
-                    var iden = "elem"+itemcount;
+                    var iden = "elem"+ide+itemcount;
                     document.getElementById(iden).remove();
                     itemcount--;
                 });
-                $('#additem'+ide).show();
+            }
+        });
+        $("#newitem"+count).focusout(function () {
+            var navn = this.id;
+            var ide = navn.split("m").pop(); //listeid
+            $('#additem'+ide).show();
+            $('#inputitem'+ide).hide();
+        });
+        $("#shoppingcart").attr('title', 'Buy selected items');
+
+        $("#shoppingcart"+count).click(function () {
+            var table = [];
+            var navn = this.id;
+            var ide = navn.split("t").pop(); //listeid
+            $(".checkboxx").each(function () {
+                if($(this).is(':checked')){
+                    var numb = this.id;
+                    var nr = numb.split("x").pop();
+                    var ss = nr[1];
+                    var htmllab = $('#labelitem'+ide+ss).html();
+                    var item = htmllab.split(">").pop();
+                    table.push(item);
+                    document.getElementById('elem'+ide+ss).remove();
+                }
+            });
+            for(t in table){
+                console.log(table[t]);
             }
         });
 

@@ -58,12 +58,13 @@ body {
 .white{
     background-color: white;
 }
-.fa-shopping-cart{
-    color: #7ebccc;
+.fa-shopping-cart, .fa-users{
+    color: dimgrey;
     text-shadow: 1px 1px 1px #ccc;
     margin: 10px;
+    font-size: 60px;
 }
-.fa-shopping-cart:hover{
-    filter: brightness(85%);
+.fa-shopping-cart:hover, .fa-users:hover{
+    filter: brightness(70%);
     text-shadow: 0px 0px 0px #ccc;
 }
