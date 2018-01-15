@@ -1,5 +1,5 @@
 div.transbox {
-    margin-top: 50px;
+    margin-top: 150px;
     background-color: #ffffff;
     opacity: 0.8;
     height: auto;
@@ -26,4 +26,16 @@ img{
 body{
     font-family: Trebuchet MS;
     font-style: inherit;
+}
+
+.Facebook{
+    background-color: #7ebccc;
+    width: 40%;
+    color: white;
+    border-radius: 4px;
+
+}
+
+.Facebook:hover {
+    background-color: #a3e6f7;
 }

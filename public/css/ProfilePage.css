@@ -2,7 +2,8 @@ body{
     font-family: "Trebuchet MS";
     font-style: inherit;
     background-attachment: fixed;
-    height: 500px;
+    height: auto;
+
 }
 
 div.containerr{

@@ -15,25 +15,29 @@
 
 <div id="fb-root"></div>
 
+<body background="/img/BackgroundImage.png">
 
-<body background="BackgroundImage.png">
 
 <div class="flag" style="background-color: white">
-        <img id="login-norway" style="position:fixed; right:15px; margin-top: 1%" src="norwegianflag.jpg" width="20" height="12">
-        <img id="login-england" style="position:fixed; right: 40px; margin-top: 1%" src="engelskflagg.png" width="20" height="12">
+        <img id="login-norway" style="position:fixed; right:15px; margin-top: 1%" src="/img/norwegianflag.jpg" width="20" height="12">
+        <img id="login-england" style="position:fixed; right: 40px; margin-top: 1%" src="/img/engelskflagg.png" width="20" height="12">
 </div>
 
 
 <div id="status"></div>
 <div align="center">
     <div class="row">
-        <div class="col-sm-6 col-md-offset-3 col-xs-offset-1 col-xs-10" style="margin: auto">
+        <div class="col-sm-6 col-sm-offset-3 col-xs-offset-1 col-xs-10" style="margin: auto">
             <div class="transbox">
                 <div align="center">
                 <br>
                 <h2 id="login-header" style="font-style: inherit; font-size: x-large" align="center" ></h2>
+<br>
+                    <div class="Facebook" align="center">
+                        <a id="login-facebook" onclick="login()"></a>
+                    </div>
 
-            <div style="padding: 75px">
+            <div style="padding: 5%" >
                 <input id="login-email" type="text" class="form-control" >
                 <br>
                 <input id="login-password" type="text" class="form-control" >
@@ -44,13 +48,10 @@
                 </div>
                 <br>
                 <a href="index.html">
-                <i class="fa fa-arrow-circle-o-right" aria-hidden="true" style="color: #a3e6f7;"></i>
+                <i id="login-button" class="fa fa-arrow-circle-o-right" aria-hidden="true" style="color: #a3e6f7;"></i>
                 </a>
                     <h1></h1>
-                <div class="Facebook" align="center">
-                    <div id="login" onclick="login()" class="fb-login-button" data-max-rows="1" data-size="medium" data-button-type="login_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="true"></div>
-                    <button onclick="getInfo()">Get Info</button>
-                </div>
+
                 <br>
                 </div>
             </div>

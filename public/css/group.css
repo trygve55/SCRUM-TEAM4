@@ -1,32 +1,25 @@
-#groupselection {
-	width: 25%;
-	float: left;
-	height: 300px;
-	margin: 5px;
-	min-width: 150px;
-	max-width: 400px;
-}
 
 #groupwindow {
-	width: 70%;
-	float: left;
-	margin: 5px;
-	min-width: 375px;
-	max-width: 700px;
+	margin-left: 10px;
+	height: auto;
 }
 
 #yourtasks {
 	float: left;
 	margin-left: 25px;
-	border-style: solid;
-	min-width: 200px;
+	border-radius: 10px;
+	-moz-box-shadow:    inset 0 0 3px grey;
+	-webkit-box-shadow: inset 0 0 3px grey;
+	box-shadow:         inset 0 0 3px grey;
 }
 
 #grouptasks {
 	float: left;
 	margin-left: 25px;
-	border-style: solid;
-	min-width: 300px;
+	border-radius: 10px;
+	-moz-box-shadow:    inset 0 0 3px grey;
+	-webkit-box-shadow: inset 0 0 3px grey;
+	box-shadow:         inset 0 0 3px grey;
 }
 
 .tablink {
@@ -35,30 +28,24 @@
 }
 
 .grouptablink {
-	width: 15%;
-	margin: 5px;
-	text-align: center;
-	float: left;
-	min-width: 100px;
+	background-color: white;
+	height: auto;
+	border-radius: 10px;
+	margin-top: 10px;
 }
 
 .grouptab {
-	height: 100%;
-	margin: 5px;
 	display: none;
-	float: left;
-	border-radius: 0px 0px 10px 10px;
-	width: 100%;
+	width: 90%;
 }
 
 .transparency {
-	margin-top: auto;
-	background-color: #ffffff;
-	opacity: 0.8;
+	background-color: white;
 	height: auto;
-	filter: alpha(opacity=60);
-	border-style: solid;
-	border-radius: 15px;
+	border-radius: 10px;
+	margin-right:10px;
+	margin-left: 10px ;
+	padding: 2%;
 }
 
 .backvariant {background-color: rgb(200,200,200);}
@@ -78,9 +65,30 @@
 .post {
 	float: top;
 	margin: 15px;
-	border-style: solid;
 	min-width: 150px;
 	min-height: 50px;
-	border-radius: 7px;
+	border-radius: 10px;
 	text-align: center;
+	-moz-box-shadow:    inset 0 0 3px grey;
+	-webkit-box-shadow: inset 0 0 3px grey;
+	box-shadow:         inset 0 0 3px grey;
+}
+
+body{
+	font-family: Trebuchet MS;
+	font-style: inherit;
+	overflow: hidden;
+}
+
+#grouppage{
+	padding: 2%;
+}
+
+#grouptabs{
+	width: 100%;
+
+}
+
+div.grouptablink.backvariant{
+	padding: 5px;
 }
