@@ -11,36 +11,56 @@
     <link rel="stylesheet" type="text/css" href="css/tasks.css">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" ></script>
     <script src="js/tasks.js"></script>
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#" style="color: dimgray">
-        <img src="logo.png" width="30" height="30" alt="">
-        Household Manager
-    </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-            <a id="tasks-homepage" class="nav-item nav-link" href="#"></a>
-            <a id="tasks-groups" class="nav-item nav-link" href="#"></a>
-            <a id="tasks-tasks" class="nav-item nav-link" href="#"></a>
-            <a id="tasks-shoppinglists" class="nav-item nav-link active" href="#"></a>
-        </div>
-        <div class="navbar-nav ml-auto">
-            <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
-            <a id="tasks-profile" class="nav-item nav-link" href="#"></a>
+    <script src="https://use.fontawesome.com/dea62227f7.js"></script>
+    <script type="text/javascript"> (function() { var css = document.createElement('link'); css.href = '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css'; css.rel = 'stylesheet'; css.type = 'text/css'; document.getElementsByTagName('head')[0].appendChild(css); })(); </script>
 
-            <i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
-            <a class="nav-item nav-link" href="login.html" id="tasks-logout"></a>
+</head>
+<body background="img/BackgroundImage.png">
+    <div class="messagepop pop" id="tasks-popup">
+        <p align="center" style="font-size: 20px" id="tasks-addmemberstolist">Add members to --list--</p>
+        <div class="row">
+            <div class="col-sm-8" id="scrollable-dropdown-menu" ><input class="typeahead form-control" id="addgroup-member"></div>
+            <div class="col-sm-1"><button type="button" class="btn btn-info" id="tasks-adduser" ></button></div>
+        </div>
+        <div style="margin-top: 5%"><button align="right" type="button" class="btn" id="tasks-cancel" style="background-color: lightgrey"></button></div>
+
+    </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="index.html" style="color: dimgray">
+            <img src="img/logo.png" width="30" height="30" alt="">
+            Household Manager
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a id="tasks-homepage" class="nav-item nav-link" href="index.html"></a>
+                <a id="tasks-groups" class="nav-item nav-link" href="group.html"></a>
+                <a id="tasks-tasks" class="nav-item nav-link  active" href="tasks.html"></a>
+                <a id="tasks-shoppinglists" class="nav-item nav-link" href="shoppinglist.html"></a>
+            </div>
+            <div class="navbar-nav ml-auto">
+                <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
+                <a id="tasks-profile" class="nav-item nav-link" href="#"></a>
+
+                <i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
+                <a class="nav-item nav-link" href="login.html" id="tasks-logout"></a>
+            </div>
+        </div>
+    </nav>
+    <br>
+    <div class="flag" style="background-color: white">
+        <img id="tasks-norway" style="position:fixed; right:15px" src="img/norwegianflag.jpg" width="20" height="12">
+        <img id="tasks-england" style="position:fixed; right: 40px" src="img/engelskflagg.png" width="20" height="12">
+    </div>
+    <div  align="center" style="margin-right: 5%; margin-left: 5%;">
+        <div class="row" id="tasks-listgroup">
+            <div class="col-sm adde" id="addlist"><h4 id="tasks-addlist"></h4>
+                <br>
+                <p style="line-height: 500px;"><i class="fa fa-plus-square-o" aria-hidden="true" style="font-size: 90px"></i></p>
+            </div>
         </div>
     </div>
-</nav>
-<br>
-<div class="flag" style="background-color: white">
-    <img id="tasks-norway" style="position:fixed; right:15px" src="norwegianflag.jpg" width="20" height="12">
-    <img id="tasks-england" style="position:fixed; right: 40px" src="engelskflagg.png" width="20" height="12">
-</div>
 </body>
 </html>

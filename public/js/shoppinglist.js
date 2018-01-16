@@ -91,7 +91,7 @@ $('document').ready(function (){
         $("<div class=\"col-sm liste\" id='listenr"+count+"'><div class='row'>" +
             "<div class='col-sm-7' style='text-align: left'>" +
             "<div id='listname"+count+"' style='margin: 6px'><input type='text' class='form-control ni' id='listnameinput"+count+"'></div>" +
-            "<div id='nameforlist"+count+"'<h4>Liste"+count+"</h4></div></div>"+
+            "<div id='nameforlist"+count+"'><h4>Liste"+count+"</h4></div></div>"+
             "<div class='col-sm-5' style='text-align: right'>" +
             "    <h4><i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: white; text-shadow: 0px 0px 3px #000;' id='whitebutt"+count+"'></i>" +
             "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: lightpink; text-shadow: 0px 0px 3px #000;' id='pinkbutt"+count+"'></i> " +
@@ -104,7 +104,6 @@ $('document').ready(function (){
             "<input type=\"text\" class=\"form-control ni\" id=\"newitem"+count+"\">" +
             "</li></div><li class=\"list-group-item addi\" id=\"additem"+count+"\"><i class=\"fa fa-plus-circle\" aria-hidden=\"true\"></i> Add item</li>" +
             "</ul><i class=\"fa fa-shopping-cart\" aria-hidden=\"true\" id='shoppingcart"+count+"' style='font-size: 20px'> Buy</i><i class=\"fa fa-users\" aria-hidden=\"true\" style='font-size: 20px'> Share</i></div>").insertAfter("#addlist");
-        $('#inputitem'+count).hide();
         $('#listname'+count).hide();
         var itemcount = 0;
 
@@ -176,11 +175,15 @@ $('document').ready(function (){
                 //$('#inputitem'+ide).hide();
                 var item = $('#newitem'+ide).val();
                 $('#newitem'+ide).val('');
-                $('#itemlist'+ide).append("<li class=\"list-group-item\" id=\"elem"+count+itemcount+"\"><div class='row'><div class=\"checkbox col-sm\"> <label id='labelitem"+count+itemcount+"'><input class='checkboxx' type=\"checkbox\" id='checkbox"+count+itemcount+"'> "+item+"</div><div class='col-sm' style='text-align: right'><i class=\"fa fa-times\" aria-hidden=\"true\" id=\"crossout" + itemcount + "\"></i></label> </div></div></li>");
+                $('#itemlist'+ide).append("<li class=\"list-group-item\" id=\"elem"+count+itemcount+"\"><div class='row'><div class=\"checkbox col-sm\"> <label id='labelitem"+count+itemcount+"'><input class='checkboxx' type=\"checkbox\" id='checkbox"+count+itemcount+"'> "+item+"</div><div class='col-sm' style='text-align: right'><i class=\"fa fa-times\" aria-hidden=\"true\" id=\"crossout" +count+'-'+ itemcount + "\"></i></label> </div></div></li>");
 
-                $('#crossout'+itemcount).click(function () {
-                    var iden = "elem"+ide+itemcount;
-                    document.getElementById(iden).remove();
+                $('#crossout'+count+'-'+itemcount).click(function () {
+                    var name = this.id;
+                    var numbers = name.split("t").pop(); //listeid
+                    var thiscount =  numbers.split("-")[0];
+                    var thisitemcount = numbers.split("-")[1];
+                    var theelement = "elem"+thiscount+thisitemcount;
+                    document.getElementById(theelement).remove();
                     itemcount--;
                 });
             }
@@ -191,7 +194,6 @@ $('document').ready(function (){
             $('#additem'+ide).show();
             $('#inputitem'+ide).hide();
         });
-        $("#shoppingcart").attr('title', 'Buy selected items');
 
         $("#shoppingcart"+count).click(function () {
             var table = [];
