@@ -1,11 +1,33 @@
-'use strict';
+/**
+ * Prepare server for test language
+ */
+before(function(done){
+    request.post('/api/login')
+        .send({
+            username: 'testnavn',
+            password: 'test'
+        })
+        .expect(200)
+        .end(function(err, res) {
+            if (err)
+                return done(err);
+            Cookies = res.headers['set-cookie'].pop().split(';')[0];
 
-var lang = require('../../api/language');
+            return done();
+        });
+});
+
+after(function(){
+    pool.end();
+});
 
 /**
  * Test for the language API
  */
 describe('Language API', function(){
+    /**
+     * Check bad request handling
+     */
     it('should return 400', function(done){
         request.get('/api/language')
             .expect(400)
@@ -16,26 +38,32 @@ describe('Language API', function(){
      * Testing the GET request with correct parameters
      */
     it('should return username', function(done){
-        request.get('/api/language')
-            .query({
-                path: '/test.html',
-                lang: 'test_lang'
-            })
-            .expect(200)
+        var req = request.get('/api/language').query({
+            path: '/test.html'
+        });
+        req.cookies = Cookies;
+        req.expect(200)
             .expect({username: "Username"})
             .end(done);
     });
 
     /**
-     * Testing if requesting non existing translation
+     * Testing if requesting non existing translation and change language request
      */
     it('should return 400', function(done){
-        request.get('/api/language')
-            .query({
-                path: '/test.html',
+        request.post('/api/language')
+            .send({
                 lang: 'en_US'
             })
-            .expect(400)
-            .end(done);
-    })
+            .end(function(err){
+                if(err)
+                    return done(err);
+                request.get('/api/language')
+                    .query({
+                        path: '/test.html'
+                    })
+                    .expect(400)
+                    .end(done);
+            });
+    });
 });

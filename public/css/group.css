@@ -1,0 +1,94 @@
+
+#groupwindow {
+	margin-left: 10px;
+	height: auto;
+}
+
+#yourtasks {
+	float: left;
+	margin-left: 25px;
+	border-radius: 10px;
+	-moz-box-shadow:    inset 0 0 3px grey;
+	-webkit-box-shadow: inset 0 0 3px grey;
+	box-shadow:         inset 0 0 3px grey;
+}
+
+#grouptasks {
+	float: left;
+	margin-left: 25px;
+	border-radius: 10px;
+	-moz-box-shadow:    inset 0 0 3px grey;
+	-webkit-box-shadow: inset 0 0 3px grey;
+	box-shadow:         inset 0 0 3px grey;
+}
+
+.tablink {
+	margin: 5px;
+	min-width: 100px;
+}
+
+.grouptablink {
+	background-color: white;
+	height: auto;
+	border-radius: 10px;
+	margin-top: 10px;
+}
+
+.grouptab {
+	display: none;
+	width: 90%;
+}
+
+.transparency {
+	background-color: white;
+	height: auto;
+	border-radius: 10px;
+	margin-right:10px;
+	margin-left: 10px ;
+	padding: 2%;
+}
+
+.backvariant {background-color: rgb(200,200,200);}
+
+.backvariant:hover {
+	background-color: rgb(225,225,230);
+	cursor: pointer;
+}
+
+.chbox {margin: 1px;}
+
+.chbox input, .task input {
+	float: left;
+	margin: 5px;
+}
+
+.post {
+	float: top;
+	margin: 15px;
+	min-width: 150px;
+	min-height: 50px;
+	border-radius: 10px;
+	text-align: center;
+	-moz-box-shadow:    inset 0 0 3px grey;
+	-webkit-box-shadow: inset 0 0 3px grey;
+	box-shadow:         inset 0 0 3px grey;
+}
+
+body{
+	font-family: Trebuchet MS;
+	font-style: inherit;
+	overflow: hidden;
+}
+
+#grouppage{
+	padding: 2%;
+}
+
+#grouptabs{
+	width: 100%;
+
+}
+
+div.grouptablink.backvariant{
+	padding: 5px;
+}

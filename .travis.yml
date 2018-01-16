@@ -11,7 +11,7 @@ branches:
   - master
 
 script:
-  - npm test
+  - npm tst
 
 after_success:
   - codecov
