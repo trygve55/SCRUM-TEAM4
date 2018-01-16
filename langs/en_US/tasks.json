@@ -9,7 +9,6 @@
   "tasks-done": "Done",
   "tasks-share": "Share",
   "tasks-addmemberstolist": "Add members to",
-  "tasks-adduserbutton": "Add user",
-  "tasks-searchbyuser": "Search by username",
-  "tasks-cancel": "Cancel"
+  "tasks-cancel": "Cancel",
+  "tasks-adduser": "Add user"
 }

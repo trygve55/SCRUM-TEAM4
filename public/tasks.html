@@ -18,11 +18,12 @@
 <body background="img/BackgroundImage.png">
     <div class="messagepop pop" id="tasks-popup">
         <p align="center" style="font-size: 20px" id="tasks-addmemberstolist">Add members to --list--</p>
-        <label id="tasks-searchbyuser">Search by username:</label><input type="text" class="form-control">
         <div class="row">
-            <div class="col-sm" style="margin-top: 5%"><button align="right" type="button" class="btn" id="tasks-cancel" style="background-color: lightgrey"></button></div>
-            <div class="col-sm" align = "right" style="margin-top:5%"><button align="right" type="button" class="btn btn-info" id="tasks-adduserbutton">Add user</button></div>
+            <div class="col-sm-8" id="scrollable-dropdown-menu" ><input class="typeahead form-control" id="addgroup-member"></div>
+            <div class="col-sm-1"><button type="button" class="btn btn-info" id="tasks-adduser" ></button></div>
         </div>
+        <div style="margin-top: 5%"><button align="right" type="button" class="btn" id="tasks-cancel" style="background-color: lightgrey"></button></div>
+
     </div>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="index.html" style="color: dimgray">
