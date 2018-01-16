@@ -4,5 +4,10 @@
   "profile-tasks": "Gjøremål",
   "profile-shoppinglists": "Handlelister",
   "profile-profile": "Profil",
-  "profile-logout": "Logg ut"
+  "profile-logout": "Logg ut",
+  "profile-balance": "BALANSE",
+  "profile-MyShoppinglist": "Min handleliste",
+  "profile-MyToDoList": "Min gjøremålsliste",
+  "profile-addItem": "Legg til element",
+  "profile-allShoppinglists": "Alle handlelister"
 }
