@@ -2,136 +2,130 @@
 var router = require('express').Router();
 
 module.exports = router;
-
-
+/**
+ * Generate a new shopping list for the current user
+ *
+ * URL: /api/shoppingList
+ * method: POST
+ * data: {
+ *      currency_id,
+ *      shopping_list_name
+ * }
+ */
 router.post('/', function(req, res) {
-
+    if(!req.body.currency_id || !req.body.shopping_list_name)
+        return res.status(400).send();
     pool.getConnection(function(err, connection) {
-        checkConnectionError(err, connection, res);
-        if(err) {
-            res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            return;
-        }
-
+        if(err)
+            return res.status(500).json({'Error' : 'connecting to database: ' } + err);
         var data = req.body;
-
         connection.beginTransaction(function (err) {
-            if(err) {
-                connection.rollback(function () {
+            if(err)
+                return connection.rollback(function () {
                     res.status(500).json({'Error' : err});
                     connection.release();
                 });
-            } else connection.query('INSERT INTO shopping_list ' +
-                '(shopping_list_name, currency_id) VALUES (?,?)',
-                [data.shopping_list_name, checkRange(data.currency_id, 1, null)],
-                function(err, result1) {
-
-                    if(err) {
-                        connection.rollback(function () {
+            connection.query('INSERT INTO shopping_list (shopping_list_name, currency_id) VALUES (?,?)',
+                [data.shopping_list_name, checkRange(data.currency_id, 1, null)], function(err, result) {
+                    if(err)
+                        return connection.rollback(function () {
                             res.status(500).json({'Error' : err});
                             connection.release();
                         });
-                    } else connection.query(
-                        'INSERT INTO shopping_list_person(' +
-                        'shopping_list_id, person_id, invite_accepted) ' +
-                        'VALUES (?,?,?);',
-                        [
-                            result1.insertId,
-                            req.session.person_id,
-                            true
-                        ],
-                        function (err, result2) {
-                            if (err) {
-                                connection.rollback(function () {
+                    connection.query('INSERT INTO shopping_list_person(shopping_list_id, person_id, invite_accepted) VALUES (?,?,?);',
+                        [result.insertId, req.session.person_id, true], function (err) {
+                            if (err)
+                                return connection.rollback(function () {
                                     res.status(500).json({'Error': err});
                                     connection.release();
                                 });
-                            } else {
-                                connection.commit(function (err) {
-                                    if (err) {
-                                        connection.rollback(function () {
-                                            res.status(500).json({'Error': err});
-                                            connection.release();
-                                        });
-                                    } else {
+                            connection.commit(function (err) {
+                                if (err)
+                                    return connection.rollback(function () {
+                                        res.status(500).json({'Error': err});
                                         connection.release();
-                                        res.status(200).json({success: "true", shopping_list_id: result1.insertId});
-                                    }
-                                });
-                            }
+                                    });
+                                connection.release();
+                                res.status(200).json({success: "true", shopping_list_id: result.insertId});
+                            });
                         });
-                }
-            );
+                });
         });
-
-
     });
 });
 
+/**
+ * Invite person to shopping list
+ *
+ * URL: /api/shoppingList/invite
+ * method: POST
+ * data: {
+ *      shopping_list_id,
+ *      person_id - person to invite
+ * }
+ */
 router.post('/invite', function(req, res) {
-
-
+    if(!req.body.shopping_list_id || !req.body.person_id)
+        return res.status(400).send();
     pool.getConnection(function(err, connection) {
-        checkConnectionError(err, connection, res);
-        if(err) {
-            res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            return;
-        } else connection.query(
-            'INSERT INTO shopping_list_person(' +
-            'shopping_list_id, person_id) ' +
-            'SELECT ?,? FROM shopping_list_person ' +
+        if(err)
+            return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+        connection.query('INSERT INTO shopping_list_person(shopping_list_id, person_id) SELECT ?,? FROM shopping_list_person ' +
             'WHERE EXISTS (SELECT person_id FROM shopping_list_person WHERE person_id = ? AND shopping_list_id = ?) LIMIT 1;',
-            [
-                req.body.shopping_list_id,
-                req.body.person_id,
-                req.session.person_id,
-                req.body.shopping_list_id
-            ],
-            function(err, result) {
+            [req.body.shopping_list_id, req.body.person_id, req.session.person_id, req.body.shopping_list_id], function(err, result) {
                 connection.release();
-                if(err) {
-                    res.status(500).json({'Error' : 'connecting to database: ' } + err);
-                    return;
-                } else if (result.affectedRows != 1) {
-
+                if(err)
+                    return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                else if (result.affectedRows != 1)
                     res.status(403).json({success: "false", error: "no access"});
-                } else {
+                else
                     res.status(200).json({success: "true"});
-                }
             });
     });
 });
 
+/**
+ * Update shopping list entry
+ *
+ * URL: /api/shoppintList/entry/{shopping_list_entry_id}
+ * method: PUT
+ * data: {
+ *      shopping_list_id,
+ *      other sql attributes you want to change
+ * }
+ */
 router.put('/entry/:shopping_list_entry_id', function(req, res) {
-
-
-    if(!req.params.shopping_list_entry_id) {
-        connection.release();
-        res.status(400).json({'Error' : (tableName + '_id not specified: ') } + err);
-        return;
-    }
-
+    if(!req.params.shopping_list_entry_id)
+        return res.status(400).send();
     pool.getConnection(function(err, connection) {
-        checkConnectionError(err, connection, res);
-
+        if(err) {
+            connection.release();
+            return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+        }
         var query = putRequestSetup(req.params.shopping_list_entry_id, req, connection, "shopping_list_entry");
-
-        connection.query(
-            query[0],
-            query[1],
-            function(err, result) {
-
+        connection.query(query[0], query[1], function(err, result) {
+            if(err)
+                return res.status(500).send();
                 checkResult(err, result, connection, res);
             });
     });
 });
 
+/**
+ * Remove a shopping list entry
+ *
+ * URL: /api/shoppingList/entry/{shopping_list_entry_id}
+ * method: DELETE
+ * data: {
+ *
+ * }
+ */
 router.delete('/entry/:shopping_list_entry_id', function(req, res) {
-
     pool.getConnection(function(err, connection) {
-        checkConnectionError(err, connection, res);
-
-        //DELETE FROM shopping_list_entry WHERE shopping_list_id = listId AND shopping_list_entry_id = entryId;
+        if(err) {
+            connection.release();
+            return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+        }
         connection.query(
             'DELETE FROM shopping_list_entry ' +
             'WHERE shopping_list_entry_id = ? AND shopping_list_id IN   ' +
@@ -143,19 +137,25 @@ router.delete('/entry/:shopping_list_entry_id', function(req, res) {
             'WHERE person.person_id = 1 ' +
             'UNION  ' +
             'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = 1) LIMIT 1',
-            [checkRange(req.params.shopping_list_entry_id, 1, null)],
-            function(err, result) {checkResult(err, result, connection, res);}
-        );
+            [checkRange(req.params.shopping_list_entry_id, 1, null)], function(err, result) {
+                checkResult(err, result, connection, res);
+            });
     });
 });
 
+/**
+ * Return the shopping list current user has access to
+ *
+ * URL: /api/shoppingList
+ * method: GET
+ */
 router.get('/', function(req, res) {
-
     pool.getConnection(function(err, connection) {
-        checkConnectionError(err, connection, res);
-
+        if(err) {
+            connection.release();
+            return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+        }
         var p_id = req.session.person_id;
-
         connection.query('SELECT * ' +
             'FROM shopping_list LEFT JOIN currency USING(currency_id)  ' +
             'LEFT JOIN shopping_list_entry USING(shopping_list_id)  ' +
@@ -169,70 +169,70 @@ router.get('/', function(req, res) {
             'WHERE person.person_id = ? ' +
             'UNION ' +
             'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?)',
-            [checkRange(req.params.shopping_list_id, 1, null), p_id, p_id, p_id],
+            [p_id, p_id, p_id],
             function(err, result) {
                 connection.release();
-
                 if (err) {
-                    res.status(500).json({error: err});
+                    return res.status(500).json({error: err});
                 } else if (!result.length) {
-                    res.status(403).json({error: "no access/does not exist", success: false});
-                } else {
-                	var shopping_lists = [];
-
-                	for (var i = 0; i < result.length;i++) {
-                		var current_shopping_list_id = shoppingListExistsInArray(result[i].shopping_list_id, shopping_lists);
-                        if (current_shopping_list_id == -1) {
-                        	shopping_lists.push({
-                                "shopping_list_id":result[i].shopping_list_id,
-                                "shopping_list_name":result[i].shopping_list_name,
-                                "currency_id":result[i].currency_id,
-                                "currency_short":result[i].currency_short,
-                                "currency_long":result[i].currency_long,
-                                "currency_sign":result[i].currency_sign,
-                                "currency_major":result[i].currency_major,
-                                "currency_long":result[i].currency_long,
-                                "shopping_list_entries": [],
-                                "person_ids": []
-                            });
-                        	current_shopping_list_id = shopping_lists.length - 1;
-                        }
-
-                        console.log(current_shopping_list_id);
-
-						if (result[i].shopping_list_entry_id) shopping_lists[current_shopping_list_id].shopping_list_entries.push({
-							"shopping_list_entry_id":result[i].shopping_list_entry_id,
-							"entry_text":result[i].entry_text,
-							"added_by_person_id":result[i].added_by_person_id,
-							"purchased_by_person_id":result[i].purchased_by_person_id,
-							"cost":result[i].cost,
-							"datetime_added":result[i].datetime_added,
-							"datetime_purchased":result[i].datetime_purchased
-						});
-
-						if (result[i].person_id) {
-							shopping_lists[current_shopping_list_id].person_ids.push(result[i].person_id);
-						}
-					}
-					for (var i = 0; i < shopping_lists.length; i++) {
-                        shopping_lists[i].shopping_list_entries = removeDuplicateUsingFilter(shopping_lists[i].shopping_list_entries);
-                        shopping_lists[i].person_ids = removeDuplicateUsingFilter(shopping_lists[i].person_ids);
-					}
-					res.status(200).json(shopping_lists);
+                    return res.status(403).json({error: "no access/does not exist", success: false});
                 }
+                var shopping_lists = [];
+                for (var i = 0; i < result.length;i++) {
+                    var current_shopping_list_id = shoppingListExistsInArray(result[i].shopping_list_id, shopping_lists);
+                    if (current_shopping_list_id == -1) {
+                        shopping_lists.push({
+                            "shopping_list_id":result[i].shopping_list_id,
+                            "shopping_list_name":result[i].shopping_list_name,
+                            "currency_id":result[i].currency_id,
+                            "currency_short":result[i].currency_short,
+                            "currency_long":result[i].currency_long,
+                            "currency_sign":result[i].currency_sign,
+                            "currency_major":result[i].currency_major,
+                            "currency_long":result[i].currency_long,
+                            "shopping_list_entries": [],
+                            "person_ids": []
+                        });
+                        current_shopping_list_id = shopping_lists.length - 1;
+                    }
+
+                    if (result[i].shopping_list_entry_id) shopping_lists[current_shopping_list_id].shopping_list_entries.push({
+                        "shopping_list_entry_id":result[i].shopping_list_entry_id,
+                        "entry_text":result[i].entry_text,
+                        "added_by_person_id":result[i].added_by_person_id,
+                        "purchased_by_person_id":result[i].purchased_by_person_id,
+                        "cost":result[i].cost,
+                        "datetime_added":result[i].datetime_added,
+                        "datetime_purchased":result[i].datetime_purchased
+                    });
+
+                    if (result[i].person_id) {
+                        shopping_lists[current_shopping_list_id].person_ids.push(result[i].person_id);
+                    }
+                }
+                for (i = 0; i < shopping_lists.length; i++) {
+                    shopping_lists[i].shopping_list_entries = removeDuplicateUsingFilter(shopping_lists[i].shopping_list_entries);
+                    shopping_lists[i].person_ids = removeDuplicateUsingFilter(shopping_lists[i].person_ids);
+                }
+                res.status(200).json(shopping_lists);
             }
         );
     });
 });
 
+/**
+ * Get all info about one shoppinglist
+ *
+ * URL: /api/shoppingList/{shopping_list_id}
+ * method: GET
+ */
 router.get('/:shopping_list_id', function(req, res) {
-
-
     pool.getConnection(function(err, connection) {
-        checkConnectionError(err, connection, res);
-
+        if(err) {
+            connection.release();
+            return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+        }
         var p_id = req.session.person_id;
-
         connection.query('SELECT * ' +
             'FROM shopping_list LEFT JOIN currency USING(currency_id)  ' +
             'LEFT JOIN shopping_list_entry USING(shopping_list_id)  ' +
@@ -249,50 +249,58 @@ router.get('/:shopping_list_id', function(req, res) {
             [checkRange(req.params.shopping_list_id, 1, null), p_id, p_id, p_id],
             function(err, result) {
                 connection.release();
-
                 if (err) {
-                    res.status(500).json({error: err});
+                    return res.status(500).json({error: err});
                 } else if (!result.length) {
-                    res.status(403).json({error: "no access/does not exist", success: false});
-                } else {
-                    var entries = [], person_ids = [];
-                    for (var i = 0; i < result.length; i++) {
-                        if (result[i].shopping_list_entry_id) entries.push({
-                            "shopping_list_entry_id":result[i].shopping_list_entry_id,
-                            "entry_text":result[i].entry_text,
-                            "added_by_person_id":result[i].added_by_person_id,
-                            "purchased_by_person_id":result[i].purchased_by_person_id,
-                            "cost":result[i].cost,
-                            "datetime_added":result[i].datetime_added,
-                            "datetime_purchased":result[i].datetime_purchased
-                        });
-                        if (result[i].person_id) {
-                            person_ids.push(result[i].person_id);
-                        }
-                    }
-                    res.status(200).json({
-                        "shopping_list_id":result[0].shopping_list_id,
-                        "shopping_list_name":result[0].shopping_list_name,
-                        "currency_id":result[0].currency_id,
-                        "currency_short":result[0].currency_short,
-                        "currency_long":result[0].currency_long,
-                        "currency_sign":result[0].currency_sign,
-                        "currency_major":result[0].currency_major,
-                        "currency_long":result[0].currency_long,
-                        "shopping_list_entries": removeDuplicateUsingFilter(entries),
-                        "person_ids": removeDuplicateUsingFilter(person_ids)
-                    });
+                    return res.status(403).json({error: "no access/does not exist", success: false});
                 }
+                var entries = [], person_ids = [];
+                for (var i = 0; i < result.length; i++) {
+                    if (result[i].shopping_list_entry_id) entries.push({
+                        "shopping_list_entry_id":result[i].shopping_list_entry_id,
+                        "entry_text":result[i].entry_text,
+                        "added_by_person_id":result[i].added_by_person_id,
+                        "purchased_by_person_id":result[i].purchased_by_person_id,
+                        "cost":result[i].cost,
+                        "datetime_added":result[i].datetime_added,
+                        "datetime_purchased":result[i].datetime_purchased
+                    });
+                    if (result[i].person_id) {
+                        person_ids.push(result[i].person_id);
+                    }
+                }
+                res.status(200).json({
+                    "shopping_list_id":result[0].shopping_list_id,
+                    "shopping_list_name":result[0].shopping_list_name,
+                    "currency_id":result[0].currency_id,
+                    "currency_short":result[0].currency_short,
+                    "currency_long":result[0].currency_long,
+                    "currency_sign":result[0].currency_sign,
+                    "currency_major":result[0].currency_major,
+                    "currency_long":result[0].currency_long,
+                    "shopping_list_entries": removeDuplicateUsingFilter(entries),
+                    "person_ids": removeDuplicateUsingFilter(person_ids)
+                });
             }
         );
     });
 });
 
-
+/**
+ * Add entry to shopping_list
+ *
+ * URL: /api/shoppingList/entry
+ * method: POST
+ * data: {
+ *      shopping_list_id,
+ *      entry_text,
+ *      purchased_by_person_id,
+ *      cost,
+ *      datetime_purchased
+ * }
+ */
 router.post('/entry', function(req, res) {
-    var data = req.body, purchased = null, p_id = req.session.person_id;
-    if (data.purchased_by_person_id) {purchased = checkRange(data.purchased_by_person_id, 1, null);}
-
+    var data = req.body, p_id = req.session.person_id;
     pool.getConnection(function(err, connection) {
         checkConnectionError(err, connection, res);
         connection.query(
@@ -312,7 +320,6 @@ router.post('/entry', function(req, res) {
             'WHERE person.person_id = 1 ' +
             'UNION  ' +
             'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = 1) LIMIT 1',
-
             [
                 checkRange(data.shopping_list_id, 1, null),
                 data.entry_text,
@@ -324,38 +331,36 @@ router.post('/entry', function(req, res) {
                 p_id,
                 p_id,
                 p_id
-            ],
-            function(err, result) {
+            ], function(err, result) {
                 connection.release();
-
-                if (err) {
-                    res.status(500).json({error: err});
-                } else if (result.insertId == 0) {
-                    res.status(400).json({error: "No access/does not exist"});
-                } else {
-                    res.status(200).json({shopping_cart_entry_id: result.insertId});
-                }
+                if (err)
+                    return res.status(500).json({error: err});
+                else if (result.insertId == 0)
+                    return res.status(400).json({error: "No access/does not exist"});
+                return res.status(200).json({shopping_cart_entry_id: result.insertId});
             });
     });
 });
 
+/**
+ * Update shopping list info
+ *
+ * URL: /api/shoppingList/{shopping_list_id}
+ * method: PUT
+ * data: {
+ *      data to change sql attributes
+ * }
+ */
 router.put('/:shopping_list_id', function(req, res) {
-
-
-    if(!req.body.shopping_list_id) {
-        res.status(400).json({'Error' : (tableName + '_id not specified: ') } + err);
-        return;
-    }
-
     pool.getConnection(function(err, connection) {
-        checkConnectionError(err, connection, res);
-
-        //'UPDATE shopping_list SET shopping_list_name = ?, currency_id = ? WHERE shopping_list_id = ?'
-        var query = putRequestSetup(req.params.shopping_list_id ,req , connection, "shopping_list");
-        connection.query(
-            query[0],
-            query[1],
-            function(err, result) {checkResult(err, result, connection, res);}
+        if(err) {
+            connection.release();
+            return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+        }
+        var query = putRequestSetup(req.params.shopping_list_id , req, connection, "shopping_list");
+        connection.query(query[0], query[1], function(err, result) {
+                checkResult(err, result, connection, res);
+            }
         );
     });
 });
@@ -397,9 +402,7 @@ function checkConnectionError(err, connection, res) {
     if(err) {
         connection.release();
         res.status(500).json({'Error' : 'connecting to database: ' } + err);
-        return;
     }
-
 }
 
 /**
