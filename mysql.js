@@ -11,6 +11,7 @@ pool = mysql.createPool({
 
         if ( ( field.type === "BIT" ) && ( field.length === 1 ) ) {
             var bytes = field.buffer();
+            if (!bytes) return null;
             return( bytes[ 0 ] === 1 );
         }
 

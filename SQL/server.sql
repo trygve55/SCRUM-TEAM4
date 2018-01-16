@@ -90,7 +90,7 @@ CREATE TABLE group_person (
     joined_timestamp DATETIME,
     role_id INTEGER NOT NULL DEFAULT 1,
     invite_accepted BIT NOT NULL DEFAULT 0,
-    was_invited BIT NOT NULL,
+    was_invited BIT NOT NULL DEFAULT 0,
     invite_sent_datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
     CONSTRAINT group_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),

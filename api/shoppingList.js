@@ -177,6 +177,7 @@ router.get('/', function(req, res) {
                 } else if (!result.length) {
                     return res.status(403).json({error: "no access/does not exist", success: false});
                 }
+                console.log(result);
                 var shopping_lists = [];
                 for (var i = 0; i < result.length;i++) {
                     var current_shopping_list_id = shoppingListExistsInArray(result[i].shopping_list_id, shopping_lists);
