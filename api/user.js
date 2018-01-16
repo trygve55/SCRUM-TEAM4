@@ -95,7 +95,7 @@ router.post('/register', function(req, res) {
                                     user.middlename,
                                     user.lastname,
                                     user.phone,
-                                    new Date(user.birth_day).toISOString().slice(0, 10),
+                                    user.birth_day ? new Date(user.birth_day).toISOString().slice(0, 10) : null,
                                     user.gender,
                                     user.profile_pic,
                                     user.shopping_list_id
@@ -146,8 +146,8 @@ router.post('/register', function(req, res) {
                                                 });
                                             } else {
                                                 connection.release();
-                                                req.session.person_id = result.insertId;
-                                                req.session.save();
+                                                //req.session.person_id = result.insertId;
+                                                //req.session.save();
                                                 res.status(200).json({message: "Transaction successful"});
                                             }
                                         });

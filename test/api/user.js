@@ -1,5 +1,30 @@
 
 describe('User API', function() {
+    describe('/api/user/register POST', function () {
+        it("Should register a user", function (done) {
+            request.post('/api/user/register')
+                .send({
+                    email:"test2@test2.no",
+                    username:"test2",
+                    password:"hei",
+                    forename:"testperson",
+                    lastname:"testperson"
+                    })
+                .expect(200)
+                .expect({message: 'Transaction successful'})
+                .end(function(){
+                    pool.getConnection(function (err, connection) {
+                        if (err) throw err;
+                        connection.query('DELETE FROM person WHERE username = "test2"', function (err, result) {
+                           if (err) throw err;
+                           connection.release();
+                           done();
+                        });
+                    });
+                });
+        });
+    });
+
     describe('/api/user/getUser GET', function () {
         it("Should return the requested user's data (private)", function (done) {
             request.get('/api/user/getUser').query({
@@ -7,7 +32,9 @@ describe('User API', function() {
             }).expect([{
                 phone: '23456',
                 email: 'test@test.com'
-            }]).end(done);
+            }]).expect(200)
+                .end(done);
+
         });
         it("Should return the requested users' data (public)", function(done) {
             request.get('/api/user/getUser').query({
