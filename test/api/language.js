@@ -2,9 +2,10 @@
  * Prepare server for test language
  */
 before(function(done){
-    request.post('/api/language')
+    request.post('/api/login')
         .send({
-            lang: 'test_lang'
+            username: 'testnavn',
+            password: 'test'
         })
         .expect(200)
         .end(function(err, res) {
@@ -24,24 +25,6 @@ after(function(){
  * Test for the language API
  */
 describe('Language API', function(){
-    var Cookies;
-    /**
-     * Prepare server for test language
-     */
-    before(function(done){
-        request.post('/api/language')
-            .send({
-                lang: 'test_lang'
-            })
-            .expect(200)
-            .end(function(err, res){
-                if(err)
-                    return done(err);
-                Cookies = res.headers['set-cookie'].pop().split(';')[0];
-                return done();
-            });
-    });
-
     /**
      * Check bad request handling
      */
