@@ -3,7 +3,10 @@ var path = require('path');
 var fs = require('fs');
 
 /**
- * Read correct json file in langs and return it based on language and requested URL
+ * Read correct json file in langs and return it the data
+ *
+ * URL: /api/language
+ * method: GET
  */
 router.get('/', function(req, res){
     var lang = req.session.lang;
@@ -35,14 +38,27 @@ router.get('/', function(req, res){
     readStream.pipe(res);
 });
 
+var langs = [
+    'en_US',
+    'nb_NO'
+];
+
+/**
+ * Set the current users language preferences
+ *
+ * URL: /api/language
+ * method: POST,
+ * data: {
+ *      lang - the new language to set for the user
+ * }
+ */
 router.post('/', function(req, res){
     var lang = req.body.lang;
-    if(!lang)
-        return res.status(400).send("Bad request");
-
+    if(!lang || langs.indexOf(lang) == -1)
+        return res.status(400).send();
     req.session.lang = lang;
     req.session.save();
-    res.status(200).send("OK");
+    res.status(200).send();
 });
 
 module.exports = router;
