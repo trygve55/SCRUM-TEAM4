@@ -4,7 +4,6 @@
     padding-bottom: 40px;
     padding-left: 4%;
     border-radius: 15px;
-    overflow: auto;
 }
 
 body {
@@ -17,7 +16,6 @@ body {
 }
 .list-group {
     max-height: 280px;
-    overflow-y: scroll;
 }
 #addgroup-checkbutton {
     color: #a3e6f7;
@@ -35,7 +33,6 @@ body {
 .typeahead,
 .tt-query,
 .tt-hint {
-    width: 150%;
     border: 2px solid #ccc;
     outline: none;
 }

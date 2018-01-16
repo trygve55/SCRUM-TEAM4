@@ -8,7 +8,7 @@ module.exports = router;
 * Optional parameters: datetime_deadline, datetime_done, done_by_id.
 */
 router.post('/', function(req, res) {
-	console.log('POST-request established');
+
 	var data = req.body, done = null;
 	if (data.datetime_done) {done = data.datetime_done;}
 
@@ -36,7 +36,7 @@ router.post('/', function(req, res) {
 * Required parameters: todo_id, person_id.
 */
 router.post('/person/', function(req, res) {
-	console.log('POST-request established');
+
 	pool.getConnection(function(err, connection) {
 		if (!checkConnectionError(err, connection, res)) {return;}
 		var data = req.body;
@@ -46,7 +46,7 @@ router.post('/person/', function(req, res) {
 			function(err, result) {
 				connection.release();
 				if (err) {throw err;}
-				if (result) {res.json({success: "Success", id: result.insertId});}
+				if (result) {res.status(200).json({success: "Success", id: result.insertId});}
 			}
 		);
 	});
@@ -57,7 +57,7 @@ router.post('/person/', function(req, res) {
 * Required parameters: todo_id(URL).
 */
 router.get('/:todo_id', function(req, res) {
-console.log('GET-request established');
+
 	pool.getConnection(function(err, connection) {
 		if (!checkConnectionError(err, connection, res)) {return;}
 
@@ -73,7 +73,7 @@ console.log('GET-request established');
 					for (var p in result[0]) {values[p] = result[0][p];}
 					delete values.person_id;
 					values.people = people;
-					res.json(values);
+					res.status(200).json(values);
 				}
 			}
 		);
@@ -85,7 +85,7 @@ console.log('GET-request established');
 * Required parameters: person_id(URL).
 */
 router.get('/person/:person_id', function(req, res) {
-	console.log('GET-request established');
+
 	pool.getConnection(function(err, connection) {
 		if (!checkConnectionError(err, connection, res)) {return;}
 
@@ -103,7 +103,7 @@ router.get('/person/:person_id', function(req, res) {
 						delete values.person_id;
 						entries.push(values);
 					}
-					res.json(entries);
+					res.status(200).json(entries);
 				}
 			}
 		);
@@ -116,7 +116,7 @@ router.get('/person/:person_id', function(req, res) {
 * Optional parameters: Any parameters that tasks use.
 */
 router.put('/:todo_id', function(req, res) {
-	console.log('PUT-request initiating');
+
 	pool.getConnection(function(err, connection) {
 		checkConnectionError(err, connection, res);
 
@@ -134,7 +134,7 @@ router.put('/:todo_id', function(req, res) {
 * Required parameters: person_id(URL).
 */
 router.delete('/person/:person_id', function(req, res) {
-	console.log('POST-request initiating');
+
 	pool.getConnection(function(err, connection) {
 		checkConnectionError(err, connection, res);
 
@@ -180,7 +180,7 @@ function checkConnectionError(err, connection, res) {
 		res.json({'Error' : 'connecting to database: ' } + err);
 		return false;
 	}
-	console.log('Database connection established');
+
 	return true;
 }
 
@@ -190,7 +190,7 @@ function checkConnectionError(err, connection, res) {
 function checkResult(err, result, connection, res) {
 	connection.release();
 	if (err) {throw err;}
-	if (result) {res.json({success: "Success"});}
+	if (result) {res.status(200).json({success: "Success"});}
 }
 
 /**
