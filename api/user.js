@@ -182,7 +182,7 @@ router.get('/user', function (req, res) {
                 return res.status(200).json({message:"Username already exists"});
             }
             connection.release();
-            res.status(200).send("Username valid");
+            res.status(200).json({message:"Username valid"});
         });
     });
 });
@@ -301,9 +301,10 @@ router.put('/:person_id', function(req, res){
         var query = putRequestSetup(parameter.person_id, req.body, connection, "person");
         connection.query(query[0], query[1], function (err, result) {
             connection.release();
-            if (err)
-            if (result)
-            return res.status(200).json({"success" : query[1] + " updated"});
+            if (err) {
+                res.status(500).json({error: err});
+            }
+            return res.status(200).json({"success" : query[1]});
         });
     });
 });

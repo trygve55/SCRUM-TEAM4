@@ -2,7 +2,7 @@
  * Prepare server for test language
  */
 before(function(done){
-    request.post('/api/login')
+    request.post('/api/auth/')
         .send({
             username: 'testnavn',
             password: 'test'

@@ -15,13 +15,57 @@ describe('User API', function() {
                 .end(function(){
                     pool.getConnection(function (err, connection) {
                         if (err) throw err;
-                        connection.query('DELETE FROM person WHERE username = "test2"', function (err, result) {
+                        connection.query('DELETE FROM person WHERE username = "test2"', function (err) {
                            if (err) throw err;
                            connection.release();
                            done();
                         });
                     });
                 });
+        });
+    });
+
+    describe('/api/user/user GET', function () {
+       it("Should return if username is valid", function (done) {
+          request.get('/api/user/user')
+              .query({
+                  username: ["testbrukeren0"]
+              })
+              .expect(200)
+              .expect({message: "Username valid"})
+              .end(done);
+       });
+    });
+
+    describe('/api/user/mail GET', function () {
+        it("Should return if email is valid", function (done) {
+            request.get('/api/user/mail')
+                .query({
+                    email: ["testbruker@test.no"]
+                })
+                .expect(200)
+                .expect({message: "E-mail valid"})
+                .end(done);
+        });
+    });
+
+    describe('/api/user/:person_id PUT', function() {
+        it("Should update values", function (done) {
+           var userEdit = {forename: "test2"};
+           request.put('/api/user/1')
+               .send(userEdit)
+               .expect(200)
+               .expect({success: "test2"})
+               .end(function () {
+                   pool.getConnection(function (err, connection) {
+                       if(err) throw err;
+                       connection.query('UPDATE person SET forename = "test" WHERE username = "testnavn"', function (err) {
+                           connection.release();
+                           if (err) throw err;
+                           done();
+                       })
+                   })
+               });
         });
     });
 
