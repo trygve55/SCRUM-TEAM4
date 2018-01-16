@@ -11,10 +11,13 @@ DROP TABLE IF EXISTS cleaning_list_points;
 DROP TABLE IF EXISTS newsfeed_post;
 DROP TABLE IF EXISTS poll_options;
 DROP TABLE IF EXISTS poll_vote;
+DROP TABLE IF EXISTS private_todo;
 DROP TABLE IF EXISTS todo;
 DROP TABLE IF EXISTS todo_person;
 DROP TABLE IF EXISTS budget_entry_type;
 DROP TABLE IF EXISTS budget_entry;
+DROP TABLE IF EXISTS budget_entry_person;
+DROP TABLE IF EXISTS person_budget_entry;
 SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE currency (
@@ -87,6 +90,7 @@ CREATE TABLE group_person (
     joined_timestamp DATETIME,
     role_id INTEGER NOT NULL DEFAULT 1,
     invite_accepted BIT NOT NULL DEFAULT 0,
+    was_invited BIT NOT NULL,
     invite_sent_datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
     CONSTRAINT group_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
@@ -110,7 +114,7 @@ CREATE TABLE shopping_list_person (
 CREATE TABLE shopping_list_entry (
     shopping_list_entry_id INTEGER NOT NULL AUTO_INCREMENT,
     shopping_list_id INTEGER NOT NULL,
-    entry_text NVARCHAR(25) NOT NULL,
+    entry_text NVARCHAR(255) NOT NULL,
     added_by_person_id INTEGER NOT NULL,
     purchased_by_person_id INTEGER DEFAULT NULL,
     cost INTEGER NOT NULL,
@@ -127,7 +131,9 @@ CREATE TABLE cleaning_list_points (
     group_id INTEGER NOT NULL,
     month_year DATE NOT NULL,
     points INTEGER NOT NULL,
-    CONSTRAINT cleaning_list_points PRIMARY KEY(person_id, group_id, month_year)
+	CONSTRAINT cleaning_list_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
+	CONSTRAINT cleaning_list_group_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
+    CONSTRAINT cleaning_list_pk PRIMARY KEY(person_id, group_id, month_year)
 );
 
 CREATE TABLE newsfeed_post (
@@ -160,6 +166,19 @@ CREATE TABLE poll_vote (
     CONSTRAINT poll_vote_pk PRIMARY KEY(post_id, person_id)
 );
 
+CREATE TABLE private_todo (
+    private_todo_id INTEGER NOT NULL AUTO_INCREMENT,
+    person_id INTEGER NOT NULL,
+    todo_text NVARCHAR(200) NOT NULL,
+    datetime_deadline DATETIME,
+    datetime_added DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    datetime_done DATETIME DEFAULT NULL,
+    is_deactivated BIT NOT NULL DEFAULT 0,
+    color_hex INTEGER,
+    CONSTRAINT private_todo_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
+    CONSTRAINT priavte_todo_pk PRIMARY KEY(private_todo_id)
+);
+
 CREATE TABLE todo (
     todo_id INTEGER NOT NULL AUTO_INCREMENT,
     group_id INTEGER NOT NULL,
@@ -170,6 +189,8 @@ CREATE TABLE todo (
     created_by_id INTEGER NOT NULL,
     done_by_id INTEGER,
     is_deactivated BIT NOT NULL DEFAULT 0,
+    color_hex INTEGER,
+    CONSTRAINT todo_group_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
     CONSTRAINT created_by_fk FOREIGN KEY(created_by_id) REFERENCES person(person_id),
     CONSTRAINT done_by_fk FOREIGN KEY(done_by_id) REFERENCES person(person_id),
     CONSTRAINT todo_pk PRIMARY KEY(todo_id)
@@ -185,26 +206,35 @@ CREATE TABLE todo_person (
 
 CREATE TABLE budget_entry_type ( 
     budget_entry_type_id INTEGER NOT NULL AUTO_INCREMENT,
-    group_id INTEGER NOT NULL,
+    shopping_list_id INTEGER NOT NULL,
     entry_type_name NVARCHAR(20) NOT NULL,
     entry_type_color VARCHAR(6) NOT NULL,
-    CONSTRAINT budget_entry_type_group_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
+    CONSTRAINT budget_entry_type_shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT budget_entry_type_pk PRIMARY KEY(budget_entry_type_id)
 );
 
 CREATE TABLE budget_entry (
     budget_entry_id INTEGER NOT NULL AUTO_INCREMENT,
     budget_entry_type_id INTEGER NOT NULL,
-    group_id INTEGER NOT NULL,
+    shopping_list_id INTEGER NOT NULL,
     added_by_id INTEGER NOT NULL,
     amount INTEGER NOT NULL,
     text_note NVARCHAR(30),
     entry_datetime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    receipt_pic BLOB,
+    receipt_pic MEDIUMBLOB,
     CONSTRAINT budget_entry_type_fk FOREIGN KEY(budget_entry_type_id) REFERENCES budget_entry_type(budget_entry_type_id),
-    CONSTRAINT budget_entry_group_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
+    CONSTRAINT budget_entry_type_shopping_list_fk2 FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT budget_entry_person_fk FOREIGN KEY(added_by_id) REFERENCES person(person_id),
     CONSTRAINT budget_entry_pk PRIMARY KEY(budget_entry_id)
+);
+
+CREATE TABLE person_budget_entry (
+    person_id INTEGER NOT NULL,
+    budget_entry_id INTEGER NOT NULL,
+    is_paid BIT NOT NULL DEFAULT 0,
+    CONSTRAINT person_budget_entry_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
+    CONSTRAINT budget_entry_fk FOREIGN KEY(budget_entry_id) REFERENCES budget_entry(budget_entry_id),
+    CONSTRAINT shopping_list_budget_entry_pk PRIMARY KEY(person_id, budget_entry_id)
 );
 
 INSERT INTO home_role(role_id, role_name) VALUES (1, 'Member');
@@ -394,11 +424,11 @@ INSERT INTO person (email, username, password_hash, forename, middlename, lastna
 INSERT INTO home_group (group_name, group_desc, group_type, created_datetime, group_pic, cleaning_list_interval, default_currency_id, shopping_list_id) 
 	VALUES ('test group', 'lol', DEFAULT, DEFAULT, NULL, DEFAULT, 100, 3);
 
-INSERT INTO group_person (person_id, group_id, joined_timestamp, role_id) 
-	VALUES (1, 1, DEFAULT, 2);
+INSERT INTO group_person (person_id, group_id, joined_timestamp, role_id, was_invited) 
+	VALUES (1, 1, DEFAULT, 2, 0);
 
-INSERT INTO group_person (person_id, group_id, joined_timestamp, role_id) 
-	VALUES (2, 1, DEFAULT, DEFAULT);
+INSERT INTO group_person (person_id, group_id, joined_timestamp, role_id, was_invited) 
+	VALUES (2, 1, DEFAULT, DEFAULT, 0);
 
 INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) 
 	VALUES (4, 1, 0, true, CURRENT_DATE);
