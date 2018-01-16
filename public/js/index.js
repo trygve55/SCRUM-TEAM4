@@ -25,7 +25,7 @@ $(function () {
             data: {
                 lang: 'nb_NO'
             },
-            success: function (data) {
+            success: function () {
                 $.ajax({
                     url: '/api/language',
                     method: 'GET',
@@ -52,7 +52,7 @@ $(function () {
             data: {
                 lang: 'en_US'
             },
-            success: function (data) {
+            success: function () {
                 $.ajax({
                     url: '/api/language',
                     method: 'GET',
@@ -74,17 +74,15 @@ $(function () {
 
     $('#index-logoutNavbar').click(function () {
         $.ajax({
-            url: '/api/login/logout',
+            url: '/api/auth/logout',
             method: 'POST',
             success: function (data) {
                 if(!data.login){
                     window.top.location="http://localhost:8000/login.html";
                 }
             }
-        })
-
-    })
-
+        });
+    });
 
     $.ajax({
         url:'/api/user/getUser',
@@ -99,9 +97,5 @@ $(function () {
             $('#index-username').text(data[0].forename + ' ' + data[0].lastname);
         },
         error: console.error
-
-
-
-    })
-
+    });
 });
