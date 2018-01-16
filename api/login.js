@@ -4,13 +4,13 @@ var bcrypt = require('bcrypt');
 module.exports = router;
 
 router.post('/logout', function(req, res) {
-    console.log("logout");
+
     req.session.destroy();
     res.status(200).json({login: false});
 });
 
 router.post('/', function(req, res){
-    console.log('POST-request established');
+
 
     var loginVariable, username = req.body.username, password = req.body.password;
 
@@ -37,16 +37,16 @@ router.post('/', function(req, res){
                 }
 
                 bcrypt.compare(password, results[0].password_hash, function(err, hash_res) {
-                    console.log("bcrypt" + res);
+
 
                     if (hash_res) {
-                        console.log("login for person id: " + results[0].person_id);
+
                         req.session.person_id = results[0].person_id;
                         req.session.save();
                         res.status(200).json({login: true, person_id: results[0].person_id});
 
                     } else {
-                        console.log("Login failed username: " + username);
+
                         res.status(400).json({login: false, error: "login failed"});
                     }
                 });
@@ -56,14 +56,14 @@ router.post('/', function(req, res){
 });
 
 router.get('/', function(req, res) {
-    console.log('GET-request established');
-    console.log("Login check");
-    console.log(req.session);
+
+
+
     res.status(200).json({login: !!req.session.person_id});
 });
 
 router.post('/facebook', function(req, res){
-    console.log('POST-request established');
+
     pool.getConnection(function (err, connection) {
         connection.query("SELECT person_id FROM person WHERE facebook_api_id = ?;", [req.body.facebook_api_id], function (error, results, fields) {
             if(err) {
@@ -72,10 +72,10 @@ router.post('/facebook', function(req, res){
             }
             if (results.length == 1) {
                 connection.release();
-                console.log("login for person id: " + results[0].person_id);
+
                 req.session.person_id = results[0].person_id;
                 req.session.save();
-                console.log(req.session);
+
                 res.status(200).json({login: true, person_id: results[0].person_id});
             } else {
                 connection.beginTransaction(function(err){

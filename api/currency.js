@@ -2,6 +2,11 @@ var router = require('express').Router();
 
 module.exports = router;
 
+/**
+ * Get all the currencies correctly sorted
+ *
+ * URL: '/api/currency
+ */
 router.get('/', function(req, res){
     pool.getConnection(function(err, connection) {
         if(err)
@@ -11,7 +16,6 @@ router.get('/', function(req, res){
             if(err)
                 return res.status(500).json({'Error' : 'connecting to database: ' } + err);
 
-            //svar på GET request
             res.status(200).json(result);
         });
     });

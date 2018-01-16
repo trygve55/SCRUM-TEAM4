@@ -17,7 +17,7 @@ $('document').ready(function () {
 
 
     $('#tasks-norway').click(function () {
-        console.log("norsk");
+
         $.ajax({
             url: '/api/language',
             method: 'GET',
@@ -36,7 +36,7 @@ $('document').ready(function () {
     });
 
     $('#tasks-england').click(function () {
-        console.log("english");
+
         $.ajax({
             url: '/api/language',
             method: 'GET',

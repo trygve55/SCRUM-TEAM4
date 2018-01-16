@@ -19,7 +19,7 @@ router.get('/', function(req, res){
         return res.status(400).send("Bad request");
     pth = pth.split('.')[0];
     var p = path.join(__dirname, '../langs/' + lang + pth + '.json');
-    console.log(p);
+
     if(!fs.existsSync(p)){
         res.status(400).send("Non existing translation");
         return;
@@ -39,7 +39,7 @@ router.post('/', function(req, res){
     var lang = req.body.lang;
     if(!lang)
         return res.status(400).send("Bad request");
-    console.log("Lang is set");
+
     req.session.lang = lang;
     req.session.save();
     res.status(200).send("OK");

@@ -78,7 +78,7 @@ $('document').ready(function(){
                                         group_id: data.id
                                     },
                                     success: function(data){
-                                        console.log(data);
+
                                     },
                                     error: console.error
                                 });

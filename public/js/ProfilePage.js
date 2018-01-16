@@ -79,7 +79,7 @@ $(function () {
             variables: [
             'forename',
             'lastname' ,
-            'email' ,
+            'email',
             'phone',
             'username',
             'facebook_api_id'
@@ -91,7 +91,7 @@ $(function () {
             $('#profile-phone').text(data[0].phone ? data[0].phone : "");
             $('#profile-username').text(data[0].username == data[0].facebook_api_id ? "" : data[0].username);
         }
-    })
+    });
 
 });
 

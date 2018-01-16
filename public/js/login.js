@@ -18,7 +18,7 @@ window.fbAsyncInit = function() {
                 method: "GET",
                 success: function(data){
                     if(data.login) {
-                        console.log("Facebook auto");
+
                         window.location = "/index.html";
                     }
                 },
@@ -40,7 +40,7 @@ function login() {
     FB.login(function (response) {
         if (response.status === 'connected') {
             FB.api('/me', 'GET', {fields: 'first_name,last_name,id,email'}, function (response) {
-                console.log(response);
+
                 $.ajax({
                     url: '/api/login/facebook',
                     method: 'POST',
@@ -51,8 +51,8 @@ function login() {
                         lastname: response.last_name
                     },
                     success: function (data) {
-                        console.log(data);
-                        console.log('hei');
+
+
                         window.location = "/index.html";
                     },
                     error: console.error
