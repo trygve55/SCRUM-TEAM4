@@ -1,8 +1,45 @@
+/*
+Authors: Andrzej Cabala, Andreas Hammer (main author), Magnus Eilertsen
+
+    home_group columns:
+
+    group_id INTEGER NOT NULL AUTO_INCREMENT,
+    group_name NVARCHAR(50) NOT NULL,
+    group_desc NVARCHAR(200),
+    group_type INTEGER NOT NULL DEFAULT 0,
+    created_datetime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    cleaning_list_interval INTEGER NOT NULL DEFAULT 0,
+    group_pic MEDIUMBLOB,
+    group_pic_tiny BLOB,
+    default_currency_id INTEGER NOT NULL,
+    shopping_list_id INTEGER NOT NULL,
+
+ */
 var router = require('express').Router(),
     formidable = require('formidable'),
     Jimp = require("jimp");
 
 module.exports = router;
+
+var acceptedGroupVars = ["group_name", "group_desc", "group_type",
+    "cleaning_list_interval", "group_pic", "group_pic_tiny",
+    "default_currency_id", "shopping_list_id"];
+
+/*
+/api/group/ POST request:
+Used to insert a row into the home_group table in the database. The body must contain the variables you want to
+set. Required variables: group_name, group_type, default_currency_id, shopping_list_id
+Optional variables: group_desc, cleaning_list_interval, group_pic, group_pic_tiny
+
+Example request body:
+{
+    "group_name": "Example Group Name",
+    "group_type": 2.
+    "default_currency_id": 24,
+    "shopping_list_id": 19,
+    "group_desc": "This group is not real. It is an example. Potato."
+}
+ */
 
 router.post('/', function(req, res){
     if(!req.body.group_name)
@@ -23,17 +60,24 @@ router.post('/', function(req, res){
             }
             qry = "INSERT INTO home_group (shopping_list_id";
             var values = [1];
+
             for(var p in group){
                 if(group.hasOwnProperty(p)){
+                    if(acceptedGroupVars.indexOf(p) < 0) {
+                        connection.release();
+                        res.status(400).send("Bad Request (bad variable: '" + p + "')");
+                        return;
+                    }
                     if(values.length != 0)
                         qry += ", ";
                     qry += p;
                     values.push(group[p]);
                 }
             }
+
             if(values.length == 0) {
                 connection.release();
-                return res.status(500).send("No values found");
+                return res.status(400).send("Bad Request (no values found)");
             }
             qry += ") VALUES (?";
             console.log(values);
@@ -85,6 +129,11 @@ router.put('/', function(req, res){
         var vals = [];
         for(var p in req.body){
             if(req.body.hasOwnProperty(p)){
+                if(acceptedGroupVars.indexOf(p) < 0) {
+                    connection.release();
+                    res.status(400).send("Bad request (bad variable: '" + p + "')");
+                    return;
+                }
                 if(p == "group_id")
                     continue;
                 if(!f)
