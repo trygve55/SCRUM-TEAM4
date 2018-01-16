@@ -1,4 +1,6 @@
 var lang;
+var users = [];
+
 $('document').ready(function () {
 
     //-----------Language-----------
@@ -94,6 +96,16 @@ $('document').ready(function () {
             "</li></div><li class=\"list-group-item addi\" id=\"additem"+count+"\"><i class=\"fa fa-plus-circle\" aria-hidden=\"true\"></i> Add item</li>" +
             "</ul><i class='fa fa-check-circle-o' aria-hidden='true' style='font-size: 20px' id='donebutton"+count+"'> "+lang["tasks-done"]+"</i><i class=\"fa fa-users\" aria-hidden=\"true\" style='font-size: 20px' id='sharebutton"+count+"'> "+lang["tasks-share"]+"</i>" +
             "<div id='sharediv"+count+"'><input type=\"text\" class=\"form-control ni\" id=\"shareinput"+count+"\"></div>"+
+            "</div>"+
+
+            "<div class=\"messagepop pop\" id=\"tasks-popup\">" +
+            "   <p align=\"center\" style=\"font-size: 20px\">"+lang["tasks-addmemberstolist"]+"</p>" +
+            "   <ul class=\"list-group\" id='tasks-memberslist"+count+"' style='margin-top: 10px; margin-bottom: 10px; max-height: 30vh;'></ul>"+
+            "   <div class=\"row\">" +
+            "      <div class=\"col-md-8\" id=\"scrollable-dropdown-menu\"><input class=\"typeahead form-control\" id=\"tasks-member"+count+"\"></div>" +
+            "      <div class=\"col-md-1'\"><button type=\"button\" class=\"btn btn-info\" id=\"tasks-adduser"+count+"\">"+lang["tasks-adduser"]+"</button></div>" +
+            "   </div>" +
+            "   <div style=\"margin-top: 5%\"><button align=\"right\" type=\"button\" class=\"btn\" id=\"tasks-cancel"+count+"\" style=\"background-color: lightgrey\">"+lang["tasks-cancel"]+"</button></div>" +
             "</div>").insertAfter("#addlist");
         $('#listname'+count).hide();
         $('#inputitem'+count).hide();
@@ -283,50 +295,68 @@ $('document').ready(function () {
             }
         });
 
-        //------------Opens a pop-up so you can share a list with others------------
-        $('#sharebutton'+count).click(function () {
-            var navn = this.id;
-            var ide = navn.split("n").pop(); //listeid
-            if ($('#sharediv'+ide).is(':visible')) {
-                $('#sharediv'+ide).hide();
-            }else{
-                $('#sharediv'+ide).show();
-                $('#shareinput'+ide).keypress(function (event) {
-                    if(event.keyCode == 13 || event.which == 13){
-                        var name = $('#shareinput'+ide).val();
-                        $('#shareinput'+ide).val('');
-                        $('#sharediv'+ide).hide();
-                    }
-                });
-            }
-        });
         //--------------POPUP Share list-----------------
         function deselect(e) {
             $('.pop').slideFadeToggle(function() {
                 e.removeClass('selected');
             });
         }
-
-        $(function() {
-            $('#sharebutton'+count).on('click', function() {
-                if($(this).hasClass('selected')) {
-                    deselect($(this));
-                } else {
-                    $(this).addClass('selected');
-                    $('.pop').slideFadeToggle();
-                }
-                return false;
-            });
-
-            $('#tasks-cancel').on('click', function() {
-                deselect($('#contact'));
-                return false;
-            });
+        $('#sharebutton'+count).on('click', function() {
+            $(this).addClass('selected');
+            $('.pop').slideFadeToggle();
         });
 
+        $('#tasks-cancel'+count).on('click', function() {
+            deselect($('#contact'));
+        });
         $.fn.slideFadeToggle = function(easing, callback) {
             return this.animate({ opacity: 'toggle', height: 'toggle' }, 'fast', easing, callback);
         };
+
+        //--------------POPUP Share list - Userlist-------
+        $.ajax({
+            'url': '/api/user/all',
+            method: "GET",
+            success: function(data){
+                var cnt = [];
+                for(var i = 0; i < data.length; i++){
+                    var u = {
+                        id: data[i].person_id,
+                        name: data[i].forename + " " + (data[i].middlename ? data[i].middlename + " " : "") + data[i].lastname,
+                        username: data[i].username
+                    };
+                    users.push(u);
+                    cnt.push(u.name);
+                }
+                $('#scrollable-dropdown-menu .typeahead').typeahead(null, {
+                    name: 'users',
+                    limit: 10,
+                    source: new Bloodhound({
+                        datumTokenizer: Bloodhound.tokenizers.whitespace,
+                        queryTokenizer: Bloodhound.tokenizers.whitespace,
+                        prefetch: '/api/user/all?slim=1'
+                    })
+                });
+            },
+            error: console.error
+        });
+        $('#tasks-member'+count).keypress(function(event) {
+            if(event.keyCode == 13 || event.which == 13){
+                var navn = this.id;
+                var ide = navn.split("r").pop(); //listeid
+                addmember(ide);
+            }
+        });
+        $('#tasks-adduser'+count).click(function(){
+            var navn = this.id;
+            var ide = navn.split("r").pop(); //listeid
+            addmember(ide);
+        });
+        function addmember(ide){
+            var member = $('#tasks-member'+ide).val();
+            $('#tasks-memberslist'+ide).prepend('<li class="list-group-item">'+member+'</li>');
+            $('#tasks-member'+ide).val('');
+        }
     });
 
 });
