@@ -9,6 +9,7 @@ window.fbAsyncInit = function() {
         xfbml            : true,
         version          : 'v2.11'
     });
+
     FB.getLoginStatus(function (response) {
         if(response.status === 'connected'){
             connected = true;
@@ -51,6 +52,7 @@ function login() {
                     },
                     success: function (data) {
                         console.log(data);
+                        console.log('hei');
                         window.location = "/index.html";
                     },
                     error: console.error
@@ -142,5 +144,18 @@ $(function () {
         });
 
     });
-    $("#login-button").click(alert);
+    $("#login-button").click(function () {
+        $.ajax({
+            url: '/api/login',
+            method: 'POST',
+            data:{
+                username: $('#login-email').val(),
+                password: $('#login-password').val()
+            },
+            success: function (data) {
+                window.location = '/index.html';
+            }
+        });
+    });
 });
+

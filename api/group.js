@@ -4,52 +4,99 @@ var router = require('express').Router(),
 
 module.exports = router;
 
+router.get('/name', function(req, res){
+    if(!req.query.group_name)
+        return res.status(400).send("Bad Request");
+    pool.getConnection(function(err, connection){
+        if(err)
+            return res.status(500).send("Error");
+        connection.query("SELECT COUNT(*) FROM home_group WHERE group_name = ?", [req.query.group_name], function (err, result){
+            connection.release();
+            if(err)
+                return res.status(500).send(err.code);
+            res.status(200).send(result[0]["COUNT(*)"] == 0);
+        });
+    });
+});
+
 router.post('/', function(req, res){
     if(!req.body.group_name)
         return res.status(400).send("Bad Request");
     pool.getConnection(function(err, connection){
         if(err)
             return res.status(500).send(JSON.stringify(err));
-        var group = req.body;
         var qry = "SELECT group_id FROM home_group WHERE group_name = ?";
-        connection.query(qry, [group.group_name], function(err, result){
+        connection.query(qry, [req.body.group_name], function(err, result){
             if(err) {
                 connection.release();
                 return res.status(500).send(err.code);
             }
             if(result.length > 0) {
                 connection.release();
-                return res.status(400).send("Group already exists");
+                return res.status(200).send(false);
             }
-            qry = "INSERT INTO home_group (shopping_list_id";
-            var values = [1];
-            for(var p in group){
-                if(group.hasOwnProperty(p)){
-                    if(values.length != 0)
-                        qry += ", ";
-                    qry += p;
-                    values.push(group[p]);
-                }
-            }
-            if(values.length == 0) {
-                connection.release();
-                return res.status(500).send("No values found");
-            }
-            qry += ") VALUES (?";
-            console.log(values);
-            for(var i = 0; i < values.length-1; i++){
-                qry += ", ?";
-            }
-            qry += ");";
-            console.log(qry);
-            connection.query(qry, values, function(err, result){
-                connection.release();
-                if(err) {
-                    return res.status(400).send(err.code + "\n" + err.sqlMessage);
-                }
-                else
-                    return res.json(result);
+            connection.beginTransaction(function(err) {
+                if(err)
+                    return res.status(500).send();
+                connection.query("INSERT INTO shopping_list (currency_id) VALUES (?)", [req.body.currency], function(err, result) {
+                    if(err)
+                        return res.status(500).send();
+                    qry = "INSERT INTO home_group (shopping_list_id, default_currency_id";
+                    var values = [result.insertId, req.body.currency];
+                    delete req.body.currency;
+                    var group = req.body;
+                    for (var p in group) {
+                        if (values.length != 0)
+                            qry += ", ";
+                        qry += p;
+                        values.push(group[p]);
+                    }
+                    if (values.length == 0) {
+                        connection.release();
+                        return res.status(500).send("No values found");
+                    }
+                    qry += ") VALUES (?";
+                    for (var i = 0; i < values.length - 1; i++) {
+                        qry += ", ?";
+                    }
+                    qry += ");";
+                    connection.query(qry, values, function (err, result) {
+                        if(err)
+                            return res.status(500).send();
+                        var group_id = result.insertId;
+                        connection.query('INSERT INTO group_person (person_id, group_id, role_id, invite_accepted) VALUES (?, ?, ?, ?)', [req.session.person_id, result.insertId, 2, 1], function(err, result) {
+                            if(err)
+                                return res.status(500).send();
+                            connection.commit(function (err) {
+                                if (err) {
+                                    return connection.rollback(function (err) {
+                                        if (err)
+                                            console.error(err);
+                                        res.status(500).send();
+                                    });
+                                }
+                                res.status(200).json({
+                                    id: group_id
+                                });
+                            });
+                        });
+                    });
+                });
             });
+        });
+    });
+});
+
+router.get('/me', function(req, res){
+    if(!req.session.person_id)
+        return res.status(500).send();
+    pool.getConnection(function(err, connection){
+        if(err)
+            return res.status(500).send();
+        connection.query('SELECT * FROM home_group WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?)', [req.session.person_id], function(err, result){
+            if(err)
+                return res.status(500).send();
+            res.status(200).json(result);
         });
     });
 });
@@ -69,7 +116,7 @@ router.get('/', function(req, res){
                 connection.release();
                 return res.status(400).send(err.code + "\n" + err.sqlMessage);
             }
-            res.json(result);
+            res.status(200).json(result);
         });
     });
 });
@@ -100,76 +147,101 @@ router.put('/', function(req, res){
             connection.release();
             if(err)
                 return res.status(400).send(err.code + "\n" + err.sqlMessage);
-            return res.json(result);
+            return res.status(200).json(result);
         });
     });
 });
 
-router.post('/user', function(req, res){
-    if(!req.body.members || !req.body.group)
+router.post('/members', function(req, res){
+    req.body.members = req.body['members[]'];
+    delete req.body['members[]'];
+    console.log(req.body);
+    if(!req.body.members || !req.body.group_id || req.body.members.length == 0)
         return res.status(400).send("Bad Request");
     pool.getConnection(function(err, connection){
         if(err)
             return res.status(500).send("Internal Error");
-        var qry = "";
-        var vals = [];
-        for(var i = 0; i < req.body.members.length; i++){
-            qry += "INSERT INTO group_person (person_id, group_id) VALUES (?, ?);";
-            vals.push([req.body.members[i], req.body.group_id]);
+        var qry = "INSERT INTO group_person (person_id, group_id) VALUES (?, ?)";
+        var vals = [req.body.members[0], req.body.group_id];
+        for(var i = 1; i < req.body.members.length; i++){
+            qry += ", (?, ?)";
+            vals.push(req.body.members[i], req.body.group_id);
         }
-        connection.query(qry, vals, function(err, result){
-            connection.release();
+        console.log(vals);
+        qry += ";";
+        console.log(qry);
+        connection.beginTransaction(function(err) {
             if(err)
-                return res.status(500).send(err.code);
-            res.json(result);
+                return res.status(500).send();
+            connection.query(qry, vals, function (err, result) {
+                console.error(err);
+                if (err)
+                    return res.status(500).send(err.code);
+                connection.commit(function(err){
+                    if(err)
+                        return connection.rollback(function(err){
+                            if(err)
+                                console.error(err);
+                            res.status(500).send();
+                        });
+                    res.status(200).json(result);
+                });
+            });
         });
     });
 });
 
 router.delete('/user', function(req, res){
     if(!req.body.person_id || !req.body.group_id || !req.body.role_id)
-        return res.status(400).send("");
+        return res.status(400).send();
     pool.getConnection(function(err, connection){
         if(err)
             return res.status(500).send("Internal Error");
         connection.query("DELETE FROM group_person WHERE group_id = 1 AND person_id = 1", [req.body.group_id, req.body.person_id], function(err, result){
-
+            connection.release();
+            if(err)
+                return res.status(500).send();
+            res.status(200).send();
         });
     });
 });
 
 router.put('/userPrivileges', function(req, res){
     if(!req.body.person_id || !req.body.group_id || !req.body.role_id)
-        return res.status(400).send("");
+        return res.status(400).send();
     pool.getConnection(function(err, connection){
         if(err)
             return res.status(500).send("Internal Error");
         connection.query("SELECT COUNT(*) FROM home_group WHERE group_id = ?", [req.body.group_id], function(err, result){
-            if(err || result[0]["COUNT(*)"] == 0) {
-                console.error(err || result);
+            if(err) {
                 connection.release();
-                return res.status(400).send("");
+                return res.status(500).send();
+            }
+            else if(result[0]["COUNT(*)"] == 0){
+                connection.release();
+                return res.status(400).send();
             }
             connection.query("SELECT COUNT(*) FROM person WHERE person_id = ?", [req.body.person_id], function(err, result){
-                if(err || result[0]["COUNT(*)"] == 0) {
-                    console.error(err || result);
+                if(err) {
                     connection.release();
-                    return res.status(400).send("");
+                    return res.status(500).send();
+                }
+                else if(result[0]["COUNT(*)"] == 0){
+                    connection.release();
+                    return res.status(400).send();
                 }
                 connection.query("UPDATE group_person SET role_id = ? WHERE group_id = ? AND person_ID = ?", [req.body.role_id, req.body.group_id, req.body.person_id], function(err, result){
                     connection.release();
                     if(err)
-                        return res.status(400).send("");
-                    res.json(result);
-                })
+                        return res.status(500).send();
+                    res.status(200).json(result);
+                });
             });
         });
     });
 });
 
 router.post('/:group_id/picture', function(req, res){
-    console.log('POST-request established');
-
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
 
@@ -180,8 +252,6 @@ router.post('/:group_id/picture', function(req, res){
             res.status(400).json({'error': 'image file over 4MB'});
             return;
         }
-
-        console.log("Loading image");
         Jimp.read(path, function (err, img) {
             if (err) {
                 res.status(500).json({'Error': err});

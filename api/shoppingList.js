@@ -322,7 +322,7 @@ function checkConnectionError(err, connection, res) {
 function checkResult(err, result, connection, res) {
 	connection.release();
 	if (err) {throw err;}
-	if (result) {res.json({success: "Success"});}
+	if (result) {res.status(200).json({success: "Success"});}
 }
 
 /**

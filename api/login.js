@@ -96,7 +96,6 @@ router.post('/facebook', function(req, res){
                             '(email, username, forename,' +
                             'lastname, shopping_list_id, facebook_api_id) VALUES (?,?,?,?,?,?)', values, function(err, result) {
                             connection.query('SELECT person_id FROM person WHERE facebook_api_id = ?', [req.body.facebook_api_id], function(err, result){
-                                connection.release();
                                 if(err)
                                     return res.status(500).send("Fail");
                                 req.session.person_id = result[0].person_id;
@@ -106,9 +105,8 @@ router.post('/facebook', function(req, res){
                                         return connection.rollback(function(err){
                                             if(err)
                                                 console.error(err);
-                                            connection.release();
+                                            res.status(500).send("Transaction fail");
                                         });
-                                    connection.release();
                                     res.status(200).send(true);
                                 });
                             });

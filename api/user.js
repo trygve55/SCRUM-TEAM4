@@ -7,22 +7,30 @@ var router = require('express').Router(),
 module.exports = router;
 
 router.get('/all', function(req, res){
+    if(!req.session.person_id)
+        return res.status(500).send();
     pool.getConnection(function(err, connection){
         if(err)
             return res.status(500).send("Error");
-        connection.query("SELECT person_id, forename, middlename, lastname, username FROM person", function(err, result){
+        connection.query("SELECT person_id, email, forename, middlename, lastname, username FROM person", function(err, result){
             connection.release();
             if(err)
                 res.status(500).send(err.code);
             else {
                 if(!req.query.slim)
-                    res.json(result);
+                    res.status(200).json(result);
                 else {
                     var r = [];
                     for(var i = 0; i < result.length; i++){
-                        r.push(result[i].forename + " " + (result[i].middlename ? result[i].middlename + " " : "") + result[i].lastname)
+                        if(result[i].person_id == req.session.person_id)
+                            continue;
+                        r.push({
+                            name: result[i].forename + " " + (result[i].middlename ? result[i].middlename + " " : "") + result[i].lastname,
+                            email: result[i].email,
+                            id: result[i].person_id
+                        });
                     }
-                    res.json(r);
+                    res.status(200).json(r);
                 }
             }
         });
@@ -95,7 +103,7 @@ router.post('/register', function(req, res) {
                                     user.middlename,
                                     user.lastname,
                                     user.phone,
-                                    new Date(user.birth_day).toISOString().slice(0, 10),
+                                    user.birth_day ? new Date(user.birth_day).toISOString().slice(0, 10) : null,
                                     user.gender,
                                     user.profile_pic,
                                     user.shopping_list_id
@@ -526,7 +534,3 @@ function putRequestSetup(iD, data, connection, tableName) {
     request += ' WHERE ' + tableName + '_id = ' + iD;
     return [request, parameters];
 }
-
-
-
-

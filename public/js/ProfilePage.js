@@ -1,7 +1,103 @@
+$(function () {
+    $.ajax({
+        url: '/api/language',
+        method: 'GET',
+        data: {
+            lang: 'nb_NO',
+            path: window.location.pathname
+        },
+        success: function (data) {
+            for (var p in data) {
+                if (data.hasOwnProperty(p)) {
+                    $("#" + p).html(data[p]);
+                }
+            }
+        }
+    });
+
+    $('#profile-norway').click(function () {
+        $.ajax({
+            url: '/api/language',
+            method: 'POST',
+            data: {
+                lang: 'nb_NO'
+            },
+            success: function () {
+                $.ajax({
+                    url: '/api/language',
+                    method: 'GET',
+                    data: {
+                        lang: 'nb_NO',
+                        path: window.location.pathname
+                    },
+                    success: function (data) {
+                        for (var p in data) {
+                            if (data.hasOwnProperty(p)) {
+                                $("#" + p).html(data[p]);
+                            }
+                        }
+                    }
+                });
+            },
+            error: console.error
+        });
+
+    });
+
+    $('#profile-england').click(function () {
+        $.ajax({
+            url: '/api/language',
+            method: 'POST',
+            data: {
+                lang: 'en_US'
+            },
+            success: function () {
+                $.ajax({
+                    url: '/api/language',
+                    method: 'GET',
+                    data: {
+                        lang: 'en_US',
+                        path: window.location.pathname
+                    },
+                    success: function (data) {
+                        for (var p in data) {
+                            if (data.hasOwnProperty(p)) {
+                                $("#" + p).html(data[p]);
+                            }
+                        }
+                    }
+                });
+            },
+            error: console.error
+        });
+    });
+
+    $.ajax({
+        url: '/api/user/getUser',
+        method: 'GET',
+        data: {
+            variables: [
+            'forename',
+            'lastname' ,
+            'email' ,
+            'phone',
+            'username',
+            'facebook_api_id'
+            ]
+        },
+        success: function (data) {
+            $('#profile-name').text(data[0].forename + '  ' + data[0].lastname);
+            $('#profile-email').text(data[0].email);
+            $('#profile-phone').text(data[0].phone ? data[0].phone : "");
+            $('#profile-username').text(data[0].username == data[0].facebook_api_id ? "" : data[0].username);
+        }
+    })
+
+});
+
+
+
 $(document).ready(
-
-
-
     function(){
 
         inits();
@@ -86,9 +182,6 @@ $(document).ready(
         $('input').focus(function() {
             $(this).val('');
         });
-
-        $('ol').sortable();
-
 
 
     }

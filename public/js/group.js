@@ -17,6 +17,18 @@ var activeTab = "tasks", currentGroup = "none";
 * When the page loads, the page must find the groups available to the user so they can be selected.
 */
 $(document).ready(function() {
+
+	$.ajax({
+		url:'/api/group/me',
+		method:'GET',
+		success: function (data) {
+			for(var i = 0; i < data.length; i++){
+				addGroupToList(data[i].group_name);
+			}
+		},
+		error: console.error()
+	});
+
 	loadLanguageText();
 	//getGroups();
 	
@@ -71,7 +83,7 @@ function getGroups() {
 	});	// GET all group names for this user.
 	*/
 	var names = response.groupnames;
-	for (i = 0; i < names.length; i++) {
+	for (var i = 0; i < names.length; i++) {
 		addGroupToList(names[i]);
 	}
 	removeDeletedGroups(names);
@@ -83,7 +95,7 @@ function getGroups() {
 function changeTab(name) {
 	if (activeTab != name) {
 		var tabs = $(".grouptab");
-		for (i = 0; i < tabs.length; i++) {tabs[i].style.display = "none";}
+		for (var i = 0; i < tabs.length; i++) {tabs[i].style.display = "none";}
 		$("#" + name).css("display", "block");
 		activeTab = name;
 	}
@@ -124,9 +136,12 @@ function loadGroup(name) {
 /**
 * When a group is created, it must be added to the list.
 */
+
 function addGroupToList(name) {
 	var groups = $(".tablink");
-	for (i = 0; i < groups.length; i++) {if ($(groups[i]).html() == name) {return;}}
+	for (var i = 0; i < groups.length; i++) {
+		if ($(groups[i]).html() == name) return;
+	}
 	$("#groupselection").append('<div class="tablink text-center backvariant" onclick="changeGroup(\'' + name + '\')">' + name + '</div>');
 }
 
@@ -136,7 +151,7 @@ function addGroupToList(name) {
 function removeDeletedGroups(validNames) {
 	$(".tablink").each(function() {
 		var exists = false;
-		for (i = 0; i < validNames.length; i++) {if ($(this).html() == validNames[i]) {exists = true;}}
+		for (var i = 0; i < validNames.length; i++) {if ($(this).html() == validNames[i]) {exists = true;}}
 		if (!exists) {$(this).remove();}
 	});
 }
@@ -153,7 +168,7 @@ function loadStatistics() {} // AJAX Get the group statistics.
 * This adds the HTML elements for the task.
 */
 function attachTasks(tasks) {
-	for (i = 0; i < tasks.length; i++) {
+	for (var i = 0; i < tasks.length; i++) {
 		var task = tasks[i];
 		if (!task.completed) {
 			if (person = task.person) {
