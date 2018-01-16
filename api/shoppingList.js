@@ -148,6 +148,83 @@ router.delete('/entry/:shopping_list_entry_id', function(req, res) {
     });
 });
 
+router.get('/', function(req, res) {
+    console.log('GET-request established');
+
+    pool.getConnection(function(err, connection) {
+        checkConnectionError(err, connection, res);
+
+        var p_id = req.session.person_id;
+
+        connection.query('SELECT * ' +
+            'FROM shopping_list LEFT JOIN currency USING(currency_id)  ' +
+            'LEFT JOIN shopping_list_entry USING(shopping_list_id)  ' +
+            'lEFT JOIN shopping_list_person USING(shopping_list_id) ' +
+            'WHERE shopping_list_id IN  ' +
+            '(SELECT shopping_list_id FROM person WHERE person_id = ?  ' +
+            'UNION  ' +
+            'SELECT home_group.shopping_list_id FROM person  ' +
+            'LEFT JOIN group_person USING(person_id) ' +
+            'LEFT JOIN home_group USING(group_id) ' +
+            'WHERE person.person_id = ? ' +
+            'UNION ' +
+            'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?)',
+            [checkRange(req.params.shopping_list_id, 1, null), p_id, p_id, p_id],
+            function(err, result) {
+                connection.release();
+                console.log(result);
+                if (err) {
+                    res.status(500).json({error: err});
+                } else if (!result.length) {
+                    res.status(403).json({error: "no access/does not exist", success: false});
+                } else {
+                	var shopping_lists = [];
+
+                	for (var i = 0; i < result.length;i++) {
+                		var current_shopping_list_id = shoppingListExistsInArray(result[i].shopping_list_id, shopping_lists);
+                        if (current_shopping_list_id == -1) {
+                        	shopping_lists.push({
+                                "shopping_list_id":result[i].shopping_list_id,
+                                "shopping_list_name":result[i].shopping_list_name,
+                                "currency_id":result[i].currency_id,
+                                "currency_short":result[i].currency_short,
+                                "currency_long":result[i].currency_long,
+                                "currency_sign":result[i].currency_sign,
+                                "currency_major":result[i].currency_major,
+                                "currency_long":result[i].currency_long,
+                                "shopping_list_entries": [],
+                                "person_ids": []
+                            });
+                        	current_shopping_list_id = shopping_lists.length - 1;
+                        }
+
+                        console.log(current_shopping_list_id);
+
+						if (result[i].shopping_list_entry_id) shopping_lists[current_shopping_list_id].shopping_list_entries.push({
+							"shopping_list_entry_id":result[i].shopping_list_entry_id,
+							"entry_text":result[i].entry_text,
+							"added_by_person_id":result[i].added_by_person_id,
+							"purchased_by_person_id":result[i].purchased_by_person_id,
+							"cost":result[i].cost,
+							"datetime_added":result[i].datetime_added,
+							"datetime_purchased":result[i].datetime_purchased
+						});
+
+						if (result[i].person_id) {
+							shopping_lists[current_shopping_list_id].person_ids.push(result[i].person_id);
+						}
+					}
+					for (var i = 0; i < shopping_lists.length; i++) {
+                        shopping_lists[i].shopping_list_entries = removeDuplicateUsingFilter(shopping_lists[i].shopping_list_entries);
+                        shopping_lists[i].person_ids = removeDuplicateUsingFilter(shopping_lists[i].person_ids);
+					}
+					res.status(200).json(shopping_lists);
+                }
+            }
+        );
+    });
+});
+
 router.get('/:shopping_list_id', function(req, res) {
 	console.log('GET-request established');
 
@@ -214,7 +291,7 @@ router.get('/:shopping_list_id', function(req, res) {
 
 router.post('/entry', function(req, res) {
 	console.log('POST-request initiating');
-	var data = req.body, purchased = null, p_id = req.session.person_id;;
+	var data = req.body, purchased = null, p_id = req.session.person_id;
 	if (data.purchased_by_person_id) {purchased = checkRange(data.purchased_by_person_id, 1, null);}
 
 	pool.getConnection(function(err, connection) {
@@ -351,16 +428,26 @@ function checkRange(value, min, max) {
 }
 
 function removeDuplicateUsingFilter(arr){
-    var unique_array = arr.filter(function(elem, index, self) {
-        if (index == 0) {
-            console.log(elem);
-            console.log(index);
-            //console.log(self);
-            console.log(elem.shopping_list_entry_id);
-            console.log(self[index].shopping_list_entry_id);
-            console.log(!!elem.shopping_list_entry_id);
-        }
-        return ((!!elem.shopping_list_entry_id) ? elem.shopping_list_entry_id == self[index].shopping_list_entry_id : index == self.indexOf(elem));
+	var added_ids = [], unique_array = arr.filter(function(elem, index, self) {
+        if (!elem.shopping_list_entry_id && elem.shopping_list_id) {
+            if (added_ids.indexOf(elem.shopping_list_id) == -1) {
+                added_ids.push(elem.shopping_list_id);
+                return true;
+            } else { return false; }
+        } else if (elem.shopping_list_entry_id) {
+        	if (added_ids.indexOf(elem.shopping_list_entry_id) == -1) {
+        		added_ids.push(elem.shopping_list_entry_id);
+        		return true;
+			} else { return false; }
+		}
+        return index == self.indexOf(elem);
     });
     return unique_array
+}
+
+function shoppingListExistsInArray(shopping_list_id, array) {
+	for (var i = 0; i < array.length;i++) {
+		if (array[i].shopping_list_id == shopping_list_id) return i;
+	}
+	return -1;
 }
