@@ -75,21 +75,17 @@ router.post('/register', function(req, res) {
                     return res.status(200).json({message: "E-mail in use"});
                 }
 
-
                 connection.beginTransaction(function (err) {
                     if (err) {
                         connection.release();
-
                         res.status(500).json({message: "database connection failed"});
                     } else connection.query('INSERT INTO shopping_list (currency_id) VALUES(?)', [100], function (err, result) {
                         if (err) {
                                 connection.rollback(function () {
                                 connection.release();
-
                                 res.status(500).json({error: err});
                             });
                         } else {
-
                             user.shopping_list_id = result.insertId;
                             auth.hashPassword(user, function (user) {
 
@@ -129,17 +125,15 @@ router.post('/register', function(req, res) {
                                 if (!checkValidName(user.lastname)){
                                     connection.release();
                                     return res.status(400).json({message:"Invalid lastname"});
-                                };
-
+                                }
 
                                 connection.query('INSERT INTO person ' +
                                     '(email, username, password_hash, forename, middlename,' +
                                     'lastname, phone, birth_date,' +
-                                    'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function (err, result) {
+                                    'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function (err) {
                                     if (err) {
                                             connection.rollback(function () {
                                             connection.release();
-
                                             res.status(500).json({error: err});
                                         });
                                     } else {
@@ -147,7 +141,6 @@ router.post('/register', function(req, res) {
                                             if (err) {
                                                 connection.rollback(function () {
                                                     connection.release();
-
                                                     res.status(500).json({error: err});
                                                 });
                                             } else {
@@ -227,14 +220,12 @@ function checkValidPhone(phonenumber){
 
 //returns true if valid
 function checkValidName(nameString) {
-    //best regex
     var nameRegex = /[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
     if (nameString) return nameRegex.test(nameString);
 }
 
 //spaces not allowed
 function checkValidForename(nameString) {
-    //best regex
     var nameRegex = /^\S[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
     if (nameString) return nameRegex.test(nameString);
 }
@@ -300,7 +291,6 @@ router.all('/profile/1/picture', function(req, res, next) {
 
 //update profile
 router.put('/:person_id', function(req, res){
-
     pool.getConnection(function (err, connection) {
         if(err) {
             return res.status(500).send({"Error" : "Connecting to database"} + err);
@@ -319,8 +309,6 @@ router.put('/:person_id', function(req, res){
 });
 
 router.post('/:person_id/picture', function(req, res){
-
-
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
 
@@ -332,7 +320,6 @@ router.post('/:person_id/picture', function(req, res){
             return;
         }
 
-
         Jimp.read(path, function (err, img) {
             if (err) {
                 res.status(500).json({'Error': err});
@@ -340,7 +327,6 @@ router.post('/:person_id/picture', function(req, res){
             }
 
             var img_tiny = img.clone();
-
 
             img.background(0xFFFFFFFF)
                 .contain(500, 500)
@@ -362,16 +348,12 @@ router.post('/:person_id/picture', function(req, res){
                                     return;
                                 }
 
-
-
                                 connection.query("UPDATE person SET profile_pic = ?, profile_pic_tiny = ? WHERE person_id = ?;", [data, data_tiny, req.params.person_id], function (err, results, fields) {
                                     connection.release();
                                     if (err) {
                                         res.status(500).json({'Error': err});
                                         return;
                                     }
-
-
 
                                     res.status(200).json(results);
                                 });
@@ -426,7 +408,6 @@ function reqForPrivateVars(reqVars) {
 }
 
 router.get('/getUser', function(req, res) {
-
     if(!req.query.hasOwnProperty('users')) {
         req.query.users = [req.session.person_id];
     } else if(reqForPrivateVars(req.query.variables) && (req.query.users.length > 1 || req.session.person_id != req.query.users[0])) {
