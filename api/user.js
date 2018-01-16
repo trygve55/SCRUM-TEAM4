@@ -7,22 +7,30 @@ var router = require('express').Router(),
 module.exports = router;
 
 router.get('/all', function(req, res){
+    if(!req.session.person_id)
+        return res.status(500).send();
     pool.getConnection(function(err, connection){
         if(err)
             return res.status(500).send("Error");
-        connection.query("SELECT person_id, forename, middlename, lastname, username FROM person", function(err, result){
+        connection.query("SELECT person_id, email, forename, middlename, lastname, username FROM person", function(err, result){
             connection.release();
             if(err)
                 res.status(500).send(err.code);
             else {
                 if(!req.query.slim)
-                    res.json(result);
+                    res.status(200).json(result);
                 else {
                     var r = [];
                     for(var i = 0; i < result.length; i++){
-                        r.push(result[i].forename + " " + (result[i].middlename ? result[i].middlename + " " : "") + result[i].lastname)
+                        if(result[i].person_id == req.session.person_id)
+                            continue;
+                        r.push({
+                            name: result[i].forename + " " + (result[i].middlename ? result[i].middlename + " " : "") + result[i].lastname,
+                            email: result[i].email,
+                            id: result[i].person_id
+                        });
                     }
-                    res.json(r);
+                    res.status(200).json(r);
                 }
             }
         });
@@ -31,7 +39,6 @@ router.get('/all', function(req, res){
 
 //register user
 router.post('/register', function(req, res) {
-    console.log('POST-request established');
     pool.getConnection(function (err, connection) {
         if (err) {
             connection.release();
@@ -39,7 +46,6 @@ router.post('/register', function(req, res) {
             return;
         }
 
-        console.log('Connected to database');
         var user = req.body;
 
         if (!checkValidUsername(user.username) && !checkValidEmail(user.email)) {
@@ -73,13 +79,13 @@ router.post('/register', function(req, res) {
                 connection.beginTransaction(function (err) {
                     if (err) {
                         connection.release();
-                        console.log(err);
+
                         res.status(500).json({message: "database connection failed"});
                     } else connection.query('INSERT INTO shopping_list (currency_id) VALUES(?)', [100], function (err, result) {
                         if (err) {
                                 connection.rollback(function () {
                                 connection.release();
-                                console.log(err);
+
                                 res.status(500).json({error: err});
                             });
                         } else {
@@ -95,7 +101,7 @@ router.post('/register', function(req, res) {
                                     user.middlename,
                                     user.lastname,
                                     user.phone,
-                                    new Date(user.birth_day).toISOString().slice(0, 10),
+                                    user.birth_day ? new Date(user.birth_day).toISOString().slice(0, 10) : null,
                                     user.gender,
                                     user.profile_pic,
                                     user.shopping_list_id
@@ -133,7 +139,7 @@ router.post('/register', function(req, res) {
                                     if (err) {
                                             connection.rollback(function () {
                                             connection.release();
-                                            console.log(err);
+
                                             res.status(500).json({error: err});
                                         });
                                     } else {
@@ -141,7 +147,7 @@ router.post('/register', function(req, res) {
                                             if (err) {
                                                 connection.rollback(function () {
                                                     connection.release();
-                                                    console.log(err);
+
                                                     res.status(500).json({error: err});
                                                 });
                                             } else {
@@ -244,35 +250,8 @@ function checkValidEmail(email) {
     if (email) return emailRegex.test(email.toLowerCase());
 }
 
-//search for user
-router.post('/search', function(req, res){
-	var search = req.body.searchString;
-	console.log('Searching for ' + search);
-	pool.getConnection(function(err, connection) {
-		if (err) {
-			res.status(500);
-			res.json({'Error' : 'connecting to database: ' } + err);
-			connection.release();
-			return;
-		}
-		console.log('Connected to database');
-		connection.query(
-			"SELECT DISTINCT person_id FROM person WHERE CONCAT(email, username, forename, lastname) LIKE CONCAT('%', ?,'%')",
-			[search],
-			function (err, result) {
-				if (err) {throw err;}
-				if (result) {
-				    connection.release();
-				    console.log(result); //TODO: get method to return results from sql-search
-                }
-		});
-	});
-});
-
 //which one?
 router.get('/:person_id/picture', function(req, res){
-    console.log('GET-request established');
-
     pool.getConnection(function (err, connection) {
         connection.query("SELECT profile_pic FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
             connection.release();
@@ -292,8 +271,6 @@ router.get('/:person_id/picture', function(req, res){
 });
 
 router.get('/:person_id/picture_tiny', function(req, res){
-    console.log('GET-request established');
-
     pool.getConnection(function (err, connection) {
         connection.query("SELECT profile_pic_tiny FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
             connection.release();
@@ -314,8 +291,8 @@ router.get('/:person_id/picture_tiny', function(req, res){
 
 /*
 router.all('/profile/1/picture', function(req, res, next) {
-    console.log("session test");
-    console.log(req.session);
+
+
     next();
 });
 
@@ -323,7 +300,7 @@ router.all('/profile/1/picture', function(req, res, next) {
 
 //update profile
 router.put('/:person_id', function(req, res){
-    console.log("put-request");
+
     pool.getConnection(function (err, connection) {
         if(err) {
             return res.status(500).send({"Error" : "Connecting to database"} + err);
@@ -334,15 +311,15 @@ router.put('/:person_id', function(req, res){
         var query = putRequestSetup(parameter.person_id, req.body, connection, "person");
         connection.query(query[0], query[1], function (err, result) {
             connection.release();
-            if (err) console.log("" + err);
-            if (result) console.log(result);
+            if (err)
+            if (result)
             return res.status(200).json({"success" : query[1] + " updated"});
         });
     });
 });
 
 router.post('/:person_id/picture', function(req, res){
-    console.log('POST-request established');
+
 
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
@@ -355,7 +332,7 @@ router.post('/:person_id/picture', function(req, res){
             return;
         }
 
-        console.log("Loading image");
+
         Jimp.read(path, function (err, img) {
             if (err) {
                 res.status(500).json({'Error': err});
@@ -363,7 +340,7 @@ router.post('/:person_id/picture', function(req, res){
             }
 
             var img_tiny = img.clone();
-            console.log("Processing image");
+
 
             img.background(0xFFFFFFFF)
                 .contain(500, 500)
@@ -385,7 +362,7 @@ router.post('/:person_id/picture', function(req, res){
                                     return;
                                 }
 
-                                console.log("Uploading image");
+
 
                                 connection.query("UPDATE person SET profile_pic = ?, profile_pic_tiny = ? WHERE person_id = ?;", [data, data_tiny, req.params.person_id], function (err, results, fields) {
                                     connection.release();
@@ -393,7 +370,7 @@ router.post('/:person_id/picture', function(req, res){
                                         res.status(500).json({'Error': err});
                                         return;
                                     }
-                                    console.log("Uploading image complete");
+
 
 
                                     res.status(200).json(results);
@@ -449,7 +426,7 @@ function reqForPrivateVars(reqVars) {
 }
 
 router.get('/getUser', function(req, res) {
-    console.log(req.query);
+
     if(!req.query.hasOwnProperty('users')) {
         req.query.users = [req.session.person_id];
     } else if(reqForPrivateVars(req.query.variables) && (req.query.users.length > 1 || req.session.person_id != req.query.users[0])) {
@@ -526,7 +503,3 @@ function putRequestSetup(iD, data, connection, tableName) {
     request += ' WHERE ' + tableName + '_id = ' + iD;
     return [request, parameters];
 }
-
-
-
-

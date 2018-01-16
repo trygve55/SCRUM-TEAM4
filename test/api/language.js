@@ -12,7 +12,7 @@ before(function(done){
             if (err)
                 return done(err);
             Cookies = res.headers['set-cookie'].pop().split(';')[0];
-            console.log(Cookies);
+
             return done();
         });
 });

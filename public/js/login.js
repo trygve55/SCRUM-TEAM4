@@ -9,6 +9,7 @@ window.fbAsyncInit = function() {
         xfbml            : true,
         version          : 'v2.11'
     });
+
     FB.getLoginStatus(function (response) {
         if(response.status === 'connected'){
             connected = true;
@@ -17,7 +18,7 @@ window.fbAsyncInit = function() {
                 method: "GET",
                 success: function(data){
                     if(data.login) {
-                        console.log("Facebook auto");
+
                         window.location = "/index.html";
                     }
                 },
@@ -39,7 +40,7 @@ function login() {
     FB.login(function (response) {
         if (response.status === 'connected') {
             FB.api('/me', 'GET', {fields: 'first_name,last_name,id,email'}, function (response) {
-                console.log(response);
+
                 $.ajax({
                     url: '/api/login/facebook',
                     method: 'POST',
@@ -50,7 +51,8 @@ function login() {
                         lastname: response.last_name
                     },
                     success: function (data) {
-                        console.log(data);
+
+
                         window.location = "/index.html";
                     },
                     error: console.error
@@ -142,5 +144,18 @@ $(function () {
         });
 
     });
-    $("#login-button").click(alert);
+    $("#login-button").click(function () {
+        $.ajax({
+            url: '/api/login',
+            method: 'POST',
+            data:{
+                username: $('#login-email').val(),
+                password: $('#login-password').val()
+            },
+            success: function (data) {
+                window.location = '/index.html';
+            }
+        });
+    });
 });
+
