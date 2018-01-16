@@ -283,8 +283,8 @@ console.log('GET-request established');
 	pool.getConnection(function(err, connection) {
 		if (!checkConnectionError(err, connection, res)) {return;}
 
-		connection.query('SELECT * FROM todo LEFT JOIN todo_person USING(todo_id) WHERE todo.todo_id = ?',
-			[req.params.todo_id],
+		connection.query('SELECT * FROM todo LEFT JOIN todo_person USING(todo_id) WHERE group_id = ?',
+			[req.params.group_id],
 			function(err, result) {
 				connection.release();
 				if (err) {throw err;}
