@@ -3,8 +3,8 @@ var router = require('express').Router();
 
 module.exports = router;
 
-router.post('/', function(req, res) {
 
+router.post('/', function(req, res) {
 
     pool.getConnection(function(err, connection) {
         checkConnectionError(err, connection, res);
