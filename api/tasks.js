@@ -67,13 +67,16 @@ router.get('/:todo_id', function(req, res) {
 				connection.release();
 				if (err) {throw err;}
 				if (result) {
-					var people = [];
-					for (i = 0; i < result.length; i++) {people.push({"person_id":result[i].person_id});}
-					var values = {};
-					for (var p in result[0]) {values[p] = result[0][p];}
-					delete values.person_id;
-					values.people = people;
-					res.status(200).json(values);
+					if (result.length > 0) {
+						var people = [];
+						for (var i = 0; i < result.length; i++) {people.push({"person_id":result[i].person_id});}
+						var values = {};
+						for (var p in result[0]) {values[p] = result[0][p];}
+						delete values.person_id;
+						values.people = people;
+						res.status(200).json(values);
+					}
+					else {res.status(400).json(result);}
 				}
 			}
 		);
@@ -97,13 +100,14 @@ router.get('/person/:person_id', function(req, res) {
 				if (err) {throw err;}
 				if (result) {
 					var entries = [];
-					for (i = 0; i < result.length; i++) {
+					for (var i = 0; i < result.length; i++) {
 						var values = {};
 						for (var p in result[i]) {values[p] = result[i][p];}
 						delete values.person_id;
 						entries.push(values);
 					}
-					res.status(200).json(entries);
+					if (entries.length > 0) {res.status(200).json(entries);}
+					else {res.status(400).json(result);}
 				}
 			}
 		);
@@ -139,7 +143,7 @@ router.delete('/person/:person_id', function(req, res) {
 		checkConnectionError(err, connection, res);
 
 		connection.query(
-			'DELETE FROM todo_person WHERE todo_id = ? AND person_id = ?',
+			'DELETE FROM todo_person WHERE person_id = ? AND todo_id = ?',
 			[checkRange(req.params.person_id, 1, null), checkRange(req.body.todo_id, 1, null)],
 			function(err, result) {checkResult(err, result, connection, res);}
 		);
@@ -154,8 +158,7 @@ router.delete('/person/:person_id', function(req, res) {
 function putRequestSetup(iD, data, connection, tableName) {
 	if(!iD) {
 		connection.release();
-		res.status(400);
-		res.json({'Error' : (tableName + '_id not specified: ') } + err);
+		res.status(400).json({'Error' : (tableName + '_id not specified: ') } + err);
 		return;
 	}
 	var parameters = [], request = 'UPDATE ' + tableName + ' SET ';
@@ -176,8 +179,7 @@ function putRequestSetup(iD, data, connection, tableName) {
 function checkConnectionError(err, connection, res) {
 	if(err) {
 		connection.release();
-		res.status(500);
-		res.json({'Error' : 'connecting to database: ' } + err);
+		res.status(500).json({'Error' : 'connecting to database: ' } + err);
 		return false;
 	}
 
@@ -190,7 +192,7 @@ function checkConnectionError(err, connection, res) {
 function checkResult(err, result, connection, res) {
 	connection.release();
 	if (err) {throw err;}
-	if (result) {res.status(200).json({success: "Success"});}
+	if (result) {res.status(200).send();}
 }
 
 /**
