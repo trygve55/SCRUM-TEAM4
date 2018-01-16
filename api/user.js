@@ -12,7 +12,7 @@ router.get('/all', function(req, res){
     pool.getConnection(function(err, connection){
         if(err)
             return res.status(500).send("Error");
-        connection.query("SELECT person_id, forename, middlename, lastname, username FROM person", function(err, result){
+        connection.query("SELECT person_id, email, forename, middlename, lastname, username FROM person", function(err, result){
             connection.release();
             if(err)
                 res.status(500).send(err.code);
@@ -22,7 +22,13 @@ router.get('/all', function(req, res){
                 else {
                     var r = [];
                     for(var i = 0; i < result.length; i++){
-                        r.push(result[i].forename + " " + (result[i].middlename ? result[i].middlename + " " : "") + result[i].lastname)
+                        if(result[i].person_id == req.session.person_id)
+                            continue;
+                        r.push({
+                            name: result[i].forename + " " + (result[i].middlename ? result[i].middlename + " " : "") + result[i].lastname,
+                            email: result[i].email,
+                            id: result[i].person_id
+                        });
                     }
                     res.status(200).json(r);
                 }
@@ -520,7 +526,3 @@ function putRequestSetup(iD, data, connection, tableName) {
     request += ' WHERE ' + tableName + '_id = ' + iD;
     return [request, parameters];
 }
-
-
-
-
