@@ -4,5 +4,12 @@
   "tasks-tasks": "Gjøremål",
   "tasks-shoppinglists": "Handlelister",
   "tasks-profile": "Profil",
-  "tasks-logout": "Logg ut"
+  "tasks-logout": "Logg ut",
+  "tasks-addlist": "Legg til gjøremålsliste",
+  "tasks-done": "Utfør",
+  "tasks-share": "Del liste",
+  "tasks-addmemberstolist": "Legg til medlemmer i",
+  "tasks-adduserbutton": "Legg til bruker",
+  "tasks-searchbyuser": "Søk etter brukernavn",
+  "tasks-cancel": "Avbryt"
 }

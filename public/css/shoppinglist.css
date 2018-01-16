@@ -19,6 +19,9 @@ body {
     height: 670px;
     opacity: 0.4;
 }
+.adde:hover{
+    opacity: 0.6;
+}
 .list-group{
     text-align: left;
     margin-inside: 4%;
@@ -38,9 +41,7 @@ body {
 #listsss{
     overflow-y: scroll;
 }
-.addi:hover{
-    background-color: grey;
-}
+
 .fa-circle:hover{
     filter: brightness(85%);
 }
