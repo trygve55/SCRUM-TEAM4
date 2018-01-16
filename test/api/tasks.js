@@ -6,6 +6,7 @@ describe('Tasks API', function() {
 
 	// Test bad requests.
 	it('should return 404', function(done) {request.get('/api/tasks').expect(404).end(done);});
+	it('should return 400', function(done) {request.get('/api/tasks/person').expect(400).end(done);});
 	it('should return 404', function(done) {request.delete('/api/tasks/person').expect(404).end(done);});
 
 	// GET
