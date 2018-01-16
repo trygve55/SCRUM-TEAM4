@@ -273,3 +273,45 @@ router.get('/:group_id/picture_tiny', function(req, res){
         });
     });
 });
+
+/**
+* The GET request for getting the task details for all tasks in this group.
+* Required parameters: todo_id(URL).
+*/
+router.get('/:group_id', function(req, res) {
+console.log('GET-request established');
+	pool.getConnection(function(err, connection) {
+		if (!checkConnectionError(err, connection, res)) {return;}
+
+		connection.query('SELECT * FROM todo LEFT JOIN todo_person USING(todo_id) WHERE group_id = ?',
+			[req.params.group_id],
+			function(err, result) {
+				connection.release();
+				if (err) {throw err;}
+				if (result) {
+					var people = [];
+					for (i = 0; i < result.length; i++) {people.push({"person_id":result[i].person_id});}
+					var values = {};
+					for (var p in result[0]) {values[p] = result[0][p];}
+					delete values.person_id;
+					values.people = people;
+					res.json(values);
+				}
+			}
+		);
+	});
+});
+
+/**
+* Check for a database connection error and report if connected.
+*/
+function checkConnectionError(err, connection, res) {
+	if(err) {
+		connection.release();
+		res.status(500);
+		res.json({'Error' : 'connecting to database: ' } + err);
+		return false;
+	}
+	console.log('Database connection established');
+	return true;
+}
