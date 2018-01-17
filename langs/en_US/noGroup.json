@@ -5,7 +5,8 @@
   "nogroup-shoppinglistsNavbar": "Shoppinglists",
   "nogroup-profileNavbar": "Profile",
   "nogroup-logoutNavbar": "Log out",
-  "nogroup-addnewgroup": "Add new group"
+  "nogroup-addnewgroup": "Add new group",
+  "nogroup-addnewlist" : "Add new group"
 
 }
 
