@@ -16,7 +16,13 @@ $('document').ready(function (){
                     $("#" + p).html(data[p]);
                 }
             }
-            $("#shoppingcart").attr('title', data["shoppingcart"]);
+            $(".fa-money").html(" "+data["shop-balance"]);
+            $(".fa-shopping-cart").html(" "+data["shop-buy"]);
+            $(".fa-users").html(" "+data["shop-share"]);
+            $(".fa-trash").html(" "+data["shop-delete"]);
+            $(".fa-plus-circle").html(" "+data["shop-additem"]);
+
+
         }
     });
     $('#login-norway').click(function () {
@@ -41,7 +47,12 @@ $('document').ready(function (){
                                 $("#" + p).html(data[p]);
                             }
                         }
-                        $("#shoppingcart").attr('title', data["shoppingcart"]);
+                        $(".fa-money").html(" "+data["shop-balance"]);
+                        $(".fa-shopping-cart").html(" "+data["shop-buy"]);
+                        $(".fa-users").html(" "+data["shop-share"]);
+                        $(".fa-trash").html(" "+data["shop-delete"]);
+                        $(".fa-plus-circle").html(" "+data["shop-additem"]);
+
                     }
                 });
             }
@@ -69,7 +80,11 @@ $('document').ready(function (){
                                 $("#" + p).html(data[p]);
                             }
                         }
-                        $("#shoppingcart").attr('title', data["shoppingcart"]);
+                        $(".fa-money").html(" "+data["shop-balance"]);
+                        $(".fa-shopping-cart").html(" "+data["shop-buy"]);
+                        $(".fa-users").html(" "+data["shop-share"]);
+                        $(".fa-trash").html(" "+data["shop-delete"]);
+                        $(".fa-plus-circle").html(" "+data["shop-additem"]);
                     }
                 });
             }
@@ -95,7 +110,7 @@ $('document').ready(function (){
             "<ul class=\"list-group\">"+
             "<div class=\"inpi\" id=\"inputitem"+count+"\"><li class=\"list-group-item\" id=\"listitem"+count+"\">" +
             "<input type=\"text\" class=\"form-control ni\" id=\"newitem"+count+"\">" +
-            "</li></div><li class=\"list-group-item addi\" id=\"additem"+count+"\"><i class=\"fa fa-plus-circle\" aria-hidden=\"true\"></i> "+lang["shop-additem"]+"</li>" +
+            "</li></div><li class=\"list-group-item addi\" id=\"additem"+count+"\"><i class=\"fa fa-plus-circle\" aria-hidden=\"true\"> "+lang["shop-additem"]+"</i></li>" +
             "</ul><i class=\"fa fa-shopping-cart\" aria-hidden=\"true\" id='shoppingcart"+count+"' style='font-size: 1.8vh'> "+lang["shop-buy"]+"</i>" +
             "<i class=\"fa fa-users\" aria-hidden=\"true\" style='font-size: 1.8vh' id='shop-members"+count+"'> "+lang["shop-share"]+"</i>" +
             "<i class=\"fa fa-trash\" aria-hidden=\"true\" id='shop-delete"+count+"' style='font-size: 1.8vh'> "+lang["shop-delete"]+"</i><i class=\"fa fa-money\" style='font-size: 1.8vh' aria-hidden=\"true\" id='shop-balance"+count+"'> "+lang["shop-balance"]+"</i></div>" +
@@ -234,7 +249,13 @@ $('document').ready(function (){
 
         //-------------------Deletes the list------------------------
         $("#shop-delete"+count).click(function () {
-            alert("This function is yet to be made");
+
+            var navn = this.id;
+            var ide = navn.split("e").pop();
+            $("#shop-delete"+ide).html(" Press again to delete");
+            $("#shop-delete"+count).click(function () {
+                $('#listenr'+ide).remove();
+            });
         });
 
         //-------------------Goes to balance list--------------------
