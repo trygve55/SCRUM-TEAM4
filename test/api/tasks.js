@@ -55,11 +55,11 @@ describe('Tasks API', function() {
 
 	// POST
 	it('should return status 200 for adding new person to task', function(done) {
-		request.post('/api/tasks/person/').send({"todo_id":1, "person_id":2}).expect(200).end(done);
+		request.post('/api/tasks/person/1').send({"people":[2, 3]}).expect(200).end(done);
 	});
 
 	// DELETE
 	it('should return status 200 for deleting task', function(done) {
-		request.delete('/api/tasks/person/2').send({"todo_id":1}).expect(200).end(done);
+		request.delete('/api/tasks/person/1').send({"people":[3, 2]}).expect(200).end(done);
 	});
 });

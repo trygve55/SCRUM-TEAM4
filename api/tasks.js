@@ -56,18 +56,16 @@ router.post('/person/:todo_id', function(req, res) {
 		}
 
 		var resultQuery = multipleRequestSetup(
-										checkRange(req.params.todo_id, 1, null),
-										data,
-										'SET @taskid = ?; ' +
+										checkRange(req.params.todo_id, 1, null), data,
 										'INSERT INTO todo_person (todo_id, person_id) VALUES ',
-										'(@taskid, ?)'
+										'(?, ?)', false
 									);
 		
 		connection.query(
 			resultQuery[0], resultQuery[1],
 			function(err, result) {
 				if (!checkConnectionError(err, connection, res)) {return;}
-				res.status(200).json({success: "Success", id: result.insertId});
+				res.status(200).send();
 			}
 		);
 	});
@@ -172,11 +170,9 @@ router.delete('/person/:todo_id', function(req, res) {
 		}
 		
 		var resultQuery = multipleRequestSetup(
-										checkRange(req.params.todo_id, 1, null),
-										data,
-										'SET @taskid = ?; ' +
+										checkRange(req.params.todo_id, 1, null), data,
 										'DELETE FROM todo_person WHERE todo_id = ? AND person_id IN (',
-										''
+										'', true
 									);
 		resultQuery[0] += ')';
 
@@ -213,13 +209,20 @@ function putRequestSetup(iD, data, connection, tableName) {
 /**
 * Make the neccesary setup for multiple request.
 */
-function multipleRequestSetup(iD, data, query, repetitiveElement, inputs) {
-	inputs.push(iD);
+function multipleRequestSetup(iD, data, query, repetitiveElement, iDFirstOnly) {
+	var inputs = [];
+	if (iDFirstOnly) {inputs.push(iD);}
 	for (var i = 0; i < data.length; i++) {
 		query += repetitiveElement;
+		if (!iDFirstOnly) {
+			inputs.push(iD);
+			inputs.push(checkRange(data[i], 1, null));
+		}
+		else {query += data[i];}
 		if (i < data.length - 1) {query += ', ';}
-		inputs.push(checkRange(data[i], 1, null));
 	}
+	console.log(query);
+	console.log(inputs);
 	return [query, inputs];
 }
 
