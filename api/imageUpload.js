@@ -1,4 +1,4 @@
-var router = require('express').Router()
+var router = require('express').Router(),
     formidable = require('formidable'),
     Jimp = require("jimp");
 
@@ -33,6 +33,7 @@ router.post('/', function(req, res){
                             }
                             pool.getConnection(function (err, connection) {
                                 if (err) {
+                                    connection.release();
                                     res.status(500).json({'Error': err});
                                     return;
                                 }
@@ -51,16 +52,16 @@ router.post('/', function(req, res){
     });
 });
 
-router.get('/', function(req, res){
-
+router.get('/', function(req, res) {
 
     pool.getConnection(function (err, connection) {
-        connection.query("SELECT profile_pic FROM person WHERE person_id = 1;", [], function (error, results, fields) {
-            connection.release();
-            if(err) {
+        if(err) {
                 res.status(500).json({'Error' : 'connecting to database: ' } + err);
                 return;
-            }
+        }
+        connection.query("SELECT profile_pic FROM person WHERE person_id = 1;", [], function (error, results, fields) {
+            connection.release();
+            if(err) return res.status(500).json({error:err});
 
             if(results.length) res.status(404).json({error: 'no profile picture.'});
 
@@ -69,10 +70,13 @@ router.get('/', function(req, res){
     });
 });
 
-router.get('/tiny', function(req, res){
-
+router.get('/tiny', function(req, res) {
 
     pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            return res.status(500).json({error:'connecting to database' + err});
+        }
         connection.query("SELECT profile_pic_tiny FROM person WHERE person_id = 1;", [], function (error, results, fields) {
             connection.release();
             if(err) {
