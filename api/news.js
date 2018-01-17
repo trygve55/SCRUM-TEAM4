@@ -21,16 +21,15 @@ router.post('/', function(req, res) {
 	pool.getConnection(function(err, connection) {
 		if (!checkConnectionError(err, connection, res)) {return;}
 		connection.query(
-			'INSERT INTO todo (' +
-			'group_id, todo_text, datetime_deadline, datetime_done, created_by_id, done_by_id' +
-			') VALUES (?,?,?,?,?,?);',
+			'INSERT INTO newsfeed_post (' +
+			'group_id, posted_by_id, post_text, attachment_type, attachment_data' +
+			') VALUES (?,?,?,?,?);',
 			[
 				checkRange(data.group_id, 1, null),
-				data.todo_text,
-				data.datetime_deadline,
-				data.datetime_done,
-				checkRange(req.session.person_id, 1, null),	// data.created_by_id to test this.
-				checkRange(data.done_by_id, 1, null)
+				req.session.person_id,
+				data.post_text,
+				data.attachment_type,
+				data.attachment_data
 			], function(err, result) {checkResult(err, result, connection, res);}
 		);
 	});
