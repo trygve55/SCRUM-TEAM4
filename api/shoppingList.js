@@ -16,36 +16,34 @@ router.post('/', function(req, res) {
     if(!req.body.currency_id || !req.body.shopping_list_name)
         return res.status(400).send();
     pool.getConnection(function(err, connection) {
-        if(err) {
-            connection.release();
+        if(err)
             return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-        }
         var data = req.body;
         connection.beginTransaction(function (err) {
             if(err)
                 return connection.rollback(function () {
-                    connection.release();
                     res.status(500).json({'Error' : err});
+                    connection.release();
                 });
             connection.query('INSERT INTO shopping_list (shopping_list_name, currency_id) VALUES (?,?)',
                 [data.shopping_list_name, checkRange(data.currency_id, 1, null)], function(err, result) {
                     if(err)
                         return connection.rollback(function () {
-                            connection.release();
                             res.status(500).json({'Error' : err});
+                            connection.release();
                         });
                     connection.query('INSERT INTO shopping_list_person(shopping_list_id, person_id, invite_accepted) VALUES (?,?,?);',
                         [result.insertId, req.session.person_id, true], function (err) {
                             if (err)
                                 return connection.rollback(function () {
-                                    connection.release();
                                     res.status(500).json({'Error': err});
+                                    connection.release();
                                 });
                             connection.commit(function (err) {
                                 if (err)
                                     return connection.rollback(function () {
-                                        connection.release();
                                         res.status(500).json({'Error': err});
+                                        connection.release();
                                     });
                                 connection.release();
                                 res.status(200).json({success: "true", shopping_list_id: result.insertId});
@@ -164,11 +162,6 @@ router.get('/', function(req, res) {
             'lEFT JOIN shopping_list_person USING(shopping_list_id) ' +
             'WHERE shopping_list_id IN  ' +
             '(SELECT shopping_list_id FROM person WHERE person_id = ?  ' +
-            'UNION  ' +
-            'SELECT home_group.shopping_list_id FROM person  ' +
-            'LEFT JOIN group_person USING(person_id) ' +
-            'LEFT JOIN home_group USING(group_id) ' +
-            'WHERE person.person_id = ? ' +
             'UNION ' +
             'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?)',
             [p_id, p_id, p_id],

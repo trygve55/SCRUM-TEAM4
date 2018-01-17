@@ -192,7 +192,7 @@ router.post('/', function(req, res) {
 });
 
 /**
- * Adds a budget entry to shopping list
+ * Get full budget for a shopping list
  *
  * URL: /api/budget/{shopping_list_id}
  * method: GET
@@ -201,13 +201,20 @@ router.get('/:shopping_list_id', function(req, res) {
     pool.getConnection(function(err, connection) {
         if(err)
             return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-        connection.query('SELECT * ' +
+        connection.query('SELECT person_id, forename, middlename, lastname, ' +
+            'budget_entry_id, amount, text_note, entry_datetime, added_by_id, ' +
+            'budget_entry_type_id, entry_type_name, entry_type_color, ' +
+            'currency_id, currency_short, currency_long, currency_sign, ' +
+            'shopping_list.shopping_list_id, shopping_list_name, color_hex, ' +
+            'shopping_list_entry_id, entry_text, purchased_by_person_id, ' +
+            'added_by_person_id, cost, datetime_added, datetime_purchased ' +
             'FROM shopping_list ' +
             'LEFT JOIN budget_entry USING(shopping_list_id) ' +
             'LEFT JOIN budget_entry_type USING(budget_entry_type_id) ' +
             'LEFT JOIN person ON person.person_id = budget_entry.added_by_id ' +
             'LEFT JOIN shopping_list_entry USING (budget_entry_id) ' +
             'LEFT JOIN currency USING(currency_id) ' +
+            'LEFT JOIN person_budget_entry USING (budget_entry_id) ' +
             'WHERE shopping_list.shopping_list_id = ? AND shopping_list.shopping_list_id IN ' +
             '(SELECT shopping_list_id FROM person WHERE person_id = ? ' +
             'UNION  ' +
