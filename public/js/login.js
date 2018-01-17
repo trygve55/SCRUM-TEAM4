@@ -153,9 +153,30 @@ $(function () {
                 password: $('#login-password').val()
             },
             success: function (data) {
-                window.location = '/index.html';
+                console.log(data);
+                if(data.login)
+                    window.location = '/index.html';
             }
         });
     });
+
+    $("#login-button").keypress(function(e){
+        if(e.keyCode!=13||e.which!=13)
+            return;
+        $.ajax({
+            url: '/api/auth',
+            method: 'POST',
+            data:{
+                username: $('#login-email').val(),
+                password: $('#login-password').val()
+            },
+            success: function (data) {
+                console.log(data);
+                if(data.login)
+                    window.location = '/index.html';
+            }
+        });
+    })
 });
+
 

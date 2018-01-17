@@ -31,6 +31,7 @@ $(document).ready(function() {
 						break;
 					}
 				}
+				console.log(activeTab);
 				if(activeTab=='shopping') {
 					getShoppinglist();
 				}
@@ -110,6 +111,9 @@ function changeTab(name) {
 		for (var i = 0; i < tabs.length; i++) {tabs[i].style.display = "none";}
 		$("#" + name).css("display", "block");
 		activeTab = name;
+		if(activeTab=='shopping') {
+			getShoppinglist();
+		}
 	}
 }
 
