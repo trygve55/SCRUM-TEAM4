@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 
 pool = mysql.createPool({
-    connectionLimit : 2, // maks antall koblinger
+    connectionLimit : 10000, // maks antall koblinger
     host : 'mysql.stud.iie.ntnu.no',
     user : 'g_tdat2003_t4',
     password : 'bR3n8htW',
@@ -11,6 +11,7 @@ pool = mysql.createPool({
 
         if ( ( field.type === "BIT" ) && ( field.length === 1 ) ) {
             var bytes = field.buffer();
+            if (!bytes) return null;
             return( bytes[ 0 ] === 1 );
         }
 

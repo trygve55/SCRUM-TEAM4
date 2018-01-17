@@ -110,7 +110,7 @@ $('document').ready(function (){
         $('#nameforlist'+count).click(function(){
             var navn = this.id;
             var ide = navn.split("t").pop();
-            console.log(ide + " name for list clicked");
+
             $('#nameforlist'+ide).hide();
             $('#listname'+ide).show();
             $('#listnameinput'+ide).focus();
@@ -119,7 +119,7 @@ $('document').ready(function (){
         $('#listname'+count).keypress(function(event) {
             var navn = this.id;
             var ide = navn.split("e").pop();
-            console.log(ide + " listname entered");
+
             if (event.keyCode == 13 || event.which == 13) {
                 var name = $('#listnameinput'+ide).val();
                 $('#nameforlist'+ide).show();
@@ -211,7 +211,7 @@ $('document').ready(function (){
                 }
             });
             for(t in table){
-                console.log(table[t]);
+
             }
         });
 
