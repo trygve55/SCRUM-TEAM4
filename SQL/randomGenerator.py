@@ -10,12 +10,14 @@ def writeFile(file, data):
 
 lists = 15;
 currencies = 150;
-people = 100;
-groups = 20;
+people = 50;
+groups = 10;
+shoppingItems = 300;
 
 currentLists = 4;
 currentPeople = 2;
 currentGroups = 2;
+currentShoppingItems = 0;
 
 names = [];
 for i in range(0, people):
@@ -69,4 +71,10 @@ for i in uniqueIDs:
 	
 	writeFile(fileName, query);
 
-print("New data created in: " + fileName);
+for i in range(0, shoppingItems):
+        query = ("INSERT INTO shopping_list_entry (shopping_list_id, entry_text, added_by_person_id, purchased_by_person_id, cost) "
+	+ "VALUES ("+ str(randint(currentLists, lists + currentLists)) +", 'Thing "+ str(i) +"', "+ str(randint(currentPeople, people + currentPeople)) +", "+ str(randint(currentPeople, people + currentPeople)) +", "+ str(randint(0, 4200)) +");");
+
+        writeFile(fileName, query);
+        
+print("SQL queries created in: " + fileName + ":\nShoppingLists: " + str(lists) + "\nUsers: " + str(people) + "\nGroups: " + str(groups) + "\nShoppingListItems: " + str(shoppingItems));
