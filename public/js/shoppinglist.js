@@ -1,6 +1,7 @@
 var lang;
 var users = [];
-var list, balance, listItem, newListItem;
+var curBudget;
+var list, balance, listItem, newListItem, popupTextList, popupList, balanceItem;
 
 $('document').ready(function () {
     //--------------Languages------------
@@ -101,8 +102,11 @@ $('document').ready(function () {
             files: [
                 "list.html",
                 "balance.html",
+                "balanceItem.html",
                 "listItem.html",
-                "newListItem.html"
+                "newListItem.html",
+                "popupList.html",
+                "popupTextfieldList.html"
             ]
         },
         success: function(data){
@@ -110,6 +114,9 @@ $('document').ready(function () {
             balance = Handlebars.compile(data["balance.html"]);
             listItem = Handlebars.compile(data["listItem.html"]);
             newListItem = Handlebars.compile(data["newListItem.html"]);
+            popupTextList = Handlebars.compile(data["popupTextfieldList.html"]);
+            popupList = Handlebars.compile(data["popupList.html"]);
+            balanceItem = Handlebars.compile(data["balanceItem.html"]);
             prep();
         }
     });
@@ -120,11 +127,12 @@ function prep(){
         url: '/api/shoppingList/',
         method: 'GET',
         success: function(data){
-            console.log(data);
             for(var j = 0; j < data.length; j++) {
                 var d = data[j];
                 var entries = "";
                 for (var i = 0; i < d.shopping_list_entries.length; i++) {
+                    if(d.shopping_list_entries[i].purchased_by_person_id)
+                        continue;
                     entries += listItem({
                         entry_text: d.shopping_list_entries[i].entry_text,
                         entry_id: d.shopping_list_entries[i].shopping_list_entry_id
@@ -161,14 +169,10 @@ function prep(){
                     url: '/api/shoppingList/' + data.shopping_list_id,
                     method: 'GET',
                     success: function(data){
-                        var entries = "";
-                        for(var i = 0; i < data.shopping_list_entries.length; i++){
-                            entries += listItem({entry_text: data.shopping_list_entries[i].entry_text});
-                        }
                         $("#addlist").after(list({
                             shopping_list_id: data.shopping_list_id,
                             shopping_list_name: data.shopping_list_name,
-                            shopping_list_entries: entries,
+                            shopping_list_entries: "",
                             lang_add_item: lang["shop-add-item"],
                             lang_buy_items: lang["shop-buy"],
                             lang_share_members: lang["shop-share"],
@@ -183,69 +187,6 @@ function prep(){
         });
         /*
 
-        //-----------------Press add item button opens inputfield--------------
-        $('#additem'+count).click(function () {
-            var navn = this.id;
-            var ide = navn.split("m").pop(); //listeid
-            $('#additem'+ide).hide();
-            $('#inputitem'+ide).show();
-            $('#newitem'+ide).focus();
-
-        });
-
-        //-----------------Adds item when Enter is pressed---------------------
-        $('#newitem'+count).keypress(function(event) {
-            if (event.keyCode == 13 || event.which == 13) {
-                itemcount++;
-                var navn = this.id;
-                var ide = navn.split("m").pop(); //listeid
-
-                //$('#inputitem'+ide).hide();
-                var item = $('#newitem'+ide).val();
-                $('#newitem'+ide).val('');
-                $('#itemlist'+ide).append("<li class=\"list-group-item\" id=\"elem"+count+itemcount+"\"><div class='row'><div class=\"checkbox col-sm\"> <label id='labelitem"+count+itemcount+"'><input class='checkboxx' type=\"checkbox\" id='checkbox"+count+itemcount+"'> "+item+"</div><div class='col-sm' style='text-align: right'><i class=\"fa fa-times\" aria-hidden=\"true\" id=\"crossout" +count+'-'+ itemcount + "\"></i></label> </div></div></li>");
-
-                $('#crossout'+count+'-'+itemcount).click(function () {
-                    var name = this.id;
-                    var numbers = name.split("t").pop(); //listeid
-                    var thiscount =  numbers.split("-")[0];
-                    var thisitemcount = numbers.split("-")[1];
-                    var theelement = "elem"+thiscount+thisitemcount;
-                    document.getElementById(theelement).remove();
-                    itemcount--;
-                });
-            }
-        });
-
-        //-------------------Removes inputfield when focus is out----------------
-        $("#newitem"+count).focusout(function () {
-            var navn = this.id;
-            var ide = navn.split("m").pop(); //listeid
-            $('#additem'+ide).show();
-            $('#inputitem'+ide).hide();
-        });
-
-        //-------------------Removes items from list when checked and shoppingcart is clicked----------
-        $("#shoppingcart"+count).click(function () {
-            var table = [];
-            var navn = this.id;
-            var ide = navn.split("t").pop(); //listeid
-            $(".checkboxx").each(function () {
-                if($(this).is(':checked')){
-                    var numb = this.id;
-                    var nr = numb.split("x").pop();
-                    var ss = nr[1];
-                    var htmllab = $('#labelitem'+ide+ss).html();
-                    var item = htmllab.split(">").pop();
-                    table.push(item);
-                    document.getElementById('elem'+ide+ss).remove();
-                }
-            });
-            for(t in table){
-                console.log(table[t]);
-            }
-        });
-
         //-------------------Deletes the list------------------------
         $("#shop-delete"+count).click(function () {
 
@@ -255,23 +196,6 @@ function prep(){
             $("#shop-delete"+count).click(function () {
                 $('#listenr'+ide).remove();
             });
-        });
-
-        //-------------------Goes to balance list--------------------
-        $('#shop-balance'+count).click(function() {
-            var navn = this.id;
-            var ide = navn.split("e").pop();
-            $('#listenr'+ide).hide();
-            $('#balancediv'+ide).show();
-
-            //-------------------Goes back to shoppinglist---------------
-            $('#shop-backlist'+count).click(function () {
-                var navn = this.id;
-                var ide = navn.split("t").pop();
-                $('#listenr'+ide).show();
-                $('#balancediv'+ide).hide();
-            });
-
         });
 
         //-----------------Opens member popup--------------------
@@ -334,7 +258,7 @@ function prep(){
 }
 
 function setupClicks(){
-    $(".list-name").click(function(){
+    $(".list-name").unbind("click").click(function(){
         var listId = $(this).closest("div[data-id]").data("id");
         var title = $(this).html();
         $(this).hide();
@@ -343,7 +267,7 @@ function setupClicks(){
         $(div).children(".list-name-input").val(title).focus();
     });
 
-    $(".list-name-input").focusout(function(){
+    $(".list-name-input").unbind("focusout").focusout(function(){
         var text = $(this).val();
         var id = $(this).closest("div[data-id]").data("id");
         var h4 = $(this).parent().parent().children(".list-name");
@@ -359,7 +283,7 @@ function setupClicks(){
         });
     });
 
-    $(".list-name-input").keypress(function(e){
+    $(".list-name-input").unbind("keypress").keypress(function(e){
         if(e.keyCode != 13 && e.which != 13)
             return;
         var text = $(this).val();
@@ -377,7 +301,7 @@ function setupClicks(){
         });
     });
 
-    $(".add-item").click(function(){
+    $(".add-item").unbind("click").click(function(){
         $(this).closest("div").children(".itemlist").append(newListItem());
 
         $("#new-list-item").keypress(function(e){
@@ -386,26 +310,30 @@ function setupClicks(){
             var ul = $(this).closest("ul");
             var text = $(this).val();
             if(text != "") {
-                saveItemToDB($(this).closest("div[data-id]").data("id"), text);
-                $(ul).append(listItem({entry_text: text}));
-                $(this).closest("li").remove();
-                addNewItem(ul);
+                var t = this;
+                saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                    $(t).closest("li").remove();
+                    addNewItem(ul);
+                    setupItemClicks();
+                });
             }
-            else
+            else {
+                setupItemClicks();
                 $(this).closest("li").remove();
+            }
         }).focusout(function(){
-            console.log("hei");
             var ul = $(this).closest("ul");
             var text = $(this).val();
             if(text != "") {
-                saveItemToDB($(this).closest("div[data-id]").data("id"), text);
-                $(ul).append(listItem({entry_text: text}));
+                saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                    setupItemClicks();
+                });
             }
             $(this).closest("li").remove();
         }).focus();
     });
 
-    $('.pink-select').click(function () {
+    $('.pink-select').unbind("click").click(function () {
         var ls = $(this).closest("div[data-id]");
         var id = $(ls).css('background-color', $(this).data('color')).data("id");
         $.ajax({
@@ -417,7 +345,7 @@ function setupClicks(){
         });
     });
 
-    $('.yellow-select').click(function () {
+    $('.yellow-select').unbind("click").click(function () {
         var ls = $(this).closest("div[data-id]");
         var id = $(ls).css('background-color', $(this).data('color')).data("id");
         $.ajax({
@@ -429,7 +357,7 @@ function setupClicks(){
         });
     });
 
-    $('.green-select').click(function () {
+    $('.green-select').unbind("click").click(function () {
         var ls = $(this).closest("div[data-id]");
         var id = $(ls).css('background-color', $(this).data('color')).data("id");
         $.ajax({
@@ -441,7 +369,7 @@ function setupClicks(){
         });
     });
 
-    $('.white-select').click(function () {
+    $('.white-select').unbind("click").click(function () {
         var ls = $(this).closest("div[data-id]");
         var id = $(ls).css('background-color', $(this).data('color')).data("id");
         $.ajax({
@@ -452,6 +380,122 @@ function setupClicks(){
             }
         });
     });
+
+    $(".fa-money").unbind("click").click(function(){
+        var id = $(this).closest("div[data-id]").data("id");
+        $.ajax({
+            url: '/api/budget/' + id,
+            method: 'GET',
+            success: function(data){
+                curBudget = data;
+                var entries = "";
+                for(var i = 0; i < data.length; i++){
+                    entries += "<tr data-id='" + data[i].budget_entry_id + "'><td>" + data[i].entry_datetime + "</td><td>" + data[i].amount + "</td>";
+                }
+                $("body").append(balance({
+                    title: lang["shop-balance"],
+                    complete: lang["shop-ok"],
+                    data: "data-id='" + id + "'",
+                    lang_trip: lang["shop-trip"],
+                    lang_price: lang["shop-price"],
+                    budget_entries: entries
+                }));
+
+                $('tr[data-id]').click(function(){
+                    var id = $(this).closest("tr[data-id]").data("id");
+                    var entry = null;
+                    for(var i = 0; i < curBudget.length; i++){
+                        if(curBudget[i].budget_entry_id == id){
+                            entry = curBudget[i];
+                        }
+                    }
+                    if(!entry)
+                        return;
+                    var d = "<li class='list-group-item'>Work in progress (data about a entry)</li>";
+                    $(this).closest(".pop").hide();
+                    $("body").append(balanceItem({
+                        title: entry.entry_datetime,
+                        complete: lang["shop-ok"],
+                        list: d
+                    }));
+                    $("#balance-info-complete").click(function(){
+                        $(this).closest(".pop").remove();
+                        $(".pop").show();
+                    });
+                });
+
+                $('#popup-complete').click(function(){
+                    $(this).closest(".pop").remove();
+                });
+            },
+            error: console.error
+        });
+    });
+
+    $(".fa-shopping-cart").unbind("click").click(function(){
+        var items = $(this).closest("div[data-id]").find(".list-group-item input:checked").closest('li[data-id]');
+        if(items.length == 0)
+            return;
+        var entries = $(items[0]).data("id");
+        var list = "<li class=\"list-group-item\">" + $(items[0]).html() + "</li>";
+        for(var i = 1; i < items.length; i++){
+            entries += "," + $(items[i]).data("id");
+            list += "<li class=\"list-group-item\">" + $(items[i]).html() + "</li>";
+        }
+        $("body").append(popupTextList({
+            title: lang["shop-buy-title"],
+            list: list,
+            textfield: lang["shop-buy-text"],
+            cancel: lang["shop-cancel"],
+            complete: lang["shop-ok"],
+            data: "data-id='" + $(this).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
+        }));
+
+        $(".pop").find(".fa-times").remove();
+        $(".pop").find("input[type=checkbox]").remove();
+
+        $("#popup-cancel").click(function(){
+            $(this).closest(".pop").remove();
+        });
+
+        $("#popup-complete").click(function(){
+            if(isNaN(Number($(this).closest('.pop').find('input').val())))
+                return;
+            var id = $(this).closest("div[data-id]").data("id");
+            var e = $(this).closest("div[data-entries]").data("entries");
+            if(Number(e) !== e)
+                e = e.split(",");
+            else
+                e = [e];
+            $.ajax({
+                url: '/api/budget',
+                method: 'POST',
+                data: {
+                    shopping_list_id: id,
+                    amount: Number($(this).closest('.pop').find('input').val()),
+                    text_note: e.join(",")
+                },
+                success: function(data){
+                    for(var i = 0; i < e.length; i++){
+                        $.ajax({
+                            url: '/api/shoppingList/entry/' + e[i],
+                            method: 'PUT',
+                            data: {
+                                shopping_list_id: id,
+                                purchased_by_person_id: 2,
+                                budget_entry_id: data.budget_entry_id
+                            }
+                        });
+                    }
+                }
+            });
+            for(var i = 0; i < e.length; i++){
+                $("div[data-id=" + id + "]").find('li[data-id=' + e[i] + ']').remove();
+            }
+            $(this).closest(".pop").remove();
+        });
+    });
+
     setupItemClicks();
 }
 
@@ -465,43 +509,61 @@ function setupItemClicks(){
         });
         $(this).closest("li[data-id]").remove();
     });
+
+    $("li[data-id]").unbind("click").click(function(e){
+        if($(this).is('.fa-times'))
+            return;
+        else if(!$(e.target).is('input')) {
+            e.preventDefault();
+            $(this).find("input[type=checkbox]").prop('checked', $(this).find("input:checked").length == 0);
+        }
+    });
 }
 
 function addNewItem(ul){
     $(ul).append(newListItem());
-    console.log("hei");
+
     $("#new-list-item").keypress(function(e){
         if(e.keyCode != 13 && e.which != 13)
             return;
         var ul = $(this).closest("ul");
         var text = $(this).val();
         if(text != "") {
-            saveItemToDB($(this).closest("div[data-id]").data("id"), text);
-            $(ul).append(listItem({entry_text: text}));
-            $(this).closest("li").remove();
-            addNewItem(ul);
+            var t = this;
+            saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                $(t).closest("li").remove();
+                addNewItem(ul);
+                setupItemClicks();
+            });
         }
-        else
+        else {
+            setupItemClicks();
             $(this).closest("li").remove();
+        }
     }).focusout(function(){
-        console.log("hei");
         var ul = $(this).closest("ul");
         var text = $(this).val();
         if(text != "") {
-            saveItemToDB($(this).closest("div[data-id]").data("id"), text);
-            $(ul).append(listItem({entry_text: text}));
+            saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                setupItemClicks();
+            });
         }
         $(this).closest("li").remove();
     }).focus();
 }
 
-function saveItemToDB(id, item){
+function saveItemToDB(id, item, ul, cb){
     $.ajax({
         url: '/api/shoppingList/entry',
         method: 'POST',
         data: {
             shopping_list_id: id,
             entry_text: item
+        },
+        success: function(data){
+            $(ul).append(listItem({entry_text: item, entry_id: data.shopping_cart_entry_id}));
+            if(cb)
+                cb();
         }
     });
 }
@@ -510,12 +572,6 @@ function addmember(ide){
     var member = $('#shop-member'+ide).val();
     $('#shop-memberslist'+ide).prepend('<li class="list-group-item">'+member+'</li>');
     $('#shop-member'+ide).val('');
-}
-
-function deselect(e) {
-    $('.pop').slideFadeToggle(function() {
-        e.removeClass('selected');
-    });
 }
 
 var hexDigits = new Array

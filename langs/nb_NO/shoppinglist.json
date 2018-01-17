@@ -13,6 +13,11 @@
   "shop-balance": "Oppgjør",
   "shop-backlist": "Tilbake til handlelisten",
   "shop-add-members": "Medlemmer",
-  "shop-cancel": "Lukk",
-  "shop-list-name-input": "Ny liste"
+  "shop-cancel": "Avbryt",
+  "shop-list-name-input": "Ny liste",
+  "shop-buy-title": "Registrer utgift",
+  "shop-buy-text": "Pris",
+  "shop-ok": "OK",
+  "shop-trip": "Handletur",
+  "shop-price": "Pris"
 }
