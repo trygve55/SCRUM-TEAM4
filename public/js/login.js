@@ -14,11 +14,11 @@ window.fbAsyncInit = function() {
         if(response.status === 'connected'){
             connected = true;
             $.ajax({
-                url: '/api/login',
+                url: '/api/auth',
                 method: "GET",
                 success: function(data){
                     if(data.login) {
-                        console.log("Facebook auto");
+
                         window.location = "/index.html";
                     }
                 },
@@ -40,9 +40,9 @@ function login() {
     FB.login(function (response) {
         if (response.status === 'connected') {
             FB.api('/me', 'GET', {fields: 'first_name,last_name,id,email'}, function (response) {
-                console.log(response);
+
                 $.ajax({
-                    url: '/api/login/facebook',
+                    url: '/api/auth/facebook',
                     method: 'POST',
                     data: {
                         facebook_api_id: response.id,
@@ -51,8 +51,8 @@ function login() {
                         lastname: response.last_name
                     },
                     success: function (data) {
-                        console.log(data);
-                        console.log('hei');
+
+
                         window.location = "/index.html";
                     },
                     error: console.error
@@ -146,7 +146,7 @@ $(function () {
     });
     $("#login-button").click(function () {
         $.ajax({
-            url: '/api/login',
+            url: '/api/auth',
             method: 'POST',
             data:{
                 username: $('#login-email').val(),

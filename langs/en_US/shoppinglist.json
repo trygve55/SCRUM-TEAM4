@@ -5,5 +5,15 @@
   "shop-shoppinglists": "Shoppinglists",
   "shop-profile": "Profile",
   "shop-logout": "Log out",
-  "shop-addlist": "Add list"
+  "shop-addlist": "Add shoppinglist",
+  "shop-delete": "Delete list",
+  "shop-share": "Members",
+  "shop-buy": "Buy",
+  "shop-additem": "Add item",
+  "shop-balance": "Settlement",
+  "shop-backlist": "Back to shoppinglist",
+  "shop-addmemberstolist": "Medlemmer",
+  "shop-adduser": "Legg til",
+  "shop-cancel": "Lukk"
+
 }

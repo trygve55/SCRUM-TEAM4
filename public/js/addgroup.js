@@ -78,7 +78,7 @@ $('document').ready(function(){
                                         group_id: data.id
                                     },
                                     success: function(data){
-                                        console.log(data);
+
                                     },
                                     error: console.error
                                 });
@@ -119,19 +119,10 @@ $('document').ready(function(){
                 suggestion: Handlebars.compile('<div>{{name}} – {{email}}</div>')
             }
         });
-/*
-    $('#addgroup-member').keypress(function(event) {
-        if(event.keyCode == 13 || event.which == 13){
-            addmember();
-        }
-    });*/
 
-    // TODO: What if user already is seleced? alert...?
-    // TODO: Remove users from selection
     $(".typeahead").bind('typeahead:select', function(a, data){
         if(!check(data))
             return;
-        $(".typeahead").val("");
         users.push(data);
         updateList();
     });
@@ -227,10 +218,22 @@ $('document').ready(function(){
 function updateList(){
     var h = "";
     for(var i = 0; i < users.length; i++){
-        h += '<li class="list-group-item">' + users[i].name + '</li>';
+        console.log(users[i]);
+        h += '<li class="list-group-item">' + users[i].name + '<i data-pid="' + users[i].id + '" style="float: right;" class="fa fa-times" area-hidden="true"></i></li>';
     }
     h += '<li class="list-group-item">You (administrator)</li>';
     $("#memberslist").html(h);
+
+    $(".fa-times").click(function(){
+        var id = $(this).data('pid');
+        for(var i = 0; i < users.length; i++){
+            if(users[i].id == id){
+                users.splice(i, 1);
+                break;
+            }
+        }
+        updateList();
+    });
 }
 
 function check(u){

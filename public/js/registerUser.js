@@ -41,7 +41,7 @@ $(function () {
                         path: window.location.pathname
                     },
                     success: function (data) {
-                        console.log(data);
+
                         for(var p in data){
                             if(data.hasOwnProperty(p)){
                                 $("#" + p).html(data[p]);
@@ -73,7 +73,7 @@ $(function () {
                     url: '/api/language',
                     method: 'GET',
                     success: function (data) {
-                        console.log(data);
+
                         for(var p in data){
                             if(data.hasOwnProperty(p)){
                                 $("#" + p).html(data[p]);
@@ -188,7 +188,7 @@ $(function () {
                 });
             },
             error: function (){
-                console.log($("#register-username").css('background'));
+
                 $('#register-username').css({
                     "border": "1px solid red",
                     "background": "#FFCECE"
