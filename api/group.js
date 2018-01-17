@@ -1,3 +1,20 @@
+/*
+Authors: Andrzej Cabala, Andreas Hammer (main author), Magnus Eilertsen
+
+    home_group columns:
+
+    group_id INTEGER NOT NULL AUTO_INCREMENT,
+    group_name NVARCHAR(50) NOT NULL,
+    group_desc NVARCHAR(200),
+    group_type INTEGER NOT NULL DEFAULT 0,
+    created_datetime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    cleaning_list_interval INTEGER NOT NULL DEFAULT 0,
+    group_pic MEDIUMBLOB,
+    group_pic_tiny  BLOB,
+    default_currency_id INTEGER NOT NULL,
+    shopping_list_id INTEGER NOT NULL,
+
+ */
 var router = require('express').Router(),
     formidable = require('formidable'),
     Jimp = require("jimp");
@@ -15,12 +32,14 @@ module.exports = router;
  */
 router.get('/name', function(req, res){
     if(!req.session.person_id)
-        return res.status(500).send();
+        return res.status(403).send("Login required");
     if(!req.query.group_name)
-        return res.status(400).send("Bad Request");
+        return res.status(400).send("Bad Request (missing variable 'group_name')");
     pool.getConnection(function(err, connection){
-        if(err)
+        if(err) {
+            connection.release();
             return res.status(500).send("Error");
+        }
         connection.query("SELECT COUNT(*) FROM home_group WHERE group_name = ?", [req.query.group_name], function (err, result){
             connection.release();
             if(err)
@@ -40,11 +59,16 @@ router.get('/name', function(req, res){
  *      currency
  * }
  */
+
 router.post('/', function(req, res){
+    var acceptedGroupVars = ["group_name", "currency"];
     if(!req.session.person_id)
-        return res.status(500).send();
-    if(!req.body.group_name)
-        return res.status(400).send("Bad Request");
+        return res.status(403).send("You must log in");
+    for(var p in req.body) {
+        if(acceptedGroupVars.indexOf(p) < 0) return res.status(400).send("Bad variable: " + p);
+    }
+    if(!req.body.group_name) return res.status(400).send("Missing variable: group_name");
+    if(!req.body.currency) return res.status(400).send("Missing variable: currency");
     pool.getConnection(function(err, connection){
         if(err)
             return res.status(500).send(JSON.stringify(err));
@@ -56,52 +80,38 @@ router.post('/', function(req, res){
             }
             if(result.length > 0) {
                 connection.release();
-                return res.status(200).send(false);
+                return res.status(400).send("Bad request (group name in use)");
             }
             connection.beginTransaction(function(err) {
-                if(err)
+                if(err) {
+                    connection.release();
                     return res.status(500).send();
+                }
                 connection.query("INSERT INTO shopping_list (currency_id) VALUES (?)", [req.body.currency], function(err, result) {
                     if(err) {
                         connection.release();
-                        return res.status(500).send();
+                        return res.status(500).send("Failed to insert shopping_list entry");
                     }
-                    qry = "INSERT INTO home_group (shopping_list_id, default_currency_id";
-                    var values = [result.insertId, req.body.currency];
-                    delete req.body.currency;
-                    var group = req.body;
-                    for (var p in group) {
-                        if (values.length != 0)
-                            qry += ", ";
-                        qry += p;
-                        values.push(group[p]);
-                    }
-                    if (values.length == 0) {
-                        connection.release();
-                        return res.status(500).send("No values found");
-                    }
-                    qry += ") VALUES (?";
-                    for (var i = 0; i < values.length - 1; i++) {
-                        qry += ", ?";
-                    }
-                    qry += ");";
+                    qry = "INSERT INTO home_group (shopping_list_id, default_currency_id, group_name) VALUES (?,?,?)";
+                    var values = [result.insertId, req.body.currency, req.body.group_name];
                     connection.query(qry, values, function (err, result) {
                         if(err) {
                             connection.release();
-                            return res.status(500).send();
+                            return res.status(500).send("Failed to insert home_group entry");
                         }
                         var group_id = result.insertId;
-                        connection.query('INSERT INTO group_person (person_id, group_id, role_id, invite_accepted) VALUES (?, ?, ?, ?)', [req.session.person_id, result.insertId, 2, 1], function(err, result) {
+                        connection.query('INSERT INTO group_person (person_id, group_id, role_id, invite_accepted) VALUES (?, ?, ?, ?)', [req.session.person_id, group_id, 2, 1], function(err, result) {
                             if(err) {
                                 connection.release();
-                                return res.status(500).send();
+                                console.log(err);
+                                return res.status(500).send("Failed to add session user to group");
                             }
                             connection.commit(function (err) {
                                 if (err) {
                                     return connection.rollback(function (err) {
-                                        if (err)
-                                            console.error(err);
-                                        res.status(500).send();
+                                        connection.release();
+                                        if (err) console.error(err);
+                                        res.status(500).send("Transaction fail");
                                     });
                                 }
                                 connection.release();
@@ -127,8 +137,10 @@ router.get('/me', function(req, res){
     if(!req.session.person_id)
         return res.status(500).send();
     pool.getConnection(function(err, connection){
-        if(err)
+        if(err) {
+            connection.release();
             return res.status(500).send();
+        }
         connection.query('SELECT * FROM home_group WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?)', [req.session.person_id], function(err, result){
             connection.release();
             if(err)
@@ -149,8 +161,10 @@ router.get('/:group_id', function(req, res){
     if(!req.session.person_id)
         return res.status(500).send();
     pool.getConnection(function(err, connection){
-        if(err)
+        if(err){
+            connection.release();
             return res.status(500).send("Error");
+        }
         connection.query("SELECT * FROM home_group WHERE group_id = ?;", [req.params.group_id], function(err, result){
             connection.release();
             if(err){
@@ -174,8 +188,10 @@ router.get('/', function(req, res){
     if(!req.session.person_id)
         return res.status(500).send();
     pool.getConnection(function(err, connection){
-        if(err)
+        if(err) {
+            connection.release();
             return res.status(500).send();
+        }
         connection.query("SELECT " + (req.query.group_name ? "*" : "group_id, group_name") + " FROM home_group" + (req.query.group_name ? " WHERE group_name = ?" : "") + ";", [req.query.group_name || req.query.group_id], function(err, result){
             connection.release();
             if(err){
@@ -196,14 +212,17 @@ router.get('/', function(req, res){
  * }
  */
 router.put('/:group_id', function(req, res){
+    var acceptedGroupVars= [];
     if(!req.session.person_id)
         return res.status(500).send();
     pool.getConnection(function(err, connection){
-        if(err)
+        if(err) {
+            connection.release();
             return res.status(500).send("Error");
+        }
         connection.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
+            connection.release();
             if(err) {
-                connection.release();
                 return res.status(500).send();
             }
             if(result.length == 0 || result[0].role_id != 2) {
@@ -215,6 +234,11 @@ router.put('/:group_id', function(req, res){
             var vals = [];
             for (var p in req.body) {
                 if (req.body.hasOwnProperty(p)) {
+                    if(acceptedGroupVars.indexOf(p) < 0) {
+                        connection.release();
+                        res.status(400).send("Bad request (bad variable: '" + p + "')");
+                        return;
+                    }
                     if (!f)
                         qry += ", ";
                     qry += p + " = ?";
@@ -251,9 +275,11 @@ router.post('/:group_id/members', function(req, res){
     if(!req.body.members || req.body.members.length == 0)
         return res.status(400).send("Bad Request");
     pool.getConnection(function(err, connection){
-        if(err)
+        if(err) {
+            connection.release();
             return res.status(500).send("Internal Error");
-        connection.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
+        }
+        connection.query("SELECT role_id FROM group_person WHERE group_id = + AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
             if(err) {
                 connection.release();
                 return res.status(500).send(err);
@@ -270,19 +296,28 @@ router.post('/:group_id/members', function(req, res){
             }
             qry += ";";
             connection.beginTransaction(function (err) {
-                if (err)
-                    return res.status(500).send("Transaction");
+
+                if (err) {
+                    connection.release();
+                    return res.status(500).send();
+                }
+
                 connection.query(qry, vals, function (err, result) {
-                    console.error(err);
-                    if (err)
+                    if (err) {
+                        connection.release();
                         return res.status(500).send(err.code);
+                    }
                     connection.commit(function (err) {
                         if (err)
                             return connection.rollback(function (err) {
-                                if (err)
+                                connection.release();
+                                if (err) {
                                     console.error(err);
-                                res.status(500).send(err);
+
+                                    res.status(500).send("Transaction fail");
+                                }
                             });
+                        connection.release();
                         res.status(200).json(result);
                     });
                 });
@@ -307,8 +342,10 @@ router.delete('/:group_id/user', function(req, res){
     if(!req.body.person_id || !req.body.role_id)
         return res.status(400).send();
     pool.getConnection(function(err, connection){
-        if(err)
+        if(err) {
+            connection.release();
             return res.status(500).send("Internal Error");
+        }
         connection.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
             if(err) {
                 connection.release();
@@ -352,8 +389,10 @@ router.put('/:group_id/userPrivileges', function(req, res){
     if(!req.body.person_id || !req.body.role_id)
         return res.status(400).send();
     pool.getConnection(function(err, connection){
-        if(err)
+        if(err) {
+            connection.release();
             return res.status(500).send("Internal Error");
+        }
         connection.query("SELECT role_id FROM group_person WHERE person_id = ? AND group_id = ?", [req.session.person_id, req.params.group_id], function(err, result){
             if(err) {
                 connection.release();
@@ -416,6 +455,7 @@ router.post('/:group_id/picture', function(req, res){
                             }
                             pool.getConnection(function (err, connection) {
                                 if (err) {
+                                    connection.release();
                                     res.status(500).json({'Error': err});
                                     return;
                                 }
@@ -442,6 +482,11 @@ router.post('/:group_id/picture', function(req, res){
  */
 router.get('/:group_id/picture', function(req, res){
     pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            res.status(500).json({'Error': err});
+            return;
+        }
         connection.query("SELECT group_pic FROM home_group WHERE group_id = ?;", [req.params.group_id], function (error, results, fields) {
             connection.release();
             if(err) {
@@ -467,6 +512,12 @@ router.get('/:group_id/picture', function(req, res){
  */
 router.get('/:group_id/picture_tiny', function(req, res){
     pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            res.status(500).json({'Error': err});
+            return;
+        }
+
         connection.query("SELECT group_pic_tiny FROM home_group WHERE group_id = ?;", [req.params.group_id], function (error, results, fields) {
             connection.release();
             if(err) {
