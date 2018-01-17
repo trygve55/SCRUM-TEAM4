@@ -4,5 +4,10 @@
   "profile-tasks": "Tasks",
   "profile-shoppinglists": "Shoppinglists",
   "profile-profile": "Profile",
-  "profile-logout": "Log out"
+  "profile-logout": "Log out",
+  "profile-balance": "BALANCE",
+  "profile-MyShoppinglist": "My shoppinglist",
+  "profile-MyToDoList": "My TODO list",
+  "profile-addItem": "Add item",
+  "profile-allShoppinglists": "All shoppinglists"
 }

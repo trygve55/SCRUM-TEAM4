@@ -14,7 +14,7 @@ window.fbAsyncInit = function() {
         if(response.status === 'connected'){
             connected = true;
             $.ajax({
-                url: '/api/login',
+                url: '/api/auth',
                 method: "GET",
                 success: function(data){
                     if(data.login) {
@@ -42,7 +42,7 @@ function login() {
             FB.api('/me', 'GET', {fields: 'first_name,last_name,id,email'}, function (response) {
 
                 $.ajax({
-                    url: '/api/login/facebook',
+                    url: '/api/auth/facebook',
                     method: 'POST',
                     data: {
                         facebook_api_id: response.id,
@@ -146,7 +146,7 @@ $(function () {
     });
     $("#login-button").click(function () {
         $.ajax({
-            url: '/api/login',
+            url: '/api/auth',
             method: 'POST',
             data:{
                 username: $('#login-email').val(),
