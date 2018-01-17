@@ -15,7 +15,7 @@ router.get('/all', function(req, res){
             connection.release();
             return res.status(500).send("Error");
         }
-        connection.query("SELECT person_id, email, forename, middlename, lastname, username FROM person", function(err, result){
+        connection.query("SELECT person_id, email, forename, middlename, lastname, username FROM person;", function(err, result){
             connection.release();
             if(err)
                 res.status(500).send(err.code);
@@ -56,7 +56,7 @@ router.post('/register', function(req, res) {
             res.status(400).json({message:"Syntax-error"})
         }
 
-        connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?', [user.username], function (err, result) {
+        connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?;', [user.username], function (err, result) {
             if (err) {
                 connection.release();
                 res.status(500).json({error: err});
@@ -67,7 +67,7 @@ router.post('/register', function(req, res) {
                 return res.status(200).json({message:"Username already in use"});
             }
 
-            connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?', [user.email], function (err, result) {
+            connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?;', [user.email], function (err, result) {
                 if (err) {
                     connection.release();
                     res.status(500).json({error: err});
@@ -82,7 +82,7 @@ router.post('/register', function(req, res) {
                     if (err) {
                         connection.release();
                         res.status(500).json({message: "database connection failed"});
-                    } else connection.query('INSERT INTO shopping_list (currency_id) VALUES(?)', [100], function (err, result) {
+                    } else connection.query('INSERT INTO shopping_list (currency_id) VALUES(?);', [100], function (err, result) {
                         if (err) {
                                 connection.rollback(function () {
                                 connection.release();
@@ -133,7 +133,7 @@ router.post('/register', function(req, res) {
                                 connection.query('INSERT INTO person ' +
                                     '(email, username, password_hash, forename, middlename,' +
                                     'lastname, phone, birth_date,' +
-                                    'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function (err) {
+                                    'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?);', values, function (err) {
                                     if (err) {
                                             connection.rollback(function () {
                                             connection.release();
@@ -180,7 +180,7 @@ router.get('/user', function (req, res) {
             return res.status(400).json({message:"Syntax-error"});
         }
 
-        connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?', [username], function (err, result){
+        connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?;', [username], function (err, result){
             connection.release();
             if(result[0].counted === 1) {
                 return res.status(200).json({message:"Username already exists"});
@@ -206,7 +206,7 @@ router.get('/mail', function (req, res) {
             return res.status(400).json({message:'Syntax-error'});
         }
 
-        connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?', [email], function (err, result){
+        connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?;', [email], function (err, result){
             connection.release();
             if(result[0].counted === 1) {
                 return res.status(200).json({message:'E-mail already exists'});
