@@ -73,13 +73,10 @@ describe('User API', function() {
 
     describe('/api/:person_id/picture POST', function () {
         it("Should return same size as image", function (done) {
-            fs.readFile('test/img/test.jpg', function (err, data) {
-                if (err) throw err;
-                request.post('/api/user/1/picture')
-                    .send('test')
+                request.post('/api/user/2/picture')
+                    .attach('file', 'test/img/test.jpg')
                     .expect(200)
                     .end(done);
-            });
         });
     });
 

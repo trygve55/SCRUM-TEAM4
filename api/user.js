@@ -2,6 +2,7 @@ var router = require('express').Router(),
     auth = require('../auth'),
     router = require('express').Router(),
     formidable = require('formidable'),
+    path = require('path'),
     Jimp = require("jimp");
 
 module.exports = router;
@@ -312,10 +313,10 @@ router.put('/:person_id', function(req, res) {
 router.post('/:person_id/picture', function(req, res){
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
+        console.log(files);
         var path = files.file.path,
             file_size = files.file.size;
 
-        console.log(path);
 
         if (file_size > 4000000) {
             res.status(400).json({'error': 'image file over 4MB'});
