@@ -1,15 +1,18 @@
 
 function reset() {
-	var adress = $("#adrinput");
-	var exists;
-	$.ajax({
-		type:"GET",
-		url:"data/quizlist/" + adress,
-		contentType:"application/json",
-		dataType:"json",
+	var adress = $("#adrinput"), exists;
+	$.ajax({type:"GET", url:"api/mail/" + adress.val(), contentType:"application/json", dataType:"json",
 		success:function(result) {exists = (result.message === 'E-mail already exists');}
-	});	// Check if adress exists
+	});	// Change to POST with all the tokens and stuffs.
+	
 	if (exists) {
+		// 1. Get a temp password.
 		
+		// 2. Send EMAIL with link.
+		
+	}
+	else {
+		adress.val("");
+		adress.attr("placeholder", "Email doesn't exist.");
 	}
 }
