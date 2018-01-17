@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 
 pool = mysql.createPool({
-    connectionLimit : 10000, // maks antall koblinger
+    connectionLimit : 10,
     host : 'mysql.stud.iie.ntnu.no',
     user : 'g_tdat2003_t4',
     password : 'bR3n8htW',

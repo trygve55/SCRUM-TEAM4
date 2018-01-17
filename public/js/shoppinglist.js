@@ -1,5 +1,7 @@
 var lang;
 var users = [];
+var list, balance, listItem;
+
 $('document').ready(function (){
     //--------------Languages------------
     $.ajax({
@@ -21,10 +23,9 @@ $('document').ready(function (){
             $(".fa-users").html(" "+data["shop-share"]);
             $(".fa-trash").html(" "+data["shop-delete"]);
             $(".fa-plus-circle").html(" "+data["shop-additem"]);
-
-
         }
     });
+
     $('#login-norway').click(function () {
         $.ajax({
             url: '/api/language',
@@ -52,12 +53,13 @@ $('document').ready(function (){
                         $(".fa-users").html(" "+data["shop-share"]);
                         $(".fa-trash").html(" "+data["shop-delete"]);
                         $(".fa-plus-circle").html(" "+data["shop-additem"]);
-
+                        $(".list-name-input").attr('placeholder', data["shop-list-name-input"]);
                     }
                 });
             }
         });
     });
+
     $('#login-england').click(function () {
         $.ajax({
             url: '/api/language',
@@ -85,17 +87,98 @@ $('document').ready(function (){
                         $(".fa-users").html(" "+data["shop-share"]);
                         $(".fa-trash").html(" "+data["shop-delete"]);
                         $(".fa-plus-circle").html(" "+data["shop-additem"]);
+                        $(".list-name-input").attr('placeholder', data["shop-list-name-input"]);
                     }
                 });
             }
         });
     });
 
+    $.ajax({
+        url: '/template/list.html',
+        method: 'GET',
+        success: function(data){
+            list = Handlebars.compile(data);
+        }
+    });
+
+    $.ajax({
+        url: '/template/balance.html',
+        method: 'GET',
+        success: function(data){
+            balance = Handlebars.compile(data);
+        }
+    });
+
+    $.ajax({
+        url: '/template/listItem.html',
+        method: 'GET',
+        success: function(data){
+            listItem = Handlebars.compile(data);
+        }
+    });
+
+    $.ajax({
+        url: '/api/shoppingList/',
+        method: 'GET',
+        success: function(data){
+            for(var j = 0; j < data.length; j++) {
+                var d = data[j];
+                var entries = "";
+                for (var i = 0; i < d.shopping_list_entries.length; i++) {
+                    entries += listItem({entry_text: d.shopping_list_entries[i].entry_text});
+                }
+                $("#listegruppe").append(list({
+                    shopping_list_id: d.shopping_list_id,
+                    shopping_list_name: (d.shopping_list_name == "" ? lang["shop-list-name-input"] : d.shopping_list_name),
+                    shopping_list_entries: entries,
+                    lang_add_item: lang["shop-add-item"],
+                    lang_buy_items: lang["shop-buy"],
+                    lang_share_members: lang["shop-share"],
+                    lang_delete_list: lang["shop-delete"],
+                    lang_settlement: lang["shop-balance"]
+                }));
+                setupClicks();
+            }
+        }
+    });
+
 
     //---------------New list-------------
     var count = 0;
     $('#addlist').click(function () {
-        count++;
+        $.ajax({
+            url: '/api/shoppingList',
+            method: 'POST',
+            data: {
+                currency_id: 100,
+                shopping_list_name: lang["shop-list-name-input"]
+            },
+            success: function(data){
+                $.ajax({
+                    url: '/api/shoppingList/' + data.shopping_list_id,
+                    method: 'GET',
+                    success: function(data){
+                        var entries = "";
+                        for(var i = 0; i < data.shopping_list_entries.length; i++){
+                            entries += listItem({entry_text: data.shopping_list_entries[i].entry_text});
+                        }
+                        $("#listegruppe").append(list({
+                            shopping_list_id: data.shopping_list_id,
+                            shopping_list_name: data.shopping_list_name,
+                            shopping_list_entries: entries,
+                            lang_add_item: lang["shop-add-item"],
+                            lang_buy_items: lang["shop-buy"],
+                            lang_share_members: lang["shop-share"],
+                            lang_delete_list: lang["shop-delete"],
+                            lang_settlement: lang["shop-balance"]
+                        }));
+                        setupClicks();
+                    }
+                });
+            }
+        });
+        /*count++;
         $("<div class=\"col-sm liste\" id='listenr"+count+"'><div class='row'>" +
             "<div class='col-sm-7' style='text-align: left'>" +
             "<div id='listname"+count+"' style='margin: 6px'><input type='text' class='form-control ni' id='listnameinput"+count+"'></div>" +
@@ -139,8 +222,8 @@ $('document').ready(function (){
             $('#nameforlist'+ide).hide();
             $('#listname'+ide).show();
             $('#listnameinput'+ide).focus();
-
         });
+
         $('#listname'+count).keypress(function(event) {
             var navn = this.id;
             var ide = navn.split("e").pop();
@@ -162,6 +245,7 @@ $('document').ready(function (){
             $('#'+name).removeClass("pink green white yellow");
             $('#'+name).addClass("pink");
         });
+
         $('#yellowbutt'+count).click(function () {
             var navn = this.id;
             var ide = navn.split("t").pop(); //listeid
@@ -169,6 +253,7 @@ $('document').ready(function (){
             $('#'+name).removeClass("pink green white yellow");
             $('#'+name).addClass("yellow");
         });
+
         $('#greenbutt'+count).click(function () {
             var navn = this.id;
             var ide = navn.split("t").pop(); //listeid
@@ -176,6 +261,7 @@ $('document').ready(function (){
             $('#'+name).removeClass("pink green white yellow");
             $('#'+name).addClass("green");
         });
+
         $('#whitebutt'+count).click(function () {
             var navn = this.id;
             var ide = navn.split("t").pop(); //listeid
@@ -276,11 +362,7 @@ $('document').ready(function (){
         });
 
         //-----------------Opens member popup--------------------
-        function deselect(e) {
-            $('.pop').slideFadeToggle(function() {
-                e.removeClass('selected');
-            });
-        }
+
         $('#shop-members'+count).on('click', function() {
             console.log("clicked");
             $(this).addClass('selected');
@@ -290,9 +372,11 @@ $('document').ready(function (){
         $('#shop-cancel'+count).on('click', function() {
             deselect($('#contact'));
         });
+
         $.fn.slideFadeToggle = function(easing, callback) {
             return this.animate({ opacity: 'toggle', height: 'toggle' }, 'fast', easing, callback);
         };
+
         $.ajax({
             'url': '/api/user/all',
             method: "GET",
@@ -319,6 +403,7 @@ $('document').ready(function (){
             },
             error: console.error
         });
+
         $('#shop-member'+count).keypress(function(event) {
             if(event.keyCode == 13 || event.which == 13){
                 var navn = this.id;
@@ -326,15 +411,50 @@ $('document').ready(function (){
                 addmember(ide);
             }
         });
+
         $('#shop-adduser'+count).click(function(){
             var navn = this.id;
             var ide = navn.split("r").pop(); //listeid
             addmember(ide);
-        });
-        function addmember(ide){
-            var member = $('#shop-member'+ide).val();
-            $('#shop-memberslist'+ide).prepend('<li class="list-group-item">'+member+'</li>');
-            $('#shop-member'+ide).val('');
-        }
+        });*/
     });
 });
+
+function setupClicks(){
+    $(".list-name").click(function(){
+        var listId = $(this).closest("div[data-id]").data("id");
+        var title = $(this).html();
+        $(this).hide();
+        var div = $(this).parent().children(".list-name-div");
+        $(div).show();
+        $(div).children(".list-name-input").val(title).focus();
+    });
+
+    $(".list-name-input").focusout(function(){
+        var text = $(this).val();
+        var id = $(this).closest("div[data-id]").data("id");
+        var h4 = $(this).parent().parent().children(".list-name");
+        $(h4).html(text);
+        $(this).parent().hide();
+        $(h4).show();
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                shopping_list_name: text
+            }
+        });
+    });
+}
+
+function addmember(ide){
+    var member = $('#shop-member'+ide).val();
+    $('#shop-memberslist'+ide).prepend('<li class="list-group-item">'+member+'</li>');
+    $('#shop-member'+ide).val('');
+}
+
+function deselect(e) {
+    $('.pop').slideFadeToggle(function() {
+        e.removeClass('selected');
+    });
+}
