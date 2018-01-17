@@ -70,14 +70,66 @@ describe('User API', function() {
         });
     });
 
+    function getFileSizeInBytes(filename) {
+        const stats = fs.statSync(filename);
+        const fileSizeInBytes = stats.size;
+        return fileSizeInBytes;
+    }
 
     describe('/api/:person_id/picture POST', function () {
         it("Should return same size as image", function (done) {
-                request.post('/api/user/2/picture')
-                    .attach('file', 'test/img/test.jpg')
-                    .expect(200)
-                    .end(done);
+            request.post('/api/user/1/picture')
+                .attach('file', 'test/img/test.jpg')
+                .expect(200)
+                .expect(getFileSizeInBytes('test/img/test.jpg')) //TODO: make it return actual size? ish?
+                .end(function(){
+                    pool.getConnection(function (err, connection) {
+                        if (err) throw err;
+                        connection.query('UPDATE person ' +
+                            'SET profile_pic = null, profile_pic_tiny = null ' +
+                            'WHERE person_id = 1;', function () {
+                            connection.release();
+                            if (err) throw err;
+                            done();
+                        });
+                    });
+                });
         });
+    });
+
+    /*
+    describe('/:person_id/picture', function () {
+       it("Should return something", function (done) {
+            request.get('/api/user/1/picture')
+                .send()
+        });
+    });
+*/
+
+    describe('/api/user/all GET', function () {
+       it("Should return expected values from database", function (done) {
+           request.get('/api/user/all')
+               .expect(200)
+               .expect([
+                   {
+                       "person_id": 1,
+                       "email": "test@test.com",
+                       "forename": "test",
+                       "middlename": null,
+                       "lastname": "test",
+                       "username": "testnavn"
+                   },
+                   {
+                       "person_id": 2,
+                       "email": "facebook@test.com",
+                       "forename": "test",
+                       "middlename": null,
+                       "lastname": "test",
+                       "username": "facebook"
+                   }
+               ])
+               .end(done);
+       });
     });
 
     describe('/api/user/getUser GET', function () {

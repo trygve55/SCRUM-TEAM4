@@ -7,8 +7,8 @@ var router = require('express').Router(),
 module.exports = router;
 
 router.get('/all', function(req, res){
-    if(!req.session.person_id)
-        return res.status(500).send();
+   if(!req.session.person_id)
+        return res.status(403).send();
     pool.getConnection(function(err, connection){
         if(err) {
             connection.release();
@@ -243,7 +243,6 @@ function checkValidEmail(email) {
     if (email) return emailRegex.test(email.toLowerCase());
 }
 
-//which one?
 router.get('/:person_id/picture', function(req, res){
     pool.getConnection(function (err, connection) {
         connection.query("SELECT profile_pic FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
@@ -257,6 +256,7 @@ router.get('/:person_id/picture', function(req, res){
                 res.status(404).json({error: 'no profile picture.'});
                 return;
             }
+
 
             if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
         });
@@ -319,10 +319,8 @@ router.put('/:person_id', function(req, res) {
 router.post('/:person_id/picture', function(req, res){
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
-        console.log(files);
         var path = files.file.path,
             file_size = files.file.size;
-
 
         if (file_size > 4000000) {
             res.status(400).json({'error': 'image file over 4MB'});
@@ -363,8 +361,8 @@ router.post('/:person_id/picture', function(req, res){
                                         res.status(500).json({'Error': err});
                                         return;
                                     }
-
-                                    res.status(200).json(results);
+                                    res.status(200).json(file_size);
+                                    //res.status(200).json(results);
                                 });
                             });
                         });
