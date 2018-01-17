@@ -6,12 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/ProfilePage.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
-    <script src="/js/fa.js"></script>
     <script src="js/ProfilePage.js"></script>
     <script src="/js/redirect.js"></script>
+    <script src="https://use.fontawesome.com/dea62227f7.js"></script>
+    <script type="text/javascript"> (function() { var css = document.createElement('link'); css.href = '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css'; css.rel = 'stylesheet'; css.type = 'text/css'; document.getElementsByTagName('head')[0].appendChild(css); })(); </script>
 
 </head>
 
@@ -30,7 +31,7 @@
     });
 </script>
 
-<body background="img/BackgroundImage.png">
+<body background="img/BackgroundImage.jpg">
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#" style="color: dimgray">
         <img src="/img/logo.png" width="30" height="30" alt="">
@@ -57,8 +58,8 @@
 </nav>
 
 <div class="flag" style="background-color: white">
-    <img id="profile-norway" style="position:fixed; right:15px; margin-top: 1%" src="/img/norwegianflag.jpg" width="20" height="12">
-    <img id="profile-england" style="position:fixed; right: 40px; margin-top: 1%" src="/img/engelskflagg.png" width="20" height="12">
+    <img id="profile-norway" style="position:absolute; right:15px; margin-top: 1%" src="/img/norwegianflag.jpg" width="20" height="12">
+    <img id="profile-england" style="position:absolute; right: 40px; margin-top: 1%" src="/img/engelskflagg.png" width="20" height="12">
 </div>
 
 <br>
@@ -134,11 +135,7 @@
                 <div class="listborder" align="center">
                         <h5>My shoppinglist</h5>
                         <ul class="list-group" id="itemlist">
-                            <li class="list-group-item">
-                                <div class="checkbox">
-                                    <label><input type="checkbox" value=""> Option 1</label>
-                                </div>
-                            </li>
+
                         </ul>
                         <ul class="list-group">
                             <div id="inputitem">
@@ -148,32 +145,37 @@
                             </div>
                             <li class="list-group-item" id="additem"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add item</li>
                         </ul>
-                            <button type="button" class="btn btn-default buttonstyle" style="align:center;">All shoppinglists</button>
 
+                    <div align="center">
+                        <i class="fa fa-shopping-cart" aria-hidden="true" id="shoppingcart" style="margin-right: 15px;"> Buy </i>
+                        <i class="fa fa-bars" aria-hidden="true" id="allshoppinglists"> All shoppinglists </i>
+                        <i class="fa fa-reply" aria-hidden="true" id="regretbutton"> Undo delete</i>
+                    </div>
                 </div>
         </div>
-        <div class="col-md-3 sidenav">
-            <div class="listborder" align="center">
-                <h5>My to do list</h5>
-                <ul class="list-group" id="tasklist">
-                    <li class="list-group-item">
-                        <div class="checkbox">
-                            <label><input type="checkbox" value=""> Option 1</label>
+            <div class="col-md-3 liste" data-id="{{shopping_list_id}}">
+                <div class="row">
+                    <div class="col-sm-7" style="text-align: left">
+                        <div class="list-name-div" style="margin: 6px">
+                            <input type="text" class="form-control ni list-name-input">
                         </div>
+                        <h4 class="list-name">{{shopping_list_name}}</h4>
+                    </div>
+                    <div class="col-sm-5" style="text-align: right">
+
+                    </div>
+                </div>
+                <ul class="list-group itemlist">{{shopping_list_entries}}</ul>
+                <ul class="list-group">
+                    <li class="list-group-item" id="listitem">
+                        <i class="fa fa-plus-circle" aria-hidden="true">{{lang_add_item}}</i>
                     </li>
                 </ul>
-                <ul class="list-group">
-                    <div id="inputtask">
-                        <li class="list-group-item" id="listtask">
-                            <input type="text" class="form-control" id="newtask">
-                        </li>
-                    </div>
-                    <li class="list-group-item" id="addtask"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add item</li>
-                </ul>
-                <button type="button" class="btn btn-default buttonstyle" style="align:center;">All shoppinglists</button>
-
+                <i class="fa fa-shopping-cart" aria-hidden="true" id="shoppingcar" style="font-size: 1.8vh">{{lang_add_item}}</i>
+                <i class="fa fa-users" aria-hidden="true" style="font-size: 1.8vh" id="shop-members">{{lang_share_members}}</i>
+                <i class="fa fa-trash" aria-hidden="true" id="shop-delete" style="font-size: 1.8vh">{{lang_delete_list}}</i>
+                <i class="fa fa-money" style="font-size: 1.8vh" aria-hidden="true" id="shop-balance">{{lang_settlement}}</i>
             </div>
-        </div>
     </div>
 </div>
 </body>
