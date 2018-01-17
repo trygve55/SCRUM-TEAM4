@@ -184,7 +184,7 @@ style=wordwrap</panel_attributes>
       <x>1088</x>
       <y>616</y>
       <w>168</w>
-      <h>88</h>
+      <h>104</h>
     </coordinates>
     <panel_attributes>Budget Entry
 --
@@ -192,7 +192,8 @@ _budget_entry_id_
 amount
 text_note
 entry_datetime
-receipt_pic</panel_attributes>
+receipt_pic
+added_by_id</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -233,7 +234,7 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>824</x>
+      <x>816</x>
       <y>104</y>
       <w>168</w>
       <h>136</h>
@@ -260,7 +261,7 @@ color_hex</panel_attributes>
       <h>280</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>10.0;330.0;590.0;330.0;590.0;10.0;330.0;10.0</additional_attributes>
+    <additional_attributes>10.0;330.0;590.0;330.0;590.0;10.0;320.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
@@ -344,17 +345,17 @@ datetime_purchased</panel_attributes>
     <coordinates>
       <x>728</x>
       <y>192</y>
-      <w>112</w>
+      <w>104</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>120.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>110.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
       <x>752</x>
-      <y>552</y>
+      <y>560</y>
       <w>128</w>
       <h>88</h>
     </coordinates>
@@ -373,10 +374,10 @@ is_hidden</panel_attributes>
       <x>800</x>
       <y>536</y>
       <w>24</w>
-      <h>32</h>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;20.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -446,7 +447,7 @@ points</panel_attributes>
       <h>272</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>890.0;200.0;890.0;320.0;10.0;320.0;10.0;10.0;90.0;10.0</additional_attributes>
+    <additional_attributes>890.0;220.0;890.0;320.0;10.0;320.0;10.0;10.0;90.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
@@ -464,7 +465,7 @@ style=wordwrap</panel_attributes>
     <id>Text</id>
     <coordinates>
       <x>1208</x>
-      <y>704</y>
+      <y>720</y>
       <w>32</w>
       <h>24</h>
     </coordinates>
@@ -967,7 +968,7 @@ style=wordwrap</panel_attributes>
       <h>344</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>970.0;240.0;970.0;410.0;10.0;410.0;10.0;10.0;130.0;10.0</additional_attributes>
+    <additional_attributes>970.0;260.0;970.0;410.0;10.0;410.0;10.0;10.0;130.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
@@ -997,12 +998,12 @@ is_paid</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>1048</x>
-      <y>696</y>
+      <y>712</y>
       <w>112</w>
-      <h>56</h>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>120.0;10.0;120.0;50.0;10.0;50.0</additional_attributes>
+    <additional_attributes>120.0;10.0;120.0;30.0;10.0;30.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
@@ -1044,7 +1045,7 @@ style=wordwrap</panel_attributes>
     <id>Text</id>
     <coordinates>
       <x>1144</x>
-      <y>704</y>
+      <y>720</y>
       <w>32</w>
       <h>24</h>
     </coordinates>
@@ -1055,15 +1056,15 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>272</x>
+      <x>304</x>
       <y>480</y>
-      <w>168</w>
+      <w>128</w>
       <h>112</h>
     </coordinates>
     <panel_attributes>Private Todo 
 --
-_private_todo_id_
-private_todo_text
+_todo_id_
+todo_text
 datetime_deadline
 datetime_added
 datetime_done
@@ -1074,13 +1075,13 @@ color_hex</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>432</x>
+      <x>424</x>
       <y>488</y>
-      <w>160</w>
+      <w>168</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>180.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>190.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
