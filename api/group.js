@@ -32,9 +32,9 @@ module.exports = router;
  */
 router.get('/name', function(req, res){
     if(!req.session.person_id)
-        return res.status(500).send();
+        return res.status(403).send("Login required");
     if(!req.query.group_name)
-        return res.status(400).send("Bad Request");
+        return res.status(400).send("Bad Request (missing variable 'group_name')");
     pool.getConnection(function(err, connection){
         if(err)
             return res.status(500).send("Error");
@@ -57,31 +57,16 @@ router.get('/name', function(req, res){
  *      currency
  * }
  */
-var acceptedGroupVars = ["group_name", "group_desc", "group_type",
-    "cleaning_list_interval", "group_pic", "group_pic_tiny",
-    "default_currency_id", "shopping_list_id"];
-
-/*
-/api/group/ POST request:
-Used to insert a row into the home_group table in the database. The body must contain the variables you want to
-set. Required variables: group_name, group_type, default_currency_id, shopping_list_id
-Optional variables: group_desc, cleaning_list_interval, group_pic, group_pic_tiny
-
-Example request body:
-{
-    "group_name": "Example Group Name",
-    "group_type": 2.
-    "default_currency_id": 24,
-    "shopping_list_id": 19,
-    "group_desc": "This group is not real. It is an example. Potato."
-}
- */
 
 router.post('/', function(req, res){
+    var acceptedGroupVars = ["group_name", "currency"];
     if(!req.session.person_id)
-        return res.status(500).send();
-    if(!req.body.group_name)
-        return res.status(400).send("Bad Request");
+        return res.status(403).send("You must log in");
+    for(var p in req.body) {
+        if(acceptedGroupVars.indexOf(p) < 0) return res.status(400).send("Bad variable: " + p);
+    }
+    if(!req.body.group_name) return res.status(400).send("Missing variable: group_name");
+    if(!req.body.currency) return res.status(400).send("Missing variable: currency");
     pool.getConnection(function(err, connection){
         if(err)
             return res.status(500).send(JSON.stringify(err));
@@ -93,7 +78,7 @@ router.post('/', function(req, res){
             }
             if(result.length > 0) {
                 connection.release();
-                return res.status(200).send(false);
+                return res.status(400).send("Bad request (group name in use)");
             }
             connection.beginTransaction(function(err) {
                 if(err)
@@ -101,44 +86,28 @@ router.post('/', function(req, res){
                 connection.query("INSERT INTO shopping_list (currency_id) VALUES (?)", [req.body.currency], function(err, result) {
                     if(err) {
                         connection.release();
-                        return res.status(500).send();
+                        return res.status(500).send("Failed to insert shopping_list entry");
                     }
-                    qry = "INSERT INTO home_group (shopping_list_id, default_currency_id";
-                    var values = [result.insertId, req.body.currency];
-                    delete req.body.currency;
-                    var group = req.body;
-                    for (var p in group) {
-                        if (values.length != 0)
-                            qry += ", ";
-                        qry += p;
-                        values.push(group[p]);
-                    }
-                    if (values.length == 0) {
-                        connection.release();
-                        return res.status(500).send("No values found");
-                    }
-                    qry += ") VALUES (?";
-                    for (var i = 0; i < values.length - 1; i++) {
-                        qry += ", ?";
-                    }
-                    qry += ");";
+                    qry = "INSERT INTO home_group (shopping_list_id, default_currency_id, group_name) VALUES (?,?,?)";
+                    var values = [result.insertId, req.body.currency, req.body.group_name];
                     connection.query(qry, values, function (err, result) {
                         if(err) {
                             connection.release();
-                            return res.status(500).send();
+                            return res.status(500).send("Failed to insert home_group entry");
                         }
                         var group_id = result.insertId;
-                        connection.query('INSERT INTO group_person (person_id, group_id, role_id, invite_accepted) VALUES (?, ?, ?, ?)', [req.session.person_id, result.insertId, 2, 1], function(err, result) {
+                        connection.query('INSERT INTO group_person (person_id, group_id, role_id, invite_accepted) VALUES (?, ?, ?, ?)', [req.session.person_id, group_id, 2, 1], function(err, result) {
                             if(err) {
                                 connection.release();
-                                return res.status(500).send();
+                                console.log(err);
+                                return res.status(500).send("Failed to add session user to group");
                             }
                             connection.commit(function (err) {
                                 if (err) {
                                     return connection.rollback(function (err) {
                                         if (err)
                                             console.error(err);
-                                        res.status(500).send();
+                                        res.status(500).send(JSON.stringify(err));
                                     });
                                 }
                                 connection.release();
