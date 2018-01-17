@@ -32,7 +32,10 @@ router.post('/', function(req, res){
     }
 
     pool.getConnection(function (err, connection) {
-        if (err) { res.status(500).json({error: "no connection to server"})}
+        if (err) {
+            connection.release();
+            res.status(500).json({error: "no connection to server"})
+        }
         else connection.query("SELECT person_id, password_hash FROM person WHERE ?? = ?;",
             [((username.indexOf("@") == -1) ? 'username' : 'email'), username], function (error, results) {
             connection.release();
@@ -75,6 +78,7 @@ router.post('/facebook', function(req, res){
     pool.getConnection(function (err, connection) {
         connection.query("SELECT person_id FROM person WHERE facebook_api_id = ?;", [req.body.facebook_api_id], function (error, results) {
             if(err) {
+                connection.release();
                 res.status(500).json({'Error' : 'connecting to database: ' } + err);
             } else if (results.length == 1) {
                 connection.release();
@@ -85,9 +89,15 @@ router.post('/facebook', function(req, res){
                 res.status(200).json({login: true, person_id: results[0].person_id});
             } else {
                 connection.beginTransaction(function(err){
-                    if(err) {res.status(500).send("Error");}
+                    if(err) {
+                        connection.release();
+                        res.status(500).send("Error");
+                    }
                     else connection.query("INSERT INTO shopping_list (currency_id) VALUES (?)", [100], function(err, result){
-                        if (err) {res.status(500).json({'error': 'connecting to database'} + err); }
+                        if (err) {
+                            connection.release();
+                            res.status(500).json({'error': 'connecting to database'} + err);
+                        }
                         else {
                             var values = [
                                 req.body.email,
@@ -101,15 +111,20 @@ router.post('/facebook', function(req, res){
                             connection.query('INSERT INTO person ' +
                                 '(email, username, forename, lastname, shopping_list_id, facebook_api_id) ' +
                                 'VALUES (?,?,?,?,?,?)', values, function(err, result) {
-                                if(err) { res.status(500).send("Fail"); }
+                                if(err) {
+                                    connection.release();
+                                    res.status(500).send("Fail");
+                                }
                                 else {
                                     connection.commit(function (err) {
                                         if (err) {
                                             connection.rollback(function (err) {
+                                                connection.release();
                                                 if (err) console.error(err);
                                                 res.status(500).send("Transaction fail");
                                             });
                                         } else {
+                                            connection.release();
                                             req.session.person_id = result.insertId;
                                             req.session.save();
                                             res.status(200).send(true);
