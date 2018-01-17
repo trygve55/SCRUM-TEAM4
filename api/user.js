@@ -2,7 +2,6 @@ var router = require('express').Router(),
     auth = require('../auth'),
     router = require('express').Router(),
     formidable = require('formidable'),
-    path = require('path'),
     Jimp = require("jimp");
 
 module.exports = router;
