@@ -66,6 +66,39 @@ router.post('/person/:todo_id', function(req, res) {
 });
 
 /**
+ * Get the data about a private task
+ *
+ * URL: /api/tasks/private/{todo_id}
+ * method: GET
+ */
+router.get('/private/:todo_id', function(req, res) {
+    pool.getConnection(function(err, connection) {
+        if (!checkConnectionError(err, connection, res))
+            return;
+        connection.query('SELECT * FROM private_todo WHERE todo.todo_id = ?',
+            [req.params.todo_id], function(err, result) {
+                connection.release();
+                if (err)
+                    return res.status(500).send();
+                if (result.length > 0) {
+                    var people = [];
+                    for (var i = 0; i < result.length; i++)
+                        people.push({"person_id":result[i].person_id});
+                    var values = {};
+                    for (var p in result[0])
+                        values[p] = result[0][p];
+                    delete values.person_id;
+                    values.people = people;
+                    res.status(200).json(values);
+                }
+                else
+                    res.status(400).json(result);
+            }
+        );
+    });
+});
+
+/**
  * Get the data about a task
  *
  * URL: /api/tasks/{todo_id}
@@ -109,7 +142,11 @@ router.get('/person/:person_id', function(req, res) {
 		if (!checkConnectionError(err, connection, res))
 		    return;
 		connection.query(
-			'SELECT * FROM todo LEFT JOIN todo_person USING(todo_id) WHERE todo_person.person_id = ?;',
+			'SELECT todo_id, todo_text, datetime_deadline, datetime_added, datetime_done, is_deactivated, color_hex, created_by_id, done_by_id ' +
+			'FROM todo LEFT JOIN todo_person USING(todo_id) WHERE todo_person.person_id = ? UNION (' +
+			'SELECT todo_id, todo_text, datetime_deadline, datetime_added, datetime_done, is_deactivated, color_hex, null, null ' +
+			'FROM private_todo WHERE private_todo.person_id = ?' +
+			') ;',
 			[checkRange(req.params.person_id, 1, null)], function(err, result) {
 				connection.release();
 				if (err)
