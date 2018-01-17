@@ -141,13 +141,12 @@ router.get('/me', function(req, res){
 /**
  * Get the requested groups info
  *
- * URL: /api/group/
+ * URL: /api/group/{group_id}
  * method: GET
  *
  * Optional, only one parameter needed, group_name is selected if both are provided
  * data: {
- *      group_name,
- *      group_id
+ *      group_name
  * }
  */
 router.get('/:group_id', function(req, res){
