@@ -43,7 +43,7 @@ router.post('/', function(req, res) {
  * URL: /api/tasks/person/{todo_id}
  * method: POST
  * data: {
- *      person_id
+ *      people[] - contains an array of "person_id"-s.
  * }
 */
 router.post('/person/:todo_id', function(req, res) {
@@ -156,7 +156,7 @@ router.put('/:todo_id', function(req, res) {
  * URL: /api/tasks/person/{todo_id}
  * method: DELETE
  * data: {
- *      person_id
+ *      people[] - contains an array of "person_id"-s.
  * }
 */
 router.delete('/person/:todo_id', function(req, res) {
