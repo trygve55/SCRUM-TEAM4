@@ -3,9 +3,9 @@ var router = require('express').Router();
 module.exports = router;
 
 /**
- * Add new task to the group task list
+ * Add new post to the group.
  *
- * URL: /api/tasks
+ * URL: /api/news
  * method: POST
  * data: {
  *      group_id,
@@ -25,12 +25,48 @@ router.post('/', function(req, res) {
 			'group_id, posted_by_id, post_text, attachment_type, attachment_data' +
 			') VALUES (?,?,?,?,?);',
 			[
-				checkRange(data.group_id, 1, null),
-				req.session.person_id,
+				data.group_id,
+				req.session.person_id,	// data.posted_by_id to test this.
 				data.post_text,
 				data.attachment_type,
 				data.attachment_data
 			], function(err, result) {checkResult(err, result, connection, res);}
+		);
+	});
+});
+
+/**
+ * Get the posts for a group.
+ *
+ * URL: /api/news/{group_id}
+ * method: GET
+*/
+router.get('/:group_id', function(req, res) {
+	pool.getConnection(function(err, connection) {
+		if (!checkConnectionError(err, connection, res)) {return;}
+
+		connection.query('SELECT * FROM newsfeed_post WHERE group_id = ?',
+			[req.params.group_id], function(err, result) {
+				connection.release();
+				if (err) {return res.status(500).send();}
+				res.status(200).json(result);
+			}
+		);
+	});
+});
+
+/**
+ * Delete this post.
+ *
+ * URL: /api/news/{post_id}
+ * method: DELETE
+*/
+router.delete('/:post_id', function(req, res) {
+	pool.getConnection(function(err, connection) {
+		if (!checkConnectionError(err, connection, res)) {return;}
+		
+		connection.query('DELETE FROM newsfeed_post WHERE post_id = ?',
+			[req.params.post_id], function(err, result) {checkResult(err, result, connection, res);}
 		);
 	});
 });
@@ -59,26 +95,6 @@ function putRequestSetup(iD, data, connection, tableName) {
 }
 
 /**
-* Make the neccesary setup for multiple request.
-*/
-function multipleRequestSetup(iD, data, query, repetitiveElement, iDFirstOnly) {
-	var inputs = [];
-	if (iDFirstOnly) {inputs.push(iD);}
-	for (var i = 0; i < data.length; i++) {
-		query += repetitiveElement;
-		if (!iDFirstOnly) {
-			inputs.push(iD);
-			inputs.push(checkRange(data[i], 1, null));
-		}
-		else {query += data[i];}
-		if (i < data.length - 1) {query += ', ';}
-	}
-	console.log(query);
-	console.log(inputs);
-	return [query, inputs];
-}
-
-/**
 * Check for a database connection error and report if connected.
 */
 function checkConnectionError(err, connection, res) {
@@ -95,16 +111,9 @@ function checkConnectionError(err, connection, res) {
 */
 function checkResult(err, result, connection, res) {
 	connection.release();
-	if (err) {throw err;}
+	if (err) {
+		res.status(500).send();
+		throw err;
+	}
 	if (result) {res.status(200).send();}
-}
-
-/**
-* This is a separate method so the response to invalid
-* values can be changed easily, like throw errors.
-*/
-function checkRange(value, min, max) {
-	if (min != null) {if (value < min) {return min;}}
-	if (max != null) {if (value > max) {return max;}}
-	return value;
 }
