@@ -1,13 +1,6 @@
 // ***** Temporary test variables - delete this section when no longer needed *****
 var grouplist;
 var person = "Person";
-var testtasks = {
-	"tasks":[
-		{"name":"Task A", "person":"Person", "completed":0, "time":"11/11/2011"}, 
-		{"name":"Task B", "person":"Someone", "completed":0, "time":"12/12/2012"},
-		{"name":"Task C", "person":"None", "completed":1, "time":"13/13/2013"}
-	]
-};
 
 // ***** Code begins here *****
 
@@ -29,6 +22,7 @@ $(document).ready(function() {
 				addGroupToList(data[i]);
 			}
 			$(".group").click(function(){
+				$('#groupwindow').show();
 				currentGroup = $(this).data("group-id");
 				console.log(currentGroup);
 				for(var i = 0; i < grouplist.length; i++) {
@@ -37,15 +31,9 @@ $(document).ready(function() {
 						break;
 					}
 				}
-				$.ajax({
-					url: "/api/group/" + currentGroup.group_id,
-					method: "GET",
-					success: function (data) {
-						console.log(data);
-						console.log(currentGroup.shopping_list_id);
-						getShoppinglist();
-					}
-				});
+				if(activeTab=='shopping') {
+					getShoppinglist();
+				}
 			});
 		},
 		error: console.error()
@@ -166,7 +154,7 @@ function addGroupToList(group) {
 	for (var i = 0; i < groups.length; i++) {
 		if ($(groups[i]).html() == group.group_name) return;
 	}
-	$("#groupselection").append('<div class="tablink text-center backvariant group" data-group-id="' + group.group_id + '">' + group.group_name + '</div>');
+	$("#groupselection").append('<div style="padding-top: 2px; height: 30px; border-radius: 10px; background-color: white; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class="tablink text-center backvariant group" data-group-id="' + group.group_id + '">' + group.group_name + '</div><h4></h4>');
 }
 
 /**
@@ -217,10 +205,12 @@ function getShoppinglist() {
 			method: "GET",
 			success: function (data) {
 				var list = data.shopping_list_entries;
-				for(var i = 0; i < list.length; i++){
-					var ting = list[i].entry_text;
-					$('#items').append(ting);
+				var h = "";
+				for (var i = 0; i < list.length; i++) {
+					h += "<br>" + list[i].entry_text;
+					console.log(h);
 				}
+				$("#items-shoppinglist").html(h);
 			}
 		});
 }
