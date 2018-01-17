@@ -117,7 +117,9 @@ router.get('/:todo_id', function(req, res) {
 		connection.query('SELECT * FROM todo LEFT JOIN todo_person USING(todo_id) WHERE todo.todo_id = ?',
 			[req.params.todo_id], function(err, result) {
 				connection.release();
-				if (err) {return res.status(500).send();}
+				if (err) {
+					return res.status(500).send();
+				}
 				if (result.length > 0) {
 					var people = [];
 					for (var i = 0; i < result.length; i++) {people.push({"person_id":result[i].person_id});}
@@ -139,19 +141,22 @@ router.get('/:todo_id', function(req, res) {
  * URL: /api/person/
 * The GET request for all tasks for a user.
 */
-router.get('/person/:person_id', function(req, res) {
+router.get('/person/:person_id', function(req, res) { // TODO FIX THIS
 	pool.getConnection(function(err, connection) {
-		if (!checkConnectionError(err, connection, res)) {return;}
+        if(err) {
+            connection.release();
+            res.status(500).json({'Error' : 'connecting to database: ' } + err);
+            return;
+        }
 
 		connection.query(
 			'SELECT todo_id, todo_text, datetime_deadline, datetime_added, datetime_done, is_deactivated, color_hex, created_by_id, done_by_id ' +
 			'FROM todo LEFT JOIN todo_person USING(todo_id) WHERE todo_person.person_id = ? UNION (' +
 			'SELECT todo_id, todo_text, datetime_deadline, datetime_added, datetime_done, is_deactivated, color_hex, null, null ' +
-			'FROM private_todo WHERE private_todo.person_id = ?' +
-			') ;',
-			[checkRange(req.params.person_id, 1, null)], function(err, result) {
+			'FROM private_todo WHERE private_todo.person_id = ?) ;',
+			[checkRange(req.params.person_id, 1, null),checkRange(req.params.person_id, 1, null)], function(err, result) {
 				connection.release();
-				if (err) {return res.status(500).send();}
+				if (err) {return res.status(500).send(err);}
 				var entries = [];
 				for (var i = 0; i < result.length; i++) {
 					var values = {};
