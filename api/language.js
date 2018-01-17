@@ -10,7 +10,7 @@ var fs = require('fs');
  */
 router.get('/', function(req, res){
     var lang = req.session.lang;
-    if(!req.query.path && !req.header('referer'))
+    if(!req.query.path || !req.header('referer'))
         return res.status(400).send();
     var pth = req.query.path || req.header('referer').split(":8000")[1];
     if(!lang){

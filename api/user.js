@@ -11,8 +11,10 @@ router.get('/all', function(req, res){
     if(!req.session.person_id)
         return res.status(500).send();
     pool.getConnection(function(err, connection){
-        if(err)
+        if(err) {
+            connection.release();
             return res.status(500).send("Error");
+        }
         connection.query("SELECT person_id, email, forename, middlename, lastname, username FROM person", function(err, result){
             connection.release();
             if(err)
@@ -119,8 +121,8 @@ router.post('/register', function(req, res) {
                                 }
 
                                 if (!checkValidForename(user.forename)) {
-                                        connection.release();
-                                        return res.status(400).json({message:"Invalid forename"});
+                                    connection.release();
+                                    return res.status(400).json({message:"Invalid forename"});
                                 }
 
                                 if (!checkValidName(user.lastname)){
@@ -166,6 +168,7 @@ router.post('/register', function(req, res) {
 router.get('/user', function (req, res) {
     pool.getConnection(function (err, connection) {
         if(err) {
+            connection.release();
             res.status(500).json({'Error' : 'connecting to database: ' } + err);
             return;
         }
@@ -178,11 +181,10 @@ router.get('/user', function (req, res) {
         }
 
         connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?', [username], function (err, result){
+            connection.release();
             if(result[0].counted === 1) {
-                connection.release();
                 return res.status(200).json({message:"Username already exists"});
             }
-            connection.release();
             res.status(200).json({message:"Username valid"});
         });
     });
@@ -192,6 +194,7 @@ router.get('/user', function (req, res) {
 router.get('/mail', function (req, res) {
     pool.getConnection(function (err, connection) {
         if(err) {
+            connection.release();
             res.status(500).json({'Error' : 'connecting to database: ' } + err);
             return;
         }
@@ -204,11 +207,10 @@ router.get('/mail', function (req, res) {
         }
 
         connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?', [email], function (err, result){
+            connection.release();
             if(result[0].counted === 1) {
-                connection.release();
                 return res.status(200).json({message:'E-mail already exists'});
             }
-            connection.release();
             res.status(200).json({message:'E-mail valid'});
         });
     });
@@ -264,6 +266,10 @@ router.get('/:person_id/picture', function(req, res){
 
 router.get('/:person_id/picture_tiny', function(req, res){
     pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            return res.status(500).json({error: err});
+        }
         connection.query("SELECT profile_pic_tiny FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
             connection.release();
             if(err) {
@@ -294,6 +300,7 @@ router.all('/profile/1/picture', function(req, res, next) {
 router.put('/:person_id', function(req, res) {
     pool.getConnection(function (err, connection) {
         if(err) {
+            connection.release();
             return res.status(500).send({"Error" : "Connecting to database"} + err);
         }
 
