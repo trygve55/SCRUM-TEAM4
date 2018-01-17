@@ -436,3 +436,10 @@ INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invi
 INSERT INTO todo (group_id, todo_text, created_by_id) VALUES (1, 'test task', 1);
 
 INSERT INTO todo_person(person_id, todo_id) VALUES (1, 1);
+
+
+
+
+
+
+
