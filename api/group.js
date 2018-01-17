@@ -294,7 +294,6 @@ router.post('/:group_id/members', function(req, res){
                         return res.status(500).send(err.code);
                     }
                     connection.commit(function (err) {
-                        connection.release();
                         if (err)
                             return connection.rollback(function (err) {
                                 connection.release();
@@ -303,6 +302,7 @@ router.post('/:group_id/members', function(req, res){
                                 }
                                 res.status(500).send("Transaction fail");
                             });
+                        connection.release();
                         res.status(200).json(result);
                     });
                 });
