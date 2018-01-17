@@ -10,7 +10,7 @@ Authors: Andrzej Cabala, Andreas Hammer (main author), Magnus Eilertsen
     created_datetime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     cleaning_list_interval INTEGER NOT NULL DEFAULT 0,
     group_pic MEDIUMBLOB,
-    group_pic_tiny BLOB,
+    group_pic_tiny  BLOB,
     default_currency_id INTEGER NOT NULL,
     shopping_list_id INTEGER NOT NULL,
 

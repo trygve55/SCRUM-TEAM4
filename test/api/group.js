@@ -1,5 +1,5 @@
 /*
-Author: Magnus Eilertsen
+Author: Magnus Eilertsen 
  */
 
 describe('Group API', function() {
