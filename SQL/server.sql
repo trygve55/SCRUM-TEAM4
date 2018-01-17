@@ -117,12 +117,14 @@ CREATE TABLE shopping_list_entry (
     entry_text NVARCHAR(255) NOT NULL,
     added_by_person_id INTEGER NOT NULL,
     purchased_by_person_id INTEGER DEFAULT NULL,
-    cost INTEGER NOT NULL,
+    cost INTEGER NOT NULL DEFAULT 0,
     datetime_added DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     datetime_purchased DATETIME DEFAULT NULL,
+    budget_entry_id INTEGER,
     CONSTRAINT shopping_list_entry_person_added_fk FOREIGN KEY(added_by_person_id) REFERENCES person(person_id),
     CONSTRAINT shopping_list_entry_person_purchased_fk FOREIGN KEY(purchased_by_person_id) REFERENCES person(person_id),
     CONSTRAINT shopping_list_entry_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
+    CONSTRAINT shopping_list_budget_entry__fk FOREIGN KEY(budget_entry_id) REFERENCES budget_entry(budget_entry_id),
     CONSTRAINT shopping_list_entry_pk PRIMARY KEY(shopping_list_entry_id)
 );
 
@@ -141,7 +143,7 @@ CREATE TABLE newsfeed_post (
     group_id INTEGER NOT NULL,
     posted_by_id INTEGER NOT NULL,
     post_text NVARCHAR(4000) NOT NULL,
-    attachment_type INTEGER NOT NULL,
+    attachment_type INTEGER NOT NULL DEFAULT 0,
     attachment_data BLOB,
     posted_datetime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT newsfeed_posted_by_fk FOREIGN KEY(posted_by_id) REFERENCES person(person_id),
@@ -208,14 +210,14 @@ CREATE TABLE budget_entry_type (
     budget_entry_type_id INTEGER NOT NULL AUTO_INCREMENT,
     shopping_list_id INTEGER NOT NULL,
     entry_type_name NVARCHAR(20) NOT NULL,
-    entry_type_color VARCHAR(6) NOT NULL,
+    entry_type_color INTEGER,
     CONSTRAINT budget_entry_type_shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT budget_entry_type_pk PRIMARY KEY(budget_entry_type_id)
 );
 
 CREATE TABLE budget_entry (
     budget_entry_id INTEGER NOT NULL AUTO_INCREMENT,
-    budget_entry_type_id INTEGER NOT NULL,
+    budget_entry_type_id INTEGER,
     shopping_list_id INTEGER NOT NULL,
     added_by_id INTEGER NOT NULL,
     amount INTEGER NOT NULL,

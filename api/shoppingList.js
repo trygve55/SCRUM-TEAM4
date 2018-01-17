@@ -106,10 +106,10 @@ router.put('/entry/:shopping_list_entry_id', function(req, res) {
         }
         var query = putRequestSetup(req.params.shopping_list_entry_id, req, connection, "shopping_list_entry");
         connection.query(query[0], query[1], function(err, result) {
-            if(err)
-                return res.status(500).send();
-                checkResult(err, result, connection, res);
-            });
+            connection.release();
+            if (err) return res.status(500).json({error: err});
+            checkResult(err, result, connection, res);
+        });
     });
 });
 
@@ -313,8 +313,8 @@ router.post('/entry', function(req, res) {
             'added_by_person_id, ' +
             'purchased_by_person_id,  ' +
             'cost,  ' +
-            'datetime_purchased)  ' +
-            'SELECT 4, \'test\', 2, null, 0, null FROM shopping_list_entry WHERE shopping_list_id IN   ' +
+            'datetime_purchased) ' +
+            'SELECT 4, \'test\', 2, null, 0, null FROM shopping_list WHERE shopping_list_id IN   ' +
             '(SELECT shopping_list_id FROM person WHERE person_id = 1 ' +
             'UNION  ' +
             'SELECT home_group.shopping_list_id FROM person   ' +
