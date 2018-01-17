@@ -11,7 +11,10 @@
 	"group-tasksNavbar": "Tasks",
 	"group-shoppinglistsNavbar": "Shoppinglists",
 	"group-profileNavbar": "Profile",
-	"group-logoutNavbar": "Log out"
+	"group-logoutNavbar": "Log out",
+	"group-tasks": "Tasks",
+	"group-feed": "Feed",
+	"group-shopping": "Shopping",
+	"group-statistics": "Statistics"
 
 }
-

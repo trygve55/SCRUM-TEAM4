@@ -46,8 +46,8 @@
 
 	<br>
 	<div class="flag" style="background-color: white">
-		<img id="group-norway" style="position:fixed; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
-		<img id="group-england" style="position:fixed; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+		<img id="group-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+		<img id="group-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
 	</div>
 
 
@@ -68,10 +68,10 @@
 				<div id="grouptabs">
 					<div class="container">
 						<ul class="nav nav-tabs">
-							<div class="grouptablink backvariant" onclick="changeTab('tasks')"><p class="langtext" id="desc_title1"></p></div>
-							<div class="grouptablink backvariant" onclick="changeTab('feed')"><p class="langtext" id="desc_title2"></p></div>
-							<div class="grouptablink backvariant" onclick="changeTab('shopping')"><p class="langtext" id="desc_title3"></p></div>
-							<div class="grouptablink backvariant" onclick="changeTab('statistics')"><p class="langtext" id="desc_title4"></p></div>
+							<div id="group-task" class="grouptablink backvariant" onclick="changeTab('tasks')"><p class="langtext" id="desc_title1"></p></div>
+							<div id="group-feed" class="grouptablink backvariant" onclick="changeTab('feed')"><p class="langtext" id="desc_title2"></p></div>
+							<div id="group-shopping" class="grouptablink backvariant"  onclick="changeTab('shopping'); getShoppinglist()"><p class="langtext" id="desc_title3"></p></div>
+							<div id="group-statistics" class="grouptablink backvariant" onclick="changeTab('statistics')"><p class="langtext" id="desc_title4"></p></div>
 						</ul>
 					</div>
 				</div>
@@ -116,7 +116,9 @@
 					<hr width="90%">
 					<!--Here the Javascript will put the lists.-->
 					Shopping Lists
-					<div data-toggle="modal" data-target="#myModalNorm" style="border-radius: 10px; max-width: 13%" id="group-registerCost" class="registerCost tablink backvariant">
+					<div id="items"></div>
+
+					<!-- <div data-toggle="modal" data-target="#myModalNorm" style="border-radius: 10px; max-width: 13%" id="group-registerCost" class="registerCost tablink backvariant"> -->
 
 						Register Cost
 					</div>

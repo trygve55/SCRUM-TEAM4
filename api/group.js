@@ -144,6 +144,7 @@ router.get('/me', function(req, res){
  * URL: /api/group/{group_id}
  * method: GET
  */
+
 router.get('/:group_id', function(req, res){
     if(!req.session.person_id)
         return res.status(500).send();
@@ -244,7 +245,7 @@ router.put('/:group_id', function(req, res){
  */
 router.post('/:group_id/members', function(req, res){
     if(!req.session.person_id)
-        return res.status(500).send();
+        return res.status(500).send("Person_id");
     req.body.members = req.body['members[]'];
     delete req.body['members[]'];
     if(!req.body.members || req.body.members.length == 0)
@@ -252,14 +253,14 @@ router.post('/:group_id/members', function(req, res){
     pool.getConnection(function(err, connection){
         if(err)
             return res.status(500).send("Internal Error");
-        connection.query("SELECT role_id FROM group_person WHERE group_id = + AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
+        connection.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
             if(err) {
                 connection.release();
-                return res.status(500).send();
+                return res.status(500).send(err);
             }
             if(result.length == 0 || result[0].role_id != 2) {
                 connection.release();
-                return res.status(400).send();
+                return res.status(400).send("You not admin");
             }
             var qry = "INSERT INTO group_person (person_id, group_id) VALUES (?, ?)";
             var vals = [req.body.members[0], req.params.group_id];
@@ -270,7 +271,7 @@ router.post('/:group_id/members', function(req, res){
             qry += ";";
             connection.beginTransaction(function (err) {
                 if (err)
-                    return res.status(500).send();
+                    return res.status(500).send("Transaction");
                 connection.query(qry, vals, function (err, result) {
                     console.error(err);
                     if (err)
@@ -280,7 +281,7 @@ router.post('/:group_id/members', function(req, res){
                             return connection.rollback(function (err) {
                                 if (err)
                                     console.error(err);
-                                res.status(500).send();
+                                res.status(500).send(err);
                             });
                         res.status(200).json(result);
                     });

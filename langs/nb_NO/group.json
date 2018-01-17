@@ -11,6 +11,10 @@
 	"group-tasksNavbar": "Gjøremål",
 	"group-shoppinglistsNavbar": "Handlelister",
 	"group-profileNavbar": "Profil",
-	"group-logoutNavbar": "Logg ut"
+	"group-logoutNavbar": "Logg ut",
+	"group-tasks": "Gjøremål",
+	"group-feed": "Innlegg",
+	"group-shopping": "Handlelister",
+	"group-statistics": "Statistikk"
 
 }

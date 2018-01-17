@@ -36,7 +36,7 @@
 
 .grouptab {
 	display: none;
-	width: 90%;
+	width: 100%;
 }
 
 .transparency {
@@ -65,7 +65,7 @@
 .post {
 	float: top;
 	margin: 15px;
-	min-width: 150px;
+	min-width: 130px;
 	min-height: 50px;
 	border-radius: 10px;
 	text-align: center;
