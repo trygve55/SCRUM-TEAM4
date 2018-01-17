@@ -290,7 +290,7 @@ router.all('/profile/1/picture', function(req, res, next) {
 */
 
 //update profile
-router.put('/:person_id', function(req, res){
+router.put('/:person_id', function(req, res) {
     pool.getConnection(function (err, connection) {
         if(err) {
             return res.status(500).send({"Error" : "Connecting to database"} + err);
@@ -299,7 +299,7 @@ router.put('/:person_id', function(req, res){
         var parameter = req.params;
 
         var query = putRequestSetup(parameter.person_id, req.body, connection, "person");
-        connection.query(query[0], query[1], function (err, result) {
+        connection.query(query[0], query[1], function (err) {
             connection.release();
             if (err) {
                 res.status(500).json({error: err});
@@ -312,9 +312,10 @@ router.put('/:person_id', function(req, res){
 router.post('/:person_id/picture', function(req, res){
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
-
         var path = files.file.path,
             file_size = files.file.size;
+
+        console.log(path);
 
         if (file_size > 4000000) {
             res.status(400).json({'error': 'image file over 4MB'});
