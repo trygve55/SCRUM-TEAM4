@@ -143,11 +143,6 @@ router.get('/me', function(req, res){
  *
  * URL: /api/group/{group_id}
  * method: GET
- *
- * Optional, only one parameter needed, group_name is selected if both are provided
- * data: {
- *      group_name
- * }
  */
 router.get('/:group_id', function(req, res){
     if(!req.session.person_id)
@@ -170,6 +165,9 @@ router.get('/:group_id', function(req, res){
  *
  * URL: /api/group/
  * method: GET
+ * data: {
+ *      group_name - Optional
+ * }
  */
 router.get('/', function(req, res){
     if(!req.session.person_id)
