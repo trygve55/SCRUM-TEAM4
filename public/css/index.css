@@ -6,6 +6,7 @@
     overflow: auto;
 }
 
+
 .newsfeed{
     background-color: white;
     border-radius: 10px;
@@ -15,6 +16,7 @@
 }
 
 body{
+    background-size: cover;
     font-family: Trebuchet MS;
     font-style: inherit;
     overflow: hidden;
