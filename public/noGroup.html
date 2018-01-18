@@ -11,11 +11,12 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://use.fontawesome.com/dea62227f7.js"></script>
+    <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/noGroup.css">
     <script src="js/noGroup.js"></script>
 
 </head>
-<body background="img/BackgroundImage.jpg">
+<body>
     <nav style="width: 100%" class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#" style="color: dimgray">
             <img src="/img/logo.png" width="30" height="30" alt="">
@@ -27,13 +28,24 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
                 <a id="nogroup-homepageNavbar" class="nav-item nav-link" href="index.html"></a>
-                <a id="nogroup-groupsNavbar" class="nav-item nav-link" href="group.html"></a>
-                <a id="nogroup-tasksNavbar" class="nav-item nav-link" href="#"></a>
-                <a id="nogroup-shoppinglistsNavbar" class="nav-item nav-link" href="#"></a>
+                <a id="nogroup-groupsNavbar" class="nav-item nav-link" onclick="new function () {
+              $.ajax({
+                url: '/api/group/me',
+                method: 'GET',
+                success: function(data){
+                    if(!data.length || data.length == 0)
+                        window.location = '/noGroup.html';
+                    else
+                        window.location = '/group.html';
+                }
+              });
+            }();"></a>
+                <a id="nogroup-tasksNavbar" class="nav-item nav-link" href="tasks.html"></a>
+                <a id="nogroup-shoppinglistsNavbar" class="nav-item nav-link" href="shoppinglist.html"></a>
             </div>
             <div class="navbar-nav ml-auto">
                 <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
-                <a id="nogroup-profileNavbar" class="nav-item nav-link" href="#"></a>
+                <a id="nogroup-profileNavbar" class="nav-item nav-link" href="ProfilePage.html"></a>
                 <i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
                 <a onclick="logout()" class="nav-item nav-link" href="login.html" id="nogroup-logoutNavbar"></a>
             </div>
@@ -42,8 +54,8 @@
 
     <br>
     <div class="flag" style="background-color: white">
-        <img id="nogroup-norway" style="position:fixed; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
-        <img id="nogroup-england" style="position:fixed; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+        <img id="nogroup-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+        <img id="nogroup-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
     </div>
 
 

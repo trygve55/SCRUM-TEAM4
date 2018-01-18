@@ -1,17 +1,20 @@
 body{
     font-family: "Trebuchet MS";
+    background-size: cover;
     font-style: inherit;
     background-attachment: fixed;
     height: auto;
+    padding-bottom: 20px;
 
 }
 
 div.containerr{
     max-width: 90%;
-    height: 100%;
     background-color: white;
     border-radius: 15px;
-    padding: 1%
+    min-height: 680px;
+    padding-top: 20px ;
+    padding-bottom: 30px;
 }
 
 div.background1{
@@ -30,18 +33,25 @@ div.listborder {
 
 div.textarea{
     width: 95%;
-    padding: 3%;
+    padding: 1%;
     font-size: 90%;
     background-color: white;
     -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
     -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
     box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
     border-radius: 15px;
+    height: 200px;
 }
 
 #okok{
-
     overflow-y: scroll;
+
+}
+
+.okoko2{
+    float:left;
+    display: none;
+    text-align: center;
 }
 
 .okoko{
@@ -49,8 +59,28 @@ div.textarea{
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    height: 17px;
+}
 
+@media screen and (max-width: 375px) {
+    .picture img {
+        display: none!important;
+    }
+    .okoko{
+        display: none!important;
+    }
+    .okoko2{
+        display: block!important;
+        float: left;
+        text-align: center;
+
+    }
+
+}
+
+
+
+#profile-name{
+    padding-top: 6%;
 }
 
 div.debtborder{
@@ -62,9 +92,9 @@ div.debtborder{
 .list-group{
     overflow-y:scroll;
     text-align: left;
-    min-height: 100%;
     max-height: 230px;
-    width: 100%;
+    min-width: 100px;
+    max-width: 100%;
 }
 
 

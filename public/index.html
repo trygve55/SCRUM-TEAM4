@@ -10,12 +10,13 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
         <script src="https://use.fontawesome.com/dea62227f7.js"></script>
+        <link rel="stylesheet" href="css/common.css">
         <link rel="stylesheet" href="css/index.css">
         <script src="js/index.js"></script>
         <script src="js/redirect.js"></script>
     </head>
 
-    <body background="/img/BackgroundImage.jpg">
+    <body>
         <nav style="width: 100%" class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="#" style="color: dimgray">
                 <img src="/img/logo.png" width="30" height="30" alt="">
@@ -27,9 +28,20 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
                     <a id="index-homepageNavbar" class="nav-item nav-link" href="index.html"></a>
-                    <a id="index-groupsNavbar" class="nav-item nav-link" href="group.html"></a>
-                    <a id="index-tasksNavbar" class="nav-item nav-link" href="#"></a>
-                    <a id="index-shoppinglistsNavbar" class="nav-item nav-link" href="#"></a>
+                    <a id="index-groupsNavbar" class="nav-item nav-link" onclick="new function () {
+              $.ajax({
+                url: '/api/group/me',
+                method: 'GET',
+                success: function(data){
+                    if(!data.length || data.length == 0)
+                        window.location = '/noGroup.html';
+                    else
+                        window.location = '/group.html';
+                }
+              });
+            }();"></a>
+                    <a id="index-tasksNavbar" class="nav-item nav-link" href="tasks.html"></a>
+                    <a id="index-shoppinglistsNavbar" class="nav-item nav-link" href="shoppinglist.html"></a>
                 </div>
                 <div class="navbar-nav ml-auto">
                     <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
@@ -42,34 +54,36 @@
         <br>
 
         <div class="flag" style="background-color: white">
-            <img id="index-norway" style="position:fixed; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
-            <img id="index-england" style="position:fixed; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+            <img id="index-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+            <img id="index-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
         </div>
-<div class="row" align="center">
-    <br>
-    <div style="width: 40px"></div>
-    <div class="profil col-sm-3">
-        <br>
 
-        <img src="/img/profilPicture.png" style="height: 200px; width: 200px">
-        <div id="index-username" style="font-size: large" ></div>
-        <div id="index-status" style="color: green; font-style: oblique ">online</div>
+        <div class="row" align="center">
+            <br>
+            <div style="width: 40px"></div>
+            <div class="profil col-sm-3">
+                <br>
 
-        <div class ="index-todo" id="index-todolist"></div>
+                <img src="/img/profilpic.svg" style="height: 200px; width: 200px">
+                <div id="index-username" style="font-size: large" ></div>
+                <div id="index-status" style="color: green; font-style: oblique ">online</div>
 
-        <i style="color:#a3e6f7;" class="fa fa-sign-out" aria-hidden="true"></i>
-        <a href="login.html" style="color: dimgray" id="index-logout"></a>
+                <div class ="index-todo" id="index-todolist"></div>
 
-    </div>
+                <i style="color:#a3e6f7;" class="fa fa-sign-out" aria-hidden="true"></i>
+                <a href="login.html" style="color: dimgray" id="index-logout"></a>
 
-    <div style="width: 40px"></div>
-    <br>
-    <div class = "newsfeed col-sm-8">
+            </div>
 
-    </div>
-    <div class = "col-sm-8"><br></div>
+            <div style="width: 40px"></div>
 
-</div>
+            <br>
+
+            <div class = "newsfeed col-sm-8"></div>
+
+            <div class = "col-sm-8"><br></div>
+
+        </div>
 
     </body>
 </html>

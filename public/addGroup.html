@@ -10,6 +10,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
     <script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
     <script type="text/javascript"> (function() { var css = document.createElement('link'); css.href = '//'; css.rel = 'stylesheet'; css.type = 'text/css'; document.getElementsByTagName('head')[0].appendChild(css); })(); </script>
+    <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" type="text/css" href="css/addgroupstyle.css">
     <script src="https://use.fontawesome.com/dea62227f7.js"></script>
     <script src="/js/handlebars.js"></script>
@@ -18,7 +19,7 @@
 
 
 </head>
-<body background="/img/BackgroundImage.jpg">
+<body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#" style="color: dimgray">
         <img src="/img/logo.png" width="30" height="30" alt="">
@@ -29,14 +30,25 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-            <a id="addgroup-homepage" class="nav-item nav-link" href="#"></a>
-            <a id="addgroup-groups" class="nav-item nav-link active" href="#"></a>
-            <a id="addgroup-tasks" class="nav-item nav-link" href="#"></a>
-            <a id="addgroup-shoppinglists" class="nav-item nav-link" href="#"></a>
+            <a id="addgroup-homepage" class="nav-item nav-link" href="index.html"></a>
+            <a id="addgroup-groups" class="nav-item nav-link active" onclick="new function () {
+              $.ajax({
+                url: '/api/group/me',
+                method: 'GET',
+                success: function(data){
+                    if(!data.length || data.length == 0)
+                        window.location = '/noGroup.html';
+                    else
+                        window.location = '/group.html';
+                }
+              });
+            }();"></a>
+            <a id="addgroup-tasks" class="nav-item nav-link" href="tasks.html"></a>
+            <a id="addgroup-shoppinglists" class="nav-item nav-link" href="shoppinglist.html"></a>
         </div>
         <div class="navbar-nav ml-auto">
             <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
-            <a id="addgroup-profile" class="nav-item nav-link" href="#"></a>
+            <a id="addgroup-profile" class="nav-item nav-link" href="ProfilePage.html"></a>
 
             <i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
             <a class="nav-item nav-link" href="login.html" id="addgroup-logout"></a>
@@ -45,8 +57,8 @@
 </nav>
 <br>
 <div class="flag" style="background-color: white">
-    <img id="login-norway" style="position:fixed; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
-    <img id="login-england" style="position:fixed; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+    <img id="login-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+    <img id="login-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
 </div>
 
 <br>

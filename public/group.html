@@ -11,14 +11,16 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 		<script src="https://use.fontawesome.com/dea62227f7.js"></script>
+		<script src="/js/handlebars.js"></script>
 		<script src="js/redirect.js"></script>
 
 		<!--These below are needed for this window to appear correctly.-->
 		<script src="/js/group.js"></script>
+		<link rel="stylesheet" href="css/common.css">
 		<link rel="stylesheet" type="text/css" href="/css/group.css"> <!--Own CSS.-->
 	</head>
 
-	<body background="img/BackgroundImage.jpg">
+	<body>
 
 	<nav style="width: 100%" class="navbar navbar-expand-lg navbar-light bg-light">
 		<a class="navbar-brand" href="#" style="color: dimgray">
@@ -31,13 +33,24 @@
 		<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
 			<div class="navbar-nav">
 				<a id="group-homepageNavbar" class="nav-item nav-link" href="index.html"></a>
-				<a id="group-groupsNavbar" class="nav-item nav-link" href="group.html"></a>
-				<a id="group-tasksNavbar" class="nav-item nav-link" href="#"></a>
-				<a id="group-shoppinglistsNavbar" class="nav-item nav-link" href="#"></a>
+				<a id="group-groupsNavbar" class="nav-item nav-link" onclick="new function () {
+              $.ajax({
+                url: '/api/group/me',
+                method: 'GET',
+                success: function(data){
+                    if(!data.length || data.length == 0)
+                        window.location = '/noGroup.html';
+                    else
+                        window.location = '/group.html';
+                }
+              });
+            }();"></a>
+				<a id="group-tasksNavbar" class="nav-item nav-link" href="tasks.html"></a>
+				<a id="group-shoppinglistsNavbar" class="nav-item nav-link" href="shoppinglist.html"></a>
 			</div>
 			<div class="navbar-nav ml-auto">
 				<i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
-				<a id="group-profileNavbar" class="nav-item nav-link" href="#"></a>
+				<a id="group-profileNavbar" class="nav-item nav-link" href="ProfilePage.html"></a>
 				<i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
 				<a onclick="logout()" class="nav-item nav-link" href="login.html" id="group-logoutNavbar"></a>
 			</div>
@@ -46,8 +59,8 @@
 
 	<br>
 	<div class="flag" style="background-color: white">
-		<img id="group-norway" style="position:fixed; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
-		<img id="group-england" style="position:fixed; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+		<img id="group-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+		<img id="group-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
 	</div>
 
 
@@ -68,10 +81,28 @@
 				<div id="grouptabs">
 					<div class="container">
 						<ul class="nav nav-tabs">
-							<div class="grouptablink backvariant" onclick="changeTab('tasks')"><p class="langtext" id="desc_title1"></p></div>
-							<div class="grouptablink backvariant" onclick="changeTab('feed')"><p class="langtext" id="desc_title2"></p></div>
-							<div class="grouptablink backvariant" onclick="changeTab('shopping')"><p class="langtext" id="desc_title3"></p></div>
-							<div class="grouptablink backvariant" onclick="changeTab('statistics')"><p class="langtext" id="desc_title4"></p></div>
+							<ul class="nav nav-tabs" role="tablist">
+								<li class="nav-item">
+									<a style="color: black" class="nav-link active" onclick="changeTab('tasks')" href="#profile" role="tab" data-toggle="tab" id="desc_title1"></a>
+								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link" href="#buzz" onclick="changeTab('feed')" role="tab" data-toggle="tab" id="desc_title2"></a>
+								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link" onclick="changeTab('shopping')" href="#references" role="tab" data-toggle="tab" id="desc_title3"></a>
+								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link"  onclick="changeTab('statistics')" href="#references" role="tab" data-toggle="tab" id="desc_title4"></a>
+								</li>
+							</ul>
+
+							<!-- Tab panes -->
+							<div class="tab-content">
+								<div role="tabpanel" class="tab-pane fade in active"></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
+							</div>
 						</ul>
 					</div>
 				</div>
@@ -81,11 +112,11 @@
 
 				<br>
 				<!--This is the tasks tab.-->
-				<div id="tasks" class="grouptab text-center" style="display: block;">
+				<div id="tasks" class="grouptab text-center" style="display: block; padding-right: 5%">
 					<div class="row">
-						<div id="yourtasks" style="text-align:center;" class="yourTasks col-sm-5">
+						<div id="yourtasks" style="text-align:center; " class="yourTasks col-sm-5">
 						<!--These are the tasks assigned to the user. The javascript will add entries here.-->
-							<p class="langtext" id="desc_title5"></p>
+							<p id="desc_title5"></p>
 							<div class="chbox">
 								<input type="checkbox" value="">
 								<p>Task N</p>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
@@ -112,10 +143,36 @@
 				</div>
 
 				<!--This is the shopping lists tab.-->
-				<div id="shopping" class="grouptab text-center">
+				<div id="shopping" class="grouptab">
 					<hr width="90%">
 					<!--Here the Javascript will put the lists.-->
-					Shopping Lists
+					<div class="col-sm liste" style="background-color: #{{color_hex}};">
+						<div class="row">
+							<div class="col-sm-7" style="text-align: left">
+								<div class="list-name-div" style="margin-bottom: 6px; display: none;">
+									<input type="text" class="form-control list-name-input">
+								</div>
+								<h4 class="list-name">Handleliste</h4>
+							</div>
+							<div class="col-sm-5" style="text-align: right">
+								<h4>
+									<i class="fa fa-circle white-select" aria-hidden="true" data-color="#FFFFFF" style="color: white; text-shadow: 0px 0px 3px #000;"></i>
+									<i class="fa fa-circle pink-select" aria-hidden="true" data-color="#FFB6C1" style="color: lightpink; text-shadow: 0px 0px 3px #000;"></i>
+									<i class="fa fa-circle yellow-select" aria-hidden="true" data-color="#FFEC8E" style="color: #ffec8e; text-shadow: 0px 0px 3px #000;"></i>
+									<i class="fa fa-circle green-select" aria-hidden="true" data-color="#90EE90" style="color: lightgreen; text-shadow: 0px 0px 3px #000;"></i>
+								</h4>
+							</div>
+						</div>
+						<ul class="list-group itemlist"></ul>
+						<ul class="list-group">
+							<li class="list-group-item add-item">
+								<i class="fa fa-plus-circle" aria-hidden="true" id="add-item"></i>
+							</li>
+						</ul>
+						<i class="fa fa-shopping-cart" aria-hidden="true" style="font-size: 1.8vh" id="buy"></i>
+						<i class="fa fa-money" style="font-size: 1.8vh" aria-hidden="true" id="settle"></i>
+					</div>
+
 					<div data-toggle="modal" data-target="#myModalNorm" style="border-radius: 10px; max-width: 13%" id="group-registerCost" class="registerCost tablink backvariant">
 
 						Register Cost

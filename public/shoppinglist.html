@@ -5,17 +5,18 @@
     <title>HHM: Shoppinglist</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
-    <link rel="stylesheet" type="text/css" href="css/shoppinglist.css">
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" ></script>
-    <script src="js/shoppinglist.js"></script>
     <script src="https://use.fontawesome.com/dea62227f7.js"></script>
-    <script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
     <script type="text/javascript"> (function() { var css = document.createElement('link'); css.href = '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css'; css.rel = 'stylesheet'; css.type = 'text/css'; document.getElementsByTagName('head')[0].appendChild(css); })(); </script>
+    <script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/shoppinglist.css">
+    <script src="/js/handlebars.js"></script>
+    <script src="/js/shoppinglist.js"></script>
 </head>
-<body background="/img/BackgroundImage.jpg">
+<body>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#" style="color: dimgray">
@@ -27,28 +28,40 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-            <a id="shop-homepage" class="nav-item nav-link" href="#"></a>
-            <a id="shop-groups" class="nav-item nav-link" href="#"></a>
-            <a id="shop-tasks" class="nav-item nav-link" href="#"></a>
-            <a id="shop-shoppinglists" class="nav-item nav-link active" href="#"></a>
+            <a id="shop-homepage" class="nav-item nav-link" href="/index.html"></a>
+            <a id="shop-groups" class="nav-item nav-link" onclick="new function () {
+              $.ajax({
+                url: '/api/group/me',
+                method: 'GET',
+                success: function(data){
+                    if(!data.length || data.length == 0)
+                        window.location = '/noGroup.html';
+                    else
+                        window.location = '/group.html';
+                }
+              });
+            }();"></a>
+            <a id="shop-tasks" class="nav-item nav-link" href="tasks.html"></a>
+            <a id="shop-shoppinglists" class="nav-item nav-link active" href="/shoppinglist.html"></a>
         </div>
         <div class="navbar-nav ml-auto">
             <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
-            <a id="shop-profile" class="nav-item nav-link" href="#"></a>
+            <a id="shop-profile" class="nav-item nav-link" href="/ProfilePage.html"></a>
 
             <i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
-            <a class="nav-item nav-link" href="login.html" id="shop-logout"></a>
+            <a class="nav-item nav-link" href="/login.html" id="shop-logout"></a>
         </div>
     </div>
 </nav>
 <br>
 <div class="flag" style="background-color: white">
-    <img id="login-norway" style="position:fixed; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
-    <img id="login-england" style="position:fixed; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+    <img id="login-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+    <img id="login-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
 </div>
 <div  align="center" style="margin-right: 5%; margin-left: 5%;">
     <div class="row" id="listegruppe">
-        <div class="col-sm adde" id="addlist"><h4 id="shop-addlist"></h4>
+        <div class="col-sm adde" id="addlist">
+            <h4 id="shop-addlist"></h4>
             <br>
             <p style="line-height: 500px;"><i class="fa fa-plus-square-o" aria-hidden="true" style="font-size: 90px"></i></p>
         </div>

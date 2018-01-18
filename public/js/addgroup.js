@@ -71,11 +71,10 @@ $('document').ready(function(){
                                     m.push(users[i].id);
                                 }
                                 $.ajax({
-                                    url: '/api/group/members',
+                                    url: '/api/group/' + data.id + '/members',
                                     method: 'POST',
                                     data: {
-                                        members: m,
-                                        group_id: data.id
+                                        members: m
                                     },
                                     success: function(data){
 
@@ -121,6 +120,7 @@ $('document').ready(function(){
         });
 
     $(".typeahead").bind('typeahead:select', function(a, data){
+        console.log(data);
         if(!check(data))
             return;
         users.push(data);

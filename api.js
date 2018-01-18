@@ -7,5 +7,7 @@ router.use('/group', require('./api/group'));
 router.use('/shoppingList', require('./api/shoppingList'));
 router.use('/currency', require('./api/currency'));
 router.use('/tasks', require('./api/tasks'));
+router.use('/budget', require('./api/budget'));
+router.use('/news', require('./api/news'));
 
 module.exports = router;
