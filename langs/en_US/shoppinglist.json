@@ -13,6 +13,11 @@
   "shop-balance": "Settlement",
   "shop-backlist": "Back to shoppinglist",
   "shop-add-members": "Members",
-  "shop-close": "Close",
-  "shop-list-name-input": "Untitled list"
+  "shop-cancel": "Cancel",
+  "shop-list-name-input": "Untitled list",
+  "shop-buy-title": "Register",
+  "shop-buy-text": "Price",
+  "shop-ok": "OK",
+  "shop-trip": "Budget entry",
+  "shop-price": "Price"
 }

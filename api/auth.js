@@ -39,7 +39,10 @@ router.post('/', function(req, res){
         else connection.query("SELECT person_id, password_hash FROM person WHERE ?? = ?;",
             [((username.indexOf("@") == -1) ? 'username' : 'email'), username], function (error, results) {
             connection.release();
-            if(err) {return res.status(500).json({'Error' : 'connecting to database: ' } + err)}
+            if(err)
+                return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+            if(results.length == 0)
+                return res.status(400).json({login: false, error: "login failed"});
             else bcrypt.compare(password, results[0].password_hash, function(err, hash_res) {
                 if (hash_res) {
                     req.session.person_id = results[0].person_id;
