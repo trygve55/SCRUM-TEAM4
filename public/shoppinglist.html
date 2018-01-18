@@ -27,17 +27,28 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-            <a id="shop-homepage" class="nav-item nav-link" href="index.html"></a>
-            <a id="shop-groups" class="nav-item nav-link" href="group.html"></a>
+            <a id="shop-homepage" class="nav-item nav-link" href="/index.html"></a>
+            <a id="shop-groups" class="nav-item nav-link" onclick="new function () {
+              $.ajax({
+                url: '/api/group/me',
+                method: 'GET',
+                success: function(data){
+                    if(!data.length || data.length == 0)
+                        window.location = '/noGroup.html';
+                    else
+                        window.location = '/group.html';
+                }
+              });
+            }();"></a>
             <a id="shop-tasks" class="nav-item nav-link" href="#"></a>
-            <a id="shop-shoppinglists" class="nav-item nav-link active" href="shoppinglist.html"></a>
+            <a id="shop-shoppinglists" class="nav-item nav-link active" href="/shoppinglist.html"></a>
         </div>
         <div class="navbar-nav ml-auto">
             <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
-            <a id="shop-profile" class="nav-item nav-link" href="ProfilePage.html"></a>
+            <a id="shop-profile" class="nav-item nav-link" href="/ProfilePage.html"></a>
 
             <i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
-            <a class="nav-item nav-link" href="login.html" id="shop-logout"></a>
+            <a class="nav-item nav-link" href="/login.html" id="shop-logout"></a>
         </div>
     </div>
 </nav>

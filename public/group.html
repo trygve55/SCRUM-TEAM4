@@ -31,7 +31,18 @@
 		<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
 			<div class="navbar-nav">
 				<a id="group-homepageNavbar" class="nav-item nav-link" href="index.html"></a>
-				<a id="group-groupsNavbar" class="nav-item nav-link" href="group.html"></a>
+				<a id="group-groupsNavbar" class="nav-item nav-link" onclick="new function () {
+              $.ajax({
+                url: '/api/group/me',
+                method: 'GET',
+                success: function(data){
+                    if(!data.length || data.length == 0)
+                        window.location = '/noGroup.html';
+                    else
+                        window.location = '/group.html';
+                }
+              });
+            }();"></a>
 				<a id="group-tasksNavbar" class="nav-item nav-link" href="#"></a>
 				<a id="group-shoppinglistsNavbar" class="nav-item nav-link" href="shoppinglist.html"></a>
 			</div>
