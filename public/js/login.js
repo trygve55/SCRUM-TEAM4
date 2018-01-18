@@ -160,7 +160,7 @@ $(function () {
         });
     });
 
-    $("#login-button").keypress(function(e){
+    $("#login-password").keypress(function(e){
         if(e.keyCode!=13||e.which!=13)
             return;
         $.ajax({

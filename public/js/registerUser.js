@@ -289,6 +289,7 @@ $(function () {
                     phone: $('#register-phone').val()
                 },
                 success: function (data) {
+                    console.log(data)
                     window.location='/index.html';
                 },
                 error: console.error
