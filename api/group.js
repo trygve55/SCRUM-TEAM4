@@ -332,8 +332,7 @@ router.post('/:group_id/members', function(req, res){
  * URL: /api/group/{group_id}/user
  * method: DELETE
  * data: {
- *      person_id, person to be updated
- *      role_id new role for person
+ *      person_id, person to deleted
  * }
  */
 router.delete('/:group_id/user', function(req, res){
@@ -345,7 +344,7 @@ router.delete('/:group_id/user', function(req, res){
         if(err) {
             connection.release();
             return res.status(500).send("Internal Error");
-        }
+        }/*
         connection.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
             if(err) {
                 connection.release();
@@ -363,15 +362,15 @@ router.delete('/:group_id/user', function(req, res){
                 if(result.length <= 1){
                     connection.release();
                     return res.status(400).send();
-                }
-                connection.query("DELETE FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.body.person_id], function (err, result) {
-                    connection.release();
-                    if (err)
-                        return res.status(500).send();
-                    res.status(200).send();
-                });
-            });
-        });
+                }*/
+		connection.query("DELETE FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.body.person_id], function (err, result) {
+			connection.release();
+			if (err)
+				return res.status(500).send();
+			res.status(200).send();
+		});
+            //});
+        //});
     });
 });
 
