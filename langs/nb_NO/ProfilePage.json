@@ -9,5 +9,7 @@
   "profile-MyShoppinglist": "Min handleliste",
   "profile-MyToDoList": "Min gjøremålsliste",
   "profile-addItem": "Legg til element",
-  "profile-allShoppinglists": "Alle handlelister"
+  "profile-allShoppinglists": "Alle gjøremål",
+  "profile-allShoppinglist":"Alle handlelister",
+  "additem":"Legg til"
 }

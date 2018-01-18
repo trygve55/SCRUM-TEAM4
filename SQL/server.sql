@@ -101,11 +101,8 @@ CREATE TABLE group_person (
 CREATE TABLE shopping_list_person (
     shopping_list_id INTEGER NOT NULL,
     person_id INTEGER NOT NULL,
-    paid_amount INTEGER NOT NULL DEFAULT 0,
-    pay_amount_points INTEGER NOT NULL DEFAULT 100,
     invite_accepted BIT NOT NULL DEFAULT 0,
     invite_sent_datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
-    is_hidden BIT NOT NULL DEFAULT 0,
     CONSTRAINT shopping_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
     CONSTRAINT shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT shopping_list_persons_pk PRIMARY KEY(shopping_list_id, person_id)
@@ -133,8 +130,8 @@ CREATE TABLE cleaning_list_points (
     group_id INTEGER NOT NULL,
     month_year DATE NOT NULL,
     points INTEGER NOT NULL,
-	CONSTRAINT cleaning_list_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
-	CONSTRAINT cleaning_list_group_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
+    CONSTRAINT cleaning_list_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
+    CONSTRAINT cleaning_list_group_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
     CONSTRAINT cleaning_list_pk PRIMARY KEY(person_id, group_id, month_year)
 );
 

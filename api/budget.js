@@ -130,7 +130,6 @@ router.delete('/entryType/:budget_entry_type_id', function(req, res) {
     pool.getConnection(function(err, connection) {
         if(err)
             return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-        var data = req.body;
         connection.query('DELETE FROM budget_entry_type ' +
             'WHERE ' +
             'budget_entry_type_id = ? AND ' +
@@ -282,6 +281,32 @@ router.get('/:shopping_list_id', function(req, res) {
                     });
                 }
             });
+    });
+});
+
+router.post('/pay/:budget_entry_id', function(req, res) {
+
+    var query = "", queryValues = [], payers = req.body.payers, budget_entry_id = req.params.budget_entry_id;
+    if (payers.length == 0) return res.status(400).json({error: "no payers array"})
+    for (var i = 0; i < payers.length;i++) {
+        if (i != 0) queryValues += ", ";
+        query += "( ?, ? )";
+        queryValues[i*2] = budget_entry_id;
+        queryValues[i*2+1] = payers[i];
+    }
+
+    pool.getConnection(function(err, connection) {
+        if(err)
+            return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+        connection.query('INSERT INTO person budget_entry(budget_entry_id, person_id) VALUES ' + query, queryValues, function(err, result) {
+            connection.release();
+            if(err)
+                return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+            else if (result.affectedRows == 0)
+                res.status(403).json({success: "false", error: "no access"});
+            else
+                res.status(200).json({success: "true", budget_entry_id: result.insertId});
+        });
     });
 });
 
