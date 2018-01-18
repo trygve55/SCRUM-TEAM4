@@ -96,6 +96,10 @@ $(function () {
             $('#profile-email').text(data[0].email);
             $('#profile-phone').text(data[0].phone ? data[0].phone : "");
             $('#profile-username').text(data[0].username == data[0].facebook_api_id ? "" : data[0].username);
+            $('#profile-name2').text(data[0].forename + '  ' + data[0].lastname);
+            $('#profile-email2').text(data[0].email);
+            $('#profile-phone2').text(data[0].phone ? data[0].phone : "");
+            $('#profile-username2').text(data[0].username == data[0].facebook_api_id ? "" : data[0].username);
         }
     });
 
