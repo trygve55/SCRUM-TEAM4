@@ -1,5 +1,10 @@
+var lang;
+var users = [];
+var curBudget;
+var list, balance, listItem, newListItem, popupTextList, popupList, balanceItem;
+
 /* Language */
-$(function () {
+$(document).ready(function () {
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -78,12 +83,12 @@ $(function () {
         method: 'GET',
         data: {
             variables: [
-            'forename',
-            'lastname' ,
-            'email',
-            'phone',
-            'username',
-            'facebook_api_id'
+                'forename',
+                'lastname' ,
+                'email',
+                'phone',
+                'username',
+                'facebook_api_id'
             ]
         },
         success: function (data) {
@@ -103,163 +108,382 @@ $(function () {
         }
     });
 
+    $.ajax({
+        url: '/template',
+        method: 'GET',
+        data: {
+            files: [
+                "list.html",
+                "balance.html",
+                "balanceItem.html",
+                "listItem.html",
+                "newListItem.html",
+                "popupList.html",
+                "popupTextfieldList.html"
+            ]
+        },
+        success: function(data){
+            list = Handlebars.compile(data["list.html"]);
+            balance = Handlebars.compile(data["balance.html"]);
+            listItem = Handlebars.compile(data["listItem.html"]);
+            newListItem = Handlebars.compile(data["newListItem.html"]);
+            popupTextList = Handlebars.compile(data["popupTextfieldList.html"]);
+            popupList = Handlebars.compile(data["popupList.html"]);
+            balanceItem = Handlebars.compile(data["balanceItem.html"]);
+            prep();
+        }
+    });
+
+
+    inits();
+    setupClicks();
+    setupItemClicks();
+    getShoppinglist();
+
+    /**
+     * Hides buttons, input
+     */
+    function inits(){
+
+    }
+
+    $('#media').carousel({
+        pause: true,
+        interval: false
+    });
 });
 
 
-
-$(document).ready(
-    function(){
-
-        inits();
-
-        /**
-         * Hides buttons, input
-         */
-        function inits(){
-            $('#inputitem').hide();
-            $('#inputtask').hide();
-            $('#regretbutton').hide();
+function getShoppinglist() {
+    $.ajax({
+        url: "/api/shoppingList/" + currentGroup.shopping_list_id,
+        method: "GET",
+        success: function (data) {
+            currentShoppingList = data;
+            $('.itemlist').html("");
+            for(var i = 0; i < data.shopping_list_entries.length; i++){
+                if(data.shopping_list_entries[i].purchased_by_person_id)
+                    continue;
+                $('.itemlist').append(listItem({
+                    entry_id: data.shopping_list_entries[i].shopping_list_entry_id,
+                    entry_text: data.shopping_list_entries[i].entry_text
+                }));
+            }
+            setupClicks();
         }
+    });
+}
 
-        /**
-         * when add item button is clicked, hides add item button, shows input
-         */
-        $('#additem').click(function () {
-            $('#inputitem').show();
-            $('#additem').hide();
-            $('#newitem').focus();
+function setupClicks(){
+    $(".list-name").unbind("click").click(function(){
+        var listId = $(this).closest("div[data-id]").data("id");
+        var title = $(this).html();
+        $(this).hide();
+        var div = $(this).parent().children(".list-name-div");
+        $(div).show();
+        $(div).children(".list-name-input").val(title).focus();
+    });
+
+    $(".list-name-input").unbind("focusout").focusout(function(){
+        var text = $(this).val();
+        var id = $(this).closest("div[data-id]").data("id");
+        var h4 = $(this).parent().parent().children(".list-name");
+        $(h4).html(text);
+        $(this).parent().hide();
+        $(h4).show();
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                shopping_list_name: text
+            }
         });
+    });
 
-        $('#addtask').click(function () {
-            $('#inputtask').show();
-            $('#addtask').hide();
-            $('#newtaskw').focus();
-        })
+    $(".list-name-input").unbind("keypress").keypress(function(e){
+        if(e.keyCode != 13 && e.which != 13)
+            return;
+        var text = $(this).val();
+        var id = $(this).closest("div[data-id]").data("id");
+        var h4 = $(this).parent().parent().children(".list-name");
+        $(h4).html(text);
+        $(this).parent().hide();
+        $(h4).show();
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                shopping_list_name: text
+            }
+        });
+    });
 
+    $(".add-item").unbind("click").click(function(){
+        $(this).closest("div").children(".itemlist").append(newListItem());
 
-        var count=0;
-        $('#newitem').keypress(function(event) {
-            if (event.keyCode == 13 || event.which == 13) {
-                var item = $('#newitem').val();
-                $('#newitem').val('');
-                count++;
-                $('#itemlist').append("<li id='itemid"+count+"' class=\"list-group-item\"><div class='row'><div class=\"col-sm checkbox\"> <label id='labelitem'><input id='labelitem' type=\"checkbox\"> <p id='hei"+count+"'> "+item+" </p></label> </div><div class='col-sm' align='right'><i class='fa fa-times' aria-hidden='true' id='cross"+count+"'></div></div></li>");
+        $("#new-list-item").keypress(function(e){
+            if(e.keyCode != 13 && e.which != 13)
+                return;
+            var ul = $(this).closest("ul");
+            var text = $(this).val();
+            if(text != "") {
+                var t = this;
+                saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                    $(t).closest("li").remove();
+                    addNewItem(ul);
+                    setupItemClicks();
+                });
+            }
+            else {
+                setupItemClicks();
+                $(this).closest("li").remove();
+            }
+        }).focusout(function(){
+            var ul = $(this).closest("ul");
+            var text = $(this).val();
+            if(text != "") {
+                saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                    setupItemClicks();
+                });
+            }
+            $(this).closest("li").remove();
+        }).focus();
+    });
 
-                $('#cross'+count).click(function () {
-                    var table = [];
-                    var n = this.id;
-                    var ide = n.split("s").pop();
+    $('.pink-select').unbind("click").click(function () {
+        var ls = $(this).closest("div[data-id]");
+        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
+            }
+        });
+    });
 
-                    var removed = $('#hei'+ide).text();
-                    $('#itemid'+ide).remove();
+    $('.yellow-select').unbind("click").click(function () {
+        var ls = $(this).closest("div[data-id]");
+        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
+            }
+        });
+    });
 
-                    $('#regretbutton').show();
+    $('.green-select').unbind("click").click(function () {
+        var ls = $(this).closest("div[data-id]");
+        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
+            }
+        });
+    });
 
+    $('.white-select').unbind("click").click(function () {
+        var ls = $(this).closest("div[data-id]");
+        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
+            }
+        });
+    });
 
-                    $('#regretbutton').click(function () {
-                        $('#itemlist').append("<li id='itemid"+ide+"' class=\"list-group-item\"><div class='row'><div class=\"col-sm checkbox\"><label><input type=\"checkbox\"><p id='hei"+ide+"'>"+removed+"</p></label></div><div class='col-sm' align='right'><i class='fa fa-times' aria-hidden='true' id='cross"+ide+"'></div></div></li>");
+    $(".fa-money").unbind("click").click(function(){
+        var id = $(this).closest("div[data-id]").data("id");
+        $.ajax({
+            url: '/api/budget/' + id,
+            method: 'GET',
+            success: function(data){
+                console.log(data);
+                curBudget = data;
+                var entries = "";
+                for(var i = 0; i < data.budget_entries.length; i++){
+                    entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].entry_datetime + "</td><td>" + data.budget_entries[i].amount + "</td>";
+                }
+                $("body").append(balance({
+                    title: lang["shop-balance"],
+                    complete: lang["shop-ok"],
+                    data: "data-id='" + id + "'",
+                    lang_trip: lang["shop-trip"],
+                    lang_price: lang["shop-price"],
+                    budget_entries: entries
+                }));
+
+                $('tr[data-id]').click(function(){
+                    var id = $(this).closest("tr[data-id]").data("id");
+                    var entry = null;
+                    for(var i = 0; i < curBudget.budget_entries.length; i++){
+                        if(curBudget.budget_entries[i].budget_entry_id == id){
+                            entry = curBudget.budget_entries[i];
+                        }
+                    }
+                    if(!entry)
+                        return;
+                    var d = "<li class='list-group-item'>Work in progress (data about a entry)</li>";
+                    $(this).closest(".pop").hide();
+                    $("body").append(balanceItem({
+                        title: entry.entry_datetime,
+                        complete: lang["shop-ok"],
+                        list: d
+                    }));
+                    $("#balance-info-complete").click(function(){
+                        $(this).closest(".pop").remove();
+                        $(".pop").show();
                     });
                 });
-            }
-        });
 
-        $('#newtask').keypress(function(event) {
-            if (event.keyCode == 13 || event.which == 13) {
-                var item = $('#newtask').val();
-                $('#newtask').val('');
-                count++;
-                $('#tasklist').append("<li id='taskid"+count+"' class=\"list-group-item\"><div class='row'><div class=\"col-sm checkbox\"> <label id='labelitem'><input id='labelitem' type=\"checkbox\"> <p id='hei'> "+item+" </p></label> </div><div class='col-sm' align='right'><i class='fa fa-times' aria-hidden='true' id='cross"+count+"'></div></div></li>");
-
-                $('#cross'+count).click(function () {
-                    var table = [];
-                    var n = this.id;
-                    var ide = n.split("s").pop();
-
-                    var removed = $('#hei').val();
-                    $('#taskid'+ide).remove();
-
-                    $('#regretbutton').show();
-
-
-
-                    $('#regretbutton').click(function () {
-                        $('#itemlist').append("<li id='taskid' class=\"list-group-item\"><div class='row'><div class=\"col-sm checkbox\"> <label><input type=\"checkbox\">  "+removed+"</label> </div><div class='col-sm' align='right'><i class='fa fa-times' aria-hidden='true' id='cross'></div></div></li>");
-                    })
+                $('#popup-complete').click(function(){
+                    $(this).closest(".pop").remove();
                 });
-            }
+            },
+            error: console.error
+        });
+    });
+
+    $(".fa-shopping-cart").unbind("click").click(function(){
+        var items = $(this).closest("div").find(".list-group-item input:checked").closest('li[data-id]');
+        if(items.length == 0)
+            return;
+        var entries = $(items[0]).data("id");
+        var list = "<li class=\"list-group-item\">" + $(items[0]).html() + "</li>";
+        for(var i = 1; i < items.length; i++){
+            entries += "," + $(items[i]).data("id");
+            list += "<li class=\"list-group-item\">" + $(items[i]).html() + "</li>";
+        }
+        $("body").append(popupTextList({
+            title: lang["shop-buy-title"],
+            list: list,
+            textfield: lang["shop-buy-text"],
+            cancel: lang["shop-cancel"],
+            complete: lang["shop-ok"],
+            data: "data-id='" + $(this).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
+        }));
+
+        $(".pop").find(".fa-times").remove();
+        $(".pop").find("input[type=checkbox]").remove();
+
+        $("#popup-cancel").click(function(){
+            $(this).closest(".pop").remove();
         });
 
-        $('#shoppingcart'+count).click(function () {
-            var table = [];
-            var navn = this.id;
-            var ide = navn.split("").pop();
-
-            $(".checkbox").each(function () {
-                if($(this).is(':checked')){
-                    var numb = this.id;
-                    var nr = numb.split("x").pop();
-                    var ss = nr[1];
-                    var htmllab = $('#labelitem'+ide+ss).html();
-                    var item = htmllab.split(">").pop();
-                    table.push(item);
-                    document.getElementById('itemid'+ide+ss).remove();
-                }
+        $("#popup-complete").click(function(){
+            if(isNaN(Number($(this).closest('.pop').find('input').val())))
+                return;
+            var id = $(this).closest("div[data-id]").data("id");
+            var e = $(this).closest("div[data-entries]").data("entries");
+            if(Number(e) !== e)
+                e = e.split(",");
+            else
+                e = [e];
+            $.ajax({
+                url: '/api/budget',
+                method: 'POST',
+                data: {
+                    shopping_list_id: currentShoppingList.shopping_list_id,
+                    amount: Number($(this).closest('.pop').find('input').val()),
+                    text_note: e.join(",")
+                },
+                success: function(data){
+                    for(var i = 0; i < e.length; i++){
+                        $.ajax({
+                            url: '/api/shoppingList/entry/' + e[i],
+                            method: 'PUT',
+                            data: {
+                                shopping_list_id: currentShoppingList.shopping_list_id,
+                                purchased_by_person_id: 2,
+                                budget_entry_id: data.budget_entry_id
+                            },
+                            error: console.error
+                        });
+                    }
+                },
+                error: console.error
             });
-            for(t in table){
-                console.log(table[t]);
+            for(var i = 0; i < e.length; i++){
+                $(".liste").find('li[data-id=' + e[i] + ']').remove();
             }
+            $(this).closest(".pop").remove();
         });
+    });
 
-        $('#regretbutton'+count).click(function () {
-            var table = [];
-            var navn = this.id;
+    setupItemClicks();
+}
 
+function setupItemClicks(){
+    $(".fa-times").unbind("click").click(function(){
+        var entry_id = $(this).closest("li[data-id]").data("id");
+        $.ajax({
+            url: '/api/shoppingList/entry/' + entry_id,
+            method: 'DELETE',
+            error: console.error
         });
+        $(this).closest("li[data-id]").remove();
+    });
 
-        /* remove inputfield when out of focus*/
-        $("#newitem").focusout(function () {
-            $("#additem").show();
-            $("#inputitem").hide();
-        });
+    $("li[data-id]").unbind("click").click(function(e){
+        if($(this).is('.fa-times'))
+            return;
+        else if(!$(e.target).is('input')) {
+            e.preventDefault();
+            $(this).find("input[type=checkbox]").prop('checked', $(this).find("input:checked").length == 0);
+        }
+    });
+}
 
-        $('#allshoppinglists').click(function () {
-            location.href = "shoppinglist.html";
-        });
+function addNewItem(ul){
+    $(ul).append(newListItem());
 
-
-
-        $('#addtask').click(function () {
-            if( $('#inputtask').is(":visible")){
-                $('#inputtask').hide();
-                var item = $('#newtask').val();
-                $('#newtask').val('');
-                $('#tasklist').append("<li class=\"list-group-item\"><div class=\"checkbox\"> <label><input type=\"checkbox\">  "+item+"</label> </div> </li>");
-
-            }
-            $('#inputtask').show();
-        });
-
-        $('#newtask').keypress(function(event) {
-            if (event.keyCode == 13 || event.which == 13) {
-                $('#inputtask').hide();
-                var item = $('#newtask').val();
-                $('#newtask').val('');
-                $('#tasklist').append("<li class=\"list-group-item\"><div class=\"checkbox\"> <label><input type=\"checkbox\">  "+item+"</label> </div> </li>");
-
-            }
-        });
-
-        $('#add-task-button').click(
-            function(){
-                var toAdd = $('input[name=task]').val();
-                $('#taskList').append('<li class="list-group-item">' + toAdd + '</li>');
+    $("#new-list-item").keypress(function(e){
+        if(e.keyCode != 13 && e.which != 13)
+            return;
+        var ul = $(this).closest("ul");
+        var text = $(this).val();
+        if(text != "") {
+            var t = this;
+            saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                $(t).closest("li").remove();
+                addNewItem(ul);
+                setupItemClicks();
             });
-
-
-            $('#media').carousel({
-                pause: true,
-                interval: false,
+        }
+        else {
+            setupItemClicks();
+            $(this).closest("li").remove();
+        }
+    }).focusout(function(){
+        var ul = $(this).closest("ul");
+        var text = $(this).val();
+        if(text != "") {
+            saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                setupItemClicks();
             });
+        }
+        $(this).closest("li").remove();
+    }).focus();
+}
 
-    }
-);
+function saveItemToDB(id, item, ul, cb){
+    $.ajax({
+        url: '/api/shoppingList/entry',
+        method: 'POST',
+        data: {
+            shopping_list_id: currentShoppingList.shopping_list_id,
+            entry_text: item
+        },
+        success: function(data){
+            $(ul).append(listItem({entry_text: item, entry_id: data.shopping_cart_entry_id}));
+            if(cb)
+                cb();
+        }
+    });
+}
