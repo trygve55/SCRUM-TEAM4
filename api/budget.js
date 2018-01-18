@@ -201,7 +201,8 @@ router.get('/:shopping_list_id', function(req, res) {
     pool.getConnection(function(err, connection) {
         if(err)
             return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-        /*connection.query('SELECT person_id, forename, middlename, lastname, ' +
+        connection.query('SELECT ' +
+            'person.person_id, forename, middlename, lastname, ' +
             'budget_entry_id, amount, text_note, entry_datetime, added_by_id, ' +
             'budget_entry_type_id, entry_type_name, entry_type_color, ' +
             'currency_id, currency_short, currency_long, currency_sign, ' +
@@ -210,9 +211,9 @@ router.get('/:shopping_list_id', function(req, res) {
             'added_by_person_id, cost, datetime_added, datetime_purchased ' +
             'FROM shopping_list ' +
             'LEFT JOIN budget_entry USING(shopping_list_id) ' +
+            'LEFT JOIN shopping_list_entry USING (budget_entry_id) ' +
             'LEFT JOIN budget_entry_type USING(budget_entry_type_id) ' +
             'LEFT JOIN person ON person.person_id = budget_entry.added_by_id ' +
-            'LEFT JOIN shopping_list_entry USING (budget_entry_id) ' +
             'LEFT JOIN currency USING(currency_id) ' +
             'LEFT JOIN person_budget_entry USING (budget_entry_id) ' +
             'WHERE shopping_list.shopping_list_id = ? AND shopping_list.shopping_list_id IN ' +
@@ -223,12 +224,12 @@ router.get('/:shopping_list_id', function(req, res) {
             'LEFT JOIN home_group USING(group_id)  ' +
             'WHERE person.person_id = ? ' +
             'UNION ' +
-            'SELECT shopping_list_id FROM shopping_list_person WHERE person.person_id = ?) LIMIT 1',
+            'SELECT shopping_list_id FROM shopping_list_person WHERE person.person_id = ?) ',
             [req.params.shopping_list_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
                 connection.release();
                 if(err)
                     return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-                else if (result.length != 1)
+                else if (result.length == 0)
                     res.status(403).json({success: "false", error: "no access"});
                 else {
                     var budget_entries = [];
@@ -265,8 +266,6 @@ router.get('/:shopping_list_id', function(req, res) {
                             "datetime_added": result[i].datetime_added,
                             "datetime_purchased": result[i].datetime_purchased
                         });
-
-
                     }
 
                     res.status(200).json({
@@ -282,13 +281,7 @@ router.get('/:shopping_list_id', function(req, res) {
                         budget_entries: budget_entries
                     });
                 }
-            });*/
-        connection.query('SELECT * FROM budget_entry WHERE shopping_list_id = ?', [req.params.shopping_list_id], function(err, result){
-            connection.release();
-            if(err)
-                return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            res.status(200).json(result);
-        });
+            });
     });
 });
 
