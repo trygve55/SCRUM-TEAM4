@@ -12,7 +12,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
     <script src="/js/ProfilePage.js"></script>
     <script src="/js/redirect.js"></script>
-
+    <script src="https://use.fontawesome.com/dea62227f7.js"></script>
+    <script type="text/javascript"> (function() { var css = document.createElement('link'); css.href = '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css'; css.rel = 'stylesheet'; css.type = 'text/css'; document.getElementsByTagName('head')[0].appendChild(css); })(); </script>
 </head>
 
 <style>
@@ -142,24 +143,24 @@
         </div>
         <div class="col-md-3 sidenav">
             <div class="listborder" align="center">
-                <h5 id="profile-MyShoppinglist"></h5>
-                <ul class="list-group" id="itemlist">
-                    <li class="list-group-item">
-                        <div class="checkbox">
-                            <label><input type="checkbox" value=""> Option 1</label>
+                <div class="col-sm liste">
+                    <div class="row">
+                        <div class="col-sm-7" style="text-align: left">
+                            <div class="list-name-div" style="margin-bottom: 6px; display: none;">
+                                <input type="text" class="form-control list-name-input">
+                            </div>
+                            <h5 class="list-name" id="profile-MyShoppinglist">My shoppinglist</h5>
                         </div>
-                    </li>
-                </ul>
-                <ul class="list-group">
-                    <div id="inputitem">
-                        <li class="list-group-item" id="listitem">
-                            <input type="text" class="form-control" id="newitem">
-                        </li>
                     </div>
-                    <li class="list-group-item" id="additem"><i class="fa fa-plus-circle" aria-hidden="true" ></i></li>
-                </ul>
-                <a href="shoppinglist.html" class="btn btn-default buttonstyle" style="align:center; color: black" id="profile-allShoppinglist"></a>
-
+                    <ul class="list-group itemlist"></ul>
+                    <ul class="list-group">
+                        <li class="list-group-item add-item">
+                            <i class="fa fa-plus-circle" aria-hidden="true">&nbsp;Add item</i>
+                        </li>
+                    </ul>
+                    <i class="fa fa-shopping-cart" aria-hidden="true" style="font-size: 1.8vh">&nbsp;{{lang_buy_items}}</i>
+                    <i class="fa fa-money" style="font-size: 1.8vh" aria-hidden="true">&nbsp;{{lang_settlement}}</i>
+                </div>
             </div>
         </div>
         <div class="col-md-3 sidenav">
