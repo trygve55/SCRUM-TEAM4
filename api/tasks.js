@@ -139,15 +139,11 @@ router.get('/:todo_id', function(req, res) {
  * Get all tasks for a user
  *
  * URL: /api/person/
-* The GET request for all tasks for a user.
+ * The GET request for all tasks for a user.
 */
 router.get('/person/:person_id', function(req, res) { // TODO FIX THIS
 	pool.getConnection(function(err, connection) {
-        if(err) {
-            connection.release();
-            res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            return;
-        }
+		if (!checkConnectionError(err, connection, res)) {return;}
 
 		connection.query(
 			'SELECT todo_id, todo_text, datetime_deadline, datetime_added, datetime_done, is_deactivated, color_hex, created_by_id, done_by_id ' +
@@ -155,6 +151,41 @@ router.get('/person/:person_id', function(req, res) { // TODO FIX THIS
 			'SELECT todo_id, todo_text, datetime_deadline, datetime_added, datetime_done, is_deactivated, color_hex, null, null ' +
 			'FROM private_todo WHERE private_todo.person_id = ?) ;',
 			[checkRange(req.params.person_id, 1, null),checkRange(req.params.person_id, 1, null)], function(err, result) {
+				connection.release();
+				if (err) {return res.status(500).send(err);}
+				var entries = [];
+				for (var i = 0; i < result.length; i++) {
+					var values = {};
+					for (var p in result[i]) {values[p] = result[i][p];}
+					delete values.person_id;
+					entries.push(values);
+				}
+				if (entries.length > 0) {res.status(200).json(entries);}
+				else {res.status(400).json(result);}
+			}
+		);
+	});
+});
+
+/**
+ * Get all tasks for a user one hour into the future.
+ *
+ * URL: /api/notify/{person_id}
+ * The GET request for all tasks for a user.
+*/
+router.get('/notify/:person_id', function(req, res) {
+	pool.getConnection(function(err, connection) {
+		if (!checkConnectionError(err, connection, res)) {return;}
+		var id = req.params.person_id;
+
+		connection.query(
+			"(SELECT todo_id, todo_text, datetime_deadline, color_hex" +
+			"FROM todo LEFT JOIN todo_person USING(todo_id) WHERE todo_person.person_id = ? " +
+			"AND datetime_deadline BETWEEN CURRENT_TIMESTAMP() AND DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 1 HOUR) order by datetime_deadline desc)" +
+			"UNION (SELECT todo_id, todo_text, datetime_deadline, color_hex" +
+			"FROM private_todo WHERE private_todo.person_id = ? " +
+			"AND datetime_deadline BETWEEN CURRENT_TIMESTAMP() AND DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 1 HOUR) order by datetime_deadline desc);",
+			[id, id, function(err, result) {
 				connection.release();
 				if (err) {return res.status(500).send(err);}
 				var entries = [];
