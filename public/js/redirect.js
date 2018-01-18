@@ -4,7 +4,7 @@ $(document).ajaxSuccess(function(e, r){
 });
 
 $(document).ready(function(){
-    if (window.location.pathname == "/index.html" || window.location.pathname == "/") {
+    if (window.location.pathname != "/login.html" && window.location.pathname != "/registerUser.html") {
         $.ajax({
             url: '/api/auth',
             method: "GET",

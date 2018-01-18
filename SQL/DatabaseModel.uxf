@@ -362,8 +362,6 @@ datetime_purchased</panel_attributes>
     </coordinates>
     <panel_attributes>Shopping List persons
 --
-paid_amount
-pay_amount_points
 invite_sent_datetime
 invite accepted</panel_attributes>
     <additional_attributes/>
