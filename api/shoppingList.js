@@ -104,7 +104,6 @@ router.put('/entry/:shopping_list_entry_id', function(req, res) {
         }
         var query = putRequestSetup(req.params.shopping_list_entry_id, req, connection, "shopping_list_entry");
         connection.query(query[0], query[1], function(err, result) {
-            connection.release();
             if (err) return res.status(500).json({error: err});
             checkResult(err, result, connection, res);
         });
