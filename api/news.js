@@ -26,7 +26,7 @@ router.post('/', function(req, res) {
 			'INSERT INTO newsfeed_post (' +
 			'group_id, posted_by_id, post_text, attachment_type, attachment_data' +
 			') VALUES (?,?,?,?,?);',
-			[data.group_id, req.session.person_id, data.post_text, data.attachment_type, extraData],	// data.posted_by_id to test this.
+			[data.group_id, data.req.session.person_id, data.post_text, data.attachment_type, extraData],	// data.posted_by_id to test this.
 			function(err, result) {checkResult(err, result, connection, res);}
 		);
 	});
@@ -44,6 +44,26 @@ router.get('/:group_id', function(req, res) {
 
 		connection.query('SELECT * FROM newsfeed_post WHERE group_id = ?',
 			[req.params.group_id], function(err, result) {
+				connection.release();
+				if (err) {return res.status(500).send();}
+				res.status(200).json(result);
+			}
+		);
+	});
+});
+
+/**
+ * Get the posts for a user.
+ *
+ * URL: /api/news/
+ * method: GET
+*/
+router.get('/', function(req, res) {
+	pool.getConnection(function(err, connection) {
+		if (!checkConnectionError(err, connection, res)) {return;}
+
+		connection.query('SELECT * FROM newsfeed_post WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?);',
+			[req.session.person_id], function(err, result) {	//req.params.person_id
 				connection.release();
 				if (err) {return res.status(500).send();}
 				res.status(200).json(result);
