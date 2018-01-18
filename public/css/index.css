@@ -15,12 +15,6 @@
     overflow: auto;
 }
 
-body{
-    background-size: cover;
-    font-family: Trebuchet MS;
-    font-style: inherit;
-}
-
 .index-todo{
     padding: 20px;
     background-color: gainsboro;
