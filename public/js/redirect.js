@@ -4,7 +4,8 @@ $(document).ajaxSuccess(function(e, r){
 });
 
 $(document).ready(function(){
-    if (window.location == "/index.html" || window.location == "/") $.ajax({
+    console.log("test3");
+    if (false) $.ajax({
         url: '/api/auth',
         method: "GET",
         success: function(data){
