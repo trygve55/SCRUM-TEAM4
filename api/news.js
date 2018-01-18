@@ -73,6 +73,27 @@ router.get('/', function(req, res) {
 });
 
 /**
+ * Update a post.
+ *
+ * URL: /api/news/{post_id}
+ * method: PUT
+ * data: {
+ *      sql attribute style parameters to set value
+ * }
+*/
+router.put('/:post_id', function(req, res) {
+	pool.getConnection(function(err, connection) {
+		if (!checkConnectionError(err, connection, res)) {return;}
+
+		var query = putRequestSetup(req.params.post_id, req.body, connection, "newsfeed_post", "post");
+		connection.query(
+			query[0], query[1],
+			function(err, result) {checkResult(err, result, connection, res);}
+		);
+	});
+});
+
+/**
  * Delete this post.
  *
  * URL: /api/news/{post_id}
@@ -93,10 +114,11 @@ router.delete('/:post_id', function(req, res) {
 /**
 * Make the neccesary setup for a put request.
 */
-function putRequestSetup(iD, data, connection, tableName) {
+function putRequestSetup(iD, data, connection, tableName, tableIDPrefix) {
+	if (!tableIDPrefix) {tableIDPrefix = tableName;}
 	if(!iD) {
 		connection.release();
-		res.status(400).json({'Error' : (tableName + '_id not specified: ') } + err);
+		res.status(400).json({'Error' : (tableIDPrefix + '_id not specified: ') } + err);
 		return;
 	}
 	var parameters = [], request = 'UPDATE ' + tableName + ' SET ';
@@ -107,7 +129,7 @@ function putRequestSetup(iD, data, connection, tableName) {
 		request += k + ' = ?';
 		parameters.push(data[k]);
 	}
-	request += ' WHERE ' + tableName + '_id = ' + iD;
+	request += ' WHERE ' + tableIDPrefix + '_id = ' + iD;
 	return [request, parameters];
 }
 
