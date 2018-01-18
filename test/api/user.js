@@ -97,7 +97,7 @@ describe('User API', function() {
         });
     });
 
-    /*
+/*
     describe('/:person_id/picture', function () {
        it("Should return something", function (done) {
             request.get('/api/user/1/picture')
