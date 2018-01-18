@@ -104,6 +104,7 @@ router.put('/entry/:shopping_list_entry_id', function(req, res) {
         }
         var query = putRequestSetup(req.params.shopping_list_entry_id, req, connection, "shopping_list_entry");
         connection.query(query[0], query[1], function(err, result) {
+            connection.release();
             if (err) return res.status(500).json({error: err});
             checkResult(err, result, connection, res);
         });
@@ -130,10 +131,10 @@ router.delete('/entry/:shopping_list_entry_id', function(req, res) {
             'SELECT home_group.shopping_list_id FROM person ' +
             'LEFT JOIN group_person USING(person_id) ' +
             'LEFT JOIN home_group USING(group_id) ' +
-            'WHERE person.person_id = ?' +
+            'WHERE person.person_id = ? ' +
             'UNION  ' +
             'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?) LIMIT 1',
-            [checkRange(req.params.shopping_list_entry_id, 1, null), req.session.person_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
+            [Number(req.params.shopping_list_entry_id), req.session.person_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
                 checkResult(err, result, connection, res);
             });
     });
