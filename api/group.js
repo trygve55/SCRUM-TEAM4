@@ -329,16 +329,16 @@ router.post('/:group_id/members', function(req, res){
 /**
  * Removes a users access to the group
  *
- * URL: /api/group/{group_id}/user
+ * URL: /api/group/{group_id}
  * method: DELETE
  * data: {
- *      person_id, person to deleted
+ *      person_id, person to delete
  * }
  */
-router.delete('/:group_id/user', function(req, res){
+router.delete('/:group_id', function(req, res){
     if(!req.session.person_id)
         return res.status(500).send();
-    if(!req.body.person_id || !req.body.role_id)
+    if(!req.params.group_id)
         return res.status(400).send();
     pool.getConnection(function(err, connection){
         if(err) {
@@ -363,7 +363,7 @@ router.delete('/:group_id/user', function(req, res){
                     connection.release();
                     return res.status(400).send();
                 }*/
-		connection.query("DELETE FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.body.person_id], function (err, result) {
+		connection.query("DELETE FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function (err, result) {
 			connection.release();
 			if (err)
 				return res.status(500).send();
