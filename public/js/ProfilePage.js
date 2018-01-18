@@ -1,7 +1,7 @@
 var lang;
-var users = [];
+var user;
 var curBudget;
-var list, balance, listItem, newListItem, popupTextList, popupList, balanceItem;
+var listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList;
 
 /* Language */
 $(document).ready(function () {
@@ -13,6 +13,7 @@ $(document).ready(function () {
             path: window.location.pathname
         },
         success: function (data) {
+            lang = data;
             for (var p in data) {
                 if (data.hasOwnProperty(p)) {
                     $("#" + p).html(data[p]);
@@ -37,6 +38,7 @@ $(document).ready(function () {
                         path: window.location.pathname
                     },
                     success: function (data) {
+                        lang = data;
                         for (var p in data) {
                             if (data.hasOwnProperty(p)) {
                                 $("#" + p).html(data[p]);
@@ -66,6 +68,7 @@ $(document).ready(function () {
                         path: window.location.pathname
                     },
                     success: function (data) {
+                        lang = data;
                         for (var p in data) {
                             if (data.hasOwnProperty(p)) {
                                 $("#" + p).html(data[p]);
@@ -88,11 +91,12 @@ $(document).ready(function () {
                 'email',
                 'phone',
                 'username',
-                'facebook_api_id'
+                'facebook_api_id',
+                'shopping_list_id'
             ]
         },
         success: function (data) {
-
+            user = data[0];
             if(data == null){ // ?? sjekk
                 return;
             }
@@ -105,40 +109,9 @@ $(document).ready(function () {
             $('#profile-email2').text(data[0].email);
             $('#profile-phone2').text(data[0].phone ? data[0].phone : "");
             $('#profile-username2').text(data[0].username == data[0].facebook_api_id ? "" : data[0].username);
+            setupShoppingList();
         }
     });
-
-    $.ajax({
-        url: '/template',
-        method: 'GET',
-        data: {
-            files: [
-                "list.html",
-                "balance.html",
-                "balanceItem.html",
-                "listItem.html",
-                "newListItem.html",
-                "popupList.html",
-                "popupTextfieldList.html"
-            ]
-        },
-        success: function(data){
-            list = Handlebars.compile(data["list.html"]);
-            balance = Handlebars.compile(data["balance.html"]);
-            listItem = Handlebars.compile(data["listItem.html"]);
-            newListItem = Handlebars.compile(data["newListItem.html"]);
-            popupTextList = Handlebars.compile(data["popupTextfieldList.html"]);
-            popupList = Handlebars.compile(data["popupList.html"]);
-            balanceItem = Handlebars.compile(data["balanceItem.html"]);
-            prep();
-        }
-    });
-
-
-    inits();
-    setupClicks();
-    setupItemClicks();
-    getShoppinglist();
 
     /**
      * Hides buttons, input
@@ -151,12 +124,32 @@ $(document).ready(function () {
         pause: true,
         interval: false
     });
+
+    $.ajax({
+        url: '/template',
+        method: 'GET',
+        data: {
+            files: [
+                'listItem.html',
+                'newListItem.html',
+                'balance.html',
+                'balanceItem.html',
+                'popupTextfieldList.html'
+            ]
+        },
+        success: function (data){
+            listItem = Handlebars.compile(data['listItem.html']);
+            newListItem = Handlebars.compile(data['newListItem.html']);
+            balance = Handlebars.compile(data['balance.html']);
+            balanceItem = Handlebars.compile(data['balanceItem.html']);
+            popupTextList = Handlebars.compile(data['popupTextfieldList.html']);
+        }
+    });
 });
 
-
-function getShoppinglist() {
+function setupShoppingList(){
     $.ajax({
-        url: "/api/shoppingList/" + currentGroup.shopping_list_id,
+        url: "/api/shoppingList/" + user.shopping_list_id,
         method: "GET",
         success: function (data) {
             currentShoppingList = data;
@@ -175,49 +168,6 @@ function getShoppinglist() {
 }
 
 function setupClicks(){
-    $(".list-name").unbind("click").click(function(){
-        var listId = $(this).closest("div[data-id]").data("id");
-        var title = $(this).html();
-        $(this).hide();
-        var div = $(this).parent().children(".list-name-div");
-        $(div).show();
-        $(div).children(".list-name-input").val(title).focus();
-    });
-
-    $(".list-name-input").unbind("focusout").focusout(function(){
-        var text = $(this).val();
-        var id = $(this).closest("div[data-id]").data("id");
-        var h4 = $(this).parent().parent().children(".list-name");
-        $(h4).html(text);
-        $(this).parent().hide();
-        $(h4).show();
-        $.ajax({
-            url: '/api/shoppingList/' + id,
-            method: 'PUT',
-            data: {
-                shopping_list_name: text
-            }
-        });
-    });
-
-    $(".list-name-input").unbind("keypress").keypress(function(e){
-        if(e.keyCode != 13 && e.which != 13)
-            return;
-        var text = $(this).val();
-        var id = $(this).closest("div[data-id]").data("id");
-        var h4 = $(this).parent().parent().children(".list-name");
-        $(h4).html(text);
-        $(this).parent().hide();
-        $(h4).show();
-        $.ajax({
-            url: '/api/shoppingList/' + id,
-            method: 'PUT',
-            data: {
-                shopping_list_name: text
-            }
-        });
-    });
-
     $(".add-item").unbind("click").click(function(){
         $(this).closest("div").children(".itemlist").append(newListItem());
 
@@ -248,54 +198,6 @@ function setupClicks(){
             }
             $(this).closest("li").remove();
         }).focus();
-    });
-
-    $('.pink-select').unbind("click").click(function () {
-        var ls = $(this).closest("div[data-id]");
-        var id = $(ls).css('background-color', $(this).data('color')).data("id");
-        $.ajax({
-            url: '/api/shoppingList/' + id,
-            method: 'PUT',
-            data: {
-                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
-            }
-        });
-    });
-
-    $('.yellow-select').unbind("click").click(function () {
-        var ls = $(this).closest("div[data-id]");
-        var id = $(ls).css('background-color', $(this).data('color')).data("id");
-        $.ajax({
-            url: '/api/shoppingList/' + id,
-            method: 'PUT',
-            data: {
-                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
-            }
-        });
-    });
-
-    $('.green-select').unbind("click").click(function () {
-        var ls = $(this).closest("div[data-id]");
-        var id = $(ls).css('background-color', $(this).data('color')).data("id");
-        $.ajax({
-            url: '/api/shoppingList/' + id,
-            method: 'PUT',
-            data: {
-                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
-            }
-        });
-    });
-
-    $('.white-select').unbind("click").click(function () {
-        var ls = $(this).closest("div[data-id]");
-        var id = $(ls).css('background-color', $(this).data('color')).data("id");
-        $.ajax({
-            url: '/api/shoppingList/' + id,
-            method: 'PUT',
-            data: {
-                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
-            }
-        });
     });
 
     $(".fa-money").unbind("click").click(function(){
@@ -415,6 +317,12 @@ function setupClicks(){
             $(this).closest(".pop").remove();
         });
     });
+
+    $(".fa-bars").unbind("click").click(function(){
+       location.href = "shoppinglist.html";
+    });
+
+
 
     setupItemClicks();
 }

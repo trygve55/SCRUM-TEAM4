@@ -10,6 +10,7 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+    <script src="/js/handlebars.js"></script>
     <script src="/js/ProfilePage.js"></script>
     <script src="/js/redirect.js"></script>
     <script src="https://use.fontawesome.com/dea62227f7.js"></script>
@@ -74,10 +75,10 @@
 </div>
 
 <br>
-<div class="container containerr" align="center">
+<div class="container" align="center">
     <br>
     <div class="row parent">
-        <div class="col-md-6 sidenav">
+        <div class="col-sm sidenav container1">
 
             <div class="container personaliaborder">
                 <div class="row textarea">
@@ -141,7 +142,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3 sidenav">
+        <div class="col-sm sidenav container2">
             <div class="listborder" align="center">
                 <div class="col-sm liste">
                     <div class="row">
@@ -149,7 +150,7 @@
                             <div class="list-name-div" style="margin-bottom: 6px; display: none;">
                                 <input type="text" class="form-control list-name-input">
                             </div>
-                            <h5 class="list-name" id="profile-MyShoppinglist">My shoppinglist</h5>
+                            <h5 class="list-name" >My shoppinglist</h5>
                         </div>
                     </div>
                     <ul class="list-group itemlist"></ul>
@@ -158,31 +159,11 @@
                             <i class="fa fa-plus-circle" aria-hidden="true">&nbsp;Add item</i>
                         </li>
                     </ul>
-                    <i class="fa fa-shopping-cart" aria-hidden="true" style="font-size: 1.8vh">&nbsp;{{lang_buy_items}}</i>
-                    <i class="fa fa-money" style="font-size: 1.8vh" aria-hidden="true">&nbsp;{{lang_settlement}}</i>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 sidenav">
-            <div class="listborder" align="center">
-                <h5 id="profile-MyToDoList"></h5>
-                <ul class="list-group" id="tasklist">
-                    <li class="list-group-item">
-                        <div class="checkbox">
-                            <label><input type="checkbox" value=""> Option 1</label>
-                        </div>
-                    </li>
-                </ul>
-                <ul class="list-group">
-                    <div id="inputtask">
-                        <li class="list-group-item" id="listtask">
-                            <input type="text" class="form-control" id="newtask">
-                        </li>
-                    </div>
-                    <li id="profile-allShoppinglists" class="list-group-item" id="addtask"><i class="fa fa-plus-circle" aria-hidden="true"></i></li>
-                </ul>
-                <button id="profile-addItem" type="button" class="btn btn-default buttonstyle" style="align:center;"></button>
+                    <i class="fa fa-shopping-cart" aria-hidden="true" style="font-size: 1.8vh">&nbsp; Buy</i>
+                    <i class="fa fa-money" style="font-size: 1.8vh" aria-hidden="true">&nbsp; Settlement</i>
+                    <i class="fa fa-bars" id="profile-allShoppingList" style="font-size: 1.8vh" aria-hidden="true">&nbsp; All shopping lists</i>
 
+                </div>
             </div>
         </div>
     </div>
