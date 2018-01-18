@@ -1,0 +1,25 @@
+<div class="col-sm liste" style="background-color: #{{color_hex}};" data-id="task-list-id">
+    <div class='row'>
+        <div class='col-sm-7' style='text-align: left'>
+            <div style='margin: 6px'><input type='text' class='form-control'>
+            </div>
+            <div><h4>{{task_list_name}}</h4></div>
+        </div>
+        <div class='col-sm-5' style='text-align: right'>
+            <h4>
+                <i class="fa fa-circle" aria-hidden="true" style='color: white;'></i>
+                <i class="fa fa-circle" aria-hidden="true" style='color: lightpink;'></i>
+                <i class="fa fa-circle" aria-hidden="true" style='color: #ffec8e;'></i>
+                <i class="fa fa-circle" aria-hidden="true" style='color: lightgreen;'></i>
+            </h4>
+        </div>
+    </div>
+        <ul class="list-group itemlist">{{{task_list_entries}}}</ul>
+        <ul class="list-group">
+            <li class="list-group-item greyhover"><i class="fa fa-plus-circle" aria-hidden="true"></i>{{lang_add_item}}</li>
+        </ul>
+        <i class="fa fa-list-ul" aria-hidden="true" style='font-size: 18px; margin: 7px'>{{lang_done_items}}</i>
+
+
+
+</div>
