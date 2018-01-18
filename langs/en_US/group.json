@@ -6,6 +6,7 @@
 	"desc_title4": "Statistics",
 	"desc_title5": "Your Tasks",
 	"desc_title6": "Group Tasks",
+	"desc_title7": "Leave Group",
 	"group-homepageNavbar": "Home",
 	"group-groupsNavbar": "Groups",
 	"group-tasksNavbar": "Tasks",
@@ -22,7 +23,9 @@
 	"shop-trip": "Budget entry",
 	"shop-price": "Price",
 	"shop-cancel": "Cancel",
-	"buy": " Kjøp",
-	"settle": " Oppgjør",
-	"add-item": "Add item"
+	"buy": "Kjøp",
+	"settle": "Oppgjør",
+	"add-item": "Add item",
+	"reg_cost": "Register Expense",
+	"desc_button0": "Leave Group"
 }
