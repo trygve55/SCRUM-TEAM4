@@ -15,6 +15,14 @@
 	"group-tasks": "Tasks",
 	"group-feed": "Feed",
 	"group-shopping": "Shopping",
-	"group-statistics": "Statistics"
-
+	"group-statistics": "Statistics",
+	"shop-buy-title": "Register",
+	"shop-buy-text": "Price",
+	"shop-ok": "OK",
+	"shop-trip": "Budget entry",
+	"shop-price": "Price",
+	"shop-cancel": "Cancel",
+	"buy": " Kjøp",
+	"settle": " Oppgjør",
+	"add-item": "Add item"
 }

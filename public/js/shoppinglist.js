@@ -387,10 +387,11 @@ function setupClicks(){
             url: '/api/budget/' + id,
             method: 'GET',
             success: function(data){
+                console.log(data);
                 curBudget = data;
                 var entries = "";
-                for(var i = 0; i < data.length; i++){
-                    entries += "<tr data-id='" + data[i].budget_entry_id + "'><td>" + data[i].entry_datetime + "</td><td>" + data[i].amount + "</td>";
+                for(var i = 0; i < data.budget_entries.length; i++){
+                    entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].entry_datetime + "</td><td>" + data.budget_entries[i].amount + "</td>";
                 }
                 $("body").append(balance({
                     title: lang["shop-balance"],
@@ -404,9 +405,9 @@ function setupClicks(){
                 $('tr[data-id]').click(function(){
                     var id = $(this).closest("tr[data-id]").data("id");
                     var entry = null;
-                    for(var i = 0; i < curBudget.length; i++){
-                        if(curBudget[i].budget_entry_id == id){
-                            entry = curBudget[i];
+                    for(var i = 0; i < curBudget.budget_entries.length; i++){
+                        if(curBudget.budget_entries[i].budget_entry_id == id){
+                            entry = curBudget.budget_entries[i];
                         }
                     }
                     if(!entry)
