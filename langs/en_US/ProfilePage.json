@@ -9,5 +9,7 @@
   "profile-MyShoppinglist": "My shoppinglist",
   "profile-MyToDoList": "My TODO list",
   "profile-addItem": "Add item",
-  "profile-allShoppinglists": "All shoppinglists"
+  "profile-allShoppinglists": "All tasks",
+  "profile-allShoppinglist":"All shoppinglists",
+  "additem": "Add item"
 }
