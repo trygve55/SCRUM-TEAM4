@@ -1,9 +1,14 @@
 body {
     font-family: Trebuchet MS;
     font-style: inherit;
-
 }
-.liste {
+label {
+    display: block;
+    margin-bottom: 3px;
+    padding-left: 15px;
+    text-indent: -15px;
+}
+.liste, .adde{
     margin: 1%;
     padding: 2%;
     background-color: white;
@@ -12,11 +17,6 @@ body {
     min-width: 29%
 }
 .adde {
-    margin: 1%;
-    padding: 2%;
-    background-color: white;
-    border-radius: 25px;
-    height: 81vh;
     opacity: 0.4;
 }
 .adde:hover{
@@ -28,19 +28,6 @@ body {
     max-height: 59vh;
     overflow-y: scroll;
 }
-.state-icon {
-    left: -5px;
-}
-.list-group-item-primary {
-    color: rgb(255, 255, 255);
-    background-color: rgb(66, 139, 202);
-}
-#additem:hover{
-    background-color: lightgrey;
-}
-#listsss{
-    overflow-y: scroll;
-}
 
 .pink{
     background-color: lightpink;
@@ -48,31 +35,17 @@ body {
 .yellow{
     background-color: #ffec8e;
 }
-
 .green{
     background-color: lightgreen;
-
 }
 .white{
     background-color: white;
 }
-.fa-check-circle-o, .fa-users{
-    color: dimgrey;
-    text-shadow: 1px 1px 1px #ccc;
-    margin: 10px;
-}
-.fa-check-circle-o:hover, .fa-users:hover{
-    filter: brightness(70%);
-    text-shadow: 0px 0px 0px #ccc;
-}
-.assign:hover{
-    font-weight: bold;
+.fa-circle{
+    text-shadow: 0px 0px 3px #000;
 }
 .list-group-item{
     padding: -6px;
-}
-.fa-times:hover{
-    color: red;
 }
 a.selected {
     background-color:#1F75CC;
@@ -80,100 +53,35 @@ a.selected {
     z-index:100;
 }
 
-.messagepop {
-    background-color:#FFFFFF;
-    cursor:default;
-    display:none;
-    margin-left: 50vh;
-    margin-top: 10vh;
-    position:absolute;
-    text-align:left;
-    width:60vh;
-    z-index:50;
-    padding: 25px 25px 20px;
-    border-radius: 25px;
-    box-shadow: 5px 5px grey;
+.inputdate {
+    width: 10vh;
+    border:none;
+    background-color: darkgrey;
+    color:white;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 15px
+}
+.fa-check-circle-o, .fa-circle-o{
+    margin: 2px;
 }
 
-label {
-    display: block;
-    margin-bottom: 3px;
-    padding-left: 15px;
-    text-indent: -15px;
+.fa-calendar:hover, .inputdate:hover{
+    color:cornflowerblue;
+}
+.fa-times:hover{
+    color: indianred;
+}
+.fa-calendar, .fa-times, .fa-list-ul, .fa-bars, .fa-arrow-circle-o-left{
+    color: darkgrey;
+}
+.greyhover:hover{
+    background-color: darkgrey;
+}
+.marked:hover{
+    background-color: #e0f4f9;
+}
+.fa-list-ul:hover, .fa-bars:hover, .fa-arrow-circle-o-left:hover{
+    color: mediumseagreen;
 }
 
-.messagepop p, .messagepop.div {
-    border-bottom: 1px solid #EFEFEF;
-    margin: 8px 0;
-    padding-bottom: 8px;
-}
-#tasks-cancel:hover{
-    filter: brightness(70%);
-}
-
-#scrollable-dropdown-menu .tt-dropdown-menu {
-    max-height: 150px;
-    overflow-y: auto;
-}
-
-.typeahead,
-.tt-query,
-.tt-hint {
-    width: 150%;
-    border: 2px solid #ccc;
-    outline: none;
-}
-
-.typeahead {
-    background-color: #fff;
-}
-
-.typeahead:focus {
-    border: 2px solid #0097cf;
-}
-
-.tt-query {
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-}
-
-.tt-hint {
-    color: #999
-}
-
-.tt-menu {
-    margin: 12px 0;
-    padding: 8px 0;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
-    border-radius: 8px;
-    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-    -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-    box-shadow: 0 5px 10px rgba(0,0,0,.2);
-}
-
-.tt-suggestion {
-    padding: 3px 20px;
-    font-size: 18px;
-    line-height: 24px;
-}
-
-.tt-suggestion:hover {
-    cursor: pointer;
-    color: #fff;
-    background-color: #0097cf;
-}
-
-.tt-suggestion.tt-cursor {
-    color: #fff;
-    background-color: #0097cf;
-
-}
-
-.tt-suggestion p {
-    margin: 0;
-}
