@@ -240,7 +240,7 @@ router.get('/:shopping_list_id', function(req, res) {
                                 "budget_entry_id": result[i].budget_entry_id,
                                 "amount": result[i].amount,
                                 "text_note": result[i].text_note,
-                                "entry_timedate": result[i].entry_timedate,
+                                "entry_datetime": result[i].entry_datetime,
                                 "added_by": {
                                     "person_id": result[i].added_by_id,
                                     "forename": result[i].forename,

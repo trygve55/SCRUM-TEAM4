@@ -122,23 +122,20 @@ router.delete('/entry/:shopping_list_entry_id', function(req, res) {
             connection.release();
             return res.status(500).json({'Error' : 'connecting to database: ' } + err);
         }
-        /*connection.query(
+        connection.query(
             'DELETE FROM shopping_list_entry ' +
             'WHERE shopping_list_entry_id = ? AND shopping_list_id IN ' +
-            '(SELECT shopping_list_id FROM person WHERE person_id = 1 ' +
+            '(SELECT shopping_list_id FROM person WHERE person_id = ? ' +
             'UNION ' +
             'SELECT home_group.shopping_list_id FROM person ' +
             'LEFT JOIN group_person USING(person_id) ' +
             'LEFT JOIN home_group USING(group_id) ' +
-            'WHERE person.person_id = 1' +
+            'WHERE person.person_id = ?' +
             'UNION  ' +
-            'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = 1) LIMIT 1',
+            'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?) LIMIT 1',
             [checkRange(req.params.shopping_list_entry_id, 1, null), req.session.person_id, req.session.person_id], function(err, result) {
                 checkResult(err, result, connection, res);
-            });*/
-        connection.query('DELETE FROM shopping_list_entry WHERE shopping_list_entry_id = ?', [req.params.shopping_list_entry_id], function(err, result){
-            checkResult(err, result, connection, res);
-        });
+            });
     });
 });
 
