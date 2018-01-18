@@ -632,3 +632,8 @@ $(function () {
 		});
 	});
 });
+
+function leaveGroup() {
+	$.ajax({url: '/api/group/' + currentGroup.group_id + '/user', method: 'DELETE', error: console.error});
+	location.reload();	// false = from chache, true = from server.
+}
