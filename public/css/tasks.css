@@ -1,5 +1,7 @@
 body {
     font-family: Trebuchet MS;
+    background-size: cover;
+    background-attachment: fixed;
     font-style: inherit;
 
 }

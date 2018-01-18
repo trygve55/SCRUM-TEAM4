@@ -201,7 +201,7 @@ router.get('/:shopping_list_id', function(req, res) {
     pool.getConnection(function(err, connection) {
         if(err)
             return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-        connection.query('SELECT person_id, forename, middlename, lastname, ' +
+        /*connection.query('SELECT person_id, forename, middlename, lastname, ' +
             'budget_entry_id, amount, text_note, entry_datetime, added_by_id, ' +
             'budget_entry_type_id, entry_type_name, entry_type_color, ' +
             'currency_id, currency_short, currency_long, currency_sign, ' +
@@ -216,14 +216,14 @@ router.get('/:shopping_list_id', function(req, res) {
             'LEFT JOIN currency USING(currency_id) ' +
             'LEFT JOIN person_budget_entry USING (budget_entry_id) ' +
             'WHERE shopping_list.shopping_list_id = ? AND shopping_list.shopping_list_id IN ' +
-            '(SELECT shopping_list_id FROM person WHERE person_id = ? ' +
+            '(SELECT shopping_list_id FROM person WHERE person.person_id = ? ' +
             'UNION  ' +
             'SELECT home_group.shopping_list_id FROM person   ' +
             'LEFT JOIN group_person USING(person_id)  ' +
             'LEFT JOIN home_group USING(group_id)  ' +
             'WHERE person.person_id = ? ' +
             'UNION ' +
-            'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?) LIMIT 1',
+            'SELECT shopping_list_id FROM shopping_list_person WHERE person.person_id = ?) LIMIT 1',
             [req.params.shopping_list_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
                 connection.release();
                 if(err)
@@ -282,7 +282,13 @@ router.get('/:shopping_list_id', function(req, res) {
                         budget_entries: budget_entries
                     });
                 }
-            });
+            });*/
+        connection.query('SELECT * FROM budget_entry WHERE shopping_list_id = ?', [req.params.shopping_list_id], function(err, result){
+            connection.release();
+            if(err)
+                return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+            res.status(200).json(result);
+        });
     });
 });
 
@@ -469,7 +475,7 @@ function removeDuplicateUsingFilter(arr){
         }
         return index == self.indexOf(elem);
     });
-    return unique_array
+    return unique_array;
 }
 
 function budgetEntryExistsInArray(budget_entry_id, array) {
