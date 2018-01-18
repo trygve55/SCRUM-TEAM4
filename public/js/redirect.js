@@ -4,15 +4,16 @@ $(document).ajaxSuccess(function(e, r){
 });
 
 $(document).ready(function(){
-    console.log("test3");
-    if (false) $.ajax({
-        url: '/api/auth',
-        method: "GET",
-        success: function(data){
-            if(!data.login) {
-                window.location = "/login.html";
-            }
-        },
-        error: console.error
-    });
+    if (window.location.pathname == "/index.html" || window.location.pathname == "/") {
+        $.ajax({
+            url: '/api/auth',
+            method: "GET",
+            success: function(data){
+                if(!data.login) {
+                    window.location = "/login.html";
+                }
+            },
+            error: console.error
+        });
+    }
 });
