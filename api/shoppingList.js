@@ -133,7 +133,7 @@ router.delete('/entry/:shopping_list_entry_id', function(req, res) {
             'WHERE person.person_id = ?' +
             'UNION  ' +
             'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?) LIMIT 1',
-            [checkRange(req.params.shopping_list_entry_id, 1, null), req.session.person_id, req.session.person_id], function(err, result) {
+            [checkRange(req.params.shopping_list_entry_id, 1, null), req.session.person_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
                 checkResult(err, result, connection, res);
             });
     });
