@@ -130,7 +130,6 @@ router.delete('/entryType/:budget_entry_type_id', function(req, res) {
     pool.getConnection(function(err, connection) {
         if(err)
             return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-        var data = req.body;
         connection.query('DELETE FROM budget_entry_type ' +
             'WHERE ' +
             'budget_entry_type_id = ? AND ' +
