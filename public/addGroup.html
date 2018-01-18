@@ -29,14 +29,25 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-            <a id="addgroup-homepage" class="nav-item nav-link" href="#"></a>
-            <a id="addgroup-groups" class="nav-item nav-link active" href="#"></a>
+            <a id="addgroup-homepage" class="nav-item nav-link" href="index.html"></a>
+            <a id="addgroup-groups" class="nav-item nav-link active" onclick="new function () {
+              $.ajax({
+                url: '/api/group/me',
+                method: 'GET',
+                success: function(data){
+                    if(!data.length || data.length == 0)
+                        window.location = '/noGroup.html';
+                    else
+                        window.location = '/group.html';
+                }
+              });
+            }();"></a>
             <a id="addgroup-tasks" class="nav-item nav-link" href="#"></a>
-            <a id="addgroup-shoppinglists" class="nav-item nav-link" href="#"></a>
+            <a id="addgroup-shoppinglists" class="nav-item nav-link" href="shoppinglist.html"></a>
         </div>
         <div class="navbar-nav ml-auto">
             <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
-            <a id="addgroup-profile" class="nav-item nav-link" href="#"></a>
+            <a id="addgroup-profile" class="nav-item nav-link" href="ProfilePage.html"></a>
 
             <i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
             <a class="nav-item nav-link" href="login.html" id="addgroup-logout"></a>
@@ -45,8 +56,8 @@
 </nav>
 <br>
 <div class="flag" style="background-color: white">
-    <img id="login-norway" style="position:fixed; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
-    <img id="login-england" style="position:fixed; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+    <img id="login-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+    <img id="login-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
 </div>
 
 <br>

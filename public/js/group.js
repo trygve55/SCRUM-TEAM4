@@ -1,17 +1,10 @@
 // ***** Temporary test variables - delete this section when no longer needed *****
-
+var grouplist;
 var person = "Person";
-var testtasks = {
-	"tasks":[
-		{"name":"Task A", "person":"Person", "completed":0, "time":"11/11/2011"}, 
-		{"name":"Task B", "person":"Someone", "completed":0, "time":"12/12/2012"},
-		{"name":"Task C", "person":"None", "completed":1, "time":"13/13/2013"}
-	]
-};
 
 // ***** Code begins here *****
 
-var activeTab = "tasks", currentGroup = "none";
+var activeTab = "tasks", currentGroup;
 
 /**
 * When the page loads, the page must find the groups available to the user so they can be selected.
@@ -22,9 +15,27 @@ $(document).ready(function() {
 		url:'/api/group/me',
 		method:'GET',
 		success: function (data) {
+			grouplist = data;
+			console.log(data);
+			currentGroup = data[0];
 			for(var i = 0; i < data.length; i++){
-				addGroupToList(data[i].group_name);
+				addGroupToList(data[i]);
 			}
+			$(".group").click(function(){
+				$('#groupwindow').show();
+				currentGroup = $(this).data("group-id");
+				console.log(currentGroup);
+				for(var i = 0; i < grouplist.length; i++) {
+					if (currentGroup == grouplist[i].group_id){
+						currentGroup = grouplist[i];
+						break;
+					}
+				}
+				console.log(activeTab);
+				if(activeTab=='shopping') {
+					getShoppinglist();
+				}
+			});
 		},
 		error: console.error()
 	});
@@ -43,6 +54,8 @@ $(document).ready(function() {
 	// Add some updating system here.
 	
 	//window.setInterval(getGroups, 5000);	// Every 5 seconds the groups will be loaded.
+
+
 
 	
 	
@@ -98,6 +111,9 @@ function changeTab(name) {
 		for (var i = 0; i < tabs.length; i++) {tabs[i].style.display = "none";}
 		$("#" + name).css("display", "block");
 		activeTab = name;
+		if(activeTab=='shopping') {
+			getShoppinglist();
+		}
 	}
 }
 
@@ -137,12 +153,12 @@ function loadGroup(name) {
 * When a group is created, it must be added to the list.
 */
 
-function addGroupToList(name) {
+function addGroupToList(group) {
 	var groups = $(".tablink");
 	for (var i = 0; i < groups.length; i++) {
-		if ($(groups[i]).html() == name) return;
+		if ($(groups[i]).html() == group.group_name) return;
 	}
-	$("#groupselection").append('<div class="tablink text-center backvariant" onclick="changeGroup(\'' + name + '\')">' + name + '</div>');
+	$("#groupselection").append('<div style="padding-top: 2px; height: 30px; border-radius: 10px; background-color: white; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class="tablink text-center backvariant group" data-group-id="' + group.group_id + '">' + group.group_name + '</div><h4></h4>');
 }
 
 /**
@@ -186,3 +202,92 @@ function attachTasks(tasks) {
 //function countNewPosts() {} // From last login date, display a number of new posts
 //function countNewTasks() {} // From last login date, display a number of new tasks
 
+
+function getShoppinglist() {
+		$.ajax({
+			url: "/api/shoppingList/" + currentGroup.shopping_list_id,
+			method: "GET",
+			success: function (data) {
+				var list = data.shopping_list_entries;
+				var h = "";
+				for (var i = 0; i < list.length; i++) {
+					h += "<br>" + list[i].entry_text;
+					console.log(h);
+				}
+				$("#items-shoppinglist").html(h);
+			}
+		});
+}
+
+$(function () {
+	$.ajax({
+		url: '/api/language',
+		method: 'GET',
+		data: {
+			lang: 'nb_NO',
+			path: window.location.pathname
+		},
+		success: function (data) {
+			for (var p in data) {
+				if (data.hasOwnProperty(p)) {
+					$("#" + p).html(data[p]);
+				}
+			}
+		},
+		error: console.error
+	});
+
+	$('#group-norway').click(function () {
+		$.ajax({
+			url: '/api/language',
+			method: 'POST',
+			data: {
+				lang: 'nb_NO'
+			},
+			success: function () {
+				$.ajax({
+					url: '/api/language',
+					method: 'GET',
+					data: {
+						lang: 'nb_NO',
+						path: window.location.pathname
+					},
+					success: function (data) {
+						for (var p in data) {
+							if (data.hasOwnProperty(p)) {
+								$("#" + p).html(data[p]);
+							}
+						}
+					}
+				});
+			}
+		});
+	});
+
+	$('#group-england').click(function () {
+		$.ajax({
+			url: '/api/language',
+			method: 'POST',
+			data: {
+				lang: 'en_US'
+			},
+			success: function () {
+				$.ajax({
+					url: '/api/language',
+					method: 'GET',
+					data: {
+						lang: 'en_US',
+						path: window.location.pathname
+					},
+					success: function (data) {
+						for (var p in data) {
+							if (data.hasOwnProperty(p)) {
+								$("#" + p).html(data[p]);
+							}
+						}
+					}
+				});
+			}
+		});
+	});
+});

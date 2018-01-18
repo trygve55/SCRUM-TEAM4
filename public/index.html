@@ -27,9 +27,20 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
                     <a id="index-homepageNavbar" class="nav-item nav-link" href="index.html"></a>
-                    <a id="index-groupsNavbar" class="nav-item nav-link" href="group.html"></a>
+                    <a id="index-groupsNavbar" class="nav-item nav-link" onclick="new function () {
+              $.ajax({
+                url: '/api/group/me',
+                method: 'GET',
+                success: function(data){
+                    if(!data.length || data.length == 0)
+                        window.location = '/noGroup.html';
+                    else
+                        window.location = '/group.html';
+                }
+              });
+            }();"></a>
                     <a id="index-tasksNavbar" class="nav-item nav-link" href="#"></a>
-                    <a id="index-shoppinglistsNavbar" class="nav-item nav-link" href="#"></a>
+                    <a id="index-shoppinglistsNavbar" class="nav-item nav-link" href="shoppinglist.html"></a>
                 </div>
                 <div class="navbar-nav ml-auto">
                     <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
@@ -42,8 +53,8 @@
         <br>
 
         <div class="flag" style="background-color: white">
-            <img id="index-norway" style="position:fixed; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
-            <img id="index-england" style="position:fixed; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+            <img id="index-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+            <img id="index-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
         </div>
 
         <div class="row" align="center">

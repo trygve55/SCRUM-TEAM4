@@ -31,13 +31,24 @@
 		<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
 			<div class="navbar-nav">
 				<a id="group-homepageNavbar" class="nav-item nav-link" href="index.html"></a>
-				<a id="group-groupsNavbar" class="nav-item nav-link" href="group.html"></a>
+				<a id="group-groupsNavbar" class="nav-item nav-link" onclick="new function () {
+              $.ajax({
+                url: '/api/group/me',
+                method: 'GET',
+                success: function(data){
+                    if(!data.length || data.length == 0)
+                        window.location = '/noGroup.html';
+                    else
+                        window.location = '/group.html';
+                }
+              });
+            }();"></a>
 				<a id="group-tasksNavbar" class="nav-item nav-link" href="#"></a>
-				<a id="group-shoppinglistsNavbar" class="nav-item nav-link" href="#"></a>
+				<a id="group-shoppinglistsNavbar" class="nav-item nav-link" href="shoppinglist.html"></a>
 			</div>
 			<div class="navbar-nav ml-auto">
 				<i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
-				<a id="group-profileNavbar" class="nav-item nav-link" href="#"></a>
+				<a id="group-profileNavbar" class="nav-item nav-link" href="ProfilePage.html"></a>
 				<i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
 				<a onclick="logout()" class="nav-item nav-link" href="login.html" id="group-logoutNavbar"></a>
 			</div>
@@ -46,8 +57,8 @@
 
 	<br>
 	<div class="flag" style="background-color: white">
-		<img id="group-norway" style="position:fixed; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
-		<img id="group-england" style="position:fixed; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+		<img id="group-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+		<img id="group-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
 	</div>
 
 
@@ -68,10 +79,28 @@
 				<div id="grouptabs">
 					<div class="container">
 						<ul class="nav nav-tabs">
-							<div class="grouptablink backvariant" onclick="changeTab('tasks')"><p class="langtext" id="desc_title1"></p></div>
-							<div class="grouptablink backvariant" onclick="changeTab('feed')"><p class="langtext" id="desc_title2"></p></div>
-							<div class="grouptablink backvariant" onclick="changeTab('shopping')"><p class="langtext" id="desc_title3"></p></div>
-							<div class="grouptablink backvariant" onclick="changeTab('statistics')"><p class="langtext" id="desc_title4"></p></div>
+							<ul class="nav nav-tabs" role="tablist">
+								<li class="nav-item">
+									<a style="color: black" class="nav-link active" onclick="changeTab('tasks')" href="#profile" role="tab" data-toggle="tab" id="desc_title1"></a>
+								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link" href="#buzz" onclick="changeTab('feed')" role="tab" data-toggle="tab" id="desc_title2"></a>
+								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link" onclick="changeTab('shopping')" href="#references" role="tab" data-toggle="tab" id="desc_title3"></a>
+								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link"  onclick="changeTab('statistics')" href="#references" role="tab" data-toggle="tab" id="desc_title4"></a>
+								</li>
+							</ul>
+
+							<!-- Tab panes -->
+							<div class="tab-content">
+								<div role="tabpanel" class="tab-pane fade in active"></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
+							</div>
 						</ul>
 					</div>
 				</div>
@@ -81,11 +110,11 @@
 
 				<br>
 				<!--This is the tasks tab.-->
-				<div id="tasks" class="grouptab text-center" style="display: block;">
+				<div id="tasks" class="grouptab text-center" style="display: block; padding-right: 5%">
 					<div class="row">
-						<div id="yourtasks" style="text-align:center;" class="yourTasks col-sm-5">
+						<div id="yourtasks" style="text-align:center; " class="yourTasks col-sm-5">
 						<!--These are the tasks assigned to the user. The javascript will add entries here.-->
-							<p class="langtext" id="desc_title5"></p>
+							<p id="desc_title5"></p>
 							<div class="chbox">
 								<input type="checkbox" value="">
 								<p>Task N</p>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
@@ -116,6 +145,15 @@
 					<hr width="90%">
 					<!--Here the Javascript will put the lists.-->
 					Shopping Lists
+					<div id="items">
+						<ul id="items-shoppinglist" class="list-group itemlist"></ul>
+						<ul class="list-group">
+							<li class="list-group-item" id="listitem">
+								<i class="fa fa-plus-circle" aria-hidden="true">Add item</i>
+							</li>
+						</ul>
+					</div>
+
 					<div data-toggle="modal" data-target="#myModalNorm" style="border-radius: 10px; max-width: 13%" id="group-registerCost" class="registerCost tablink backvariant">
 
 						Register Cost
