@@ -3,30 +3,30 @@ body{
     background-size: cover;
     font-style: inherit;
     background-attachment: fixed;
-    height: 100%;
-    padding-bottom: 10px;
 
 }
 
 div.container1{
-    max-width: 90%;
+
+    width:100%;
+    height:100%;
+
     background-color: white;
     border-radius: 15px;
-    min-height: 100%;
+    overflow: hidden;
+
+
+}
+
+div.changeinfo {
+    margin-top: 5%;
+    width: 95%;
     padding: 2%;
-    margin: 1%;
-
+    font-size: 90%;
 
 }
 
-div.container2{
-    padding-top: 2%;
-    max-width: 90%;
-    background-color: white;
-    border-radius: 15px;
-    min-height: 100%;
-    margin: 1%;
-}
+
 
 div.background1{
     background-color: white;
@@ -34,7 +34,8 @@ div.background1{
 }
 
 div.personaliaborder{
-    padding-bottom: 0%;
+    padding-bottom: 10%;
+
 }
 
 div.listborder {
@@ -47,10 +48,7 @@ div.textarea{
     padding: 1%;
     font-size: 90%;
     background-color: white;
-    -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    border-radius: 15px;
+
     height: 200px;
 }
 
@@ -72,6 +70,12 @@ div.textarea{
     white-space: nowrap;
 }
 
+.fa-picture-o{
+    font-size: 20px;
+}
+
+/*
+
 @media screen and (max-width: 375px) {
     .picture img {
         display: none!important;
@@ -85,8 +89,9 @@ div.textarea{
         text-align: center;
 
     }
-
 }
+
+*/
 
 #profile-name{
     padding-top: 6%;
@@ -94,35 +99,18 @@ div.textarea{
 
 div.debtborder{
     height: 46%;
-    padding-top: 5%;
-    padding-bottom: 3%;
+    width: 100%;
+    margin-left: -5%;
+    margin-right: -5%;
+    padding-bottom: 5%;
 }
 
-.list-group{
-    overflow-y:scroll;
-    text-align: left;
-    max-height: 50px;
-    min-width: 100px;
-    max-width: 100%;
-}
+
 
 .b{
     position: absolute;
     bottom: 0;
     align: center;
-}
-
-.list-groups{
-    overflow-y:scroll;
-    width: 100%;
-    min-height: 200px; /* MÅ VÆRE PROSENT */
-    max-height: 300px;
-}
-
-.force-to-bottom {
-    position:absolute;
-    bottom: 0%;
-    width: 100%;
 }
 
 h4 {
@@ -179,188 +167,13 @@ h6{
 /* End carousel */
 
 div.shadow{
-    width: 60%;
-    height: 100%;
-    margin-top: 2%;
-    margin-bottom:2%;
-    -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    width: 70%;
+    min-width: 50%;
+    height: 200px;
+    border-radius: 10px;
+    -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.1) inset;
+    -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.1) inset;
+    box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.1) inset;
+    margin-bottom: 1%;
     padding: 2%;
-}
-
-.buttonstyle{
-    margin-bottom: 5%;
-
-}
-
-
-.liste {
-
-    background-color: white;
-    border-radius: 25px;
-    min-height: 100%;
-}
-.adde {
-    margin: 1%;
-    padding: 2%;
-    background-color: palegreen;
-    border-radius: 25px;
-    height: 670px;
-    opacity: 0.4;
-    min-width: 0px;
-}
-.adde:hover{
-    opacity: 0.6;
-}
-.list-group{
-    text-align: left;
-    margin-inside: 0%;
-    max-height: 200px;  /* list height */
-    overflow-y: scroll;
-}
-.state-icon {
-    left: -5px;
-}
-.list-name-input {
-    border: none;
-    outline: 0;
-}
-.list-group-item-primary {
-    color: rgb(255, 255, 255);
-    background-color: rgb(66, 139, 202);
-}
-#additem:hover{
-    background-color: lightgrey;
-}
-
-.fa-shopping-cart, .fa-users, .fa-trash, .fa-money, .fa-list, .fa-bars{
-    color: dimgrey;
-    text-shadow: 1px 1px 1px #ccc;
-    margin: 10px;
-}
-.fa-shopping-cart:hover, .fa-users:hover, .fa-trash:hover, .fa-money:hover, .fa-list:hover, fa-bars:hover{
-    filter: brightness(70%);
-    text-shadow: 0px 0px 0px #ccc;
-}
-a.selected {
-    background-color:#1F75CC;
-    color:white;
-    z-index:100;
-}
-
-.messagepop {
-    display:none;
-    width:60vh;
-    z-index:50;
-    padding: 25px 25px 20px;
-    border-radius: 25px;
-    box-shadow: 5px 5px grey;
-}
-
-.pop {
-    text-align:left;
-    position: fixed;
-    z-index: 1;
-    padding-top: 100px;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgb(0,0,0);
-    background-color: rgba(0,0,0,0.2);
-}
-
-.pop-content {
-    background-color: #FFFFFF;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 50%;
-    border-radius: 25px;
-    box-shadow: 5px 5px grey;
-}
-
-label {
-    display: block;
-    margin-bottom: 3px;
-    padding-left: 15px;
-    text-indent: -15px;
-}
-
-.messagepop p, .messagepop.div {
-    border-bottom: 1px solid #EFEFEF;
-    margin: 8px 0;
-    padding-bottom: 8px;
-}
-#tasks-cancel:hover{
-    filter: brightness(70%);
-}
-
-#scrollable-dropdown-menu .tt-dropdown-menu {
-    max-height: 150px;
-    overflow-y: auto;
-}
-
-.typeahead,
-.tt-query,
-.tt-hint {
-    width: 150%;
-    border: 2px solid #ccc;
-    outline: none;
-}
-
-.typeahead {
-    background-color: #fff;
-}
-
-.typeahead:focus {
-    border: 2px solid #0097cf;
-}
-
-.tt-query {
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-}
-
-.tt-hint {
-    color: #999
-}
-
-.tt-menu {
-    margin: 12px 0;
-    padding: 8px 0;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
-    border-radius: 8px;
-    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-    -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-    box-shadow: 0 5px 10px rgba(0,0,0,.2);
-}
-
-.tt-suggestion {
-    padding: 3px 20px;
-    font-size: 18px;
-    line-height: 24px;
-}
-
-.tt-suggestion:hover {
-    cursor: pointer;
-    color: #fff;
-    background-color: #0097cf;
-}
-
-.tt-suggestion.tt-cursor {
-    color: #fff;
-    background-color: #0097cf;
-
-}
-
-.tt-suggestion p {
-    margin: 0;
 }

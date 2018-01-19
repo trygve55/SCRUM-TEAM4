@@ -11,5 +11,18 @@
   "profile-addItem": "Add item",
   "profile-allShoppinglists": "All tasks",
   "profile-allShoppinglist":"All shoppinglists",
-  "additem": "Add item"
+  "additem": "Add item",
+  "p-newpassword": "New password",
+  "p-oldpassword": "Old password",
+  "p-username": "username",
+  "p-forename": "forename",
+  "p-middlename": "middlename",
+  "p-lastname": "lastname",
+  "p-phonenumber": "phonenumber",
+  "p-birthdate": "birthdate",
+  "p-gender": "gender",
+  "p-savepassword": "save password",
+  "p-saveinfo": "save info",
+  "p-changepassword": "Change password",
+  "p-changeinfo": "Change info"
 }
