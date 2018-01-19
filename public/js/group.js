@@ -637,3 +637,12 @@ function leaveGroup() {
 	$.ajax({url: '/api/group/' + currentGroup.group_id, method: 'DELETE', error: console.error()});
 	location.reload();	// false = from chache, true = from server.
 }
+
+function drawChart() {
+	var chart = new Chart($("#stat0").getContext("2d"), {
+	type: 'line',
+	data: {},	// AJAX
+	options: {}
+});
+	
+}
