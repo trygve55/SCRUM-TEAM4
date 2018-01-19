@@ -1,4 +1,5 @@
 var fs = require('fs');
+var jwt = require('jsonwebtoken');
 
 describe('User API', function() {
     describe('/api/user/register POST', function () {
@@ -174,4 +175,80 @@ describe('User API', function() {
             }).expect(403).end(done);
         });
     });
+
+    describe('/api/user/forgottenPasswordEmail POST', function() {
+        it('should reject requests without an email variable', function(done) {
+            request.post('/api/user/forgottenPasswordEmail').send().expect(400).end(done);
+        });
+        it('should reject requests with a bad email variable', function(done) {
+            request.post('/api/user/forgottenPasswordEmail').send({email: "d9k0ask@amskd.soq"}).expect(404).end(done);
+        });
+    });
+
+
+    /*describe('/api/user/forgottenPasswordReset', function() { //TODO test this test and un-comment it when it works
+        after('delete potential test person', function() {
+            pool.getConnection(function(err, connection) {
+                if(err) throw err;
+                connection.query("DELETE FROM person WHERE email = 'DELETE_THIS@IF.FOUND'", function(err) {
+                    if(err) {
+                        connection.release();
+                        throw err;
+                    }
+                    connection.query("DELETE FROM shopping_list WHERE shopping_list_name = 'THIS LIST IS A TEST'", function(err) {
+                        if(err) {
+                            connection.release();
+                            throw err;
+                        }
+                        connection.release();
+                    })
+                })
+            })
+        });
+        it('should change the password for a dummy user', function(done) {
+            pool.getConnection(function(err, connection) {
+                if(err) throw err;
+                connection.query("INSERT INTO shopping_list(shopping_list_name, currency_id) VALUES ('THIS LIST IS A TEST', 5)", function(err, res) {
+                    if(err) {
+                        connection.release();
+                        throw err;
+                    }
+                    var shopping_list_id = res.insertId,
+                        values = ["DELETE_THIS@IF.FOUND", "UnitTestUser", "TESTFAIL", "Shouldnt", "BeSeen", shopping_list_id];
+                    connection.query("INSERT INTO person(email, username, password_hash, forename, lastname, shopping_list_id) VALUES (" +
+                        "?,?,?,?,?,?)", values, function(err, res) {
+                        if(err) {
+                            connection.release();
+                            throw err;
+                        }
+                        var secret = 'test secret',
+                            person_id = res.insertId,
+                            token = jwt.sign({
+                                id: person_id
+                            }, secret);
+                        connection.query("UPDATE person SET reset_password_token = ? WHERE person_id = ?", [token, person_id], function(err, res) {
+                            if(err) {
+                                connection.release();
+                                throw err;
+                            }
+                            request.post('/api/user/forgottenPasswordReset')
+                                .query({token: token})
+                                .send({new_password: "test success"})
+                                .expect(200)
+                                .end(function(err, res) {
+                                    connection.query("SELECT password_hash FROM person WHERE person_id = ?", [person_id],function(err, res) {
+                                        if(err) {
+                                            connection.release();
+                                            throw err;
+                                        }
+                                        chai.expect(res[0].password_hash).to.not.equal("TESTFAIL");
+                                    });
+                                    done();
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });*/
 });

@@ -2,7 +2,9 @@ var router = require('express').Router(),
     auth = require('../auth'),
     router = require('express').Router(),
     formidable = require('formidable'),
-    Jimp = require("jimp");
+    Jimp = require("jimp"),
+    nodemailer = require('nodemailer'),
+    jwt = require('jsonwebtoken');
 
 module.exports = router;
 
@@ -40,6 +42,20 @@ router.get('/all', function(req, res){
 });
 
 //register user
+/**
+ * Register a new user
+ *
+ * URL: /api/user/register
+ * method: POST
+ * data: {
+ *      forename,
+ *      lastname,
+ *      username,
+ *      email,
+ *      password,
+ *      [phone]
+ * }
+ */
 router.post('/register', function(req, res) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -371,6 +387,134 @@ router.post('/:person_id/picture', function(req, res){
     });
 });
 
+var transporter = nodemailer.createTransport({
+    service: 'aol',
+    auth: {
+        user: "HHManagerMail@aol.com",
+        pass: "SCRuMteAm4"
+    }
+}), mailOptions = {
+        from: "HHManagerMail@aol.com",
+        to: "",
+        subject: "",
+        text: ""
+    },
+    secret = "CONSTANT# VIGILANCE",
+    issuer = "HHManager";
+
+
+/**
+ * Send an email with a link to change a forgotten password
+ *
+ * URL: /api/user/forgottenPasswordEmail
+ * method: POST
+ * data: {
+ *      email
+ * }
+ */
+
+router.post('/forgottenPasswordEmail', function(req,res) {
+    if(!req.body.email) {
+        return res.status(400).send("Bad request (no email variable)");
+    }
+    pool.getConnection(function(err, connection) {
+        if(err) {
+            return res.status(500).send("Failed to connect to database");
+        }
+        connection.query("SELECT COUNT(*), person_id, forename FROM person WHERE email = ?", [req.body.email], function(err, result) {
+            if(err) {
+                connection.release();
+                return res.status(500).send("Internal database error in query (1)");
+            }
+            if(result[0]["COUNT(*)"] == 0) {
+                connection.release();
+                return res.status(404).send("Email not found");
+            }
+            var token = jwt.sign({
+                id: result[0]["person_id"],
+                iss: issuer,
+                exp: Math.floor(Date.now() / 1000+ (60*60))
+            }, secret);
+            var url = "http://localhost:8000/resetPassword.html?token=" + token;
+            mailOptions.to = req.body.email;
+            mailOptions.subject = "Household Manager: forgotten password";
+            mailOptions.text = "Hi " + result[0].forename + "," +
+                "\nA request was made to reset the password associated with this email. " +
+                "Click the provided link to reset your password: \n\n" + url +
+                "\n\nThe link expires in one hour." +
+                "\n\nIf you did not request this, please ignore this email, or respond to let us know. \n\n" +
+                "Thanks, \nHousehold Manager";
+            var sql = "UPDATE person SET reset_password_token = ? WHERE email = ?";
+            connection.query(sql, [token, req.body.email], function(err) {
+                if(err) {
+                    connection.release();
+                    return res.status(500).send("Internal database error in query (2)");
+                }
+                connection.release();
+                transporter.sendMail(mailOptions, function(error, info) {
+                    if(error) {
+                        return res.status(500).send("Internal server error in email (1)");
+                    } else {
+                        return res.status(200).send("Email sent: " + info.response);
+                    }
+                });
+            });
+        });
+    });
+});
+
+/**
+ * Set new password with a JWT acquired from an email
+ *
+ * URL: /api/user/forgottenPasswordReset?token={token}
+ * method: POST
+ * data: {
+ *      new_password
+ * }
+ */
+
+router.post('/forgottenPasswordReset', function(req, res) {
+    if(!req.body.new_password || !req.query.token) {
+        return res.status(400).send("Bad request (missing variable");
+    }
+    var token = req.query.token;
+    jwt.verify(token, secret, {
+        iss: issuer
+    }, function(err, payload) {
+        if(err) {
+            return res.status(400).send("Bad token (1)");
+        }
+        pool.getConnection(function(err, connection) {
+            if(err) {
+                return res.status(500).send("Internal database error (1)");
+            }
+            connection.query("SELECT reset_password_token FROM person WHERE person_id = ?", [payload.id], function(err, result) {
+                if(err) {
+                    connection.release();
+                    return res.status(500).send("Internal database error (2)");
+                }
+                if(result[0].reset_password_token == null) {
+                    console.log(payload.id);
+                    return res.status(500).send("Internal database/server error (possible bad token) (3)");
+                }
+                if(result[0].reset_password_token != token) {
+                    return res.status(400).send("Bad token (2)");
+                }
+                var user = {password: req.body.new_password};
+                auth.hashPassword(user, function(user) {
+                    connection.query("UPDATE person SET password_hash = ?, reset_password_token = NULL WHERE person_id = ?", [user.password_hash, payload.id], function(err) {
+                        if(err) {
+                            connection.release();
+                            return res.status(500).send("Internal database error (4)");
+                        }
+                        connection.release();
+                        return res.status(200).send("Password updated");
+                    })
+                })
+            });
+        });
+    });
+});
 
 /*
 Returns the requested information about the requested user(s). The request can contain two variables: variables (required) and
