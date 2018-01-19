@@ -972,9 +972,9 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>304</x>
-      <y>664</y>
-      <w>128</w>
+      <x>296</x>
+      <y>800</y>
+      <w>144</w>
       <h>56</h>
     </coordinates>
     <panel_attributes>Person Budget Entry
@@ -985,13 +985,13 @@ is_paid</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>424</x>
-      <y>688</y>
-      <w>64</w>
+      <x>432</x>
+      <y>824</y>
+      <w>56</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;10.0;60.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -1056,31 +1056,29 @@ style=wordwrap</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>304</x>
-      <y>520</y>
-      <w>128</w>
-      <h>112</h>
+      <y>664</y>
+      <w>136</w>
+      <h>96</h>
     </coordinates>
-    <panel_attributes>Private Todo 
+    <panel_attributes>Private Todo Entry
 --
-_todo_id_
-todo_text
+_private_todo_entry_id_
+private_todo_entry_text
 datetime_deadline
 datetime_added
-datetime_done
-is_deactivated
-color_hex</panel_attributes>
+datetime_done</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>424</x>
+      <x>432</x>
       <y>528</y>
-      <w>168</w>
+      <w>160</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>190.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>180.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
@@ -1103,6 +1101,57 @@ style=wordwrap</panel_attributes>
       <h>24</h>
     </coordinates>
     <panel_attributes>0..*
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>304</x>
+      <y>520</y>
+      <w>136</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>Private Todo List
+--
+_private_todo_id_
+private_todo_name
+is_deactivated
+color_hex</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>368</x>
+      <y>592</y>
+      <w>24</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>376</x>
+      <y>640</y>
+      <w>32</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>0..*
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>376</x>
+      <y>600</y>
+      <w>32</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>1..1
 style=wordwrap</panel_attributes>
     <additional_attributes/>
   </element>
