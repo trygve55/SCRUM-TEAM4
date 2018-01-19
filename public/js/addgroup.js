@@ -56,6 +56,7 @@ $('document').ready(function(){
                 group_name: groupname
             },
             success: function (data) {
+                console.log(data);
                 if (data) {
                     $.ajax({
                         url: '/api/group',
@@ -65,11 +66,13 @@ $('document').ready(function(){
                             currency: Number($("#currency-input").val())
                         },
                         success: function (data) {
+                            console.log(data);
                             if(data.id){
                                 var m = [];
                                 for(var i = 0; i < users.length; i++){
                                     m.push(users[i].id);
                                 }
+                                console.log(m);
                                 $.ajax({
                                     url: '/api/group/' + data.id + '/members',
                                     method: 'POST',
@@ -77,6 +80,7 @@ $('document').ready(function(){
                                         members: m
                                     },
                                     success: function(data){
+                                        console.log(data);
                                         window.location="/group.html";
                                     },
                                     error: console.error
@@ -120,7 +124,6 @@ $('document').ready(function(){
         });
 
     $(".typeahead").bind('typeahead:select', function(a, data){
-        console.log(data);
         if(!check(data))
             return;
         users.push(data);
@@ -218,7 +221,6 @@ $('document').ready(function(){
 function updateList(){
     var h = "";
     for(var i = 0; i < users.length; i++){
-        console.log(users[i]);
         h += '<li class="list-group-item">' + users[i].name + '<i data-pid="' + users[i].id + '" style="float: right;" class="fa fa-times" area-hidden="true"></i></li>';
     }
     h += '<li class="list-group-item">You (administrator)</li>';
