@@ -279,7 +279,7 @@ router.post('/:group_id/members', function(req, res){
             connection.release();
             return res.status(500).send("Internal Error");
         }
-        connection.query("SELECT role_id FROM group_person WHERE group_id = + AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
+        connection.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
             if(err) {
                 connection.release();
                 return res.status(500).send(err);

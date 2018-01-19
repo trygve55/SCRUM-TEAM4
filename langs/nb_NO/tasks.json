@@ -7,9 +7,9 @@
   "tasks-logout": "Logg ut",
   "tasks-addlist": "Legg til gjøremålsliste",
   "tasks-done": "Utfør",
-  "tasks-share": "Del liste",
-  "tasks-addmemberstolist": "Legg medlemmer til",
-  "tasks-cancel": "Avbryt",
+  "tasks-share": "Medlemmer",
+  "tasks-addmemberstolist": "Medlemmer",
+  "tasks-cancel": "Lukk",
   "tasks-adduser": "Legg til"
 
 }

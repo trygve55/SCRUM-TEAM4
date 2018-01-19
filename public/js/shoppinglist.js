@@ -14,6 +14,7 @@ $('document').ready(function () {
         },
         success: function (data) {
             lang = data;
+
             for (var p in data) {
                 if (data.hasOwnProperty(p)) {
                     $("#" + p).html(data[p]);
@@ -26,7 +27,6 @@ $('document').ready(function () {
             $(".fa-plus-circle").html(" " + data["shop-additem"]);
         }
     });
-
     $('#login-norway').click(function () {
         $.ajax({
             url: '/api/language',
@@ -44,6 +44,7 @@ $('document').ready(function () {
                     },
                     success: function (data) {
                         lang = data;
+
                         for (var p in data) {
                             if (data.hasOwnProperty(p)) {
                                 $("#" + p).html(data[p]);
@@ -55,12 +56,12 @@ $('document').ready(function () {
                         $(".fa-trash").html(" " + data["shop-delete"]);
                         $(".fa-plus-circle").html(" " + data["shop-additem"]);
                         $(".list-name-input").attr('placeholder', data["shop-list-name-input"]);
+
                     }
                 });
             }
         });
     });
-
     $('#login-england').click(function () {
         $.ajax({
             url: '/api/language',
@@ -78,6 +79,7 @@ $('document').ready(function () {
                     },
                     success: function (data) {
                         lang = data;
+
                         for (var p in data) {
                             if (data.hasOwnProperty(p)) {
                                 $("#" + p).html(data[p]);
@@ -189,6 +191,55 @@ function prep(){
 
         //-------------------Deletes the list------------------------
         $("#shop-delete"+count).click(function () {
+=======
+    //---------------New list-------------
+    var count = 0;
+    $('#addlist').click(function () {
+        count++;
+        $("<div class=\"col-sm liste\" id='listenr"+count+"'><div class='row'>" +
+            "<div class='col-sm-7' style='text-align: left'>" +
+            "<div id='listname"+count+"' style='margin: 6px'><input type='text' class='form-control ni' id='listnameinput"+count+"'></div>" +
+            "<div id='nameforlist"+count+"'><h4>Liste"+count+"</h4></div></div>"+
+            "<div class='col-sm-5' style='text-align: right'>" +
+            "    <h4><i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: white; text-shadow: 0px 0px 3px #000;' id='whitebutt"+count+"'></i>" +
+            "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: lightpink; text-shadow: 0px 0px 3px #000;' id='pinkbutt"+count+"'></i> " +
+            "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: #ffec8e; text-shadow: 0px 0px 3px #000;' id='yellowbutt"+count+"'></i> " +
+            "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: lightgreen; text-shadow: 0px 0px 3px #000;' id='greenbutt"+count+"'></i></h4></div>" +
+            "</div>" +
+            "<ul class=\"list-group\" id=\"itemlist"+count+"\"> </ul>"+
+            "<ul class=\"list-group\">"+
+            "<div class=\"inpi\" id=\"inputitem"+count+"\"><li class=\"list-group-item\" id=\"listitem"+count+"\">" +
+            "<input type=\"text\" class=\"form-control ni\" id=\"newitem"+count+"\">" +
+            "</li></div><li class=\"list-group-item addi\" id=\"additem"+count+"\"><i class=\"fa fa-plus-circle\" aria-hidden=\"true\"> "+lang["shop-additem"]+"</i></li>" +
+            "</ul><i class=\"fa fa-shopping-cart\" aria-hidden=\"true\" id='shoppingcart"+count+"' style='font-size: 1.8vh'> "+lang["shop-buy"]+"</i>" +
+            "<i class=\"fa fa-users\" aria-hidden=\"true\" style='font-size: 1.8vh' id='shop-members"+count+"'> "+lang["shop-share"]+"</i>" +
+            "<i class=\"fa fa-trash\" aria-hidden=\"true\" id='shop-delete"+count+"' style='font-size: 1.8vh'> "+lang["shop-delete"]+"</i><i class=\"fa fa-money\" style='font-size: 1.8vh' aria-hidden=\"true\" id='shop-balance"+count+"'> "+lang["shop-balance"]+"</i></div>" +
+            "<div class=\"messagepop pop\" id=\"shop-popup\">" +
+            "   <p align=\"center\" style=\"font-size: 20px\">"+lang["shop-addmemberstolist"]+"</p>" +
+            "   <ul class=\"list-group\" id='shop-memberslist"+count+"' style='margin-top: 10px; margin-bottom: 10px; max-height: 30vh;'></ul>" +
+            "   <div class=\"row\">" +
+            "       <div class=\"col-md-8\" id=\"scrollable-dropdown-menu\"><input class=\"typeahead form-control\" id=\"shop-member"+count+"\"></div>" +
+            "       <div class=\"col-md-1\"><button type=\"button\" class=\"btn btn-info\" id=\"shop-adduser"+count+"\">"+lang["shop-adduser"]+"</button></div>" +
+            "   </div>" +
+            "   <div style=\"margin-top: 5%\"><button align=\"right\" type=\"button\" class=\"btn\" id=\"shop-cancel"+count+"\" style=\"background-color: lightgrey\">"+lang["shop-cancel"]+"</button>" +
+            "</div></div>"+
+            "<div class='col-sm liste' id='balancediv"+count+"'>" +
+            "<h4>Balance</h4><table class='table table-hover table-bordered'><thead><tr><th>Shoppingtrip</th><th>Price</th></tr></thead>" +
+            "<tbody><tr><td>Testtrip</td><td>5mill</td></tr></tbody>"+
+            "</table><i class=\"fa fa-list\" aria-hidden=\"true\" id='shop-backlist"+count+"'> "+lang["shop-backlist"]+"</i>").insertAfter("#addlist");
+        $('#listname'+count).hide();
+        $('#balancediv'+count).hide();
+        var itemcount = 0;
+
+        //-------------Edit listname------------------
+        $('#nameforlist'+count).click(function(){
+            var navn = this.id;
+            var ide = navn.split("t").pop();
+            console.log(ide + " name for list clicked");
+            $('#nameforlist'+ide).hide();
+            $('#listname'+ide).show();
+            $('#listnameinput'+ide).focus();
+>>>>>>> tasklist
 
             var navn = this.id;
             var ide = navn.split("e").pop();
@@ -198,7 +249,15 @@ function prep(){
             });
         });
 
+<<<<<<< HEAD
         //-----------------Opens member popup--------------------
+=======
+        //---------------------Listcolor----------------------
+        $('#pinkbutt'+count).click(function () {
+            var navn = this.id;
+            var ide = navn.split("t").pop(); //listeid
+            var name = "listenr"+ide;
+>>>>>>> tasklist
 
         $('#shop-members'+count).on('click', function() {
             console.log("clicked");
@@ -249,7 +308,12 @@ function prep(){
             }
         });
 
+<<<<<<< HEAD
         $('#shop-adduser'+count).click(function(){
+=======
+        //-----------------Press add item button opens inputfield--------------
+        $('#additem'+count).click(function () {
+>>>>>>> tasklist
             var navn = this.id;
             var ide = navn.split("r").pop(); //listeid
             addmember(ide);
@@ -280,8 +344,7 @@ function setupClicks(){
             data: {
                 shopping_list_name: text
             }
-        });
-    });
+        });});
 
     $(".list-name-input").unbind("keypress").keypress(function(e){
         if(e.keyCode != 13 && e.which != 13)
