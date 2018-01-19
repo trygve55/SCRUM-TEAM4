@@ -189,16 +189,11 @@ label {
 	margin: 5px;
 }
 
-.post {
-	float: top;
-	margin: 15px;
+#group-newsfeed {
+	margin: 5px;
 	min-width: 130px;
 	min-height: 50px;
-	border-radius: 10px;
-	text-align: center;
-	-moz-box-shadow:    inset 0 0 3px grey;
-	-webkit-box-shadow: inset 0 0 3px grey;
-	box-shadow:         inset 0 0 3px grey;
+	border-radius: 5px;
 }
 
 #grouppage{
@@ -215,5 +210,5 @@ div.grouptablink.backvariant{
 }
 
 #groupselection{
-	height: 335px;
+	height: 670px;
 }
