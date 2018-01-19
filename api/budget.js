@@ -340,7 +340,7 @@ router.get('/:shopping_list_id', function(req, res) {
                 else if (result.length == 0)
                     res.status(403).json({success: "false", error: "no access"});
                 else {
-                    var budget_entries = [];
+                    var budget_entries = [], debt = [];
                     for (var i = 0; i < result.length;i++) {
                         var current_budget_entry_id = budgetEntryExistsInArray(result[i].budget_entry_id, budget_entries);
                         if (current_budget_entry_id == -1) {
@@ -366,7 +366,7 @@ router.get('/:shopping_list_id', function(req, res) {
                             current_budget_entry_id = budget_entries.length - 1;
                         }
 
-                        if (result[i].shopping_list_entry_id && shoppingListEntryExistsInArray(result[i].shopping_list_entry_id, budget_entries[current_budget_entry_id].budget_shopping_list_entries) == -1) budget_entries[current_budget_entry_id].budget_shopping_list_entries.push({
+                        if (result[i].shopping_list_entry_id && shoppingListEntryExistsInArray(result[i].shopping_list_entry_id, budget_entries[current_budget_entry_id].budget_shopping_list_entries) === -1) budget_entries[current_budget_entry_id].budget_shopping_list_entries.push({
                             "shopping_list_entry_id": result[i].shopping_list_entry_id,
                             "entry_text": result[i].entry_text,
                             "added_by_person_id": result[i].added_by_person_id,
@@ -376,7 +376,7 @@ router.get('/:shopping_list_id', function(req, res) {
                             "datetime_purchased": result[i].datetime_purchased
                         });
 
-                        if (result[i].paid_person_id && payPersonExistsInArray(result[i].paid_person_id, budget_entries[current_budget_entry_id].persons_to_pay) == -1) budget_entries[current_budget_entry_id].persons_to_pay.push({
+                        if (result[i].paid_person_id && payPersonExistsInArray(result[i].paid_person_id, budget_entries[current_budget_entry_id].persons_to_pay) === -1) budget_entries[current_budget_entry_id].persons_to_pay.push({
                             "person_id": result[i].paid_person_id,
                             "datetime_paid": result[i].datetime_paid,
                             "forename": result[i].paid_person_forename,
@@ -408,13 +408,24 @@ router.get('/:shopping_list_id', function(req, res) {
     });
 });
 
+
+/**
+ * Adds a to pay for a budget entry
+ *
+ * URL: /api/budget/{budget_entry_id}
+ * method: POST
+ * data: {
+ *      person_ids[],
+ *      is_paid
+ * }
+ */
 router.post('/pay/:budget_entry_id', function(req, res) {
 
-    var query = "", queryValues = [], payers = req.body.payers, budget_entry_id = req.params.budget_entry_id;
-    if (payers.length == 0) return res.status(400).json({error: "no payers array"})
+    var query = "", queryValues = [], payers = req.body.person_ids, budget_entry_id = req.params.budget_entry_id;
+    if (payers.length === 0) return res.status(400).json({error: "no payers array"})
     for (var i = 0; i < payers.length;i++) {
-        if (i != 0) queryValues += ", ";
-        query += "( ?, ? )";
+        if (i !== 0) query += ", ";
+        query += "( ?, ? " + ((req.body.is_paid) ? ',CURRENT_TIMESTAMP)': ',NULL )');
         queryValues[i*2] = budget_entry_id;
         queryValues[i*2+1] = payers[i];
     }
@@ -422,32 +433,51 @@ router.post('/pay/:budget_entry_id', function(req, res) {
     pool.getConnection(function(err, connection) {
         if(err)
             return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-        connection.query('INSERT INTO person_budget_entry(budget_entry_id, person_id) VALUES ' + query, queryValues, function(err, result) {
+        connection.query('INSERT INTO person_budget_entry(budget_entry_id, person_id, datetime_paid' + ') VALUES ' + query, queryValues, function(err, result) {
             connection.release();
             if(err)
                 return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            else if (result.affectedRows == 0)
+            else if (result.affectedRows === 0)
                 res.status(403).json({success: "false", error: "no access"});
             else
-                res.status(200).json({success: "true", budget_entry_id: result.insertId});
+                res.status(200).send();
         });
     });
 });
 
+/**
+ * Adds a to pay for a budget entry
+ *
+ * URL: /api/budget/{budget_entry_id}
+ * method: PUT
+ * data: {
+ *      person_id,
+ *      is_paid
+ * }
+ */
 router.put('/pay/:budget_entry_id', function(req, res) {
 
     pool.getConnection(function(err, connection) {
         if(err)
             return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-        connection.query('UPDATE person budget_entry SET is_paid = ?  WHERE budget_entry_id = ? AND person_id = ?);',
-            [req.body.is_paid, req.params.budget_entry_id, req.body.person_id], function(err, result) {
+        if(req.body.is_paid) connection.query('UPDATE person_budget_entry SET datetime_paid = CURRENT_TIMESTAMP WHERE budget_entry_id = ? AND person_id = ?;',
+            [req.params.budget_entry_id, req.body.person_id], function(err, result) {
             connection.release();
             if(err)
                 return res.status(500).json({'Error' : 'connecting to database: ' } + err);
             else if (result.affectedRows == 0)
                 res.status(403).json({success: "false", error: "no access"});
             else
-                res.status(200).json({success: "true", budget_entry_id: result.insertId});
+                res.status(200).json({success: "true"});
+        }); else connection.query('UPDATE person_budget_entry SET datetime_paid = NULL WHERE budget_entry_id = ? AND person_id = ?;',
+            [req.params.budget_entry_id, req.body.person_id], function(err, result) {
+            connection.release();
+            if(err)
+                return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+            else if (result.affectedRows == 0)
+                res.status(403).json({success: "false", error: "no access"});
+            else
+                res.status(200).send();
         });
     });
 });
