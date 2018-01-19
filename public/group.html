@@ -82,26 +82,27 @@
 					<div class="container">
 						<ul class="nav nav-tabs">
 							<ul class="nav nav-tabs" role="tablist">
+
 								<li class="nav-item">
-									<a style="color: black" class="nav-link active" onclick="changeTab('tasks')" href="#profile" role="tab" data-toggle="tab" id="desc_title1"></a>
+									<a style="color: black" class="nav-link active" onclick="changeTab('feed')" role="tab" data-toggle="tab" id="desc_title2"></a>
 								</li>
 								<li class="nav-item">
-									<a style="color: black" class="nav-link" href="#buzz" onclick="changeTab('feed')" role="tab" data-toggle="tab" id="desc_title2"></a>
+									<a style="color: black" class="nav-link" onclick="changeTab('tasks')"  role="tab" data-toggle="tab" id="desc_title1"></a>
 								</li>
 								<li class="nav-item">
-									<a style="color: black" class="nav-link" onclick="changeTab('shopping')" href="#references" role="tab" data-toggle="tab" id="desc_title3"></a>
+									<a style="color: black" class="nav-link" onclick="changeTab('shopping')" role="tab" data-toggle="tab" id="desc_title3"></a>
 								</li>
 								<li class="nav-item">
-									<a style="color: black" class="nav-link"  onclick="changeTab('statistics')" href="#references" role="tab" data-toggle="tab" id="desc_title4"></a>
+									<a style="color: black" class="nav-link"  onclick="changeTab('statistics')"  role="tab" data-toggle="tab" id="desc_title4"></a>
 								</li>
 								<li class="nav-item">
-									<a style="color: black" class="nav-link"  onclick="changeTab('leave')" href="#references" role="tab" data-toggle="tab" id="desc_title7"></a>
+									<a style="color: black" class="nav-link"  onclick="changeTab('leave')"  role="tab" data-toggle="tab" id="desc_title7"></a>
 								</li>
 							</ul>
 
 							<!-- Tab panes -->
 							<div class="tab-content">
-								<div role="tabpanel" class="tab-pane fade in active"></div>
+								<div role="tabpanel" class="tab-pane fade"></div>
 								<div role="tabpanel" class="tab-pane fade" ></div>
 								<div role="tabpanel" class="tab-pane fade" ></div>
 								<div role="tabpanel" class="tab-pane fade" ></div>
@@ -116,7 +117,7 @@
 
 				<br>
 				<!--This is the tasks tab.-->
-				<div id="tasks" class="grouptab text-center" style="display: block; padding-right: 5%">
+				<div id="tasks" class="grouptab text-center" style="padding-right: 5%">
 					<div class="row">
 						<div id="yourtasks" style="text-align:center; " class="yourTasks col-sm-5">
 						<!--These are the tasks assigned to the user. The javascript will add entries here.-->
@@ -140,10 +141,37 @@
 				</div>
 
 				<!--This is the news tab.-->
-				<div id="feed" class="grouptab text-center">
-					<hr width="90%">
-					<!--Here the Javascript will put the posts.-->
-					<div><p class="post">A POST</p></div>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
+				<div id="feed" class="row grouptab text-center">
+					<div>
+						<div align="center">
+							<textarea id="group-newsfeed" style=" padding-left:30px; width:95%; text-align: left; height: 80px"></textarea>
+						</div>
+						<div align="left">
+							<i style="padding-left: 5%" class="fa fa-camera" aria-hidden="true"> Add picture</i>
+						</div>
+						<div align="right">
+							<i class="fa fa-sticky-note" aria-hidden="true"></i>
+						</div>
+						<div align="center">
+							<div  id="index-newFeed" style="padding:2%; margin-top: 20px; margin-bottom: 20px; min-height:175px; max-width: 95%; -moz-box-shadow: inset 0 0 2px lightgrey; -webkit-box-shadow: inset 0 0 3px lightgrey; box-shadow: inset 0 0 3px lightgrey; border-radius: 10px">
+								<div class= "row">
+									<div class ="col-sm-2">
+										<h3></h3>
+										<img style="max-width: 120px; max-height: 120px; image-rendering: crisp-edges;" id="index-feedProfilPicture" src="img/profilPicture.png">
+										<h3></h3>
+										<div id="index-feedName">Oda Skaug</div>
+									</div>
+									<div class="col-sm-9">
+										<div  style="text-align: right" id="index-time">18.Januar 20:12</div>
+										<h4></h4>
+										<div style="text-align: left" id="index-text">Formelt sett må resultatet av en sortering tilfredsstille to betingelser; elementene må stå i en økende rekkefølge, dvs. alle elementer må være like stort eller større enn det foregående ut ifra en gitt sammenligningsfunksjon, og resultatet må være en permutasjon av inn-dataene. </div>
+										<br>
+										<!--<img src="img/BackgroundImage.jpg" style="max-width: 730px; max-height: 750px;">-->
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 
 				<!--This is the shopping lists tab.-->
@@ -177,6 +205,7 @@
 						<i class="fa fa-money" style="font-size: 1.8vh" aria-hidden="true" id="settle"></i>
 					</div>
 
+					<!--
 					<div data-toggle="modal" data-target="#myModalNorm" style="border-radius: 10px; max-width: 13%" id="group-registerCost" class="registerCost tablink backvariant">
 
 						Register Cost
@@ -186,9 +215,9 @@
 				<div class="modal fade" id="myModalNorm" tabindex="-1" role="dialog"
 					 aria-labelledby="myModalLabel" aria-hidden="true">
 					<div class="modal-dialog">
-						<div class="modal-content">
+						<div class="modal-content">-->
 							<!-- Modal Header -->
-							<div class="modal-header">
+							<!--<div class="modal-header">
 								<h4 class="modal-title" id="registercost-modalLabel">
 									Register Cost
 								</h4>
@@ -198,10 +227,10 @@
 									<span class="sr-only">Close</span>
 								</button>
 
-							</div>
+							</div> -->
 
 							<!-- Modal Body -->
-							<div class="modal-body">
+							<!--<div class="modal-body">
 
 								<form role="form">
 									<div align="left" class="form-group">
@@ -214,9 +243,9 @@
 
 
 							</div>
-
+-->
 							<!-- Modal Footer -->
-							<div class="modal-footer">
+							<!--<div class="modal-footer">
 								<button type="button" class="btn btn-default"
 										data-dismiss="modal">
 									Close
@@ -227,7 +256,7 @@
 							</div>
 						</div>
 					</div>
-				</div>
+				</div> -->
 
 
 				<!--This is the statistics lists tab.-->
@@ -248,6 +277,6 @@
 				</div>
 			</div>
 		</div>
-
+		</div>
 	</body>
 </html>

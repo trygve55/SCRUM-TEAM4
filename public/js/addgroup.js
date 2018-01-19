@@ -77,7 +77,7 @@ $('document').ready(function(){
                                         members: m
                                     },
                                     success: function(data){
-
+                                        window.location="/group.html";
                                     },
                                     error: console.error
                                 });

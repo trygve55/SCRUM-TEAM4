@@ -4,7 +4,7 @@ var person = "Person";
 
 // ***** Code begins here *****
 
-var activeTab = "tasks", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList;
+var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList;
 
 /**
 * When the page loads, the page must find the groups available to the user so they can be selected.
@@ -52,9 +52,7 @@ $(document).ready(function() {
 					}
 				}
 				console.log(activeTab);
-				if(activeTab=='shopping') {
-					getShoppinglist();
-				}
+				changeTab();
 			});
 		},
 		error: console.error()
@@ -126,15 +124,21 @@ function getGroups() {
 * When the user clicks on a tab, load and show the information within, and hide any other tabs.
 */
 function changeTab(name) {
-	if (activeTab != name) {
-		var tabs = $(".grouptab");
-		for (var i = 0; i < tabs.length; i++) {tabs[i].style.display = "none";}
-		$("#" + name).css("display", "block");
-		activeTab = name;
-		if(activeTab=='shopping') {
-			getShoppinglist();
-		}
-	}
+    if(name)
+        activeTab = name;
+    else
+        name = activeTab;
+    var tabs = $(".grouptab");
+    for (var i = 0; i < tabs.length; i++)
+        $(tabs[i]).hide()
+    $("#" + name).show();
+    activeTab = name;
+    if(activeTab=='shopping') {
+        getShoppinglist();
+    }
+    else if(activeTab=='feed'){
+
+    }
 }
 
 /**
