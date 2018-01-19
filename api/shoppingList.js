@@ -177,6 +177,7 @@ router.get('/', function(req, res) {
                             "shopping_list_id":result[i].shopping_list_id,
                             "shopping_list_name":result[i].shopping_list_name,
                             "color_hex":result[i].color_hex,
+                            "is_hidden":result[i].is_hidden,
                             "currency_id":result[i].currency_id,
                             "currency_short":result[i].currency_short,
                             "currency_long":result[i].currency_long,
