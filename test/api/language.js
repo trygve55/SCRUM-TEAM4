@@ -27,7 +27,6 @@ after(function(){
  *  method reboots login after fail.
  *
  */
-
 afterEach(function(done) {
     if(pool._allConnections.length > 1) {
         console.log('Method does not close connection\n');

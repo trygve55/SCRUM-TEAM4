@@ -62,7 +62,7 @@ describe('Tasks API', function() {
     describe('Testing PUT methods', function() {
         it('should return status 200 for editing task', function(done) {
             request.put('/api/tasks/1').send({"todo_text":"Delete!", "created_by_id":2}).end(function(err) {
-                if(err) {return done(err);}
+                if(err) throw err;
                 request.put('/api/tasks/1').send({"todo_text":"test task", "created_by_id":1}).expect(200).end(done);
             });
         });
