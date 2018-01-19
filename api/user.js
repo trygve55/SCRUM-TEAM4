@@ -41,6 +41,41 @@ router.get('/all', function(req, res){
     });
 });
 
+router.put('/:person_id/password', function (req, res) {
+    console.log(req.session.person_id);
+    if(!req.session.person_id)
+        return res.status(403).send("ERROR: NO ACCESS");
+    pool.getConnection(function (err, connection) {
+       if(err) {
+           connection.release();
+           return res.status(500).json("DB_ERROR");
+       }
+       console.log(req.params.person_id);
+       connection.query('SELECT facebook_api_id FROM person WHERE person_id = ?', [req.params.person_id], function (err, result) {
+           if(err) {
+               connection.release();
+               return res.status(500).send("DB_ERROR");
+           } else {
+               console.log(result[0].facebook_api_id);
+               if (result[0].facebook_api_id)
+                   return res.status(200).send("ERROR");
+               else {
+                   connection.query(
+                       'UPDATE person SET password_hash = ? WHERE person_id = ?;',
+                       [auth.hashPassword(req.body.password), req.params.person_id],
+                       function (err) {
+                           connection.release();
+                           if(err)
+                               return res.status(500).send("ERROR: executing query");
+                           else
+                               return res.status(200).send("SUCCESS: password changed");
+                   });
+               }
+           }
+       });
+    });
+});
+
 //register user
 /**
  * Register a new user
