@@ -5,9 +5,9 @@
     <id>UMLClass</id>
     <coordinates>
       <x>568</x>
-      <y>192</y>
+      <y>184</y>
       <w>168</w>
-      <h>144</h>
+      <h>168</h>
     </coordinates>
     <panel_attributes>HomeGroup
 --
@@ -17,6 +17,8 @@ group_desc
 group_type
 created_datetime
 group_pic
+group_pic_tiny
+has_group_pic
 cleaning_list_interval
 default_currency_id
 group_deactivated</panel_attributes>
@@ -26,9 +28,9 @@ group_deactivated</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>568</x>
-      <y>384</y>
+      <y>376</y>
       <w>168</w>
-      <h>272</h>
+      <h>280</h>
     </coordinates>
     <panel_attributes>Person
 --
@@ -44,6 +46,7 @@ birth_date
 is_verified
 gender
 profile_pic
+has_profile_pic
 last_active
 reset_password_token
 user_language
@@ -102,12 +105,12 @@ was_invited</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>640</x>
-      <y>328</y>
+      <y>344</y>
       <w>24</w>
-      <h>72</h>
+      <h>48</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -822,11 +825,11 @@ currency_major</panel_attributes>
       <x>648</x>
       <y>128</y>
       <w>24</w>
-      <h>80</h>
+      <h>72</h>
     </coordinates>
     <panel_attributes>lt=-
 </panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -880,7 +883,7 @@ style=wordwrap</panel_attributes>
     <id>Text</id>
     <coordinates>
       <x>656</x>
-      <y>176</y>
+      <y>168</y>
       <w>32</w>
       <h>16</h>
     </coordinates>
@@ -1074,11 +1077,11 @@ datetime_done</panel_attributes>
     <coordinates>
       <x>432</x>
       <y>528</y>
-      <w>160</w>
+      <w>152</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>180.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>170.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
@@ -1114,8 +1117,8 @@ style=wordwrap</panel_attributes>
     </coordinates>
     <panel_attributes>Private Todo List
 --
-_private_todo_id_
-private_todo_name
+_private_todo_list_id_
+private_todo_list_name
 is_deactivated
 color_hex</panel_attributes>
     <additional_attributes/>
