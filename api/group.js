@@ -268,11 +268,12 @@ router.put('/:group_id', function(req, res){
  * }
  */
 router.post('/:group_id/members', function(req, res){
-    console.log(req.body);
     if(!req.session.person_id)
         return res.status(500).send("Person_id");
     req.body.members = req.body['members[]'];
     delete req.body['members[]'];
+    if(!(req.body.members instanceof Array))
+        req.body.members = [req.body.members];
     if(!req.body.members || req.body.members.length == 0)
         return res.status(400).send("Bad Request");
     pool.getConnection(function(err, connection){
@@ -281,15 +282,12 @@ router.post('/:group_id/members', function(req, res){
             return res.status(500).send("Internal Error");
         }
         connection.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
-            console.log(result);
             if(err) {
                 console.error(err);
                 connection.release();
                 return res.status(500).send(err);
             }
             if(result.length == 0 || result[0].role_id != 2) {
-                console.log(result.length == 0);
-                console.log(result.length[0].role_id);
                 connection.release();
                 return res.status(400).send("You're not the admin");
             }
@@ -300,9 +298,6 @@ router.post('/:group_id/members', function(req, res){
                 vals.push(req.body.members[i], req.params.group_id);
             }
             qry += ";";
-            console.log(req.body.members.length);
-            console.log(req.body.members);
-            console.log(qry);
             connection.beginTransaction(function (err) {
 
                 if (err) {
