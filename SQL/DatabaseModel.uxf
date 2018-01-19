@@ -979,7 +979,7 @@ style=wordwrap</panel_attributes>
     </coordinates>
     <panel_attributes>Person Budget Entry
 --
-is_paid</panel_attributes>
+datetime_paid</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -1063,7 +1063,7 @@ style=wordwrap</panel_attributes>
     <panel_attributes>Private Todo Entry
 --
 _private_todo_entry_id_
-private_todo_entry_text
+todo_text
 datetime_deadline
 datetime_added
 datetime_done</panel_attributes>

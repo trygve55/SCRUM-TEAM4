@@ -236,7 +236,6 @@ function answerPost(req, res, connection, result) {
 function addPersonBudgetEntry(req, res, connection, result){
     console.log("adding persons_ids");
     var queryValues = [], query = "";
-    queryValues.push(result.insertId);
 
     for (var i = 0; i < req.body.person_ids.length;i++) {
         if (i != 0) query += ",";
@@ -245,15 +244,22 @@ function addPersonBudgetEntry(req, res, connection, result){
         query += "(?,?)";
     }
 
+    console.log(result);
+
     connection.query(
         'INSERT INTO person_budget_entry (person_id, budget_entry_id) VALUES ' + query +';',
         queryValues,
         function (err, result2) {
+            console.log('INSERT INTO person_budget_entry (person_id, budget_entry_id) VALUES ' + query +';');
+            console.log(queryValues);
+            console.log(result2);
+
             if (err)
                 return connection.rollback(function () {
                     connection.release();
                     res.status(500).json({'Error': 'connecting to database: '} + err);
                 });
+
             answerPost(req, res, connection, result);
             });
 }
@@ -299,14 +305,17 @@ router.get('/:shopping_list_id', function(req, res) {
         if(err)
             return res.status(500).json({'Error' : 'connecting to database: ' } + err);
         connection.query('SELECT ' +
-            'person.person_id, forename, middlename, lastname, ' +
+            'person.person_id, person.forename, person.middlename, person.lastname, ' +
             'budget_entry_id, amount, text_note, entry_datetime, added_by_id, ' +
             'budget_entry_type_id, entry_type_name, entry_type_color, ' +
             'currency_id, currency_short, currency_long, currency_sign, ' +
             'shopping_list.shopping_list_id, shopping_list_name, color_hex, ' +
             'shopping_list_entry_id, entry_text, purchased_by_person_id, ' +
-            'added_by_person_id, cost, datetime_added, datetime_purchased ' +
-            'person_budget_entry.person_id, is_paid' +
+            'added_by_person_id, cost, datetime_added, datetime_purchased, ' +
+            'person_budget_entry.person_id AS paid_person_id, datetime_paid, ' +
+            'paid_person.forename AS paid_person_forename, ' +
+            'paid_person.middlename AS paid_person_middlename, ' +
+            'paid_person.lastname AS paid_person_lastname ' +
             'FROM shopping_list ' +
             'LEFT JOIN budget_entry USING(shopping_list_id) ' +
             'LEFT JOIN shopping_list_entry USING (budget_entry_id) ' +
@@ -314,6 +323,7 @@ router.get('/:shopping_list_id', function(req, res) {
             'LEFT JOIN person ON person.person_id = budget_entry.added_by_id ' +
             'LEFT JOIN currency USING(currency_id) ' +
             'LEFT JOIN person_budget_entry USING (budget_entry_id) ' +
+            'LEFT JOIN person AS paid_person ON person_budget_entry.person_id = paid_person.person_id ' +
             'WHERE shopping_list.shopping_list_id = ? AND shopping_list.shopping_list_id IN ' +
             '(SELECT shopping_list_id FROM person WHERE person.person_id = ? ' +
             'UNION  ' +
@@ -356,7 +366,7 @@ router.get('/:shopping_list_id', function(req, res) {
                             current_budget_entry_id = budget_entries.length - 1;
                         }
 
-                        if (result[i].shopping_list_entry_id) budget_entries[current_budget_entry_id].budget_shopping_list_entries.push({
+                        if (result[i].shopping_list_entry_id && shoppingListEntryExistsInArray(result[i].shopping_list_entry_id, budget_entries[current_budget_entry_id].budget_shopping_list_entries) == -1) budget_entries[current_budget_entry_id].budget_shopping_list_entries.push({
                             "shopping_list_entry_id": result[i].shopping_list_entry_id,
                             "entry_text": result[i].entry_text,
                             "added_by_person_id": result[i].added_by_person_id,
@@ -366,15 +376,19 @@ router.get('/:shopping_list_id', function(req, res) {
                             "datetime_purchased": result[i].datetime_purchased
                         });
 
-                        if (result[i].is_paid) budget_entries[current_budget_entry_id].persons_to_pay.push({
-                            "shopping_list_entry_id": result[i].shopping_list_entry_id,
-                            "entry_text": result[i].entry_text,
-                            "added_by_person_id": result[i].added_by_person_id,
-                            "purchased_by_person_id": result[i].purchased_by_person_id,
-                            "cost": result[i].cost,
-                            "datetime_added": result[i].datetime_added,
-                            "datetime_purchased": result[i].datetime_purchased
+                        if (result[i].paid_person_id && payPersonExistsInArray(result[i].paid_person_id, budget_entries[current_budget_entry_id].persons_to_pay) == -1) budget_entries[current_budget_entry_id].persons_to_pay.push({
+                            "person_id": result[i].paid_person_id,
+                            "datetime_paid": result[i].datetime_paid,
+                            "forename": result[i].paid_person_forename,
+                            "middlename": result[i].paid_person_middlename,
+                            "lastname": result[i].paid_person_lastname
                         });
+                    }
+
+                    for (var i = 0;i < budget_entries.length;i++) {
+                        for (var j = 0; j < budget_entries[i].persons_to_pay.length;j++) {
+                            budget_entries[i].persons_to_pay[j].amount_to_pay = budget_entries[i].amount / budget_entries[i].persons_to_pay.length;
+                        }
                     }
 
                     res.status(200).json({
@@ -441,6 +455,20 @@ router.put('/pay/:budget_entry_id', function(req, res) {
 function budgetEntryExistsInArray(budget_entry_id, array) {
     for (var i = 0; i < array.length;i++) {
         if (array[i].budget_entry_id == budget_entry_id) return i;
+    }
+    return -1;
+}
+
+function shoppingListEntryExistsInArray(shopping_list_entry_id, array) {
+    for (var i = 0; i < array.length;i++) {
+        if (array[i].shopping_list_entry_id == shopping_list_entry_id) return i;
+    }
+    return -1;
+}
+
+function payPersonExistsInArray(person_id, array) {
+    for (var i = 0; i < array.length;i++) {
+        if (array[i].person_id == person_id) return i;
     }
     return -1;
 }

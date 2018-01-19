@@ -192,23 +192,23 @@ CREATE TABLE poll_vote (
 );
 
 CREATE TABLE private_todo_list (
-    private_todo_id INTEGER NOT NULL AUTO_INCREMENT,
-    private_todo_name NVARCHAR(30),
+    private_todo_list_id INTEGER NOT NULL AUTO_INCREMENT,
+    private_todo_list_name NVARCHAR(30),
     person_id INTEGER NOT NULL,
     is_deactivated BIT NOT NULL DEFAULT 0,
     color_hex INTEGER,
-    CONSTRAINT private_todo_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
-    CONSTRAINT priavte_todo_pk PRIMARY KEY(private_todo_id)
+    CONSTRAINT private_todo_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
+    CONSTRAINT priavte_todo_list_pk PRIMARY KEY(private_todo_list_id)
 );
 
 CREATE TABLE private_todo_entry (
     private_todo_entry_id INTEGER NOT NULL AUTO_INCREMENT,
-    private_todo_id INTEGER NOT NULL,
+    private_todo_list_id INTEGER NOT NULL,
     todo_text NVARCHAR(200) NOT NULL,
     datetime_deadline DATETIME,
     datetime_added DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     datetime_done DATETIME DEFAULT NULL,
-    CONSTRAINT private_todo_list_entry_fk FOREIGN KEY(private_todo_id) REFERENCES private_todo_list(private_todo_id),
+    CONSTRAINT private_todo_list_entry_fk FOREIGN KEY(private_todo_list_id) REFERENCES private_todo_list(private_todo_list_id),
     CONSTRAINT private_todo_entry_pk PRIMARY KEY(private_todo_entry_id)
 );
 
