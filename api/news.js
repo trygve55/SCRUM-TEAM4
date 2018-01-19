@@ -18,16 +18,23 @@ module.exports = router;
 */
 router.post('/', function(req, res) {
 	var data = req.body;
+	if(!data.group_id || !data.post_text)
+		return res.status(400).send();
 	var extraData = null;
-	if (data.attachment_data) {extraData = data.attachment_data;}
+	if (data.attachment_data)
+		extraData = data.attachment_data;
+	if(!data.attachment_type)
+		data.attachment_type = 0;
 	pool.getConnection(function(err, connection) {
 		if (!checkConnectionError(err, connection, res)) {return;}
 		connection.query(
 			'INSERT INTO newsfeed_post (' +
 			'group_id, posted_by_id, post_text, attachment_type, attachment_data' +
 			') VALUES (?,?,?,?,?);',
-			[data.group_id, data.req.session.person_id, data.post_text, data.attachment_type, extraData],	// data.posted_by_id to test this.
-			function(err, result) {checkResult(err, result, connection, res);}
+			[data.group_id, req.session.person_id, data.post_text, data.attachment_type, extraData],	// data.posted_by_id to test this.
+			function(err, result) {
+				checkResult(err, result, connection, res);
+			}
 		);
 	});
 });
@@ -42,11 +49,34 @@ router.get('/:group_id', function(req, res) {
 	pool.getConnection(function(err, connection) {
 		if (!checkConnectionError(err, connection, res)) {return;}
 
-		connection.query('SELECT * FROM newsfeed_post WHERE group_id = ?',
+		connection.query('SELECT ' +
+			'post_id, posted_by_id, post_text, attachment_type, posted_datetime, ' +
+			'forename, middlename, lastname ' +
+			'FROM newsfeed_post ' +
+			'LEFT JOIN person ON person.person_id = newsfeed_post.posted_by_id ' +
+			'WHERE group_id = ? ORDER BY posted_datetime DESC',
 			[req.params.group_id], function(err, result) {
 				connection.release();
-				if (err) {return res.status(500).send();}
-				res.status(200).json(result);
+				if (err)
+					return res.status(500).json({error: err});
+				var posts = [];
+				console.log(result);
+				for(var i = 0; i < result.length;i++) {
+					posts.push({
+						"post_id": result[i].post_id,
+						"post_text": result[i].post_text,
+						"posted_datetime": result[i].posted_datetime,
+						"attachment_type": result[i].attachment_type,
+						"posted_by": {
+							"person_id": result[i].posted_by_id,
+							"forename": result[i].forename,
+							"middlename": result[i].middlename,
+							"lastname": result[i].lastname
+						}
+					});
+				}
+
+				res.status(200).json(posts);
 			}
 		);
 	});
@@ -62,7 +92,7 @@ router.get('/', function(req, res) {
 	pool.getConnection(function(err, connection) {
 		if (!checkConnectionError(err, connection, res)) {return;}
 
-		connection.query('SELECT * FROM newsfeed_post WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?);',
+		connection.query('SELECT * FROM newsfeed_post WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?) ORDER BY posted_datetime DESC;',
 			[req.session.person_id], function(err, result) {	//req.params.person_id
 				connection.release();
 				if (err) {return res.status(500).send();}
@@ -150,9 +180,8 @@ function checkConnectionError(err, connection, res) {
 */
 function checkResult(err, result, connection, res) {
 	connection.release();
-	if (err) {
-		res.status(500).send();
-		throw err;
-	}
-	if (result) {res.status(200).send();}
+	if (err)
+		return res.status(500).send();
+	if (result)
+		res.status(200).json(result);
 }

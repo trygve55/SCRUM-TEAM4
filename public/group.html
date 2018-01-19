@@ -65,7 +65,7 @@
 
 
 		<!--This is the div that is the entire window. It is a separate div so it can be moved into a different HMTL file.-->
-		<div id="grouppage" class="row" align="center">
+		<div  id="grouppage" class="row" align="center">
 			<br>
 			<div id="groupselection" class="transparency text-center col-sm-3">
 				<!--These are the groups available to the user. The javascript will add entries here.-->
@@ -112,10 +112,6 @@
 					</div>
 				</div>
 
-
-
-
-				<br>
 				<!--This is the tasks tab.-->
 				<div id="tasks" class="grouptab text-center" style="padding-right: 5%">
 					<div class="row">
@@ -141,44 +137,37 @@
 				</div>
 
 				<!--This is the news tab.-->
+
 				<div id="feed" class="row grouptab text-center">
 					<div>
 						<div align="center">
-							<textarea id="group-newsfeed" style=" padding-left:30px; width:95%; text-align: left; height: 80px"></textarea>
+							<textarea placeholder="Anything you want to say...?" id="group-newsfeedPost"></textarea>
 						</div>
-						<div align="left">
-							<i style="padding-left: 5%" class="fa fa-camera" aria-hidden="true"> Add picture</i>
-						</div>
-						<div align="right">
-							<i class="fa fa-sticky-note" aria-hidden="true"></i>
-						</div>
-						<div align="center">
-							<div  id="index-newFeed" style="padding:2%; margin-top: 20px; margin-bottom: 20px; min-height:175px; max-width: 95%; -moz-box-shadow: inset 0 0 2px lightgrey; -webkit-box-shadow: inset 0 0 3px lightgrey; box-shadow: inset 0 0 3px lightgrey; border-radius: 10px">
-								<div class= "row">
-									<div class ="col-sm-2">
-										<h3></h3>
-										<img style="max-width: 120px; max-height: 120px; image-rendering: crisp-edges;" id="index-feedProfilPicture" src="img/profilPicture.png">
-										<h3></h3>
-										<div id="index-feedName">Oda Skaug</div>
-									</div>
-									<div class="col-sm-9">
-										<div  style="text-align: right" id="index-time">18.Januar 20:12</div>
-										<h4></h4>
-										<div style="text-align: left" id="index-text">Formelt sett må resultatet av en sortering tilfredsstille to betingelser; elementene må stå i en økende rekkefølge, dvs. alle elementer må være like stort eller større enn det foregående ut ifra en gitt sammenligningsfunksjon, og resultatet må være en permutasjon av inn-dataene. </div>
-										<br>
-										<!--<img src="img/BackgroundImage.jpg" style="max-width: 730px; max-height: 750px;">-->
-									</div>
+
+						<div class="row" >
+							<div id="group-picturePost" class="col-sm-4" align="center">
+								<i  class="fa fa-camera" aria-hidden="true"> Add picture</i>
+							</div>
+							<div id="group-post" class="group-post col-sm-7">
+								<div align="right">
+									<i id="group-postButton" class="fa fa-sticky-note" aria-hidden="true">  Post</i>
 								</div>
 							</div>
+							<div  id="group-post2" class="group-post col-sm-7" style="display: none">
+									<i class="fa fa-sticky-note" aria-hidden="true">  Post</i>
+							</div>
 						</div>
+
+						<div id="posts" align="center"></div>
+						<br>
+
 					</div>
 				</div>
 
 				<!--This is the shopping lists tab.-->
 				<div id="shopping" class="grouptab">
-					<hr width="90%">
 					<!--Here the Javascript will put the lists.-->
-					<div class="col-sm liste" style="background-color: #{{color_hex}};">
+					<div class="col-sm liste" style="background-color: #{{color_hex}}; width: 90%">
 						<div class="row">
 							<div class="col-sm-7" style="text-align: left">
 								<div class="list-name-div" style="margin-bottom: 6px; display: none;">

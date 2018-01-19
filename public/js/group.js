@@ -4,7 +4,7 @@ var person = "Person";
 
 // ***** Code begins here *****
 
-var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList;
+var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore;
 
 /**
 * When the page loads, the page must find the groups available to the user so they can be selected.
@@ -19,7 +19,8 @@ $(document).ready(function() {
                 'newListItem.html',
                 'balance.html',
                 'balanceItem.html',
-                'popupTextfieldList.html'
+                'popupTextfieldList.html',
+                'newsfeedPost.html'
             ]
         },
         success: function (data){
@@ -28,6 +29,7 @@ $(document).ready(function() {
             balance = Handlebars.compile(data['balance.html']);
             balanceItem = Handlebars.compile(data['balanceItem.html']);
             popupTextList = Handlebars.compile(data['popupTextfieldList.html']);
+            feedPost = Handlebars.compile(data['newsfeedPost.html']);
         }
     });
 
@@ -137,7 +139,7 @@ function changeTab(name) {
         getShoppinglist();
     }
     else if(activeTab=='feed'){
-
+        getPost();
     }
 }
 
@@ -562,6 +564,23 @@ function saveItemToDB(id, item, ul, cb){
 }
 
 $(function () {
+    $('#group-postButton').click(function() {
+        console.log('hei');
+        $.ajax({
+            url: '/api/news',
+            method: 'POST',
+            data: {
+                post_text: $('#group-newsfeedPost').val(),
+                group_id: currentGroup.group_id
+            },
+            success: function (data123) {
+                console.log(data123);
+                getPost();
+            }
+        })
+
+    });
+
 	$.ajax({
 		url: '/api/language',
 		method: 'GET',
@@ -636,6 +655,49 @@ $(function () {
 		});
 	});
 });
+
+function getPost(){
+    $.ajax({
+        url:'/api/news/' + currentGroup.group_id,
+        method: 'GET',
+
+        success: function (dataFeed) {
+            $("#posts").html("");
+            for(var i = 0; i < dataFeed.length; i++) {
+                var length = 50;
+                var text = dataFeed[i].post_text.split(" ");
+                var short = "";
+                var rest = "";
+                for(var j = 0; j < length && j < text.length; j++){
+                    short += text[j] + " ";
+                }
+                for(var k = j; k < text.length; k++){
+                    rest += text[k] + " ";
+                }
+                $("#posts").append(feedPost({
+                    name: dataFeed[i].posted_by.forename + (dataFeed[i].posted_by.middlename ? ' ' + dataFeed[i].posted_by.middlename : '') + ' ' + dataFeed[i].posted_by.lastname,
+                    payload: '',
+                    text: short,
+                    rest_text: rest,
+                    image_url: (dataFeed[i].attachment_type == 0 ? '/img/profilPicture.png' : ''),
+                    data: 'data-id="' + dataFeed[i].post_id + '"',
+                    datetime: dataFeed[i].posted_datetime,
+                    lang_read_more: "Read more..."
+                }));
+                console.log(j);
+                if(k <= length)
+                    $("#posts div[data-id=" + dataFeed[i].post_id + "] a").hide();
+                else {
+                    $("#posts div[data-id=" + dataFeed[i].post_id + "] a").click(function(){
+                        console.log("HEI");
+                        $(this).closest("div").find("span").show();
+                        $(this).remove();
+                    });
+                }
+            }
+        }
+    });
+}
 
 function leaveGroup() {
 	$.ajax({url: '/api/group/' + currentGroup.group_id, method: 'DELETE', error: console.error()});
