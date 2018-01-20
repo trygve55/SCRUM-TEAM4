@@ -302,8 +302,10 @@ function addShoppingListEntryToBudgetEntry(req, res, connection, result) {
  */
 router.get('/:shopping_list_id', function(req, res) {
     pool.getConnection(function(err, connection) {
-        if(err)
-            return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+        if (err) {
+            console.log("test0");
+            return res.status(500).json({'Error': 'connecting to database: '} + err);
+        }
         connection.query('SELECT ' +
             'person.person_id, person.forename, person.middlename, person.lastname, ' +
             'budget_entry_id, amount, text_note, entry_datetime, added_by_id, ' +
@@ -335,8 +337,10 @@ router.get('/:shopping_list_id', function(req, res) {
             'SELECT shopping_list_id FROM shopping_list_person WHERE person.person_id = ?) ',
             [req.params.shopping_list_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
                 connection.release();
-                if(err)
-                    return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                if (err) {
+                    console.log("test1");
+                    return res.status(500).json({'Error': 'connecting to database: '} + err);
+                }
                 else if (result.length == 0)
                     res.status(403).json({success: "false", error: "no access"});
                 else {
@@ -390,6 +394,60 @@ router.get('/:shopping_list_id', function(req, res) {
                             budget_entries[i].persons_to_pay[j].amount_to_pay = budget_entries[i].amount / budget_entries[i].persons_to_pay.length;
                         }
                     }
+					
+					var persons_to_get_paid = [];
+					
+					for (var i = 0;i < budget_entries.length;i++) {
+						var paid_to_person_index = payPersonExistsInArray(budget_entries[i].added_by.person_id, persons_to_get_paid);
+						if (paid_to_person_index === -1) {
+							persons_to_get_paid.push({
+								"person_id": budget_entries[i].added_by.person_id,
+								"persons_to_pay": []
+							});
+							paid_to_person_index = persons_to_get_paid.length - 1;
+						}
+                        for (var j = 0; j < budget_entries[i].persons_to_pay.length;j++) {
+						    if (budget_entries[i].persons_to_pay[j].person_id !== persons_to_get_paid[paid_to_person_index].person_id) {
+                                if (budget_entries[i].persons_to_pay[j].datetime_paid === null) {
+                                    var pay_from_person_index = payPersonExistsInArray(budget_entries[i].persons_to_pay[j].person_id, persons_to_get_paid[paid_to_person_index].persons_to_pay);
+                                    if (pay_from_person_index === -1) {
+                                        persons_to_get_paid[paid_to_person_index].persons_to_pay.push({
+                                            "person_id": budget_entries[i].persons_to_pay[j].person_id,
+                                            "amount_to_pay": budget_entries[i].persons_to_pay[j].amount_to_pay
+                                        });
+                                        pay_from_person_index = persons_to_get_paid[paid_to_person_index].persons_to_pay.length - 1;
+                                    } else {
+                                        persons_to_get_paid[paid_to_person_index].persons_to_pay[pay_from_person_index].amount_to_pay += budget_entries[i].persons_to_pay[j].amount_to_pay;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    for (var i = 0;i < persons_to_get_paid.length;i++) {
+					    for (var j = 0;j < persons_to_get_paid.length;j++) {
+					        if (persons_to_get_paid[i].person_id !== persons_to_get_paid[j].person_id) {
+                                for (var k = 0;k < persons_to_get_paid[j].persons_to_pay.length;k++) {
+                                    if (persons_to_get_paid[j].persons_to_pay[k].person_id === persons_to_get_paid[i].person_id) {
+                                        for (var l = 0; l < persons_to_get_paid[i].persons_to_pay.length;l++) {
+                                            if (persons_to_get_paid[i].persons_to_pay[l].person_id === persons_to_get_paid[j].person_id) {
+                                                if (persons_to_get_paid[i].persons_to_pay[l].amount_to_pay === persons_to_get_paid[j].persons_to_pay[k].amount_to_pay) {
+                                                    persons_to_get_paid[i].persons_to_pay.splice(l,1);
+                                                    persons_to_get_paid[j].persons_to_pay.splice(k,1);
+                                                } else if (persons_to_get_paid[i].persons_to_pay[l].amount_to_pay < persons_to_get_paid[j].persons_to_pay[k].amount_to_pay) {
+                                                    persons_to_get_paid[j].persons_to_pay[k].amount_to_pay -= persons_to_get_paid[i].persons_to_pay[l].amount_to_pay;
+                                                    persons_to_get_paid[i].persons_to_pay.splice(l,1);
+                                                } else {
+                                                    persons_to_get_paid[i].persons_to_pay[l].amount_to_pay -= persons_to_get_paid[j].persons_to_pay[k].amount_to_pay;
+                                                    persons_to_get_paid[j].persons_to_pay.splice(k,1);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     res.status(200).json({
                         shopping_list_id: req.params.shopping_list_id,
@@ -401,7 +459,8 @@ router.get('/:shopping_list_id', function(req, res) {
                             currency_long: result[0].currency_long,
                             currency_sign: result[0].currency_sign
                         },
-                        budget_entries: budget_entries
+                        budget_entries: budget_entries,
+                        persons_to_get_paid: persons_to_get_paid
                     });
                 }
             });
@@ -497,6 +556,13 @@ function shoppingListEntryExistsInArray(shopping_list_entry_id, array) {
 }
 
 function payPersonExistsInArray(person_id, array) {
+    for (var i = 0; i < array.length;i++) {
+        if (array[i].person_id == person_id) return i;
+    }
+    return -1;
+}
+
+function paidPersonExistsInArray(person_id, array) {
     for (var i = 0; i < array.length;i++) {
         if (array[i].person_id == person_id) return i;
     }
