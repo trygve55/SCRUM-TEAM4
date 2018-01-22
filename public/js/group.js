@@ -66,6 +66,21 @@ $(document).ready(function() {
 	var groups = $("div.tablink");
 	if (groups.length > 0) {changeGroup($(groups[0]).html());}
 	
+	
+	// STATISTICS
+	var stats = $.ajax({
+		type:"GET",
+		url:"/api/budget/" + currentGroup.shopping_list_id,
+		contentType:"application/json",
+		dataType:"json",
+		success:function(result) {stats = result;}
+	});
+	if (stats) {
+		
+		
+		drawLineChart("#stat0", stats);
+	}
+	
 	// TEST
 	//addGroupToList("Group E");
 	//addGroupToList("Group 1");
@@ -74,10 +89,6 @@ $(document).ready(function() {
 	// Add some updating system here.
 	
 	//window.setInterval(getGroups, 5000);	// Every 5 seconds the groups will be loaded.
-
-
-
-	
 	
 });
 
@@ -635,14 +646,16 @@ $(function () {
 
 function leaveGroup() {
 	$.ajax({url: '/api/group/' + currentGroup.group_id, method: 'DELETE', error: console.error()});
-	location.reload();	// false = from chache, true = from server.
+	location.reload();	// false = from cache, true = from server.
 }
-
-function drawChart() {
+/**
+* Charts.js
+*/
+function drawLineChart(iD, data) {
 	var chart = new Chart($("#stat0").getContext("2d"), {
-	type: 'line',
-	data: {},	// AJAX
-	options: {}
-});
+		type: 'line',
+		data: {data},	// AJAX
+		options: {}
+	});
 	
 }
