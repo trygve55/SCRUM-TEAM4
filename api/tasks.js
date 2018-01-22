@@ -27,6 +27,25 @@ router.get('/notify', function(req, res) {
 });
 
 /**
+ * Get the data for all tasks that repeat.
+ *
+ * URL: /api/tasks/{group_id}
+ * method: GET
+*/
+router.get('/repeat/:group_id', function(req, res) {
+	pool.query(
+		'SELECT todo.*, person_id, forename, lastname ' +
+		'FROM todo LEFT JOIN todo_person USING(todo_id) LEFT JOIN person USING(person_id) ' +
+		'WHERE group_id = ? AND todo_interval != 0',
+		[req.params.group_id], function(err, result) {
+			if (err) {return res.status(500).send();}
+			if (result.length > 0) {res.status(200).json(values);}
+			else {res.status(400).json(result);}
+		}
+	);
+});
+
+/**
  * Add new task to the group task list
  *
  * URL: /api/tasks
@@ -45,19 +64,19 @@ router.get('/notify', function(req, res) {
 router.post('/', function(req, res) {
 	var data = req.body;
 	pool.query(
-        'INSERT INTO todo (' +
-        'group_id, todo_text, datetime_deadline, datetime_done, created_by_id, done_by_id, todo_interval' +
-        ') VALUES (?,?,?,?,?,?);',
-        [
-            checkRange(data.group_id, 1, null),
-            data.todo_text,
-            data.datetime_deadline,
-            data.datetime_done,
-            checkRange(data.created_by_id, 1, null),	// req.session.person_id to test this.
-            checkRange(data.done_by_id, 1, null),
+		'INSERT INTO todo (' +
+		'group_id, todo_text, datetime_deadline, datetime_done, created_by_id, done_by_id, todo_interval' +
+		') VALUES (?,?,?,?,?,?,?);',
+		[
+			checkRange(data.group_id, 1, null),
+			data.todo_text,
+			data.datetime_deadline,
+			data.datetime_done,
+			checkRange(data.req.session.person_id, 1, null),
+			checkRange(data.done_by_id, 1, null),
 			(data.todo_interval ? data.todo_interval : null)
-        ], function(err, result) {checkResult(err, result, res);}
-    );
+		], function(err, result) {checkResult(err, result, res);}
+	);
 });
 
 /**
@@ -70,23 +89,23 @@ router.post('/', function(req, res) {
  * }
 */
 router.post('/person/:todo_id', function(req, res) {
-		var data = req.body.people;
-		if (data.length < 0) {
-			res.status(400).send();
-			return;
-		}
+	var data = req.body.people;
+	if (data.length < 0) {
+		res.status(400).send();
+		return;
+	}
 
-		var resultQuery = multipleRequestSetup(
-										checkRange(req.params.todo_id, 1, null), data,
-										'INSERT INTO todo_person (todo_id, person_id) VALUES ',
-										'(?, ?)', false
-									);
-		
-		pool.query(resultQuery[0], resultQuery[1], function(err) {
-			if(err) { res.status(500).send(); }
-				res.status(200).send();
-            }
-        );
+	var resultQuery = multipleRequestSetup(
+									checkRange(req.params.todo_id, 1, null), data,
+									'INSERT INTO todo_person (todo_id, person_id) VALUES ',
+									'(?, ?)', false
+								);
+	
+	pool.query(resultQuery[0], resultQuery[1], function(err) {
+		if(err) { res.status(500).send(); }
+			res.status(200).send();
+		}
+	);
 });
 
 /**
@@ -96,7 +115,8 @@ router.post('/person/:todo_id', function(req, res) {
  * method: GET
  */
 router.get('/private/:todo_id', function(req, res) {
-    pool.query('SELECT * FROM private_todo_entry WHERE todo.todo_id = ?',
+    pool.query(
+		'SELECT * FROM private_todo_entry WHERE todo.todo_id = ?',
         [req.params.todo_id], function(err, result) {
             if (err)
                 return res.status(500).send();
@@ -180,10 +200,7 @@ router.get('/person/:person_id', function(req, res) {
 */
 router.put('/:todo_id', function(req, res) {
     var query = putRequestSetup(checkRange(req.params.todo_id, 1, null), req.body, "todo");
-    pool.query(
-        query[0], query[1],
-        function(err, result) {checkResult(err, result, res);}
-    );
+    pool.query(query[0], query[1], function(err, result) {checkResult(err, result, res);});
 });
 
 /**
@@ -197,10 +214,7 @@ router.put('/:todo_id', function(req, res) {
 */
 router.delete('/person/:todo_id', function(req, res) {
     var data = req.body.people, todo = checkRange(req.params.todo_id, 1, null);
-    if (data.length < 0) {
-        res.status(400).send();
-        return;
-    }
+    if (data.length < 0) {return res.status(400).send();}
     var resultQuery = multipleRequestSetup(
         checkRange(req.params.todo_id, 1, null), data,
         'DELETE FROM todo_person WHERE todo_id = ? AND person_id IN (',
@@ -208,12 +222,7 @@ router.delete('/person/:todo_id', function(req, res) {
     );
     resultQuery[0] += ')';
 
-    pool.query(
-        resultQuery[0], resultQuery[1],
-        function(err, result) {
-            checkResult(err, result, res);
-        }
-    );
+    pool.query(resultQuery[0], resultQuery[1], function(err, result) {checkResult(err, result, res);});
 });
 
 // Help methods:
