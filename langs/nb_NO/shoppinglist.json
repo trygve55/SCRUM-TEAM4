@@ -20,5 +20,8 @@
   "shop-ok": "OK",
   "shop-trip": "Handletur",
   "shop-price": "Pris",
-  "shop-input-members": "Skriv inn nytt medlem her"
+  "shop-input-members": "Skriv inn nytt medlem her",
+  "shop-entry-name": "Kommentar",
+  "shop-entry-label": "Type",
+  "shop-not-needed": "Ikke nødvendig"
 }
