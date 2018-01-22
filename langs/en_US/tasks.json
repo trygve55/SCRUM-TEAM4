@@ -7,8 +7,8 @@
   "tasks-logout": "Log out",
   "tasks-addlist": "Add new tasklist",
   "tasks-done": "Done",
-  "tasks-share": "Share",
-  "tasks-addmemberstolist": "Add members to",
-  "tasks-cancel": "Cancel",
+  "tasks-share": "Members",
+  "tasks-addmemberstolist": "Members",
+  "tasks-cancel": "Close",
   "tasks-adduser": "Add user"
 }

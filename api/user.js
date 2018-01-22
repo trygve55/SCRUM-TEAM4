@@ -76,7 +76,6 @@ router.put('/:person_id/password', function (req, res) {
     });
 });
 
-//register user
 /**
  * Register a new user
  *
@@ -296,20 +295,15 @@ function checkValidEmail(email) {
 
 router.get('/:person_id/picture', function(req, res){
     pool.getConnection(function (err, connection) {
-        connection.query("SELECT profile_pic FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
+        connection.query("SELECT profile_pic, has_profile_pic FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
             connection.release();
-            if(err) {
-                res.status(500).json({'Error' : 'connecting to database: ' } + err);
-                return;
-            }
+            if(err)
+                return res.status(500).json({'Error' : 'connecting to database: ' } + err);
 
-            if(results.length == 0) {
-                res.status(404).json({error: 'no profile picture.'});
-                return;
-            }
+            if(!results[0].has_profile_pic)
+                return res.status(404).json({error: 'no profile picture.'});
 
-
-            if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
+            res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
         });
     });
 });
@@ -320,19 +314,15 @@ router.get('/:person_id/picture_tiny', function(req, res){
             connection.release();
             return res.status(500).json({error: err});
         }
-        connection.query("SELECT profile_pic_tiny FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
+        connection.query("SELECT profile_pic_tiny, has_profile_pic  FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
             connection.release();
-            if(err) {
-                res.status(500).json({'Error' : 'connecting to database: ' } + err);
-                return;
-            }
+            if(err)
+                return res.status(500).json({'Error' : 'connecting to database: ' } + err);
 
-            if(results.length == 0) {
-                res.status(404).json({error: 'no profile picture.'});
-                return;
-            }
+            if(!results[0].has_profile_pic)
+                return res.status(404).json({error: 'no profile picture.'});
 
-            if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
+            res.contentType('jpeg').status(200).end(results[0].profile_pic_tiny, 'binary');
         });
     });
 });
@@ -368,6 +358,11 @@ router.put('/:person_id', function(req, res) {
 });
 
 router.post('/:person_id/picture', function(req, res){
+
+    if (req.session.person_id === req.params.person_id) return res.status(403).json({
+        "error": "you can not set the profile picture of someone else"
+    });
+
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
         var path = files.file.path,
@@ -379,10 +374,8 @@ router.post('/:person_id/picture', function(req, res){
         }
 
         Jimp.read(path, function (err, img) {
-            if (err) {
-                res.status(500).json({'Error': err});
-                return;
-            }
+            if (err)
+                return res.status(500).json({'Error': err});
 
             var img_tiny = img.clone();
 
@@ -390,30 +383,24 @@ router.post('/:person_id/picture', function(req, res){
                 .contain(500, 500)
                 .quality(70)
                 .getBuffer(Jimp.MIME_JPEG, function (err, data) {
-                    if (err) {
-                        res.status(500).json({'Error': err});
-                        return;
-                    }
+                    if (err)
+                        return res.status(500).json({'Error': err});
                     img_tiny.cover(128, 128)
                         .quality(60)
                         .getBuffer(Jimp.MIME_JPEG, function (err, data_tiny) {
-                            if (err) { res.status(500).json({'Error': err});
-                                return;
-                            }
-                            pool.getConnection(function (err, connection) {
-                                if (err) {
-                                    res.status(500).json({'Error': err});
-                                    return;
-                                }
+                            if (err)
+                                return res.status(500).json({'Error': err});
 
-                                connection.query("UPDATE person SET profile_pic = ?, profile_pic_tiny = ? WHERE person_id = ?;", [data, data_tiny, req.params.person_id], function (err, results, fields) {
+                            pool.getConnection(function (err, connection) {
+                                if (err)
+                                    return res.status(500).json({'Error': err});
+
+                                connection.query("UPDATE person SET profile_pic = ?, profile_pic_tiny = ?, has_profile_pic = 1 WHERE person_id = ?;", [data, data_tiny, req.params.person_id], function (err, results, fields) {
                                     connection.release();
-                                    if (err) {
-                                        res.status(500).json({'Error': err});
-                                        return;
-                                    }
-                                    res.status(200).json(file_size);
-                                    //res.status(200).json(results);
+                                    if (err)
+                                        return res.status(500).json({'Error': err});
+
+                                    res.status(200).json(results);
                                 });
                             });
                         });
@@ -422,13 +409,33 @@ router.post('/:person_id/picture', function(req, res){
     });
 });
 
+router.delete('/:person_id/picture', function(req, res){
+
+    if (req.session.person_id === req.params.person_id) return res.status(403).json({
+        "error": "you can not set the profile picture of someone else"
+    });
+
+    pool.getConnection(function (err, connection) {
+        if (err)
+            return res.status(500).json({'Error': err});
+
+        connection.query("UPDATE person SET profile_pic = NULL, profile_pic_tiny = NULL, has_profile_pic = 0 WHERE person_id = ?;", [data, data_tiny, req.params.person_id], function (err, results, fields) {
+            connection.release();
+            if (err)
+                return res.status(500).json({'Error': err});
+
+            res.status(200).json(results);
+        });
+    });
+});
+
 var transporter = nodemailer.createTransport({
-    service: 'aol',
-    auth: {
-        user: "HHManagerMail@aol.com",
-        pass: "SCRuMteAm4"
-    }
-}), mailOptions = {
+        service: 'aol',
+        auth: {
+            user: "HHManagerMail@aol.com",
+            pass: "SCRuMteAm4"
+        }
+    }), mailOptions = {
         from: "HHManagerMail@aol.com",
         to: "",
         subject: "",
@@ -436,7 +443,6 @@ var transporter = nodemailer.createTransport({
     },
     secret = "CONSTANT# VIGILANCE",
     issuer = "HHManager";
-
 
 /**
  * Send an email with a link to change a forgotten password

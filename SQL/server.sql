@@ -18,6 +18,8 @@ DROP TABLE IF EXISTS budget_entry_type;
 DROP TABLE IF EXISTS budget_entry;
 DROP TABLE IF EXISTS budget_entry_person;
 DROP TABLE IF EXISTS person_budget_entry;
+DROP TABLE IF EXISTS private_todo_entry;
+DROP TABLE IF EXISTS private_todo_list;
 SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE currency (
@@ -52,6 +54,7 @@ CREATE TABLE person (
     gender INTEGER DEFAULT 0,
     profile_pic MEDIUMBLOB,
     profile_pic_tiny BLOB,
+    has_profile_pic BIT NOT NULL DEFAULT 0,
     last_active TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     reset_password_token VARCHAR(255),
     shopping_list_id INTEGER NOT NULL UNIQUE,
@@ -71,6 +74,7 @@ CREATE TABLE home_group (
     cleaning_list_interval INTEGER NOT NULL DEFAULT 0,
     group_pic MEDIUMBLOB,
     group_pic_tiny BLOB,
+    has_group_pic BIT NOT NULL DEFAULT 0,
     default_currency_id INTEGER NOT NULL,
     shopping_list_id INTEGER NOT NULL,
     CONSTRAINT group_currency_fk FOREIGN KEY(default_currency_id) REFERENCES currency(currency_id),
@@ -101,14 +105,35 @@ CREATE TABLE group_person (
 CREATE TABLE shopping_list_person (
     shopping_list_id INTEGER NOT NULL,
     person_id INTEGER NOT NULL,
-    paid_amount INTEGER NOT NULL DEFAULT 0,
-    pay_amount_points INTEGER NOT NULL DEFAULT 100,
     invite_accepted BIT NOT NULL DEFAULT 0,
     invite_sent_datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
-    is_hidden BIT NOT NULL DEFAULT 0,
     CONSTRAINT shopping_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
     CONSTRAINT shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT shopping_list_persons_pk PRIMARY KEY(shopping_list_id, person_id)
+);
+
+CREATE TABLE budget_entry_type ( 
+    budget_entry_type_id INTEGER NOT NULL AUTO_INCREMENT,
+    shopping_list_id INTEGER NOT NULL,
+    entry_type_name NVARCHAR(20) NOT NULL,
+    entry_type_color INTEGER,
+    CONSTRAINT budget_entry_type_shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
+    CONSTRAINT budget_entry_type_pk PRIMARY KEY(budget_entry_type_id)
+);
+
+CREATE TABLE budget_entry (
+    budget_entry_id INTEGER NOT NULL AUTO_INCREMENT,
+    budget_entry_type_id INTEGER,
+    shopping_list_id INTEGER NOT NULL,
+    added_by_id INTEGER NOT NULL,
+    amount INTEGER NOT NULL,
+    text_note NVARCHAR(30),
+    entry_datetime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    receipt_pic MEDIUMBLOB,
+    CONSTRAINT budget_entry_type_fk FOREIGN KEY(budget_entry_type_id) REFERENCES budget_entry_type(budget_entry_type_id),
+    CONSTRAINT budget_entry_type_shopping_list_fk2 FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
+    CONSTRAINT budget_entry_person_fk FOREIGN KEY(added_by_id) REFERENCES person(person_id),
+    CONSTRAINT budget_entry_pk PRIMARY KEY(budget_entry_id)
 );
 
 CREATE TABLE shopping_list_entry (
@@ -133,8 +158,8 @@ CREATE TABLE cleaning_list_points (
     group_id INTEGER NOT NULL,
     month_year DATE NOT NULL,
     points INTEGER NOT NULL,
-	CONSTRAINT cleaning_list_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
-	CONSTRAINT cleaning_list_group_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
+    CONSTRAINT cleaning_list_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
+    CONSTRAINT cleaning_list_group_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
     CONSTRAINT cleaning_list_pk PRIMARY KEY(person_id, group_id, month_year)
 );
 
@@ -168,17 +193,25 @@ CREATE TABLE poll_vote (
     CONSTRAINT poll_vote_pk PRIMARY KEY(post_id, person_id)
 );
 
-CREATE TABLE private_todo (
-    private_todo_id INTEGER NOT NULL AUTO_INCREMENT,
+CREATE TABLE private_todo_list (
+    private_todo_list_id INTEGER NOT NULL AUTO_INCREMENT,
+    private_todo_list_name NVARCHAR(30),
     person_id INTEGER NOT NULL,
+    is_deactivated BIT NOT NULL DEFAULT 0,
+    color_hex INTEGER,
+    CONSTRAINT private_todo_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
+    CONSTRAINT priavte_todo_list_pk PRIMARY KEY(private_todo_list_id)
+);
+
+CREATE TABLE private_todo_entry (
+    private_todo_entry_id INTEGER NOT NULL AUTO_INCREMENT,
+    private_todo_list_id INTEGER NOT NULL,
     todo_text NVARCHAR(200) NOT NULL,
     datetime_deadline DATETIME,
     datetime_added DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     datetime_done DATETIME DEFAULT NULL,
-    is_deactivated BIT NOT NULL DEFAULT 0,
-    color_hex INTEGER,
-    CONSTRAINT private_todo_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
-    CONSTRAINT priavte_todo_pk PRIMARY KEY(private_todo_id)
+    CONSTRAINT private_todo_list_entry_fk FOREIGN KEY(private_todo_list_id) REFERENCES private_todo_list(private_todo_list_id),
+    CONSTRAINT private_todo_entry_pk PRIMARY KEY(private_todo_entry_id)
 );
 
 CREATE TABLE todo (
@@ -206,34 +239,10 @@ CREATE TABLE todo_person (
     CONSTRAINT todo_pk PRIMARY KEY(todo_id, person_id)
 );
 
-CREATE TABLE budget_entry_type ( 
-    budget_entry_type_id INTEGER NOT NULL AUTO_INCREMENT,
-    shopping_list_id INTEGER NOT NULL,
-    entry_type_name NVARCHAR(20) NOT NULL,
-    entry_type_color INTEGER,
-    CONSTRAINT budget_entry_type_shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
-    CONSTRAINT budget_entry_type_pk PRIMARY KEY(budget_entry_type_id)
-);
-
-CREATE TABLE budget_entry (
-    budget_entry_id INTEGER NOT NULL AUTO_INCREMENT,
-    budget_entry_type_id INTEGER,
-    shopping_list_id INTEGER NOT NULL,
-    added_by_id INTEGER NOT NULL,
-    amount INTEGER NOT NULL,
-    text_note NVARCHAR(30),
-    entry_datetime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    receipt_pic MEDIUMBLOB,
-    CONSTRAINT budget_entry_type_fk FOREIGN KEY(budget_entry_type_id) REFERENCES budget_entry_type(budget_entry_type_id),
-    CONSTRAINT budget_entry_type_shopping_list_fk2 FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
-    CONSTRAINT budget_entry_person_fk FOREIGN KEY(added_by_id) REFERENCES person(person_id),
-    CONSTRAINT budget_entry_pk PRIMARY KEY(budget_entry_id)
-);
-
 CREATE TABLE person_budget_entry (
     person_id INTEGER NOT NULL,
     budget_entry_id INTEGER NOT NULL,
-    is_paid BIT NOT NULL DEFAULT 0,
+    datetime_paid DATETIME,
     CONSTRAINT person_budget_entry_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
     CONSTRAINT budget_entry_fk FOREIGN KEY(budget_entry_id) REFERENCES budget_entry(budget_entry_id),
     CONSTRAINT shopping_list_budget_entry_pk PRIMARY KEY(person_id, budget_entry_id)
@@ -432,8 +441,8 @@ INSERT INTO group_person (person_id, group_id, joined_timestamp, role_id, was_in
 INSERT INTO group_person (person_id, group_id, joined_timestamp, role_id, was_invited) 
 	VALUES (2, 1, DEFAULT, DEFAULT, 0);
 
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) 
-	VALUES (4, 1, 0, true, CURRENT_DATE);
+INSERT INTO shopping_list_person (shopping_list_id, person_id, invite_accepted, invite_sent_datetime) 
+	VALUES (4, 1, true, CURRENT_DATE);
 
 INSERT INTO todo (group_id, todo_text, created_by_id) VALUES (1, 'test task', 1);
 
@@ -715,8 +724,6 @@ INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (98,
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (14, 4, 1, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (7, 20, 2, False);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (88, 4, 1, False);
-INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (46, 22, 1, False);
-INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (3, 22, 2, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (28, 13, 2, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (92, 3, 2, False);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (30, 3, 2, False);
@@ -740,7 +747,6 @@ INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (39,
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (97, 6, 2, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (62, 17, 1, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (27, 15, 1, True);
-INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (70, 22, 2, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (40, 15, 1, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (34, 18, 2, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (4, 18, 1, False);
@@ -775,108 +781,3 @@ INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (75,
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (8, 21, 2, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (61, 10, 1, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (17, 11, 2, False);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (10, 7, 46104, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (6, 26, 18802, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (7, 37, 85322, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (16, 41, 93383, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (14, 59, 39064, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (10, 27, 6098, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (10, 2, 69525, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (6, 75, 51974, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (16, 43, 10405, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (10, 12, 30514, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (14, 38, 24142, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (19, 55, 64844, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (5, 49, 29458, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (5, 88, 83067, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (11, 15, 57098, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (14, 54, 68892, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (15, 50, 14608, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (14, 40, 15587, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (11, 96, 94960, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (9, 13, 22795, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (16, 22, 7377, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (15, 95, 57835, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (15, 93, 99663, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (19, 11, 88770, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (14, 46, 63221, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (12, 66, 14339, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (12, 94, 69564, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (6, 64, 81116, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (13, 52, 97093, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (9, 100, 59456, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (10, 57, 52872, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (18, 28, 83776, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (17, 14, 98069, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (5, 101, 39488, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (12, 99, 41142, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (10, 36, 14332, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (8, 29, 55288, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (14, 78, 60127, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (18, 34, 32103, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (15, 33, 32216, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (12, 65, 92047, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (18, 82, 97988, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (14, 61, 84815, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (6, 17, 95414, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (16, 48, 56623, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (15, 91, 37147, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (7, 3, 26204, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (14, 21, 25803, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (5, 42, 4671, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (18, 44, 55418, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (10, 24, 95571, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (6, 69, 76588, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (18, 76, 69397, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (10, 56, 58510, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (10, 72, 37066, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (17, 51, 71109, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (4, 98, 70881, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (11, 89, 36549, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (12, 92, 59286, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (5, 16, 18925, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (4, 19, 83217, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (7, 35, 10434, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (15, 20, 57441, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (18, 77, 3577, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (8, 73, 83682, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (9, 80, 64332, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (9, 79, 38488, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (12, 70, 89659, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (6, 6, 23866, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (14, 58, 24928, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (13, 45, 53040, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (14, 30, 95806, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (9, 8, 60507, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (16, 68, 61759, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (8, 53, 72874, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (7, 32, 50306, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (10, 25, 68543, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (17, 83, 6438, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (11, 84, 98446, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (11, 47, 10539, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (11, 10, 94354, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (13, 74, 92327, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (18, 62, 92391, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (16, 63, 88352, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (15, 86, 82909, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (10, 87, 33641, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (8, 60, 6736, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (13, 9, 75629, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (5, 85, 54145, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (17, 39, 53170, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (16, 81, 53010, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (8, 5, 70794, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (18, 18, 99150, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (13, 23, 62928, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (17, 90, 96671, True, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (10, 4, 53076, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (15, 31, 38110, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (18, 67, 98806, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (6, 97, 66453, False, CURRENT_DATE);
-INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) VALUES (9, 71, 98141, False, CURRENT_DATE);
-
-
-
-
-

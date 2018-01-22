@@ -1,6 +1,25 @@
 var lang;
+var itemcount = 0;
+/*function clicked(element) {
+    $(element).fadeOut(300);
+    var label = element.id;
+    var listnr = label.split("m").pop()[0];
+    console.log($(label).find("col-sm").html());
+    itemcount++;
+    $('#listoftasks'+listnr).append("" +
+        "<li class=\"list-group-item marked\" id=\"elem"+listnr+"-"+itemcount+"\" style='padding: -2px; margin: -3px; font-size: 15px;'>" +
+        "   <div class='row'>" +
+        "       <div class=\"col-sm-5\" id='theitemdiv"+listnr+"-"+itemcount+"'><i class=\"fa fa-check-circle-o\" aria-hidden=\"true\" id='checked"+listnr+"-"+itemcount+"' style='font-size: 15px;'></i>" +
+        "           <i class=\"fa fa-circle-o\" aria-hidden=\"true\" id='unchecked"+listnr+"-"+itemcount+"' style='font-size: 15px;'></i> " +
+        "           "+item+"</div>" +
+        "       <div class='col-sm-7' style='text-align: right'>" +
+        "       <input class='inputdate' type=\"text\" id=\"datepicker"+listnr+"-"+itemcount+"\"> " +
+        "       <i class=\"fa fa-calendar\" aria-hidden=\"true\" id='calendar"+listnr+"-"+itemcount+"' style='font-size: 20px;'></i>" +
+        "           <i class=\"fa fa-times\" aria-hidden=\"true\" id=\"crossout" +listnr+"-"+ itemcount + "\" style='font-size: 20px;'></i></label> " +
+        "   </div></div>" +
+        "</li>");
+}*/
 $('document').ready(function () {
-
     //-----------Language-----------
     $.ajax({
         url: '/api/language',
@@ -73,260 +92,227 @@ $('document').ready(function () {
         });
     });
 
-    //-----------Lists-----------
-    var count = 0;
+    //-----------Add new list-----------
+    var count = 0; //the listnumber
+    //Table with all dates in all lists
+    var dateArr = [];
+    //Table with all 'done'-items
+    var donetab = [];
     $('#addlist').click(function () {
         count++;
-        $("<div class=\"col-sm liste\" id='listenr"+count+"'><div class='row'>" +
-            "<div class='col-sm-7' style='text-align: left' id='listnamediv'>" +
+        dateArr[count] = [];
+        donetab[count] = [];
+
+        //Adds html to the group of lists
+        $("<div class=\"col-sm liste\" id='listnr"+count+"'><div class='row'>" +
+            "<div class='col-sm-7' style='text-align: left'>" +
             "<div id='listname"+count+"' style='margin: 6px'><input type='text' class='form-control' id='listnameinput"+count+"'></div>" +
-            "<div id='nameforlist"+count+"'><h4>Liste"+count+"</h4></div></div>"+
+            "<div id='listnamelabel"+count+"'><h4>Liste"+count+"</h4></div></div>"+
             "<div class='col-sm-5' style='text-align: right'>" +
-            "    <h4><i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: white; text-shadow: 0px 0px 3px #000;' id='whitebutt"+count+"'></i>" +
-            "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: lightpink; text-shadow: 0px 0px 3px #000;' id='pinkbutt"+count+"'></i> " +
-            "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: #ffec8e; text-shadow: 0px 0px 3px #000;' id='yellowbutt"+count+"'></i> " +
-            "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: lightgreen; text-shadow: 0px 0px 3px #000;' id='greenbutt"+count+"'></i></h4></div>" +
+            "    <h4><i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: white;' id='whitebutt"+count+"'></i>" +
+            "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: lightpink;' id='pinkbutt"+count+"'></i> " +
+            "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: #ffec8e;' id='yellowbutt"+count+"'></i> " +
+            "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: lightgreen;' id='greenbutt"+count+"'></i></h4></div>" +
             "</div>" +
-            "<ul class=\"list-group listsss\" id=\"itemlist"+count+"\"></ul>"+
+            "<ul class=\"list-group\" id=\"listoftasks"+count+"\"></ul>"+
             "<ul class=\"list-group\">"+
-            "<div class=\"inpi\" id=\"inputitem"+count+"\"><li class=\"list-group-item\" id=\"listitem"+count+"\">" +
-            "<input type=\"text\" class=\"form-control ni\" id=\"newitem"+count+"\">" +
-            "</li></div><li class=\"list-group-item addi\" id=\"additem"+count+"\"><i class=\"fa fa-plus-circle\" aria-hidden=\"true\"></i> Add item</li>" +
-            "</ul><i class='fa fa-check-circle-o' aria-hidden='true' style='font-size: 20px' id='donebutton"+count+"'> "+lang["tasks-done"]+"</i><i class=\"fa fa-users\" aria-hidden=\"true\" style='font-size: 20px' id='sharebutton"+count+"'> "+lang["tasks-share"]+"</i>" +
-            "<div id='sharediv"+count+"'><input type=\"text\" class=\"form-control ni\" id=\"shareinput"+count+"\"></div>"+
+            "<li class=\"list-group-item\" id=\"newitem"+count+"\"><input type=\"text\" class=\"form-control\" id=\"newiteminput"+count+"\"></li>" +
+            "<li class=\"list-group-item greyhover\" id=\"additem"+count+"\"><i class=\"fa fa-plus-circle\" aria-hidden=\"true\"></i> Add item</li></ul>" +
+            "<i class=\"fa fa-list-ul\" aria-hidden=\"true\" style='font-size: 18px; margin: 7px' id='donebutton"+count+"'> Fullført</i>" +
+            "</div><div class='col-sm liste' id='donetasks"+count+"'><h5 align='left'>Done tasks</h5>" +
+            "<ul class='list-group' id='donelist"+count+"'><div align='center'><i class=\"fa fa-bars\" aria-hidden=\"true\" style='font-size: 15px; margin: 5px;' id='goback"+count+"'> Go back to tasks</i></div></ul>" +
             "</div>").insertAfter("#addlist");
-        $('#listname'+count).hide();
-        $('#inputitem'+count).hide();
+
+        //duplicated jqueries
+        var listname = $('#listname'+count);
+
+        //Hides a number of elements to be shown with clicks etc
+        listname.hide();
+        $('#newitem'+count).hide();
         $('#dialog'+count).hide();
         $('#sharediv'+count).hide();
+        $('#donetasks'+count).hide();
 
-        //---------Opens inputfield to change listname--------
-        $('#nameforlist'+count).click(function(){
-            var navn = this.id;
-            var ide = navn.split("t").pop();
-            console.log(ide + " name for list clicked");
-            $('#nameforlist'+ide).hide();
-            $('#listname'+ide).show();
-            $('#listnameinput'+ide).focus();
+        //---------Opens input-field to change name of list--------
+        $('#listnamelabel'+count).click(function(){
+            var listnr = this.id.split("l").pop();
+            $('#listnamelabel'+listnr).hide();
+            $('#listname'+listnr).show();
+            $('#listnameinput'+listnr).focus();
         });
 
-        //---------Edits listname when enter is pressed-------
-        $('#listname'+count).keypress(function(event) {
-            var navn = this.id;
-            var ide = navn.split("e").pop();
-            console.log(ide + " listname entered");
-            if (event.keyCode == 13 || event.which == 13) {
-                var name = $('#listnameinput'+ide).val();
-                $('#nameforlist'+ide).show();
-                $('#nameforlist'+ide).text(name);
-                $('#listname'+ide).hide();
+        //---------Opens input-field for adding new tasks-------
+        $('#additem'+count).click(function () {
+            var label = this.id;
+            var listnr = label.split("m").pop();
+            $('#additem'+listnr).hide();
+            $('#newitem'+listnr).show();
+            $('#newiteminput'+listnr).focus();
+        });
+
+        //---------Edits name of list when enter is pressed-------
+        $('#listnameinput'+count).keypress(function(event) {
+            var label = this.id;
+            var listnr = label.split("t").pop();
+            if (event.keyCode === 13 || event.which === 13) {
+                var name = $('#listnameinput'+listnr).val();
+                var listnamelabel = $('#listnamelabel'+listnr);
+                listnamelabel.show();
+                listnamelabel.html('<h4>'+name+'</h4>');
+                $('#listname'+listnr).hide();
             }
         });
 
         //---------Changes the background-colors when circles are clicked-------
         $('#pinkbutt'+count).click(function () {
-            var navn = this.id;
-            var ide = navn.split("t").pop(); //listeid
-            var name = "listenr"+ide;
-
-            $('#'+name).removeClass("pink green white yellow");
-            $('#'+name).addClass("pink");
+            var label = this.id;
+            var listnr = label.split("t").pop();
+            var list = $('#listnr'+listnr);
+            list.removeClass("pink green white yellow");
+            list.addClass("pink");
         });
         $('#yellowbutt'+count).click(function () {
-            var navn = this.id;
-            var ide = navn.split("t").pop(); //listeid
-            var name = "listenr"+ide;
-            $('#'+name).removeClass("pink green white yellow");
-            $('#'+name).addClass("yellow");
+            var label = this.id;
+            var listnr = label.split("t").pop();
+            var list = $('#listnr'+listnr);
+            list.removeClass("pink green white yellow");
+            list.addClass("yellow");
         });
         $('#greenbutt'+count).click(function () {
-            var navn = this.id;
-            var ide = navn.split("t").pop(); //listeid
-            var name = "listenr"+ide;
-            $('#'+name).removeClass("pink green white yellow");
-            $('#'+name).addClass("green");
+            var label = this.id;
+            var listnr = label.split("t").pop();
+            var list = $('#listnr'+listnr);
+            list.removeClass("pink green white yellow");
+            list.addClass("green");
         });
         $('#whitebutt'+count).click(function () {
-            var navn = this.id;
-            var ide = navn.split("t").pop(); //listeid
-            var name = "listenr"+ide;
-            $('#'+name).removeClass("pink green white yellow");
-            $('#'+name).addClass("white");
+            var label = this.id;
+            var listnr = label.split("t").pop();
+            var list = $('#listnr'+listnr);
+            list.removeClass("pink green white yellow");
+            list.addClass("white");
         });
 
-        //---------Opens inputfield for adding listitems-------
-        $('#additem'+count).click(function () {
-            var name = this.id;
-            var ide = name.split("m").pop(); //listeid
 
-            $('#additem'+ide).hide();
-            $('#inputitem'+ide).show();
-            $('#newitem'+ide).focus();
+
+
+        //-------------Opens a list of all tasks that are done------------
+        $('#donebutton'+count).click(function () {
+            var listnr = this.id.split("n").pop();
+            $('#donetasks'+listnr).show();
+            $('#listnr'+listnr).hide();
+            //Adds all elements in done-list to the current list
+            if(donetab.length>1){
+                for (var i=0; i<donetab[listnr].length; i++){
+                    $('#donelist'+listnr).prepend('<li class="list-group-item marked" onclick="clicked(this)" id="doneitem'+listnr+"-"+i+'"><div class="row"><i class="fa fa-check-circle-o" aria-hidden="true" id="checked'+i+'" style="font-size: 15px;"></i>' +
+                        '<i class="fa fa-circle-o" aria-hidden="true" id="unchecked'+i+'" style="font-size: 15px;"></i><div class="col-sm" id="doneitemtext'+listnr+'">'+donetab[listnr][i]+'</div></div>' +
+                        '</li>');
+                    $('#unchecked'+i).hide();
+                }
+                donetab[listnr]=[]; //resets done-tab
+
+
+                //-------------------Goes back to main list of tasks-----------------
+                $('#goback'+listnr).click(function () {
+                    $('#donetasks'+listnr).hide();
+                    $('#listnr'+listnr).show();
+                });
+            }
+        });
+
+        //-----------Hide input when focus goes out-----
+        $("#newiteminput"+count).focusout(function () {
+            var listnr = this.id.split("t").pop();
+            $('#additem'+listnr).show();
+            $('#newitem'+listnr).hide();
         });
 
         //---------Adds item to list when Enter is pressed----
-        var itemcount = 0;
-        $('#newitem'+count).keypress(function(event) {
-            if (event.keyCode == 13 || event.which == 13) {
+        $("#newiteminput"+count).keypress(function(event) {
+            if (event.keyCode === 13 || event.which === 13) {
                 itemcount++;
 
-                var navn = this.id;
-                var ide = navn.split("m").pop(); //Id of list
-                var item = $('#newitem'+ide).val(); //Value of inputfield
+                var listnr = this.id.split("t").pop(); //Id of list
+                var item = $('#newiteminput'+listnr).val(); //Value of inputfield
 
-                $('#newitem'+ide).val('');//Resets inputfield
-                //----------Adds item--------
-                $('#itemlist'+ide).append("" +
-                    "<li class=\"list-group-item\" id=\"elem"+count+itemcount+"\" style='padding: -2px; margin: -3px'>" +
+
+                $('#newiteminput'+listnr).val('');//Resets inputfield
+
+                //----------Adds item-----------
+                $('#listoftasks'+listnr).append("" +
+                    "<li class=\"list-group-item marked\" id=\"elem"+listnr+"-"+itemcount+"\" style='padding: -2px; margin: -3px; font-size: 15px;'>" +
                     "   <div class='row'>" +
-                    "       <div class=\"checkbox col-sm\"> " +
-                    "           <label id='labelitem"+count+itemcount+"'>" +
-                    "           <input class='checkboxx' type=\"checkbox\" id='checkbox"+count+itemcount+"'> "+item+"</div>" +
-                    "       <div class='col-sm' style='text-align: right'>" +
-                    "           <i class=\"fa fa-times\" aria-hidden=\"true\" id=\"crossout" +count+"-"+ itemcount + "\" style='font-size: 25px;'></i></label> " +
+                    "       <div class=\"col-sm-5\" id='theitemdiv"+listnr+"-"+itemcount+"'><i class=\"fa fa-check-circle-o\" aria-hidden=\"true\" id='checked"+listnr+"-"+itemcount+"' style='font-size: 15px;'></i>" +
+                    "           <i class=\"fa fa-circle-o\" aria-hidden=\"true\" id='unchecked"+listnr+"-"+itemcount+"' style='font-size: 15px;'></i> " +
+                    "           "+item+"</div>" +
+                    "       <div class='col-sm-7' style='text-align: right'>" +
+                    "       <input class='inputdate' type=\"text\" id=\"datepicker"+listnr+"-"+itemcount+"\"> " +
+                    "       <i class=\"fa fa-calendar\" aria-hidden=\"true\" id='calendar"+listnr+"-"+itemcount+"' style='font-size: 20px;'></i>" +
+                    "           <i class=\"fa fa-times\" aria-hidden=\"true\" id=\"crossout" +listnr+"-"+ itemcount + "\" style='font-size: 20px;'></i></label> " +
                     "   </div></div>" +
-                    "   <div class='row'>" +
-                    "       <div class='col-sm assign' style='font-style: italic; text-decoration: underline;' id='assign"+count+'-'+itemcount+"'> " +
-                    "           <div id='namee"+count+itemcount+"'>Assign</div> " +
-                    "           <div id='divassignedto"+count+"-"+itemcount+"'>" +
-                    "               <input type='text' class='form-control' id='assignedto"+count+"-"+itemcount+"'>" +
-                    "   </div></div>" +
-                    "<div class='col-sm' style='text-align: right'><div class='assign' id='dueto"+count+"-"+itemcount+"' style='font-style: italic; text-decoration: underline;'>Due date</div>" +
-                    "<div id='divduetoinput"+count+"-"+itemcount+"'>" +
-                    "<input type='text' class='form-control' id='duetoinput"+count+"-"+itemcount+"'></div></div>" +
-                    "</div>"+
                     "</li>");
-                $('#divassignedto'+count+"-"+itemcount).hide();
-                $('#divduetoinput'+count+"-"+itemcount).hide();
+
+                //-------------Sets dateformat and sets date inthe datedateArrtab------------
+                $( function() {
+                    $("#datepicker"+listnr+"-"+itemcount).datepicker({
+                        //dateFormat: 'DD, mm-y'
+                        dateFormat: 'dd/mm/y',
+                        onSelect: function() {
+                            var name = this.id;
+                            var numbers = name.split("r").pop();
+                            var thiscount =  numbers.split("-")[0];
+                            var thisitemcount = numbers.split("-")[1];
+                            dateArr[thiscount][thisitemcount] = $(this).datepicker('getDate');
+                        }
+                    });
+                });
+                //Hides elements yet to be shown
+                $("#datepicker"+listnr+"-"+itemcount).hide();
+                $('#checked'+listnr+"-"+itemcount).hide();
+
+
+                //----------Makes task go to donelist---------------
+                $('#theitemdiv'+count+"-"+itemcount).click(function(){
+                    var listnr = this.id.split("v").pop();
+                    var thiscount =  listnr.split("-")[0];
+                    var thisitemcount = listnr.split("-")[1];
+
+                    var thetext = $('#theitemdiv'+thiscount+"-"+thisitemcount).html();
+                    var item = thetext.split(">").pop();
+                    var len = donetab[thiscount].length;
+                    donetab[thiscount][len]=item;
+                    $('#checked'+thiscount+"-"+thisitemcount).show();
+                    $('#unchecked'+thiscount+"-"+thisitemcount).hide();
+                    $('#elem'+thiscount+"-"+thisitemcount).fadeOut(300);
+                });
 
                 //----------Deletes item-----------------------------
                 $('#crossout'+count+'-'+itemcount).click(function () {
-                    var name = this.id;
-                    var numbers = name.split("t").pop(); //listeid
+                    var numbers = this.id.split("t").pop();
                     var thiscount =  numbers.split("-")[0];
                     var thisitemcount = numbers.split("-")[1];
-                    var theelement = "elem"+thiscount+thisitemcount;
-                    document.getElementById(theelement).remove();
-                    itemcount--;
+                    $('#elem'+thiscount+"-"+thisitemcount).remove();
                 });
 
-                //----------Opens inputfield for assigned to----------
-                $('#assign'+count+'-'+itemcount).click(function () {
-                    var name = this.id;
-                    var thiscount = name.split("n").pop().split("-")[0];
-                    var thisitemcount = name.split("n").pop().split("-")[1];
-                    $('#divassignedto'+thiscount+"-"+thisitemcount).show();
-                    $('#assignedto'+thiscount+"-"+thisitemcount).focus();
-                });
+                //----------Adds due-date to task------------------------
+                $('#calendar'+count+'-'+itemcount).click(function () {
+                    var numbers = this.id.split("r").pop();
+                    var thiscount =  numbers.split("-")[0];
+                    var thisitemcount = numbers.split("-")[1];
+                    var datepicker = $("#datepicker"+thiscount+"-"+thisitemcount);
+                    if(datepicker.is(":visible")){
+                        datepicker.hide();
+                    }else{
+                        if(datepicker.val()===""){
+                            datepicker.show();
+                            datepicker.focus();
 
-                //----------Sets assigned-to when Enter is clicked----
-                $('#assignedto'+count+"-"+itemcount).keypress(function (event) {
-                    if (event.keyCode == 13 || event.which == 13) {
-                        var name = this.id;
-                        var thiscount = name.split("o").pop().split("-")[0];
-                        var thisitemcount = name.split("o").pop().split("-")[1];
-                        var name = $('#assignedto'+thiscount+'-'+thisitemcount).val();
-                        $('#namee'+thiscount+thisitemcount).html("Assigned to: " + name);
-                        $('#divassignedto'+thiscount+'-'+thisitemcount).hide();
-                    }
-                });
-
-                //----------Opens inputfield for due to----------
-                $('#dueto'+count+'-'+itemcount).click(function () {
-                    var name = this.id;
-                    var thiscount = name.split("o").pop().split("-")[0];
-                    var thisitemcount = name.split("o").pop().split("-")[1];
-                    $('#divduetoinput'+thiscount+"-"+thisitemcount).show();
-                    $('#duetoinput'+thiscount+"-"+thisitemcount).focus();
-                });
-
-                //----------Sets due-to when Enter is clicked----
-                $('#duetoinput'+count+"-"+itemcount).keypress(function (event) {
-                    if (event.keyCode == 13 || event.which == 13) {
-                        var name = this.id;
-                        var thiscount = name.split("t").pop().split("-")[0];
-                        var thisitemcount = name.split("t").pop().split("-")[1];
-                        var date = $('#duetoinput'+thiscount+'-'+thisitemcount).val();
-                        $('#dueto'+thiscount+'-'+thisitemcount).html("Due to: " + date);
-                        $('#divduetoinput'+thiscount+'-'+thisitemcount).hide();
+                        }else{
+                            datepicker.show();
+                        }
                     }
                 });
             }
         });
-
-        //-----------Hide inputfield when focus goes out-----
-        $("#newitem"+count).focusout(function () {
-            var navn = this.id;
-            var ide = navn.split("m").pop(); //listeid
-            $('#additem'+ide).show();
-            $('#inputitem'+ide).hide();
-        });
-
-        //-----------Adds all checked items to a table and removes them from the list---------
-        $("#donebutton"+count).click(function () {
-            var table = [];
-            var navn = this.id;
-            var ide = navn.split("n").pop(); //listeid
-            $(".checkboxx").each(function () {
-                if($(this).is(':checked')){
-                    var numb = this.id;
-                    var nr = numb.split("x").pop();
-                    var ss = nr[1];
-                    var htmllab = $('#labelitem'+ide+ss).html();
-                    var item = htmllab.split(">").pop();
-                    table.push(item);
-                    document.getElementById('elem'+ide+ss).remove();
-                }
-            });
-            for(t in table){
-                //console.log(table[t]);
-            }
-        });
-
-        //------------Opens a pop-up so you can share a list with others------------
-        $('#sharebutton'+count).click(function () {
-            var navn = this.id;
-            var ide = navn.split("n").pop(); //listeid
-            if ($('#sharediv'+ide).is(':visible')) {
-                $('#sharediv'+ide).hide();
-            }else{
-                $('#sharediv'+ide).show();
-                $('#shareinput'+ide).keypress(function (event) {
-                    if(event.keyCode == 13 || event.which == 13){
-                        var name = $('#shareinput'+ide).val();
-                        $('#shareinput'+ide).val('');
-                        $('#sharediv'+ide).hide();
-                    }
-                });
-            }
-        });
-        //--------------POPUP Share list-----------------
-        function deselect(e) {
-            $('.pop').slideFadeToggle(function() {
-                e.removeClass('selected');
-            });
-        }
-
-        $(function() {
-            $('#sharebutton'+count).on('click', function() {
-                if($(this).hasClass('selected')) {
-                    deselect($(this));
-                } else {
-                    $(this).addClass('selected');
-                    $('.pop').slideFadeToggle();
-                }
-                return false;
-            });
-
-            $('#tasks-cancel').on('click', function() {
-                deselect($('#contact'));
-                return false;
-            });
-        });
-
-        $.fn.slideFadeToggle = function(easing, callback) {
-            return this.animate({ opacity: 'toggle', height: 'toggle' }, 'fast', easing, callback);
-        };
     });
-
 });

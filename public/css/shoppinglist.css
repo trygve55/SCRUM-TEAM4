@@ -83,7 +83,6 @@ a.selected {
     border-radius: 25px;
     box-shadow: 5px 5px grey;
 }
-
 .pop {
     text-align:left;
     position: fixed;
@@ -107,7 +106,6 @@ a.selected {
     border-radius: 25px;
     box-shadow: 5px 5px grey;
 }
-
 label {
     display: block;
     margin-bottom: 3px;

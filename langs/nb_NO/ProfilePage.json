@@ -11,5 +11,18 @@
   "profile-addItem": "Legg til element",
   "profile-allShoppinglists": "Alle gjøremål",
   "profile-allShoppinglist":"Alle handlelister",
-  "additem":"Legg til"
+  "additem":"Legg til",
+  "p-newpassword": "Nytt passord",
+  "p-oldpassword": "Gammelt passord",
+  "p-username": "Brukernavn",
+  "p-forename": "Fornavn",
+  "p-middlename": "Mellomnavn",
+  "p-lastname": "Etternavn",
+  "p-phonenumber": "Mobilnummer",
+  "p-birthdate": "Fødselsdato",
+  "p-gender": "Kjønn",
+  "p-savepassword": "Lagre passord",
+  "p-saveinfo": "Lagre info",
+  "p-changepassword": "Endre passord",
+  "p-changeinfo": "Endre info"
 }

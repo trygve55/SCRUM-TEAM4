@@ -3,19 +3,30 @@ body{
     background-size: cover;
     font-style: inherit;
     background-attachment: fixed;
-    height: auto;
-    padding-bottom: 20px;
 
 }
 
-div.containerr{
-    max-width: 90%;
+div.container1{
+
+    width:100%;
+    height:100%;
+
     background-color: white;
     border-radius: 15px;
-    min-height: 680px;
-    padding-top: 20px ;
-    padding-bottom: 30px;
+    overflow: hidden;
+
+
 }
+
+div.changeinfo {
+    margin-top: 5%;
+    width: 95%;
+    padding: 2%;
+    font-size: 90%;
+
+}
+
+
 
 div.background1{
     background-color: white;
@@ -23,23 +34,21 @@ div.background1{
 }
 
 div.personaliaborder{
-    padding-bottom: 0%;
+    padding-bottom: 10%;
+
 }
 
 div.listborder {
     background-color: white;
-    padding: 1%;
 }
 
 div.textarea{
+
     width: 95%;
     padding: 1%;
     font-size: 90%;
     background-color: white;
-    -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    border-radius: 15px;
+
     height: 200px;
 }
 
@@ -61,6 +70,12 @@ div.textarea{
     white-space: nowrap;
 }
 
+.fa-picture-o{
+    font-size: 20px;
+}
+
+/*
+
 @media screen and (max-width: 375px) {
     .picture img {
         display: none!important;
@@ -74,10 +89,9 @@ div.textarea{
         text-align: center;
 
     }
-
 }
 
-
+*/
 
 #profile-name{
     padding-top: 6%;
@@ -85,16 +99,10 @@ div.textarea{
 
 div.debtborder{
     height: 46%;
-    padding-top: 5%;
-    padding-bottom: 3%;
-}
-
-.list-group{
-    overflow-y:scroll;
-    text-align: left;
-    max-height: 230px;
-    min-width: 100px;
-    max-width: 100%;
+    width: 100%;
+    margin-left: -5%;
+    margin-right: -5%;
+    padding-bottom: 5%;
 }
 
 
@@ -103,19 +111,6 @@ div.debtborder{
     position: absolute;
     bottom: 0;
     align: center;
-}
-
-.list-groups{
-    overflow-y:scroll;
-    width: 100%;
-    min-height: 200px; /* MÅ VÆRE PROSENT */
-    max-height: 300px;
-}
-
-.force-to-bottom {
-    position:absolute;
-    bottom: 0%;
-    width: 100%;
 }
 
 h4 {
@@ -172,20 +167,13 @@ h6{
 /* End carousel */
 
 div.shadow{
-    width: 60%;
-    height: 100%;
-    margin-top: 2%;
-    margin-bottom:2%;
-    -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    width: 70%;
+    min-width: 50%;
+    height: 200px;
+    border-radius: 10px;
+    -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.1) inset;
+    -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.1) inset;
+    box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.1) inset;
+    margin-bottom: 1%;
     padding: 2%;
-
-
 }
-
-.buttonstyle{
-    margin-bottom: 5%;
-
-}
-
