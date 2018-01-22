@@ -7,7 +7,7 @@
       <x>568</x>
       <y>184</y>
       <w>168</w>
-      <h>168</h>
+      <h>160</h>
     </coordinates>
     <panel_attributes>HomeGroup
 --
@@ -19,7 +19,6 @@ created_datetime
 group_pic
 group_pic_tiny
 has_group_pic
-cleaning_list_interval
 default_currency_id
 group_deactivated</panel_attributes>
     <additional_attributes/>
@@ -105,12 +104,12 @@ was_invited</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>640</x>
-      <y>344</y>
+      <y>336</y>
       <w>24</w>
-      <h>48</h>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -239,9 +238,9 @@ style=wordwrap</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>816</x>
-      <y>144</y>
+      <y>128</y>
       <w>168</w>
-      <h>136</h>
+      <h>152</h>
     </coordinates>
     <panel_attributes>Todo
 --
@@ -253,7 +252,8 @@ datetime_done
 created_by_id
 done_by_id
 is_deactivated
-color_hex</panel_attributes>
+color_hex
+todo_interval</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -366,7 +366,8 @@ datetime_purchased</panel_attributes>
     <panel_attributes>Shopping List persons
 --
 invite_sent_datetime
-invite accepted</panel_attributes>
+invite accepted
+is_hidden</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -384,12 +385,12 @@ invite accepted</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>728</x>
-      <y>120</y>
+      <y>104</y>
       <w>520</w>
-      <h>448</h>
+      <h>464</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>300.0;540.0;300.0;510.0;630.0;510.0;630.0;10.0;80.0;10.0;80.0;110.0;10.0;110.0</additional_attributes>
+    <additional_attributes>300.0;560.0;300.0;530.0;630.0;530.0;630.0;10.0;80.0;10.0;80.0;130.0;10.0;130.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
@@ -630,8 +631,7 @@ style=wordwrap</panel_attributes>
 _shopping_list_id_
 shopping_list_name
 currency_id
-color_hex
-is_hidden</panel_attributes>
+color_hex</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
