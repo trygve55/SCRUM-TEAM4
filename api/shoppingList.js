@@ -139,6 +139,52 @@ router.delete('/entry/:shopping_list_entry_id', function(req, res) {
     });
 });
 
+
+/**
+ * Update shopping list person info
+ *
+ * URL: /api/shoppingList/person/{shopping_list_entry_id}
+ * method: PUT
+ * data: {
+ *      other sql attributes you want to change
+ * }
+ */
+router.put('/info/:shopping_list_id', function(req, res) {
+    if(!req.params.shopping_list_id)
+        return res.status(400).json({error: "no shopping list id"});
+    pool.getConnection(function(err, connection) {
+        if(err) {
+            connection.release();
+            return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+        }
+
+        var parameters = [], request = 'UPDATE shopping_list_person SET ', first = true;
+        for (var k in req.body) {
+            if (k !== req.body.invite_sent_datetime) {
+                (!first) ? request += ', ' :  first = false;
+                request += k + ' = ?';
+                parameters.push(req.body[k]);
+            }
+        }
+        request += ' WHERE person_id = ? AND shopping_list_id = ? ' +
+            'AND shopping_list_id IN  ' +
+            '(SELECT t.shopping_list_id FROM (SELECT shopping_list_id FROM person) t WHERE person_id = ?  ' +
+            'UNION ' +
+            'SELECT k.shopping_list_id FROM (SELECT shopping_list_id FROM shopping_list_person) k WHERE person_id = ?) LIMIT 1';
+
+        parameters.push(req.session.person_id);
+        parameters.push(req.params.shopping_list_id);
+        parameters.push(req.session.person_id);
+        parameters.push(req.session.person_id);
+
+        connection.query(request, parameters, function(err, result) {
+            connection.release();
+            if (err) return res.status(500).json({error: err});
+            res.status(200).json({request: request,result: result, parameters: parameters});
+        });
+    });
+});
+
 /**
  * Return the shopping list current user has access to
  *
@@ -386,16 +432,17 @@ function putRequestSetup(id, req, connection, tableName) {
             parameters.push(req.body[k]);
         }
     }
-    request += ' WHERE ' + tableName + '_id = ' + id +
+    request += ' WHERE ' + tableName + '_id = ? ' +
         ' AND shopping_list_id IN  ' +
-        '(SELECT shopping_list_id FROM person WHERE person_id = ?  ' +
+        '(SELECT t.shopping_list_id FROM (SELECT shopping_list_id FROM person) t WHERE person_id = ?  ' +
         'UNION  ' +
-        'SELECT home_group.shopping_list_id FROM person  ' +
+        'SELECT n.shopping_list_id FROM (SELECT home_group.shopping_list_id person  ' +
         'LEFT JOIN group_person USING(person_id) ' +
-        'LEFT JOIN home_group USING(group_id) ' +
+        'LEFT JOIN home_group USING(group_id) n) ' +
         'WHERE person.person_id = ? ' +
         'UNION ' +
-        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ? AND invite_accepted = 1) LIMIT 1';
+        'SELECT k.shopping_list_id FROM (SELECT shopping_list_id FROM shopping_list_person) k WHERE person_id = ? AND invite_accepted = 1) LIMIT 1';
+    parameters.push(id);
     parameters.push(req.session.person_id);
     parameters.push(req.session.person_id);
     parameters.push(req.session.person_id);
