@@ -25,6 +25,10 @@
   "p-saveinfo": "Save info",
   "p-changepassword": "Change password",
   "p-changeinfo": "Change info",
-  "p-changephoto": "Change photo"
-
+  "p-changephoto": "Change photo",
+  "p-gender": "Gender",
+  "p-genderopt": "< Gender (optional) >",
+  "p-female":, "Female",
+  "p-male":, "Male",
+  "p-other": "Other"
 }

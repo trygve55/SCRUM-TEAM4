@@ -23,6 +23,15 @@
     <script src="/js/ProfilePage.js"></script>
     <script src="/js/redirect.js"></script>
     <script src="https://use.fontawesome.com/dea62227f7.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
     <script type="text/javascript"> (function() { var css = document.createElement('link'); css.href = '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css'; css.rel = 'stylesheet'; css.type = 'text/css'; document.getElementsByTagName('head')[0].appendChild(css); })(); </script>
 </head>
 
@@ -33,6 +42,8 @@
 </style>
 
 <script type="text/javascript">
+
+
     $(document).ready(function () {
         $('#media').carousel({
             pause: true,
@@ -206,31 +217,36 @@
 
                 <div class="row form-group">
                     <div class="col-4" align="left">
-                        <label for="gender">Select list (select one):</label>
+                        <label for="gender" id="p-gender"></label>
                     </div>
                     <div class="col-8">
                         <select class="form-control" id="gender">
-                            <option> < Kjønn(valgfritt) > </option>
-                            <option>Female</option>
-                            <option>Male</option>
-                            <option>Other</option>
-
+                            <option id="p-other"></option>
+                            <option id="p-female"></option>
+                            <option id="p-male"></option>
+                            <option id="p-genderopt" selected></option>
                         </select>
                     </div>
                 </div>
 
                 <div class="row form-group">
                     <div class="col-4" align="left">
-                        <label for="sel2">Birthdate</label>
+                        <label for="datepicker">Birthdate</label>
                     </div>
                     <div class="col-8">
-                        <select class="form-control" id="sel2">
 
-                        </select>
+                        <input value="yyyy-mm-dd" type="text" id="datepicker">
                     </div>
                 </div>
 
-                <button type="button" id="but" class="btn btn-default buttonstyle">Save info</button>
+                <div class="row form-group">
+                    <div class="col-4" align="left">
+                    </div>
+                    <div class="col-8" align="right">
+                        <button type="button" id="but" class="btn btn-default buttonstyle">Save info</button>
+                    </div>
+                </div>
+
 
                 <!-- <button type="default" class="btn btn-primary" style="align:right">Save info</button> -->
             </form>
@@ -244,7 +260,7 @@
                         <label for="usr" id="p-oldpassword"></label>
                     </div>
                     <div class="col-8">
-                        <input type="password" class="form-control" id="usr" placeholder="old password">
+                        <input type="password" class="form-control" id="usr">
                     </div>
                 </div>
                 <div class="row form-group">
@@ -252,10 +268,16 @@
                         <label for="pwd" id="p-newpassword"></label>
                     </div>
                     <div class="col-8">
-                        <input type="password" class="form-control" id="pwd" placeholder="new password">
+                        <input type="password" class="form-control" id="pwd">
                     </div>
                 </div>
-                <button id="but1" type="button" class="btn btn-default buttonstyle" style="align:right">Save password</button>
+                <div class="row form-group">
+                    <div class="col-4" align="left">
+                    </div>
+                    <div class="col-8" align="right">
+                        <button id="but1" type="button" class="btn btn-default buttonstyle" style="align:right">Save password</button>
+                    </div>
+                </div>
             </div>
             </form>
 

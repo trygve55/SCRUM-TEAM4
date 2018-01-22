@@ -88,12 +88,16 @@ $(document).ready(function () {
         data: {
             variables: [
                 'forename',
+                'middlename',
                 'lastname' ,
                 'email',
                 'phone',
                 'username',
                 'facebook_api_id',
-                'shopping_list_id'
+                'shopping_list_id',
+                'person_id',
+                'gender',
+                'birth_date'
             ]
         },
         success: function (data) {
@@ -104,7 +108,12 @@ $(document).ready(function () {
 
 
 
-            testetest = (data[0].person_id);
+            testetest = data[0].person_id;
+            console.log(data[0]);
+
+            var dato = data[0].birth_date;
+
+
 
             $('#profile-name').text(data[0].forename + '  ' + data[0].lastname);
             $('#p-forenam').val(data[0].forename);
@@ -112,6 +121,12 @@ $(document).ready(function () {
             $('#p-lastnam').val(data[0].lastname);
             $('#p-usernam').val(data[0].username);
             $('#p-phonenumb').val(data[0].phone);
+            $('#datepicker').val(data[0].birth_date);
+            $('#datepicker').val('yy-mm-dd', data[0].birth_date);
+
+            /*$('#datepicker').datepicker({ dateFormat: 'dd-mm-yy' }).val(data[0].birth_date);*/
+
+
 
             $('#profile-email').text(data[0].email);
             $('#profile-phone').text(data[0].phone ? data[0].phone : "");
@@ -128,14 +143,23 @@ $(document).ready(function () {
 
     });
 
+    $( "#datepicker" ).datepicker({
+        dateFormat: 'yy-mm-dd',
+        changeMonth: true,
+        changeYear: true
+    });
 
     $("#but").click(function () {
-        console.log(testetest);
         $.ajax({
             url: '/api/user/'+testetest,
             method: 'PUT',
             data:{
-                username: $('#p-usernam').val()
+                username: $('#p-usernam').val(),
+                forename: $('#p-forenam').val(),
+                middlename: $('#p-middlenam').val(),
+                lastname: $('#p-lastnam').val(),
+                phone: $('#p-phonenumb').val(),
+                birth_date: $('#datepicker').val()
             },
             success: function (data) {
                 console.log(data)
@@ -143,6 +167,8 @@ $(document).ready(function () {
             error: console.error
         });
     });
+
+
 
     /**
      * Hides buttons, input
