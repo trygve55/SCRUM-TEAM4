@@ -1,10 +1,9 @@
 // ***** Temporary test variables - delete this section when no longer needed *****
-var grouplist;
 var person = "Person";
 
-// ***** Code begins here *****
 
 var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore;
+var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
 
 /**
 * When the page loads, the page must find the groups available to the user so they can be selected.
@@ -37,7 +36,7 @@ $(document).ready(function() {
 		url:'/api/group/me',
 		method:'GET',
 		success: function (data) {
-			grouplist = data;
+			var grouplist = data;
 			console.log(data);
 			currentGroup = data[0];
 			for(var i = 0; i < data.length; i++){
@@ -61,10 +60,9 @@ $(document).ready(function() {
 	});
 
 	loadLanguageText();
-	//getGroups();
 	
-	var groups = $("div.tablink");
-	if (groups.length > 0) {changeGroup($(groups[0]).html());}
+	//var groups = $("div.tablink");
+	//if (groups.length > 0) {changeGroup($(groups[0]).html());}
 	
 	// TEST
 	//addGroupToList("Group E");
@@ -74,10 +72,6 @@ $(document).ready(function() {
 	// Add some updating system here.
 	
 	//window.setInterval(getGroups, 5000);	// Every 5 seconds the groups will be loaded.
-
-
-
-	
 	
 });
 
@@ -135,15 +129,14 @@ function changeTab(name) {
         $(tabs[i]).hide()
     $("#" + name).show();
     activeTab = name;
-    if(activeTab=='shopping') {
+    if(activeTab=='shopping')
         getShoppinglist();
-    }
-    else if(activeTab=='feed'){
+    else if(activeTab=='feed')
         getPost();
-    }
-    if(activeTab=='tasks'){
+    else if(activeTab=='tasks')
         setupTasks();
-    }
+    else if (activeTab == 'statistics')
+        drawChart();
 }
 
 /**
@@ -683,7 +676,6 @@ $(function () {
 
 });
 
-
 function getPost(){
     $.ajax({
         url:'/api/news/' + currentGroup.group_id,
@@ -729,10 +721,54 @@ function getPost(){
         }
     });
 }
-
+/**
+* Leave the currently selected group.
+* The page just reloads so that the group is removed from the list.
+*/
 function leaveGroup() {
 	$.ajax({url: '/api/group/' + currentGroup.group_id, method: 'DELETE', error: console.error()});
-	location.reload();	// false = from chache, true = from server.
+	location.reload();	// false = from cache, true = from server.
+}
+
+/**
+* Statistics for the statistics tab.
+* The month labels will move so that the last column is the current month.
+*/
+function drawChart() {
+	// AJAX get all the budget data for the chart.
+	$.ajax({
+		type:"GET",
+		url:"/api/budget/" + currentGroup.shopping_list_id,
+		contentType:"application/json",
+		dataType:"json",
+		success:function(result) {
+			if (result) {
+				var minLimit = new Date();
+				var monthNow = minLimit.getMonth();
+				minLimit = minLimit.setFullYear(minLimit.getFullYear() - 1);
+				
+				// Insert the values for every month.
+				var months = Array(2).fill().map(() => Array(12).fill(0));
+				for (var i = 0; i < result.budget_entries.length; i++) {
+					var element = result.budget_entries[i];
+					if (element.entry_datetime != null) {
+						var entryTime = new Date(element.entry_datetime);
+						var entryMonth = mod(entryTime.getMonth() - monthNow - 1, 12);	// Perferably test the mod more.
+						if (entryTime > minLimit) {
+							if (element.amount > 0) {months[0][entryMonth] += element.amount;}
+							else {months[1][entryMonth] += element.amount;}
+						}
+					}
+				}
+				
+				// Adjust the labels.
+				var labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], rotate = monthNow + 1;
+				while (rotate-- > 0) {labels.push(labels.shift());}
+				
+				drawBarChart(months, labels);
+			}
+		}
+	});
 }
 
 /** START GET TASKS FOR GROUP */
@@ -865,3 +901,28 @@ function saveTaskToDB(id, item, ul, cb){
         }
     });
 }
+
+/**
+* Draw a "bar" style chart with these labels and the specified data.
+*/
+function drawBarChart(data, labels) {
+	// Build the datasets. The colours are defined at the very top of this file.
+	var datasets = [];
+	for (var i = 0; i < data.length; i++) {
+		datasets.push({"label": statLabels[i], "backgroundColor": 'rgba' + statColours[i][0], "borderColor": 'rgba' + statColours[i][1], "data":data[i]});
+	}
+	
+	// The Charts.js part.
+	var chart = new Chart(document.getElementById("stat0").getContext("2d"), {
+		type: 'bar',
+		data: {"labels":labels, "datasets":datasets},
+		options: {"barPercentage":0.95, scales: {xAxes: [{stacked: true}], yAxes: [{stacked: true}]}}
+	});
+}
+
+/**
+* Javascript modulo math is a LIE.
+*/
+function mod(n, m) {
+    return ((n % m) + m) % m;
+};

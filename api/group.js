@@ -35,18 +35,11 @@ router.get('/name', function(req, res){
         return res.status(403).send("Login required");
     if(!req.query.group_name)
         return res.status(400).send("Bad Request (missing variable 'group_name')");
-    pool.getConnection(function(err, connection){
-        if(err) {
-            connection.release();
-            return res.status(500).send("Error");
-        }
-        connection.query("SELECT COUNT(*) FROM home_group WHERE group_name = ?", [req.query.group_name], function (err, result){
-            connection.release();
+    pool.query("SELECT COUNT(*) FROM home_group WHERE group_name = ?", [req.query.group_name], function (err, result){
             if(err)
                 return res.status(500).send(err.code);
             res.status(200).send(result[0]["COUNT(*)"] == 0);
         });
-    });
 });
 
 /**
@@ -441,6 +434,8 @@ router.post('/:group_id/picture', function(req, res){
         }
         Jimp.read(path, function (err, img) {
             if (err) {
+                console.log(err);
+                console.log("error 0");
                 res.status(500).json({'Error': err});
                 return;
             }
@@ -452,6 +447,8 @@ router.post('/:group_id/picture', function(req, res){
                 .quality(70)
                 .getBuffer(Jimp.MIME_JPEG, function (err, data) {
                     if (err) {
+                        console.log(err);
+                        console.log("error 1");
                         res.status(500).json({'Error': err});
                         return;
                     }
@@ -459,18 +456,21 @@ router.post('/:group_id/picture', function(req, res){
                         .quality(60)
                         .getBuffer(Jimp.MIME_JPEG, function (err, data_tiny) {
                             if (err) {
+                                console.log("error 2");
                                 res.status(500).json({'Error': err});
                                 return;
                             }
                             pool.getConnection(function (err, connection) {
                                 if (err) {
                                     connection.release();
+                                    console.log("error 3");
                                     res.status(500).json({'Error': err});
                                     return;
                                 }
-                                connection.query("UPDATE home_group SET group_pic = ?, group_pic_tiny = ? WHERE group_id = ?;", [data, data_tiny, req.params.group_id], function (err, results, fields) {
+                                connection.query("UPDATE home_group SET group_pic = ?, group_pic_tiny = ? has_group_pic WHERE group_id = ?;", [data, data_tiny, req.params.group_id], function (err, results, fields) {
                                     connection.release();
                                     if (err) {
+                                        console.log("error 4");
                                         res.status(500).json({'Error': err});
                                         return;
                                     }
@@ -490,26 +490,15 @@ router.post('/:group_id/picture', function(req, res){
  * method: POST
  */
 router.get('/:group_id/picture', function(req, res){
-    pool.getConnection(function (err, connection) {
-        if (err) {
-            connection.release();
-            res.status(500).json({'Error': err});
-            return;
-        }
-        connection.query("SELECT group_pic FROM home_group WHERE group_id = ?;", [req.params.group_id], function (error, results, fields) {
-            connection.release();
-            if(err) {
-                res.status(500).json({'Error' : 'connecting to database: ' } + err);
-                return;
-            }
+    connection.query("SELECT group_pic, has_group_pic FROM home_group WHERE group_id = ?;", [req.params.group_id], function (error, results, fields) {
+        connection.release();
+        if(err)
+            return res.status(500).json({'Error' : 'connecting to database: ' } + err);
 
-            if(results.length == 0) {
-                res.status(404).json({error: 'no profile picture.'});
-                return;
-            }
+        if(!results[0].has_group_pic)
+            return res.status(404).json({error: 'no group picture.'});
 
-            if(results) res.contentType('jpeg').status(200).end(results[0].group_pic, 'binary');
-        });
+        res.contentType('jpeg').status(200).end(results[0].group_pic, 'binary');
     });
 });
 
@@ -523,23 +512,33 @@ router.get('/:group_id/picture_tiny', function(req, res){
     pool.getConnection(function (err, connection) {
         if (err) {
             connection.release();
-            res.status(500).json({'Error': err});
-            return;
+            return res.status(500).json({error: err});
         }
-
-        connection.query("SELECT group_pic_tiny FROM home_group WHERE group_id = ?;", [req.params.group_id], function (error, results, fields) {
+        connection.query("SELECT group_pic_tiny, has_group_pic  FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
             connection.release();
-            if(err) {
-                res.status(500).json({'Error' : 'connecting to database: ' } + err);
-                return;
-            }
+            if(err)
+                return res.status(500).json({'Error' : 'connecting to database: ' } + err);
 
-            if(results.length == 0) {
-                res.status(404).json({error: 'no profile picture.'});
-                return;
-            }
+            if(!results[0].has_group_pic)
+                return res.status(404).json({error: 'no group picture.'});
 
-            if(results) res.contentType('jpeg').status(200).end(results[0].group_pic_tiny, 'binary');
+            res.contentType('jpeg').status(200).end(results[0].group_pic_tiny, 'binary');
+        });
+    });
+});
+
+router.delete('/:group_id/picture', function(req, res){
+
+    pool.getConnection(function (err, connection) {
+        if (err)
+            return res.status(500).json({'Error': err});
+
+        connection.query("UPDATE home_group SET group_pic = NULL, group_pic_tiny = NULL, has_group_pic = 0 WHERE group_id = ?;", [data, data_tiny, req.params.person_id], function (err, results, fields) {
+            connection.release();
+            if (err)
+                return res.status(500).json({'Error': err});
+
+            res.status(200).json(results);
         });
     });
 });

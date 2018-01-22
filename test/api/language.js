@@ -1,6 +1,7 @@
 /**
  * Prepare server for test language
  */
+
 before("Create session (log in)", function(done){
     request.post('/api/auth')
         .send({
@@ -12,7 +13,6 @@ before("Create session (log in)", function(done){
             if (err)
                 return done(err);
             Cookies = res.headers['set-cookie'].pop().split(';')[0];
-
             return done();
         });
 });
@@ -20,6 +20,21 @@ before("Create session (log in)", function(done){
 after(function(){
     pool.end();
 });
+
+/**
+ *
+ *  Method for testing connections
+ *  method reboots login after fail.
+ *
+ */
+
+
+afterEach(function() {
+    if(pool._allConnections.length > 1) {
+       console.log("This method does not close all connections");
+    }
+});
+
 
 /**
  * Test for the language API
@@ -37,14 +52,24 @@ describe('Language API', function(){
     /**
      * Testing the GET request with correct parameters
      */
-    it('should return username', function(done){
-        var req = request.get('/api/language').query({
-            path: '/test.html'
-        });
-        req.cookies = Cookies;
-        req.expect(200)
-            .expect({username: "Username"})
-            .end(done);
+    it('should return 200 and Close', function(done){
+        request.post('/api/language')
+            .send({
+                lang: 'en_US'
+            })
+            .end(function(err){
+                if(err)
+                    return done(err);
+                request.get('/api/language')
+                    .query({
+                        path: '/tasks.html'
+                    })
+                    .expect(200)
+                    .end(function(err, res){
+                        chai.expect(res.body['tasks-cancel']).to.equal("Close");
+                        done();
+                    });
+            });
     });
 
     /**

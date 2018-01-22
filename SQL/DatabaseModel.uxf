@@ -5,9 +5,9 @@
     <id>UMLClass</id>
     <coordinates>
       <x>568</x>
-      <y>192</y>
+      <y>184</y>
       <w>168</w>
-      <h>144</h>
+      <h>160</h>
     </coordinates>
     <panel_attributes>HomeGroup
 --
@@ -17,7 +17,8 @@ group_desc
 group_type
 created_datetime
 group_pic
-cleaning_list_interval
+group_pic_tiny
+has_group_pic
 default_currency_id
 group_deactivated</panel_attributes>
     <additional_attributes/>
@@ -26,9 +27,9 @@ group_deactivated</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>568</x>
-      <y>384</y>
+      <y>376</y>
       <w>168</w>
-      <h>272</h>
+      <h>280</h>
     </coordinates>
     <panel_attributes>Person
 --
@@ -44,6 +45,7 @@ birth_date
 is_verified
 gender
 profile_pic
+has_profile_pic
 last_active
 reset_password_token
 user_language
@@ -102,12 +104,12 @@ was_invited</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>640</x>
-      <y>328</y>
+      <y>336</y>
       <w>24</w>
-      <h>72</h>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -236,9 +238,9 @@ style=wordwrap</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>816</x>
-      <y>144</y>
+      <y>128</y>
       <w>168</w>
-      <h>136</h>
+      <h>152</h>
     </coordinates>
     <panel_attributes>Todo
 --
@@ -250,7 +252,8 @@ datetime_done
 created_by_id
 done_by_id
 is_deactivated
-color_hex</panel_attributes>
+color_hex
+todo_interval</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -363,7 +366,8 @@ datetime_purchased</panel_attributes>
     <panel_attributes>Shopping List persons
 --
 invite_sent_datetime
-invite accepted</panel_attributes>
+invite accepted
+is_hidden</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -381,12 +385,12 @@ invite accepted</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>728</x>
-      <y>120</y>
+      <y>104</y>
       <w>520</w>
-      <h>448</h>
+      <h>464</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>300.0;540.0;300.0;510.0;630.0;510.0;630.0;10.0;80.0;10.0;80.0;110.0;10.0;110.0</additional_attributes>
+    <additional_attributes>300.0;560.0;300.0;530.0;630.0;530.0;630.0;10.0;80.0;10.0;80.0;130.0;10.0;130.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
@@ -627,8 +631,7 @@ style=wordwrap</panel_attributes>
 _shopping_list_id_
 shopping_list_name
 currency_id
-color_hex
-is_hidden</panel_attributes>
+color_hex</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -822,11 +825,11 @@ currency_major</panel_attributes>
       <x>648</x>
       <y>128</y>
       <w>24</w>
-      <h>80</h>
+      <h>72</h>
     </coordinates>
     <panel_attributes>lt=-
 </panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -880,7 +883,7 @@ style=wordwrap</panel_attributes>
     <id>Text</id>
     <coordinates>
       <x>656</x>
-      <y>176</y>
+      <y>168</y>
       <w>32</w>
       <h>16</h>
     </coordinates>
@@ -972,26 +975,26 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>304</x>
-      <y>664</y>
-      <w>128</w>
+      <x>296</x>
+      <y>800</y>
+      <w>144</w>
       <h>56</h>
     </coordinates>
     <panel_attributes>Person Budget Entry
 --
-is_paid</panel_attributes>
+datetime_paid</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>424</x>
-      <y>688</y>
-      <w>64</w>
+      <x>432</x>
+      <y>824</y>
+      <w>56</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;10.0;60.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -1056,31 +1059,29 @@ style=wordwrap</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>304</x>
-      <y>520</y>
-      <w>128</w>
-      <h>112</h>
+      <y>664</y>
+      <w>136</w>
+      <h>96</h>
     </coordinates>
-    <panel_attributes>Private Todo 
+    <panel_attributes>Private Todo Entry
 --
-_todo_id_
+_private_todo_entry_id_
 todo_text
 datetime_deadline
 datetime_added
-datetime_done
-is_deactivated
-color_hex</panel_attributes>
+datetime_done</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>424</x>
+      <x>432</x>
       <y>528</y>
-      <w>168</w>
+      <w>152</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>190.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>170.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
@@ -1103,6 +1104,57 @@ style=wordwrap</panel_attributes>
       <h>24</h>
     </coordinates>
     <panel_attributes>0..*
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>304</x>
+      <y>520</y>
+      <w>136</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>Private Todo List
+--
+_private_todo_list_id_
+private_todo_list_name
+is_deactivated
+color_hex</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>368</x>
+      <y>592</y>
+      <w>24</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>376</x>
+      <y>640</y>
+      <w>32</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>0..*
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>376</x>
+      <y>600</y>
+      <w>32</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>1..1
 style=wordwrap</panel_attributes>
     <additional_attributes/>
   </element>
