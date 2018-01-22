@@ -97,6 +97,7 @@ $('document').ready(function () {
     });
 });
 
+// TODO: FIX
 function prep(){
     $.ajax({
         url: '/api/shoppingList/',
@@ -114,12 +115,12 @@ function prep(){
                     });
                 }
                 $("#addlist").after(tasklist({
-                    shopping_list_id: d.shopping_list_id,
-                    shopping_list_name: (d.shopping_list_name == "" ? lang["task-default-name"] : d.shopping_list_name),
-                    shopping_list_entries: entries,
+                    task_list_id: d.shopping_list_id,
+                    task_list_name: (d.shopping_list_name == "" ? lang["task-default-name"] : d.shopping_list_name),
+                    task_list_entries: entries,
                     lang_add_item: lang["task-add-item"],
-                    lang_delete_list: lang["task-delete"],
-                    lang_settlement: lang["tas-done-tasks"],
+                    lang_done_items: lang["task-done-tasks"],
+                    lang_delete: lang["task-delete"],
                     color_hex: (d.color_hex ? d.color_hex.toString(16) : "FFFFFF")
                 }));
             }
@@ -147,8 +148,8 @@ function prep(){
                             shopping_list_name: data.shopping_list_name,
                             shopping_list_entries: "",
                             lang_add_item: lang["task-add-item"],
-                            lang_delete_list: lang["task-delete"],
-                            lang_settlement: lang["task-done-tasks"],
+                            lang_done_items: lang["task-done-tasks"],
+                            lang_delete: lang["task-delete"],
                             color_hex: (data.color_hex ? data.color_hex.toString(16) : "FFFFFF")
                         }));
                         setupClicks();
