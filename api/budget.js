@@ -570,6 +570,50 @@ router.put('/pay/:budget_entry_id', function(req, res) {
     });
 });
 
+/**
+ * Get all budget entries with their type for a group. Only available to users in the group
+ *
+ * URL: /api/budget/entries
+ * method: GET
+ * data: {
+ *      group_id
+ * }
+ */
+
+router.get('/', function(req, res) {
+    if(req.session.person_id == null) {
+        return res.status(403).send("Invalid request, you must log in");
+    }
+    if(req.query.group_id == null) {
+        return res.status(400).send("Bad request, no group_id variable");
+    }
+    pool.query("SELECT group_id FROM group_person WHERE person_id = ?", [req.session.person_id], function(err, result) {
+        if(err) {
+            return res.status(500).send("Internal database error (1)");
+        }
+        var inGroup = false;
+        result.forEach(function(element) {
+            if(element.group_id == req.query.group_id) inGroup = true;
+        });
+        if(!inGroup) {
+            return res.status(403).send("Invalid request, you do not have access to that information");
+        }
+        pool.query("SELECT shopping_list_id FROM home_group WHERE group_id = ?", [result[0].group_id], function(err, result) {
+            if(err) return res.status(500).send("Internal server error (2)");
+            var sql = "SELECT bet.entry_type_name, be.shopping_list_id, be.added_by_id, be.amount FROM budget_entry be" +
+                " RIGHT JOIN budget_entry_type bet ON be.budget_entry_type_id = bet.budget_entry_type_id" +
+                " WHERE bet.shopping_list_id = ? AND be.shopping_list_id = ?" +
+                " UNION" +
+                " SELECT NULL AS \"entry_type_name\", shopping_list_id, added_by_id, amount" +
+                " FROM budget_entry WHERE budget_entry_type_id IS NULL AND shopping_list_id = ?",
+                values = [req.query.group_id, req.query.group_id, req.query.group_id];
+            pool.query(sql, values, function(err, result) {
+                return res.status(200).json(result);
+            });
+        });
+    });
+});
+
 function budgetEntryExistsInArray(budget_entry_id, array) {
     for (var i = 0; i < array.length;i++) {
         if (array[i].budget_entry_id == budget_entry_id) return i;
