@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+
+        <!-- favicon stuff -->
+        <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png">
+        <link rel="manifest" href="img/favicons/manifest.json">
+        <link rel="mask-icon" href="img/favicons/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="theme-color" content="#ffffff">
+
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
+		<script src="https://use.fontawesome.com/dea62227f7.js"></script>
+		<script src="/js/handlebars.js"></script>
+		<script src="js/redirect.js"></script>
+
+		<!--These below are needed for this window to appear correctly.-->
+		<script src="/js/group.js"></script>
+		<link rel="stylesheet" href="css/common.css">
+		<link rel="stylesheet" type="text/css" href="/css/group.css"> <!--Own CSS.-->
+	</head>
+
+	<body>
+
+	<nav style="width: 100%" class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="#" style="color: dimgray">
+			<img src="img/logo.svg" width="30" height="30" alt="">
+			Household Manager
+		</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+			<div class="navbar-nav">
+				<a id="group-homepageNavbar" class="nav-item nav-link" href="index.html"></a>
+				<a id="group-groupsNavbar" class="nav-item nav-link" onclick="new function () {
+              $.ajax({
+                url: '/api/group/me',
+                method: 'GET',
+                success: function(data){
+                    if(!data.length || data.length == 0)
+                        window.location = '/noGroup.html';
+                    else
+                        window.location = '/group.html';
+                }
+              });
+            }();"></a>
+				<a id="group-tasksNavbar" class="nav-item nav-link" href="tasks.html"></a>
+				<a id="group-shoppinglistsNavbar" class="nav-item nav-link" href="shoppinglist.html"></a>
+			</div>
+			<div class="navbar-nav ml-auto">
+				<i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
+				<a id="group-profileNavbar" class="nav-item nav-link" href="ProfilePage.html"></a>
+				<i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
+				<a onclick="logout()" class="nav-item nav-link" href="login.html" id="group-logoutNavbar"></a>
+			</div>
+		</div>
+	</nav>
+
+	<br>
+	<div class="flag" style="background-color: white">
+		<img id="group-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+		<img id="group-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+	</div>
+
+
+		<!--This is the div that is the entire window. It is a separate div so it can be moved into a different HMTL file.-->
+		<div id="grouppage" class="row" align="center">
+			<br>
+			<div id="groupselection" class="transparency text-center col-sm-3">
+				<!--These are the groups available to the user. The javascript will add entries here.-->
+				<p class="langtext" id="desc_title0"></p>
+				<div class="tablink text-center backvariant"></div>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
+
+			</div>
+
+			<br>
+
+			<div id="groupwindow" class="transparency col-sm-8">
+				<!--These are the tabs available once a group is selected.-->
+				<div id="grouptabs">
+					<div class="container">
+						<ul class="nav nav-tabs">
+							<ul class="nav nav-tabs" role="tablist">
+								<li class="nav-item">
+									<a style="color: black" class="nav-link active" onclick="changeTab('tasks')" href="#profile" role="tab" data-toggle="tab" id="desc_title1"></a>
+								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link" href="#buzz" onclick="changeTab('feed')" role="tab" data-toggle="tab" id="desc_title2"></a>
+								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link" onclick="changeTab('shopping')" href="#references" role="tab" data-toggle="tab" id="desc_title3"></a>
+								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link"  onclick="changeTab('statistics')" href="#references" role="tab" data-toggle="tab" id="desc_title4"></a>
+								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link"  onclick="changeTab('leave')" href="#references" role="tab" data-toggle="tab" id="desc_title7"></a>
+								</li>
+							</ul>
+
+							<!-- Tab panes -->
+							<div class="tab-content">
+								<div role="tabpanel" class="tab-pane fade in active"></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
+							</div>
+						</ul>
+					</div>
+				</div>
+
+
+
+
+				<br>
+				<!--This is the tasks tab.-->
+				<div id="tasks" class="grouptab text-center" style="display: block; padding-right: 5%">
+					<div class="row">
+						<div id="yourtasks" style="text-align:center; " class="yourTasks col-sm-5">
+						<!--These are the tasks assigned to the user. The javascript will add entries here.-->
+							<p id="desc_title5"></p>
+							<div class="chbox">
+								<input type="checkbox" value="">
+								<p>Task N</p>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
+							</div>
+						</div>
+
+						<div id="grouptasks" class="groupTasks col-sm-5">
+							<!--These are all the tasks in the group. The javascript will add entries here.-->
+							<p class="langtext" id="desc_title6"></p>
+							<div class="task">
+								<input type="checkbox" value="">
+								<!--The format here is just temporary. Change if something better gets decided.-->
+								<p>Task N - Person - Time</p>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!--This is the news tab.-->
+				<div id="feed" class="grouptab text-center">
+					<hr width="90%">
+					<!--Here the Javascript will put the posts.-->
+					<div><p class="post">A POST</p></div>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
+				</div>
+
+				<!--This is the shopping lists tab.-->
+				<div id="shopping" class="grouptab">
+					<hr width="90%">
+					<!--Here the Javascript will put the lists.-->
+					<div class="col-sm liste" style="background-color: #{{color_hex}};">
+						<div class="row">
+							<div class="col-sm-7" style="text-align: left">
+								<div class="list-name-div" style="margin-bottom: 6px; display: none;">
+									<input type="text" class="form-control list-name-input">
+								</div>
+								<h4 class="list-name">Handleliste</h4>
+							</div>
+							<div class="col-sm-5" style="text-align: right">
+								<h4>
+									<i class="fa fa-circle white-select" aria-hidden="true" data-color="#FFFFFF" style="color: white; text-shadow: 0px 0px 3px #000;"></i>
+									<i class="fa fa-circle pink-select" aria-hidden="true" data-color="#FFB6C1" style="color: lightpink; text-shadow: 0px 0px 3px #000;"></i>
+									<i class="fa fa-circle yellow-select" aria-hidden="true" data-color="#FFEC8E" style="color: #ffec8e; text-shadow: 0px 0px 3px #000;"></i>
+									<i class="fa fa-circle green-select" aria-hidden="true" data-color="#90EE90" style="color: lightgreen; text-shadow: 0px 0px 3px #000;"></i>
+								</h4>
+							</div>
+						</div>
+						<ul class="list-group itemlist"></ul>
+						<ul class="list-group">
+							<li class="list-group-item add-item">
+								<i class="fa fa-plus-circle" aria-hidden="true" id="add-item"></i>
+							</li>
+						</ul>
+						<i class="fa fa-shopping-cart" aria-hidden="true" style="font-size: 1.8vh" id="buy"></i>
+						<i class="fa fa-money" style="font-size: 1.8vh" aria-hidden="true" id="settle"></i>
+					</div>
+
+					<div data-toggle="modal" data-target="#myModalNorm" style="border-radius: 10px; max-width: 13%" id="group-registerCost" class="registerCost tablink backvariant">
+
+						Register Cost
+					</div>
+				</div>
+
+				<div class="modal fade" id="myModalNorm" tabindex="-1" role="dialog"
+					 aria-labelledby="myModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<!-- Modal Header -->
+							<div class="modal-header">
+								<h4 class="modal-title" id="registercost-modalLabel">
+									Register Cost
+								</h4>
+								<button type="button" class="close"
+										data-dismiss="modal">
+									<span aria-hidden="true">&times;</span>
+									<span class="sr-only">Close</span>
+								</button>
+
+							</div>
+
+							<!-- Modal Body -->
+							<div class="modal-body">
+
+								<form role="form">
+									<div align="left" class="form-group">
+										<label for="cost">Total cost</label>
+										<input type="email" class="form-control"
+											   id="cost" placeholder="Enter total cost"/>
+									</div>
+
+								</form>
+
+
+							</div>
+
+							<!-- Modal Footer -->
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default"
+										data-dismiss="modal">
+									Close
+								</button>
+								<button  onclick="registerCost()" id="group-registerCostButton" type="button" class="btn btn-primary">
+									<p class="langtext" id="reg_cost"></p>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<!--This is the statistics lists tab.-->
+				<div id="statistics" class="grouptab text-center">
+					<hr width="90%">
+					<!--Here the is the space for the statistics.-->
+					<canvas id="stat0" class="chart"></canvas>
+				</div>
+				
+				<!--This is the leave group tab.-->
+				<div id="leave" class="grouptab text-center">
+					<hr width="90%">
+					<div>
+						<!--This is the button move it if needed.-->
+						<button type="button" class="btn btn-primary" onclick="leaveGroup()">
+							<p class="langtext" id="desc_button0"></p>
+						</button>
+					</div>
+					
+					<div>
+						<!--This is the extra stuff, move it later.-->
+						<button type="button" class="btn btn-primary" onclick="leaveGroup()">
+							<p class="langtext" id="desc_button0"></p>
+						</button>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+
+	</body>
+</html>

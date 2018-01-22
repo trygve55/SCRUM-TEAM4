@@ -38,14 +38,15 @@ router.get('/notify', function(req, res) {
  *      Optional:
  *      datetime_deadline,
  *      datetime_done,
- *      done_by_id
+ *      done_by_id,
+ *		todo_interval
  * }
 */
 router.post('/', function(req, res) {
 	var data = req.body;
 	pool.query(
         'INSERT INTO todo (' +
-        'group_id, todo_text, datetime_deadline, datetime_done, created_by_id, done_by_id' +
+        'group_id, todo_text, datetime_deadline, datetime_done, created_by_id, done_by_id, todo_interval' +
         ') VALUES (?,?,?,?,?,?);',
         [
             checkRange(data.group_id, 1, null),
@@ -53,7 +54,8 @@ router.post('/', function(req, res) {
             data.datetime_deadline,
             data.datetime_done,
             checkRange(data.created_by_id, 1, null),	// req.session.person_id to test this.
-            checkRange(data.done_by_id, 1, null)
+            checkRange(data.done_by_id, 1, null),
+			(data.todo_interval ? data.todo_interval : null)
         ], function(err, result) {checkResult(err, result, res);}
     );
 });
