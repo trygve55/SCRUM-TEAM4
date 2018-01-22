@@ -1,6 +1,7 @@
 var lang;
 var user;
 var curBudget;
+var testetest;
 var listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList;
 
 /* Language */
@@ -101,7 +102,17 @@ $(document).ready(function () {
                 return;
             }
 
+
+
+            testetest = (data[0].person_id);
+
             $('#profile-name').text(data[0].forename + '  ' + data[0].lastname);
+            $('#p-forenam').val(data[0].forename);
+            $('#p-middlenam').val(data[0].middlename);
+            $('#p-lastnam').val(data[0].lastname);
+            $('#p-usernam').val(data[0].username);
+            $('#p-phonenumb').val(data[0].phone);
+
             $('#profile-email').text(data[0].email);
             $('#profile-phone').text(data[0].phone ? data[0].phone : "");
             $('#profile-username').text(data[0].username == data[0].facebook_api_id ? "" : data[0].username);
@@ -110,7 +121,27 @@ $(document).ready(function () {
             $('#profile-phone2').text(data[0].phone ? data[0].phone : "");
             $('#profile-username2').text(data[0].username == data[0].facebook_api_id ? "" : data[0].username);
             setupShoppingList();
+
+
         }
+
+
+    });
+
+
+    $("#but").click(function () {
+        console.log(testetest);
+        $.ajax({
+            url: '/api/user/'+testetest,
+            method: 'PUT',
+            data:{
+                username: $('#p-usernam').val()
+            },
+            success: function (data) {
+                console.log(data)
+            },
+            error: console.error
+        });
     });
 
     /**
@@ -146,6 +177,10 @@ $(document).ready(function () {
         }
     });
 });
+
+
+
+
 
 function setupShoppingList(){
     $.ajax({
@@ -379,6 +414,8 @@ function addNewItem(ul){
         $(this).closest("li").remove();
     }).focus();
 }
+
+
 
 function saveItemToDB(id, item, ul, cb){
     $.ajax({

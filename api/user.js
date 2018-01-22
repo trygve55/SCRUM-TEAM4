@@ -312,8 +312,8 @@ router.put('/:person_id', function(req, res){
         var query = putRequestSetup(parameter.person_id, req.body, connection, "person");
         connection.query(query[0], query[1], function (err, result) {
             connection.release();
-            if (err)
-            if (result)
+            if(err)
+                return res.status(500).send({"Error" : "Connecting to database"} + err);
             return res.status(200).json({"success" : query[1] + " updated"});
         });
     });

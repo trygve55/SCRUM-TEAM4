@@ -87,21 +87,19 @@
 <div class="container container1" align="center">
     <br>
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-6 bordr colu1">
 
             <div class="container personaliaborder">
+                <div>
                 <div class="row textarea">
-                    <div class="col-sm">
+                    <div class="col-sm" style="margin-left: 5%">
                         <div class="row picture">
-                            <img  src="https://lh3.googleusercontent.com/AkTbUA_l8OICZ7xKGMY3-w0_kgCIRz_yEXMOYgHokTR9P_vszUvdp4udMP_o4VaCDkg=w300" height="190px" width="190px" >
+                            <img  id="profpic" src="https://lh3.googleusercontent.com/AkTbUA_l8OICZ7xKGMY3-w0_kgCIRz_yEXMOYgHokTR9P_vszUvdp4udMP_o4VaCDkg=w300">
                         </div>
                         <div class="row">
-                            <i class="fa fa-picture-o" aria-hidden="true"> Change photo</i>
+                            <i class="fa fa-picture-o" aria-hidden="true"> <text id="p-changephoto"> </text></i>
                         </div>
-
                     </div>
-
-
 
                     <div class="col-sm" align="left">
                         <div style="height:auto" id="profile-name" class="okoko"></div>
@@ -127,9 +125,10 @@
                     </div>
 
                 </div>
+                </div>
             </div>
 
-            <div class="container debtborder">
+            <div class="container debtborder tester">
                 <div id="media" class="carousel slide media-carousel" data-ride="carousel">
                     <ol class="carousel-indicators">
                         <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
@@ -159,7 +158,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-6 colu2" style="padding-right: 5%">
 
             <h6 id="p-changeinfo"></h6>
 
@@ -204,12 +203,41 @@
                         <input type="text" class="form-control" id="p-phonenumb"  placeholder="">
                     </div>
                 </div>
+
+                <div class="row form-group">
+                    <div class="col-4" align="left">
+                        <label for="gender">Select list (select one):</label>
+                    </div>
+                    <div class="col-8">
+                        <select class="form-control" id="gender">
+                            <option> < Kjønn(valgfritt) > </option>
+                            <option>Female</option>
+                            <option>Male</option>
+                            <option>Other</option>
+
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-4" align="left">
+                        <label for="sel2">Birthdate</label>
+                    </div>
+                    <div class="col-8">
+                        <select class="form-control" id="sel2">
+
+                        </select>
+                    </div>
+                </div>
+
+                <button type="button" id="but" class="btn btn-default buttonstyle">Save info</button>
+
                 <!-- <button type="default" class="btn btn-primary" style="align:right">Save info</button> -->
             </form>
 
 
             <form>
-            <div style="align: left;">
+            <div style="align: left; padding-top: 5%">
                 <h6 id="p-changepassword"></h6>
                 <div class="row form-group">
                     <div class="col-4" align="left">
@@ -227,7 +255,7 @@
                         <input type="password" class="form-control" id="pwd" placeholder="new password">
                     </div>
                 </div>
-                <button type="default" class="btn btn-primary" style="align:right">Save password</button>
+                <button id="but1" type="button" class="btn btn-default buttonstyle" style="align:right">Save password</button>
             </div>
             </form>
 
