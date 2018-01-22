@@ -141,6 +141,9 @@ function changeTab(name) {
     else if(activeTab=='feed'){
         getPost();
     }
+    if(activeTab=='tasks'){
+        setupTasks();
+    }
 }
 
 /**
@@ -248,6 +251,29 @@ function getShoppinglist() {
 			}
 		});
 }
+
+function getTasksWindow() {
+    $.ajax({
+        url: '/api/tasks' + currentGroup.group_id,
+        method: 'GET',
+        success: function (dataTask) {
+            console.log(dataTask);
+            setupTasks();
+        }
+    })
+}
+
+function getTasks() {
+    $.ajax({
+        url: "/api/tasks/person/",
+        method: 'GET',
+        success: function (dataperson) {
+            console.log(dataperson);
+        }
+    })
+}
+
+
 
 function setupClicks(){
     $(".list-name").unbind("click").click(function(){
@@ -654,7 +680,9 @@ $(function () {
 			}
 		});
 	});
+
 });
+
 
 function getPost(){
     $.ajax({
@@ -705,4 +733,135 @@ function getPost(){
 function leaveGroup() {
 	$.ajax({url: '/api/group/' + currentGroup.group_id, method: 'DELETE', error: console.error()});
 	location.reload();	// false = from chache, true = from server.
+}
+
+/** START GET TASKS FOR GROUP */
+function setupClicksTask(){
+    $(".add-task").unbind("click").click(function(){
+        $(this).closest("div").children(".itemlist-task").append(newListItem());
+
+        $("#new-list-item").keypress(function(e){
+            if(e.keyCode != 13 && e.which != 13)
+                return;
+            var ul = $(this).closest("ul");
+            var text = $(this).val();
+            if(text != "") {
+                var t = this;
+                saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                    $(t).closest("li").remove();
+                    addNewItem(ul);
+                    setupItemClicks();
+                });
+            }
+            else {
+                setupItemClicks();
+                $(this).closest("li").remove();
+            }
+        }).focusout(function(){
+            var ul = $(this).closest("ul");
+            var text = $(this).val();
+            if(text != "") {
+                saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                    setupItemClicks();
+                });
+            }
+            $(this).closest("li").remove();
+        }).focus();
+    });
+
+    $('.pink-select').unbind("click").click(function () {
+        var ls = $(this).closest("div[data-id]");
+        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
+            }
+        });
+    });
+
+    $('.yellow-select').unbind("click").click(function () {
+        var ls = $(this).closest("div[data-id]");
+        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
+            }
+        });
+    });
+
+    $('.green-select').unbind("click").click(function () {
+        var ls = $(this).closest("div[data-id]");
+        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
+            }
+        });
+    });
+
+    $('.white-select').unbind("click").click(function () {
+        var ls = $(this).closest("div[data-id]");
+        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
+            }
+        });
+    });
+
+}
+
+function addNewTask(ul){
+    $(ul).append(newListItem());
+
+    $("#new-list-item").keypress(function(e){
+        if(e.keyCode != 13 && e.which != 13)
+            return;
+        var ul = $(this).closest("ul");
+        var text = $(this).val();
+        if(text != "") {
+            var t = this;
+            saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                $(t).closest("li").remove();
+                addNewItem(ul);
+                setupItemClicks();
+            });
+        }
+        else {
+            setupItemClicks();
+            $(this).closest("li").remove();
+        }
+    }).focusout(function(){
+        var ul = $(this).closest("ul");
+        var text = $(this).val();
+        if(text != "") {
+            saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                setupItemClicks();
+            });
+        }
+        $(this).closest("li").remove();
+    }).focus();
+}
+
+function saveTaskToDB(id, item, ul, cb){
+    $.ajax({
+        url: '/api/tasks/',
+        method: 'POST',
+        data: {
+
+        },
+        success: function(data){
+            $(ul).append(listItem({entry_text: item, entry_id: data.shopping_cart_entry_id}));
+            if(cb)
+                cb();
+        }
+    });
 }

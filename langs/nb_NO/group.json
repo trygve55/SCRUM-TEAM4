@@ -27,5 +27,7 @@
 	"shop-price": "Pris",
 	"shop-cancel": "Avbryt",
 	"reg_cost": "Registrer Kostnad",
-	"desc_button0": "Administrer"
+	"desc_button0": "Administrer",
+	"list-name-task": "Gjøremål",
+	"add-task": " Legg til gjøremål"
 }

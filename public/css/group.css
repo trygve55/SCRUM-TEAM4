@@ -7,6 +7,17 @@
 	min-width: 320px;
 
 }
+
+.listeTask{
+	margin: 1%;
+	padding: 2%;
+	background-color: white;
+	border-radius: 25px;
+	max-height: 670px;
+	min-width: 320px;
+	width: 90%;
+}
+
 .adde {
 	margin: 1%;
 	padding: 2%;

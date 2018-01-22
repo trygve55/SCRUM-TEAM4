@@ -23,9 +23,11 @@
 	"shop-trip": "Budget entry",
 	"shop-price": "Price",
 	"shop-cancel": "Cancel",
-	"buy": "Kjøp",
-	"settle": "Oppgjør",
+	"buy": "Buy",
+	"settle": "Settle",
 	"add-item": "Add item",
 	"reg_cost": "Register Expense",
-	"desc_button0": "Administrate"
+	"desc_button0": "Administrate",
+	"list-name-task": "Tasks",
+	"add-task": "Add task"
 }
