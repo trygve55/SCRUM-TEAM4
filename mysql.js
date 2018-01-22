@@ -6,6 +6,7 @@ pool = mysql.createPool({
     user : 'g_tdat2003_t4',
     password : 'bR3n8htW',
     database : 'g_tdat2003_t4',
+    connectTimeout: 120000,
     debug : false,
     typeCast: function castField( field, useDefaultTypeCasting ) {
 

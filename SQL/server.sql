@@ -54,6 +54,7 @@ CREATE TABLE person (
     gender INTEGER DEFAULT 0,
     profile_pic MEDIUMBLOB,
     profile_pic_tiny BLOB,
+    has_profile_pic BIT NOT NULL DEFAULT 0,
     last_active TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     reset_password_token VARCHAR(255),
     shopping_list_id INTEGER NOT NULL UNIQUE,
@@ -73,6 +74,7 @@ CREATE TABLE home_group (
     cleaning_list_interval INTEGER NOT NULL DEFAULT 0,
     group_pic MEDIUMBLOB,
     group_pic_tiny BLOB,
+    has_group_pic BIT NOT NULL DEFAULT 0,
     default_currency_id INTEGER NOT NULL,
     shopping_list_id INTEGER NOT NULL,
     CONSTRAINT group_currency_fk FOREIGN KEY(default_currency_id) REFERENCES currency(currency_id),
@@ -105,6 +107,7 @@ CREATE TABLE shopping_list_person (
     person_id INTEGER NOT NULL,
     invite_accepted BIT NOT NULL DEFAULT 0,
     invite_sent_datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_hidden BIT NOT NULL DEFAULT 0,
     CONSTRAINT shopping_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
     CONSTRAINT shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT shopping_list_persons_pk PRIMARY KEY(shopping_list_id, person_id)
