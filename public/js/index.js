@@ -141,7 +141,7 @@ function prep() {
                     groupname: feed[i].group_name,
                     text: short,
                     rest_text: rest,
-                    image_url: '/api/user/' + feed.person_id + '/picture_tiny',
+                    image_url: '/api/user/' + feed[i].person_id + '/picture_tiny',
                     data: 'data-id="' + feed[i].post_id + '"',
                     datetime: testy,
                     lang_read_more: "Read more..."
