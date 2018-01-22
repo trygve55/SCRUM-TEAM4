@@ -1,6 +1,7 @@
 /**
  * Prepare server for test language
  */
+
 before("Create session (log in)", function(done){
     request.post('/api/auth')
         .send({

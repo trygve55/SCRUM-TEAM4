@@ -2,19 +2,21 @@ var router = require('express').Router(),
     auth = require('../auth'),
     router = require('express').Router(),
     formidable = require('formidable'),
-    Jimp = require("jimp");
+    Jimp = require("jimp"),
+    nodemailer = require('nodemailer'),
+    jwt = require('jsonwebtoken');
 
 module.exports = router;
 
 router.get('/all', function(req, res){
-    if(!req.session.person_id)
-        return res.status(500).send();
+   if(!req.session.person_id)
+        return res.status(403).send();
     pool.getConnection(function(err, connection){
         if(err) {
             connection.release();
             return res.status(500).send("Error");
         }
-        connection.query("SELECT person_id, email, forename, middlename, lastname, username FROM person", function(err, result){
+        connection.query("SELECT person_id, email, forename, middlename, lastname, username FROM person;", function(err, result){
             connection.release();
             if(err)
                 res.status(500).send(err.code);
@@ -39,7 +41,55 @@ router.get('/all', function(req, res){
     });
 });
 
-//register user
+router.put('/:person_id/password', function (req, res) {
+    console.log(req.session.person_id);
+    if(!req.session.person_id)
+        return res.status(403).send("ERROR: NO ACCESS");
+    pool.getConnection(function (err, connection) {
+       if(err) {
+           connection.release();
+           return res.status(500).json("DB_ERROR");
+       }
+       console.log(req.params.person_id);
+       connection.query('SELECT facebook_api_id FROM person WHERE person_id = ?', [req.params.person_id], function (err, result) {
+           if(err) {
+               connection.release();
+               return res.status(500).send("DB_ERROR");
+           } else {
+               console.log(result[0].facebook_api_id);
+               if (result[0].facebook_api_id)
+                   return res.status(200).send("ERROR");
+               else {
+                   connection.query(
+                       'UPDATE person SET password_hash = ? WHERE person_id = ?;',
+                       [auth.hashPassword(req.body.password), req.params.person_id],
+                       function (err) {
+                           connection.release();
+                           if(err)
+                               return res.status(500).send("ERROR: executing query");
+                           else
+                               return res.status(200).send("SUCCESS: password changed");
+                   });
+               }
+           }
+       });
+    });
+});
+
+/**
+ * Register a new user
+ *
+ * URL: /api/user/register
+ * method: POST
+ * data: {
+ *      forename,
+ *      lastname,
+ *      username,
+ *      email,
+ *      password,
+ *      [phone]
+ * }
+ */
 router.post('/register', function(req, res) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -55,7 +105,7 @@ router.post('/register', function(req, res) {
             res.status(400).json({message:"Syntax-error"})
         }
 
-        connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?', [user.username], function (err, result) {
+        connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?;', [user.username], function (err, result) {
             if (err) {
                 connection.release();
                 res.status(500).json({error: err});
@@ -66,7 +116,7 @@ router.post('/register', function(req, res) {
                 return res.status(200).json({message:"Username already in use"});
             }
 
-            connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?', [user.email], function (err, result) {
+            connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?;', [user.email], function (err, result) {
                 if (err) {
                     connection.release();
                     res.status(500).json({error: err});
@@ -81,14 +131,13 @@ router.post('/register', function(req, res) {
                     if (err) {
                         connection.release();
                         res.status(500).json({message: "database connection failed"});
-                    } else connection.query('INSERT INTO shopping_list (currency_id) VALUES(?)', [100], function (err, result) {
+                    } else connection.query('INSERT INTO shopping_list (currency_id) VALUES(?);', [100], function (err, result) {
                         if (err) {
                                 connection.rollback(function () {
                                 connection.release();
                                 res.status(500).json({error: err});
                             });
                         } else {
-
                             user.shopping_list_id = result.insertId;
                             auth.hashPassword(user, function (user) {
 
@@ -133,7 +182,7 @@ router.post('/register', function(req, res) {
                                 connection.query('INSERT INTO person ' +
                                     '(email, username, password_hash, forename, middlename,' +
                                     'lastname, phone, birth_date,' +
-                                    'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function (err, result) {
+                                    'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?);', values, function (err) {
                                     if (err) {
                                             connection.rollback(function () {
                                             connection.release();
@@ -148,8 +197,8 @@ router.post('/register', function(req, res) {
                                                 });
                                             } else {
                                                 connection.release();
-                                                req.session.person_id = result.insertId;
-                                                req.session.save();
+                                                //req.session.person_id = result.insertId;
+                                                //req.session.save();
                                                 res.status(200).json({message: "Transaction successful"});
                                             }
                                         });
@@ -180,12 +229,12 @@ router.get('/user', function (req, res) {
             return res.status(400).json({message:"Syntax-error"});
         }
 
-        connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?', [username], function (err, result){
+        connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?;', [username], function (err, result){
             connection.release();
             if(result[0].counted === 1) {
                 return res.status(200).json({message:"Username already exists"});
             }
-            res.status(200).send("Username valid");
+            res.status(200).json({message:"Username valid"});
         });
     });
 });
@@ -206,7 +255,7 @@ router.get('/mail', function (req, res) {
             return res.status(400).json({message:'Syntax-error'});
         }
 
-        connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?', [email], function (err, result){
+        connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?;', [email], function (err, result){
             connection.release();
             if(result[0].counted === 1) {
                 return res.status(200).json({message:'E-mail already exists'});
@@ -223,14 +272,12 @@ function checkValidPhone(phonenumber){
 
 //returns true if valid
 function checkValidName(nameString) {
-    //best regex
     var nameRegex = /[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
     if (nameString) return nameRegex.test(nameString);
 }
 
 //spaces not allowed
 function checkValidForename(nameString) {
-    //best regex
     var nameRegex = /^\S[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
     if (nameString) return nameRegex.test(nameString);
 }
@@ -290,8 +337,7 @@ router.all('/profile/1/picture', function(req, res, next) {
 */
 
 //update profile
-router.put('/:person_id', function(req, res){
-
+router.put('/:person_id', function(req, res) {
     pool.getConnection(function (err, connection) {
         if(err) {
             connection.release();
@@ -301,11 +347,12 @@ router.put('/:person_id', function(req, res){
         var parameter = req.params;
 
         var query = putRequestSetup(parameter.person_id, req.body, connection, "person");
-        connection.query(query[0], query[1], function (err, result) {
+        connection.query(query[0], query[1], function (err) {
             connection.release();
-            if (err)
-            if (result)
-            return res.status(200).json({"success" : query[1] + " updated"});
+            if (err) {
+                res.status(500).json({error: err});
+            }
+            return res.status(200).json({"success" : query[1]});
         });
     });
 });
@@ -318,7 +365,6 @@ router.post('/:person_id/picture', function(req, res){
 
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
-
         var path = files.file.path,
             file_size = files.file.size;
 
@@ -326,7 +372,6 @@ router.post('/:person_id/picture', function(req, res){
             res.status(400).json({'error': 'image file over 4MB'});
             return;
         }
-
 
         Jimp.read(path, function (err, img) {
             if (err)
@@ -384,6 +429,133 @@ router.delete('/:person_id/picture', function(req, res){
     });
 });
 
+var transporter = nodemailer.createTransport({
+        service: 'aol',
+        auth: {
+            user: "HHManagerMail@aol.com",
+            pass: "SCRuMteAm4"
+        }
+    }), mailOptions = {
+        from: "HHManagerMail@aol.com",
+        to: "",
+        subject: "",
+        text: ""
+    },
+    secret = "CONSTANT# VIGILANCE",
+    issuer = "HHManager";
+
+/**
+ * Send an email with a link to change a forgotten password
+ *
+ * URL: /api/user/forgottenPasswordEmail
+ * method: POST
+ * data: {
+ *      email
+ * }
+ */
+
+router.post('/forgottenPasswordEmail', function(req,res) {
+    if(!req.body.email) {
+        return res.status(400).send("Bad request (no email variable)");
+    }
+    pool.getConnection(function(err, connection) {
+        if(err) {
+            return res.status(500).send("Failed to connect to database");
+        }
+        connection.query("SELECT COUNT(*), person_id, forename FROM person WHERE email = ?", [req.body.email], function(err, result) {
+            if(err) {
+                connection.release();
+                return res.status(500).send("Internal database error in query (1)");
+            }
+            if(result[0]["COUNT(*)"] == 0) {
+                connection.release();
+                return res.status(404).send("Email not found");
+            }
+            var token = jwt.sign({
+                id: result[0]["person_id"],
+                iss: issuer,
+                exp: Math.floor(Date.now() / 1000+ (60*60))
+            }, secret);
+            var url = "http://localhost:8000/resetPassword.html?token=" + token;
+            mailOptions.to = req.body.email;
+            mailOptions.subject = "Household Manager: forgotten password";
+            mailOptions.text = "Hi " + result[0].forename + "," +
+                "\nA request was made to reset the password associated with this email. " +
+                "Click the provided link to reset your password: \n\n" + url +
+                "\n\nThe link expires in one hour." +
+                "\n\nIf you did not request this, please ignore this email, or respond to let us know. \n\n" +
+                "Thanks, \nHousehold Manager";
+            var sql = "UPDATE person SET reset_password_token = ? WHERE email = ?";
+            connection.query(sql, [token, req.body.email], function(err) {
+                if(err) {
+                    connection.release();
+                    return res.status(500).send("Internal database error in query (2)");
+                }
+                connection.release();
+                transporter.sendMail(mailOptions, function(error, info) {
+                    if(error) {
+                        return res.status(500).send("Internal server error in email (1)");
+                    } else {
+                        return res.status(200).send("Email sent: " + info.response);
+                    }
+                });
+            });
+        });
+    });
+});
+
+/**
+ * Set new password with a JWT acquired from an email
+ *
+ * URL: /api/user/forgottenPasswordReset?token={token}
+ * method: POST
+ * data: {
+ *      new_password
+ * }
+ */
+
+router.post('/forgottenPasswordReset', function(req, res) {
+    if(!req.body.new_password || !req.query.token) {
+        return res.status(400).send("Bad request (missing variable");
+    }
+    var token = req.query.token;
+    jwt.verify(token, secret, {
+        iss: issuer
+    }, function(err, payload) {
+        if(err) {
+            return res.status(400).send("Bad token (1)");
+        }
+        pool.getConnection(function(err, connection) {
+            if(err) {
+                return res.status(500).send("Internal database error (1)");
+            }
+            connection.query("SELECT reset_password_token FROM person WHERE person_id = ?", [payload.id], function(err, result) {
+                if(err) {
+                    connection.release();
+                    return res.status(500).send("Internal database error (2)");
+                }
+                if(result[0].reset_password_token == null) {
+                    return res.status(500).send("Internal database/server error (possible bad token) (3)");
+                }
+                if(result[0].reset_password_token != token) {
+                    return res.status(400).send("Bad token (2)");
+                }
+                var user = {password: req.body.new_password};
+                auth.hashPassword(user, function(user) {
+                    connection.query("UPDATE person SET password_hash = ?, reset_password_token = NULL WHERE person_id = ?", [user.password_hash, payload.id], function(err) {
+                        if(err) {
+                            connection.release();
+                            return res.status(500).send("Internal database error (4)");
+                        }
+                        connection.release();
+                        return res.status(200).send("Password updated");
+                    })
+                })
+            });
+        });
+    });
+});
+
 /*
 Returns the requested information about the requested user(s). The request can contain two variables: variables (required) and
 users, both arrays. The first one is a list of the variables you would like to retrieve, while the second is a list of
@@ -427,7 +599,6 @@ function reqForPrivateVars(reqVars) {
 }
 
 router.get('/getUser', function(req, res) {
-
     if(!req.query.hasOwnProperty('users')) {
         req.query.users = [req.session.person_id];
     } else if(reqForPrivateVars(req.query.variables) && (req.query.users.length > 1 || req.session.person_id != req.query.users[0])) {
