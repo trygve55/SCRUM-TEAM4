@@ -1,33 +1,22 @@
-var router = require('express').Router()
+var router = require('express').Router(),
     formidable = require('formidable'),
     Jimp = require("jimp");
 
 module.exports = router;
 
 router.post('/', function(req, res){
-    console.log('POST-request established');
-
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
-
         var path = files.file.path,
             file_size = files.file.size;
-
-        if (file_size > 2000000) {
-            res.status(400).json({'error': 'image file over 2MB'});
-            return;
-        }
-
-        console.log("Loading image");
+        if (file_size > 2000000)
+            return res.status(400).json({'error': 'image file over 2MB'});
         Jimp.read(path, function (err, img) {
             if (err) {
                 res.status(500).json({'Error': err});
                 return;
             }
-
             var img_tiny = img.clone();
-            console.log("Processing image");
-
             img.scaleToFit(2000, 1500)
                 .quality(70)
                 .getBuffer(Jimp.MIME_JPEG, function (err, data) {
@@ -44,21 +33,16 @@ router.post('/', function(req, res){
                             }
                             pool.getConnection(function (err, connection) {
                                 if (err) {
+                                    connection.release();
                                     res.status(500).json({'Error': err});
                                     return;
                                 }
-
-                                console.log("Uploading image");
-
                                 connection.query("UPDATE person SET profile_pic = ?, profile_pic_tiny = ? WHERE person_id = 1;", [data, data_tiny], function (err, results, fields) {
                                     connection.release();
                                     if (err) {
                                         res.status(500).json({'Error': err});
                                         return;
                                     }
-                                    console.log("Uploading image complete");
-
-
                                     res.status(200).json(results);
                                 });
                             });
@@ -68,16 +52,16 @@ router.post('/', function(req, res){
     });
 });
 
-router.get('/', function(req, res){
-    console.log('GET-request established');
+router.get('/', function(req, res) {
 
     pool.getConnection(function (err, connection) {
-        connection.query("SELECT profile_pic FROM person WHERE person_id = 1;", [], function (error, results, fields) {
-            connection.release();
-            if(err) {
+        if(err) {
                 res.status(500).json({'Error' : 'connecting to database: ' } + err);
                 return;
-            }
+        }
+        connection.query("SELECT profile_pic FROM person WHERE person_id = 1;", [], function (error, results, fields) {
+            connection.release();
+            if(err) return res.status(500).json({error:err});
 
             if(results.length) res.status(404).json({error: 'no profile picture.'});
 
@@ -86,10 +70,13 @@ router.get('/', function(req, res){
     });
 });
 
-router.get('/tiny', function(req, res){
-    console.log('GET-request established');
+router.get('/tiny', function(req, res) {
 
     pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            return res.status(500).json({error:'connecting to database' + err});
+        }
         connection.query("SELECT profile_pic_tiny FROM person WHERE person_id = 1;", [], function (error, results, fields) {
             connection.release();
             if(err) {

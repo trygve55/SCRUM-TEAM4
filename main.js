@@ -23,9 +23,11 @@ app.use(session({
 }));
 
 app.use('/api', require('./api'));
+app.use('/template', require('./template'));
 
 app.get("*", function(req, res){
     res.status(404).send("Page not found");
 });
 
 module.exports = app;
+

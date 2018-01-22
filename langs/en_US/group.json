@@ -6,12 +6,26 @@
 	"desc_title4": "Statistics",
 	"desc_title5": "Your Tasks",
 	"desc_title6": "Group Tasks",
+	"desc_title7": "Leave Group",
 	"group-homepageNavbar": "Home",
 	"group-groupsNavbar": "Groups",
 	"group-tasksNavbar": "Tasks",
 	"group-shoppinglistsNavbar": "Shoppinglists",
 	"group-profileNavbar": "Profile",
-	"group-logoutNavbar": "Log out"
-
+	"group-logoutNavbar": "Log out",
+	"group-tasks": "Tasks",
+	"group-feed": "Feed",
+	"group-shopping": "Shopping",
+	"group-statistics": "Statistics",
+	"shop-buy-title": "Register",
+	"shop-buy-text": "Price",
+	"shop-ok": "OK",
+	"shop-trip": "Budget entry",
+	"shop-price": "Price",
+	"shop-cancel": "Cancel",
+	"buy": "Kjøp",
+	"settle": "Oppgjør",
+	"add-item": "Add item",
+	"reg_cost": "Register Expense",
+	"desc_button0": "Leave Group"
 }
-

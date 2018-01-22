@@ -1,0 +1,87 @@
+body {
+    font-family: Trebuchet MS;
+    font-style: inherit;
+}
+label {
+    display: block;
+    margin-bottom: 3px;
+    padding-left: 15px;
+    text-indent: -15px;
+}
+.liste, .adde{
+    margin: 1%;
+    padding: 2%;
+    background-color: white;
+    border-radius: 25px;
+    max-height: 81vh;
+    min-width: 29%
+}
+.adde {
+    opacity: 0.4;
+}
+.adde:hover{
+    opacity: 0.6;
+}
+.list-group{
+    text-align: left;
+    margin-inside: 4%;
+    max-height: 59vh;
+    overflow-y: scroll;
+}
+
+.pink{
+    background-color: lightpink;
+}
+.yellow{
+    background-color: #ffec8e;
+}
+.green{
+    background-color: lightgreen;
+}
+.white{
+    background-color: white;
+}
+.fa-circle{
+    text-shadow: 0px 0px 3px #000;
+}
+.list-group-item{
+    padding: -6px;
+}
+a.selected {
+    background-color:#1F75CC;
+    color:white;
+    z-index:100;
+}
+
+.inputdate {
+    width: 10vh;
+    border:none;
+    background-color: darkgrey;
+    color:white;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 15px
+}
+.fa-check-circle-o, .fa-circle-o{
+    margin: 2px;
+}
+
+.fa-calendar:hover, .inputdate:hover{
+    color:cornflowerblue;
+}
+.fa-times:hover{
+    color: indianred;
+}
+.fa-calendar, .fa-times, .fa-list-ul, .fa-bars, .fa-arrow-circle-o-left{
+    color: darkgrey;
+}
+.greyhover:hover{
+    background-color: darkgrey;
+}
+.marked:hover{
+    background-color: #e0f4f9;
+}
+.fa-list-ul:hover, .fa-bars:hover, .fa-arrow-circle-o-left:hover{
+    color: mediumseagreen;
+}
+

@@ -2,36 +2,95 @@ var router = require('express').Router(),
     auth = require('../auth'),
     router = require('express').Router(),
     formidable = require('formidable'),
-    Jimp = require("jimp");
+    Jimp = require("jimp"),
+    nodemailer = require('nodemailer'),
+    jwt = require('jsonwebtoken');
 
 module.exports = router;
 
 router.get('/all', function(req, res){
+   if(!req.session.person_id)
+        return res.status(403).send();
     pool.getConnection(function(err, connection){
-        if(err)
+        if(err) {
+            connection.release();
             return res.status(500).send("Error");
-        connection.query("SELECT person_id, forename, middlename, lastname, username FROM person", function(err, result){
+        }
+        connection.query("SELECT person_id, email, forename, middlename, lastname, username FROM person;", function(err, result){
             connection.release();
             if(err)
                 res.status(500).send(err.code);
             else {
                 if(!req.query.slim)
-                    res.json(result);
+                    res.status(200).json(result);
                 else {
                     var r = [];
                     for(var i = 0; i < result.length; i++){
-                        r.push(result[i].forename + " " + (result[i].middlename ? result[i].middlename + " " : "") + result[i].lastname)
+                        if(result[i].person_id == req.session.person_id)
+                            continue;
+                        r.push({
+                            name: result[i].forename + " " + (result[i].middlename ? result[i].middlename + " " : "") + result[i].lastname,
+                            email: result[i].email,
+                            id: result[i].person_id
+                        });
                     }
-                    res.json(r);
+                    res.status(200).json(r);
                 }
             }
         });
     });
 });
 
-//register user
+router.put('/:person_id/password', function (req, res) {
+    console.log(req.session.person_id);
+    if(!req.session.person_id)
+        return res.status(403).send("ERROR: NO ACCESS");
+    pool.getConnection(function (err, connection) {
+       if(err) {
+           connection.release();
+           return res.status(500).json("DB_ERROR");
+       }
+       console.log(req.params.person_id);
+       connection.query('SELECT facebook_api_id FROM person WHERE person_id = ?', [req.params.person_id], function (err, result) {
+           if(err) {
+               connection.release();
+               return res.status(500).send("DB_ERROR");
+           } else {
+               console.log(result[0].facebook_api_id);
+               if (result[0].facebook_api_id)
+                   return res.status(200).send("ERROR");
+               else {
+                   connection.query(
+                       'UPDATE person SET password_hash = ? WHERE person_id = ?;',
+                       [auth.hashPassword(req.body.password), req.params.person_id],
+                       function (err) {
+                           connection.release();
+                           if(err)
+                               return res.status(500).send("ERROR: executing query");
+                           else
+                               return res.status(200).send("SUCCESS: password changed");
+                   });
+               }
+           }
+       });
+    });
+});
+
+/**
+ * Register a new user
+ *
+ * URL: /api/user/register
+ * method: POST
+ * data: {
+ *      forename,
+ *      lastname,
+ *      username,
+ *      email,
+ *      password,
+ *      [phone]
+ * }
+ */
 router.post('/register', function(req, res) {
-    console.log('POST-request established');
     pool.getConnection(function (err, connection) {
         if (err) {
             connection.release();
@@ -39,7 +98,6 @@ router.post('/register', function(req, res) {
             return;
         }
 
-        console.log('Connected to database');
         var user = req.body;
 
         if (!checkValidUsername(user.username) && !checkValidEmail(user.email)) {
@@ -47,7 +105,7 @@ router.post('/register', function(req, res) {
             res.status(400).json({message:"Syntax-error"})
         }
 
-        connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?', [user.username], function (err, result) {
+        connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?;', [user.username], function (err, result) {
             if (err) {
                 connection.release();
                 res.status(500).json({error: err});
@@ -58,7 +116,7 @@ router.post('/register', function(req, res) {
                 return res.status(200).json({message:"Username already in use"});
             }
 
-            connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?', [user.email], function (err, result) {
+            connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?;', [user.email], function (err, result) {
                 if (err) {
                     connection.release();
                     res.status(500).json({error: err});
@@ -69,21 +127,17 @@ router.post('/register', function(req, res) {
                     return res.status(200).json({message: "E-mail in use"});
                 }
 
-
                 connection.beginTransaction(function (err) {
                     if (err) {
                         connection.release();
-                        console.log(err);
                         res.status(500).json({message: "database connection failed"});
-                    } else connection.query('INSERT INTO shopping_list (currency_id) VALUES(?)', [100], function (err, result) {
+                    } else connection.query('INSERT INTO shopping_list (currency_id) VALUES(?);', [100], function (err, result) {
                         if (err) {
                                 connection.rollback(function () {
                                 connection.release();
-                                console.log(err);
                                 res.status(500).json({error: err});
                             });
                         } else {
-
                             user.shopping_list_id = result.insertId;
                             auth.hashPassword(user, function (user) {
 
@@ -95,7 +149,7 @@ router.post('/register', function(req, res) {
                                     user.middlename,
                                     user.lastname,
                                     user.phone,
-                                    new Date(user.birth_day).toISOString().slice(0, 10),
+                                    user.birth_day ? new Date(user.birth_day).toISOString().slice(0, 10) : null,
                                     user.gender,
                                     user.profile_pic,
                                     user.shopping_list_id
@@ -116,24 +170,22 @@ router.post('/register', function(req, res) {
                                 }
 
                                 if (!checkValidForename(user.forename)) {
-                                        connection.release();
-                                        return res.status(400).json({message:"Invalid forename"});
+                                    connection.release();
+                                    return res.status(400).json({message:"Invalid forename"});
                                 }
 
                                 if (!checkValidName(user.lastname)){
                                     connection.release();
                                     return res.status(400).json({message:"Invalid lastname"});
-                                };
-
+                                }
 
                                 connection.query('INSERT INTO person ' +
                                     '(email, username, password_hash, forename, middlename,' +
                                     'lastname, phone, birth_date,' +
-                                    'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', values, function (err, result) {
+                                    'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?);', values, function (err) {
                                     if (err) {
                                             connection.rollback(function () {
                                             connection.release();
-                                            console.log(err);
                                             res.status(500).json({error: err});
                                         });
                                     } else {
@@ -141,13 +193,12 @@ router.post('/register', function(req, res) {
                                             if (err) {
                                                 connection.rollback(function () {
                                                     connection.release();
-                                                    console.log(err);
                                                     res.status(500).json({error: err});
                                                 });
                                             } else {
                                                 connection.release();
-                                                req.session.person_id = result.insertId;
-                                                req.session.save();
+                                                //req.session.person_id = result.insertId;
+                                                //req.session.save();
                                                 res.status(200).json({message: "Transaction successful"});
                                             }
                                         });
@@ -166,6 +217,7 @@ router.post('/register', function(req, res) {
 router.get('/user', function (req, res) {
     pool.getConnection(function (err, connection) {
         if(err) {
+            connection.release();
             res.status(500).json({'Error' : 'connecting to database: ' } + err);
             return;
         }
@@ -177,13 +229,12 @@ router.get('/user', function (req, res) {
             return res.status(400).json({message:"Syntax-error"});
         }
 
-        connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?', [username], function (err, result){
+        connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?;', [username], function (err, result){
+            connection.release();
             if(result[0].counted === 1) {
-                connection.release();
                 return res.status(200).json({message:"Username already exists"});
             }
-            connection.release();
-            res.status(200).send("Username valid");
+            res.status(200).json({message:"Username valid"});
         });
     });
 });
@@ -192,6 +243,7 @@ router.get('/user', function (req, res) {
 router.get('/mail', function (req, res) {
     pool.getConnection(function (err, connection) {
         if(err) {
+            connection.release();
             res.status(500).json({'Error' : 'connecting to database: ' } + err);
             return;
         }
@@ -203,12 +255,11 @@ router.get('/mail', function (req, res) {
             return res.status(400).json({message:'Syntax-error'});
         }
 
-        connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?', [email], function (err, result){
+        connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?;', [email], function (err, result){
+            connection.release();
             if(result[0].counted === 1) {
-                connection.release();
                 return res.status(200).json({message:'E-mail already exists'});
             }
-            connection.release();
             res.status(200).json({message:'E-mail valid'});
         });
     });
@@ -221,14 +272,12 @@ function checkValidPhone(phonenumber){
 
 //returns true if valid
 function checkValidName(nameString) {
-    //best regex
     var nameRegex = /[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
     if (nameString) return nameRegex.test(nameString);
 }
 
 //spaces not allowed
 function checkValidForename(nameString) {
-    //best regex
     var nameRegex = /^\S[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
     if (nameString) return nameRegex.test(nameString);
 }
@@ -244,109 +293,78 @@ function checkValidEmail(email) {
     if (email) return emailRegex.test(email.toLowerCase());
 }
 
-//search for user
-router.post('/search', function(req, res){
-	var search = req.body.searchString;
-	console.log('Searching for ' + search);
-	pool.getConnection(function(err, connection) {
-		if (err) {
-			res.status(500);
-			res.json({'Error' : 'connecting to database: ' } + err);
-			connection.release();
-			return;
-		}
-		console.log('Connected to database');
-		connection.query(
-			"SELECT DISTINCT person_id FROM person WHERE CONCAT(email, username, forename, lastname) LIKE CONCAT('%', ?,'%')",
-			[search],
-			function (err, result) {
-				if (err) {throw err;}
-				if (result) {
-				    connection.release();
-				    console.log(result); //TODO: get method to return results from sql-search
-                }
-		});
-	});
-});
-
-//which one?
 router.get('/:person_id/picture', function(req, res){
-    console.log('GET-request established');
-
     pool.getConnection(function (err, connection) {
-        connection.query("SELECT profile_pic FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
+        connection.query("SELECT profile_pic, has_profile_pic FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
             connection.release();
-            if(err) {
-                res.status(500).json({'Error' : 'connecting to database: ' } + err);
-                return;
-            }
+            if(err)
+                return res.status(500).json({'Error' : 'connecting to database: ' } + err);
 
-            if(results.length == 0) {
-                res.status(404).json({error: 'no profile picture.'});
-                return;
-            }
+            if(!results[0].has_profile_pic)
+                return res.status(404).json({error: 'no profile picture.'});
 
-            if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
+            res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
         });
     });
 });
 
 router.get('/:person_id/picture_tiny', function(req, res){
-    console.log('GET-request established');
-
     pool.getConnection(function (err, connection) {
-        connection.query("SELECT profile_pic_tiny FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
+        if (err) {
             connection.release();
-            if(err) {
-                res.status(500).json({'Error' : 'connecting to database: ' } + err);
-                return;
-            }
+            return res.status(500).json({error: err});
+        }
+        connection.query("SELECT profile_pic_tiny, has_profile_pic  FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
+            connection.release();
+            if(err)
+                return res.status(500).json({'Error' : 'connecting to database: ' } + err);
 
-            if(results.length == 0) {
-                res.status(404).json({error: 'no profile picture.'});
-                return;
-            }
+            if(!results[0].has_profile_pic)
+                return res.status(404).json({error: 'no profile picture.'});
 
-            if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
+            res.contentType('jpeg').status(200).end(results[0].profile_pic_tiny, 'binary');
         });
     });
 });
 
 /*
 router.all('/profile/1/picture', function(req, res, next) {
-    console.log("session test");
-    console.log(req.session);
+
+
     next();
 });
 
 */
 
 //update profile
-router.put('/:person_id', function(req, res){
-    console.log("put-request");
+router.put('/:person_id', function(req, res) {
     pool.getConnection(function (err, connection) {
         if(err) {
+            connection.release();
             return res.status(500).send({"Error" : "Connecting to database"} + err);
         }
 
         var parameter = req.params;
 
         var query = putRequestSetup(parameter.person_id, req.body, connection, "person");
-        connection.query(query[0], query[1], function (err, result) {
+        connection.query(query[0], query[1], function (err) {
             connection.release();
-            if (err) console.log("" + err);
-            if (result) console.log(result);
-            return res.status(200).json({"success" : query[1] + " updated"});
+            if (err) {
+                res.status(500).json({error: err});
+            }
+            return res.status(200).json({"success" : query[1]});
         });
     });
 });
 
 router.post('/:person_id/picture', function(req, res){
-    console.log('POST-request established');
+
+    if (req.session.person_id === req.params.person_id) return res.status(403).json({
+        "error": "you can not set the profile picture of someone else"
+    });
 
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
-
         var path = files.file.path,
             file_size = files.file.size;
 
@@ -355,46 +373,32 @@ router.post('/:person_id/picture', function(req, res){
             return;
         }
 
-        console.log("Loading image");
         Jimp.read(path, function (err, img) {
-            if (err) {
-                res.status(500).json({'Error': err});
-                return;
-            }
+            if (err)
+                return res.status(500).json({'Error': err});
 
             var img_tiny = img.clone();
-            console.log("Processing image");
 
             img.background(0xFFFFFFFF)
                 .contain(500, 500)
                 .quality(70)
                 .getBuffer(Jimp.MIME_JPEG, function (err, data) {
-                    if (err) {
-                        res.status(500).json({'Error': err});
-                        return;
-                    }
+                    if (err)
+                        return res.status(500).json({'Error': err});
                     img_tiny.cover(128, 128)
                         .quality(60)
                         .getBuffer(Jimp.MIME_JPEG, function (err, data_tiny) {
-                            if (err) { res.status(500).json({'Error': err});
-                                return;
-                            }
+                            if (err)
+                                return res.status(500).json({'Error': err});
+
                             pool.getConnection(function (err, connection) {
-                                if (err) {
-                                    res.status(500).json({'Error': err});
-                                    return;
-                                }
+                                if (err)
+                                    return res.status(500).json({'Error': err});
 
-                                console.log("Uploading image");
-
-                                connection.query("UPDATE person SET profile_pic = ?, profile_pic_tiny = ? WHERE person_id = ?;", [data, data_tiny, req.params.person_id], function (err, results, fields) {
+                                connection.query("UPDATE person SET profile_pic = ?, profile_pic_tiny = ?, has_profile_pic = 1 WHERE person_id = ?;", [data, data_tiny, req.params.person_id], function (err, results, fields) {
                                     connection.release();
-                                    if (err) {
-                                        res.status(500).json({'Error': err});
-                                        return;
-                                    }
-                                    console.log("Uploading image complete");
-
+                                    if (err)
+                                        return res.status(500).json({'Error': err});
 
                                     res.status(200).json(results);
                                 });
@@ -405,6 +409,153 @@ router.post('/:person_id/picture', function(req, res){
     });
 });
 
+router.delete('/:person_id/picture', function(req, res){
+
+    if (req.session.person_id === req.params.person_id) return res.status(403).json({
+        "error": "you can not set the profile picture of someone else"
+    });
+
+    pool.getConnection(function (err, connection) {
+        if (err)
+            return res.status(500).json({'Error': err});
+
+        connection.query("UPDATE person SET profile_pic = NULL, profile_pic_tiny = NULL, has_profile_pic = 0 WHERE person_id = ?;", [data, data_tiny, req.params.person_id], function (err, results, fields) {
+            connection.release();
+            if (err)
+                return res.status(500).json({'Error': err});
+
+            res.status(200).json(results);
+        });
+    });
+});
+
+var transporter = nodemailer.createTransport({
+        service: 'aol',
+        auth: {
+            user: "HHManagerMail@aol.com",
+            pass: "SCRuMteAm4"
+        }
+    }), mailOptions = {
+        from: "HHManagerMail@aol.com",
+        to: "",
+        subject: "",
+        text: ""
+    },
+    secret = "CONSTANT# VIGILANCE",
+    issuer = "HHManager";
+
+/**
+ * Send an email with a link to change a forgotten password
+ *
+ * URL: /api/user/forgottenPasswordEmail
+ * method: POST
+ * data: {
+ *      email
+ * }
+ */
+
+router.post('/forgottenPasswordEmail', function(req,res) {
+    if(!req.body.email) {
+        return res.status(400).send("Bad request (no email variable)");
+    }
+    pool.getConnection(function(err, connection) {
+        if(err) {
+            return res.status(500).send("Failed to connect to database");
+        }
+        connection.query("SELECT COUNT(*), person_id, forename FROM person WHERE email = ?", [req.body.email], function(err, result) {
+            if(err) {
+                connection.release();
+                return res.status(500).send("Internal database error in query (1)");
+            }
+            if(result[0]["COUNT(*)"] == 0) {
+                connection.release();
+                return res.status(404).send("Email not found");
+            }
+            var token = jwt.sign({
+                id: result[0]["person_id"],
+                iss: issuer,
+                exp: Math.floor(Date.now() / 1000+ (60*60))
+            }, secret);
+            var url = "http://localhost:8000/resetPassword.html?token=" + token;
+            mailOptions.to = req.body.email;
+            mailOptions.subject = "Household Manager: forgotten password";
+            mailOptions.text = "Hi " + result[0].forename + "," +
+                "\nA request was made to reset the password associated with this email. " +
+                "Click the provided link to reset your password: \n\n" + url +
+                "\n\nThe link expires in one hour." +
+                "\n\nIf you did not request this, please ignore this email, or respond to let us know. \n\n" +
+                "Thanks, \nHousehold Manager";
+            var sql = "UPDATE person SET reset_password_token = ? WHERE email = ?";
+            connection.query(sql, [token, req.body.email], function(err) {
+                if(err) {
+                    connection.release();
+                    return res.status(500).send("Internal database error in query (2)");
+                }
+                connection.release();
+                transporter.sendMail(mailOptions, function(error, info) {
+                    if(error) {
+                        return res.status(500).send("Internal server error in email (1)");
+                    } else {
+                        return res.status(200).send("Email sent: " + info.response);
+                    }
+                });
+            });
+        });
+    });
+});
+
+/**
+ * Set new password with a JWT acquired from an email
+ *
+ * URL: /api/user/forgottenPasswordReset
+ * method: POST
+ * data: {
+ *      new_password,
+ *      token
+ * }
+ */
+
+router.post('/forgottenPasswordReset', function(req, res) {
+    if(!req.body.new_password || !req.body.token) {
+        return res.status(400).send("Bad request (missing variable");
+    }
+    var token = req.body.token;
+    jwt.verify(token, secret, {
+        iss: issuer
+    }, function(err, payload) {
+        if(err) {
+            return res.status(400).send("Bad token (1)");
+        }
+        pool.getConnection(function(err, connection) {
+            if(err) {
+                return res.status(500).send("Internal database error (1)");
+            }
+            connection.query("SELECT reset_password_token FROM person WHERE person_id = ?", [payload.id], function(err, result) {
+                if(err) {
+                    connection.release();
+                    return res.status(500).send("Internal database error (2)");
+                }
+                if(result[0].reset_password_token == null) {
+                    return res.status(500).send("Internal database/server error (possible bad token) (3)");
+                }
+                if(result[0].reset_password_token != token) {
+                    return res.status(400).send("Bad token (2)");
+                }
+                var user = {password: req.body.new_password};
+                auth.hashPassword(user, function(user) {
+                    connection.query("UPDATE person SET password_hash = ?, reset_password_token = NULL WHERE person_id = ?", [user.password_hash, payload.id], function(err) {
+                        if(err) {
+                            connection.release();
+                            return res.status(500).send("Internal database error (4)");
+                        }
+                        connection.release();
+                        return res.status(200).send("Password updated");
+                    })
+                })
+            });
+        });
+    });
+});
 
 /*
 Returns the requested information about the requested user(s). The request can contain two variables: variables (required) and
@@ -449,7 +600,6 @@ function reqForPrivateVars(reqVars) {
 }
 
 router.get('/getUser', function(req, res) {
-    console.log(req.query);
     if(!req.query.hasOwnProperty('users')) {
         req.query.users = [req.session.person_id];
     } else if(reqForPrivateVars(req.query.variables) && (req.query.users.length > 1 || req.session.person_id != req.query.users[0])) {
@@ -526,7 +676,3 @@ function putRequestSetup(iD, data, connection, tableName) {
     request += ' WHERE ' + tableName + '_id = ' + iD;
     return [request, parameters];
 }
-
-
-
-

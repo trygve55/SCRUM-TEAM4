@@ -5,5 +5,19 @@
   "shop-shoppinglists": "Shoppinglists",
   "shop-profile": "Profile",
   "shop-logout": "Log out",
-  "shop-addlist": "Add list"
+  "shop-addlist": "Add shoppinglist",
+  "shop-delete": "Delete list",
+  "shop-share": "Members",
+  "shop-buy": "Buy",
+  "shop-add-item": "Add item",
+  "shop-balance": "Settlement",
+  "shop-backlist": "Back to shoppinglist",
+  "shop-add-members": "Members",
+  "shop-cancel": "Cancel",
+  "shop-list-name-input": "Untitled list",
+  "shop-buy-title": "Register",
+  "shop-buy-text": "Price",
+  "shop-ok": "OK",
+  "shop-trip": "Budget entry",
+  "shop-price": "Price"
 }

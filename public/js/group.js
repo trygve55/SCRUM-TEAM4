@@ -1,22 +1,65 @@
 // ***** Temporary test variables - delete this section when no longer needed *****
-
+var grouplist;
 var person = "Person";
-var testtasks = {
-	"tasks":[
-		{"name":"Task A", "person":"Person", "completed":0, "time":"11/11/2011"}, 
-		{"name":"Task B", "person":"Someone", "completed":0, "time":"12/12/2012"},
-		{"name":"Task C", "person":"None", "completed":1, "time":"13/13/2013"}
-	]
-};
 
 // ***** Code begins here *****
 
-var activeTab = "tasks", currentGroup = "none";
+var activeTab = "tasks", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList;
 
 /**
 * When the page loads, the page must find the groups available to the user so they can be selected.
 */
 $(document).ready(function() {
+    $.ajax({
+        url: '/template',
+        method: 'GET',
+        data: {
+            files: [
+                'listItem.html',
+                'newListItem.html',
+                'balance.html',
+                'balanceItem.html',
+                'popupTextfieldList.html'
+            ]
+        },
+        success: function (data){
+            listItem = Handlebars.compile(data['listItem.html']);
+            newListItem = Handlebars.compile(data['newListItem.html']);
+            balance = Handlebars.compile(data['balance.html']);
+            balanceItem = Handlebars.compile(data['balanceItem.html']);
+            popupTextList = Handlebars.compile(data['popupTextfieldList.html']);
+        }
+    });
+
+	$.ajax({
+		url:'/api/group/me',
+		method:'GET',
+		success: function (data) {
+			grouplist = data;
+			console.log(data);
+			currentGroup = data[0];
+			for(var i = 0; i < data.length; i++){
+				addGroupToList(data[i]);
+			}
+			$(".group").click(function(){
+				$('#groupwindow').show();
+				currentGroup = $(this).data("group-id");
+				console.log(currentGroup);
+				for(var i = 0; i < grouplist.length; i++) {
+					if (currentGroup == grouplist[i].group_id){
+						currentGroup = grouplist[i];
+						break;
+					}
+				}
+				console.log(activeTab);
+				if(activeTab=='shopping') {
+					getShoppinglist();
+				}
+			});
+		},
+		error: console.error()
+	});
+
 	loadLanguageText();
 	//getGroups();
 	
@@ -31,6 +74,8 @@ $(document).ready(function() {
 	// Add some updating system here.
 	
 	//window.setInterval(getGroups, 5000);	// Every 5 seconds the groups will be loaded.
+
+
 
 	
 	
@@ -71,7 +116,7 @@ function getGroups() {
 	});	// GET all group names for this user.
 	*/
 	var names = response.groupnames;
-	for (i = 0; i < names.length; i++) {
+	for (var i = 0; i < names.length; i++) {
 		addGroupToList(names[i]);
 	}
 	removeDeletedGroups(names);
@@ -83,9 +128,12 @@ function getGroups() {
 function changeTab(name) {
 	if (activeTab != name) {
 		var tabs = $(".grouptab");
-		for (i = 0; i < tabs.length; i++) {tabs[i].style.display = "none";}
+		for (var i = 0; i < tabs.length; i++) {tabs[i].style.display = "none";}
 		$("#" + name).css("display", "block");
 		activeTab = name;
+		if(activeTab=='shopping') {
+			getShoppinglist();
+		}
 	}
 }
 
@@ -124,10 +172,13 @@ function loadGroup(name) {
 /**
 * When a group is created, it must be added to the list.
 */
-function addGroupToList(name) {
+
+function addGroupToList(group) {
 	var groups = $(".tablink");
-	for (i = 0; i < groups.length; i++) {if ($(groups[i]).html() == name) {return;}}
-	$("#groupselection").append('<div class="tablink text-center backvariant" onclick="changeGroup(\'' + name + '\')">' + name + '</div>');
+	for (var i = 0; i < groups.length; i++) {
+		if ($(groups[i]).html() == group.group_name) return;
+	}
+	$("#groupselection").append('<div style="padding-top: 2px; height: 30px; border-radius: 10px; background-color: white; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class="tablink text-center backvariant group" data-group-id="' + group.group_id + '">' + group.group_name + '</div><h4></h4>');
 }
 
 /**
@@ -136,7 +187,7 @@ function addGroupToList(name) {
 function removeDeletedGroups(validNames) {
 	$(".tablink").each(function() {
 		var exists = false;
-		for (i = 0; i < validNames.length; i++) {if ($(this).html() == validNames[i]) {exists = true;}}
+		for (var i = 0; i < validNames.length; i++) {if ($(this).html() == validNames[i]) {exists = true;}}
 		if (!exists) {$(this).remove();}
 	});
 }
@@ -153,7 +204,7 @@ function loadStatistics() {} // AJAX Get the group statistics.
 * This adds the HTML elements for the task.
 */
 function attachTasks(tasks) {
-	for (i = 0; i < tasks.length; i++) {
+	for (var i = 0; i < tasks.length; i++) {
 		var task = tasks[i];
 		if (!task.completed) {
 			if (person = task.person) {
@@ -171,3 +222,413 @@ function attachTasks(tasks) {
 //function countNewPosts() {} // From last login date, display a number of new posts
 //function countNewTasks() {} // From last login date, display a number of new tasks
 
+
+function getShoppinglist() {
+		$.ajax({
+			url: "/api/shoppingList/" + currentGroup.shopping_list_id,
+			method: "GET",
+			success: function (data) {
+                currentShoppingList = data;
+			    $('.itemlist').html("");
+				for(var i = 0; i < data.shopping_list_entries.length; i++){
+                    if(data.shopping_list_entries[i].purchased_by_person_id)
+                        continue;
+				    $('.itemlist').append(listItem({
+                        entry_id: data.shopping_list_entries[i].shopping_list_entry_id,
+                        entry_text: data.shopping_list_entries[i].entry_text
+                    }));
+                }
+                setupClicks();
+			}
+		});
+}
+
+function setupClicks(){
+    $(".list-name").unbind("click").click(function(){
+        var listId = $(this).closest("div[data-id]").data("id");
+        var title = $(this).html();
+        $(this).hide();
+        var div = $(this).parent().children(".list-name-div");
+        $(div).show();
+        $(div).children(".list-name-input").val(title).focus();
+    });
+
+    $(".list-name-input").unbind("focusout").focusout(function(){
+        var text = $(this).val();
+        var id = $(this).closest("div[data-id]").data("id");
+        var h4 = $(this).parent().parent().children(".list-name");
+        $(h4).html(text);
+        $(this).parent().hide();
+        $(h4).show();
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                shopping_list_name: text
+            }
+        });
+    });
+
+    $(".list-name-input").unbind("keypress").keypress(function(e){
+        if(e.keyCode != 13 && e.which != 13)
+            return;
+        var text = $(this).val();
+        var id = $(this).closest("div[data-id]").data("id");
+        var h4 = $(this).parent().parent().children(".list-name");
+        $(h4).html(text);
+        $(this).parent().hide();
+        $(h4).show();
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                shopping_list_name: text
+            }
+        });
+    });
+
+    $(".add-item").unbind("click").click(function(){
+        $(this).closest("div").children(".itemlist").append(newListItem());
+
+        $("#new-list-item").keypress(function(e){
+            if(e.keyCode != 13 && e.which != 13)
+                return;
+            var ul = $(this).closest("ul");
+            var text = $(this).val();
+            if(text != "") {
+                var t = this;
+                saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                    $(t).closest("li").remove();
+                    addNewItem(ul);
+                    setupItemClicks();
+                });
+            }
+            else {
+                setupItemClicks();
+                $(this).closest("li").remove();
+            }
+        }).focusout(function(){
+            var ul = $(this).closest("ul");
+            var text = $(this).val();
+            if(text != "") {
+                saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                    setupItemClicks();
+                });
+            }
+            $(this).closest("li").remove();
+        }).focus();
+    });
+
+    $('.pink-select').unbind("click").click(function () {
+        var ls = $(this).closest("div[data-id]");
+        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
+            }
+        });
+    });
+
+    $('.yellow-select').unbind("click").click(function () {
+        var ls = $(this).closest("div[data-id]");
+        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
+            }
+        });
+    });
+
+    $('.green-select').unbind("click").click(function () {
+        var ls = $(this).closest("div[data-id]");
+        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
+            }
+        });
+    });
+
+    $('.white-select').unbind("click").click(function () {
+        var ls = $(this).closest("div[data-id]");
+        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
+            }
+        });
+    });
+
+    $(".fa-money").unbind("click").click(function(){
+        var id = $(this).closest("div[data-id]").data("id");
+        $.ajax({
+            url: '/api/budget/' + id,
+            method: 'GET',
+            success: function(data){
+                console.log(data);
+                curBudget = data;
+                var entries = "";
+                for(var i = 0; i < data.budget_entries.length; i++){
+                    entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].entry_datetime + "</td><td>" + data.budget_entries[i].amount + "</td>";
+                }
+                $("body").append(balance({
+                    title: lang["shop-balance"],
+                    complete: lang["shop-ok"],
+                    data: "data-id='" + id + "'",
+                    lang_trip: lang["shop-trip"],
+                    lang_price: lang["shop-price"],
+                    budget_entries: entries
+                }));
+
+                $('tr[data-id]').click(function(){
+                    var id = $(this).closest("tr[data-id]").data("id");
+                    var entry = null;
+                    for(var i = 0; i < curBudget.budget_entries.length; i++){
+                        if(curBudget.budget_entries[i].budget_entry_id == id){
+                            entry = curBudget.budget_entries[i];
+                        }
+                    }
+                    if(!entry)
+                        return;
+                    var d = "<li class='list-group-item'>Work in progress (data about a entry)</li>";
+                    $(this).closest(".pop").hide();
+                    $("body").append(balanceItem({
+                        title: entry.entry_datetime,
+                        complete: lang["shop-ok"],
+                        list: d
+                    }));
+                    $("#balance-info-complete").click(function(){
+                        $(this).closest(".pop").remove();
+                        $(".pop").show();
+                    });
+                });
+
+                $('#popup-complete').click(function(){
+                    $(this).closest(".pop").remove();
+                });
+            },
+            error: console.error
+        });
+    });
+
+    $(".fa-shopping-cart").unbind("click").click(function(){
+        var items = $(this).closest("div").find(".list-group-item input:checked").closest('li[data-id]');
+        if(items.length == 0)
+            return;
+        var entries = $(items[0]).data("id");
+        var list = "<li class=\"list-group-item\">" + $(items[0]).html() + "</li>";
+        for(var i = 1; i < items.length; i++){
+            entries += "," + $(items[i]).data("id");
+            list += "<li class=\"list-group-item\">" + $(items[i]).html() + "</li>";
+        }
+        $("body").append(popupTextList({
+            title: lang["shop-buy-title"],
+            list: list,
+            textfield: lang["shop-buy-text"],
+            cancel: lang["shop-cancel"],
+            complete: lang["shop-ok"],
+            data: "data-id='" + $(this).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
+        }));
+
+        $(".pop").find(".fa-times").remove();
+        $(".pop").find("input[type=checkbox]").remove();
+
+        $("#popup-cancel").click(function(){
+            $(this).closest(".pop").remove();
+        });
+
+        $("#popup-complete").click(function(){
+            if(isNaN(Number($(this).closest('.pop').find('input').val())))
+                return;
+            var id = $(this).closest("div[data-id]").data("id");
+            var e = $(this).closest("div[data-entries]").data("entries");
+            if(Number(e) !== e)
+                e = e.split(",");
+            else
+                e = [e];
+            $.ajax({
+                url: '/api/budget',
+                method: 'POST',
+                data: {
+                    shopping_list_id: currentShoppingList.shopping_list_id,
+                    amount: Number($(this).closest('.pop').find('input').val()),
+                    text_note: e.join(",")
+                },
+                success: function(data){
+                    for(var i = 0; i < e.length; i++){
+                        $.ajax({
+                            url: '/api/shoppingList/entry/' + e[i],
+                            method: 'PUT',
+                            data: {
+                                shopping_list_id: currentShoppingList.shopping_list_id,
+                                purchased_by_person_id: 2,
+                                budget_entry_id: data.budget_entry_id
+                            },
+                            error: console.error
+                        });
+                    }
+                },
+                error: console.error
+            });
+            for(var i = 0; i < e.length; i++){
+                $(".liste").find('li[data-id=' + e[i] + ']').remove();
+            }
+            $(this).closest(".pop").remove();
+        });
+    });
+
+    setupItemClicks();
+}
+
+function setupItemClicks(){
+    $(".fa-times").unbind("click").click(function(){
+        var entry_id = $(this).closest("li[data-id]").data("id");
+        $.ajax({
+            url: '/api/shoppingList/entry/' + entry_id,
+            method: 'DELETE',
+            error: console.error
+        });
+        $(this).closest("li[data-id]").remove();
+    });
+
+    $("li[data-id]").unbind("click").click(function(e){
+        if($(this).is('.fa-times'))
+            return;
+        else if(!$(e.target).is('input')) {
+            e.preventDefault();
+            $(this).find("input[type=checkbox]").prop('checked', $(this).find("input:checked").length == 0);
+        }
+    });
+}
+
+function addNewItem(ul){
+    $(ul).append(newListItem());
+
+    $("#new-list-item").keypress(function(e){
+        if(e.keyCode != 13 && e.which != 13)
+            return;
+        var ul = $(this).closest("ul");
+        var text = $(this).val();
+        if(text != "") {
+            var t = this;
+            saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                $(t).closest("li").remove();
+                addNewItem(ul);
+                setupItemClicks();
+            });
+        }
+        else {
+            setupItemClicks();
+            $(this).closest("li").remove();
+        }
+    }).focusout(function(){
+        var ul = $(this).closest("ul");
+        var text = $(this).val();
+        if(text != "") {
+            saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                setupItemClicks();
+            });
+        }
+        $(this).closest("li").remove();
+    }).focus();
+}
+
+function saveItemToDB(id, item, ul, cb){
+    $.ajax({
+        url: '/api/shoppingList/entry',
+        method: 'POST',
+        data: {
+            shopping_list_id: currentShoppingList.shopping_list_id,
+            entry_text: item
+        },
+        success: function(data){
+            $(ul).append(listItem({entry_text: item, entry_id: data.shopping_cart_entry_id}));
+            if(cb)
+                cb();
+        }
+    });
+}
+
+$(function () {
+	$.ajax({
+		url: '/api/language',
+		method: 'GET',
+		data: {
+			lang: 'nb_NO',
+			path: window.location.pathname
+		},
+		success: function (data) {
+            lang = data;
+			for (var p in data) {
+				if (data.hasOwnProperty(p)) {
+					$("#" + p).html(data[p]);
+				}
+			}
+		},
+		error: console.error
+	});
+
+	$('#group-norway').click(function () {
+		$.ajax({
+			url: '/api/language',
+			method: 'POST',
+			data: {
+				lang: 'nb_NO'
+			},
+			success: function () {
+				$.ajax({
+					url: '/api/language',
+					method: 'GET',
+					data: {
+						lang: 'nb_NO',
+						path: window.location.pathname
+					},
+					success: function (data) {
+                        lang = data;
+						for (var p in data) {
+							if (data.hasOwnProperty(p)) {
+								$("#" + p).html(data[p]);
+							}
+						}
+					}
+				});
+			}
+		});
+	});
+
+	$('#group-england').click(function () {
+		$.ajax({
+			url: '/api/language',
+			method: 'POST',
+			data: {
+				lang: 'en_US'
+			},
+			success: function () {
+				$.ajax({
+					url: '/api/language',
+					method: 'GET',
+					data: {
+						lang: 'en_US',
+						path: window.location.pathname
+					},
+					success: function (data) {
+					    lang = data;
+						for (var p in data) {
+							if (data.hasOwnProperty(p)) {
+								$("#" + p).html(data[p]);
+							}
+						}
+					}
+				});
+			}
+		});
+	});
+});
