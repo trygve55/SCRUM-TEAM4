@@ -41,7 +41,6 @@ router.post('/', function(req, res){
                         });
                 });
         });
-    });
 });
 
 router.get('/', function(req, res) {

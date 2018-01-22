@@ -20,16 +20,13 @@ router.post('/', function(req, res) {
 	var data = req.body;
 	var extraData = null;
 	if (data.attachment_data) {extraData = data.attachment_data;}
-	pool.getConnection(function(err, connection) {
-		if (!checkConnectionError(err, connection, res)) {return;}
-		connection.query(
-			'INSERT INTO newsfeed_post (' +
-			'group_id, posted_by_id, post_text, attachment_type, attachment_data' +
-			') VALUES (?,?,?,?,?);',
-			[data.group_id, data.req.session.person_id, data.post_text, data.attachment_type, extraData],	// data.posted_by_id to test this.
-			function(err, result) {checkResult(err, result, connection, res);}
-		);
-	});
+    pool.query(
+        'INSERT INTO newsfeed_post (' +
+        'group_id, posted_by_id, post_text, attachment_type, attachment_data' +
+        ') VALUES (?,?,?,?,?);',
+        [data.group_id, data.req.session.person_id, data.post_text, data.attachment_type, extraData],	// data.posted_by_id to test this.
+        function(err, result) {checkResult(err, result, res);}
+    );
 });
 
 /**
@@ -39,17 +36,12 @@ router.post('/', function(req, res) {
  * method: GET
 */
 router.get('/:group_id', function(req, res) {
-	pool.getConnection(function(err, connection) {
-		if (!checkConnectionError(err, connection, res)) {return;}
-
-		connection.query('SELECT * FROM newsfeed_post WHERE group_id = ?',
-			[req.params.group_id], function(err, result) {
-				connection.release();
-				if (err) {return res.status(500).send();}
-				res.status(200).json(result);
-			}
-		);
-	});
+    pool.query('SELECT * FROM newsfeed_post WHERE group_id = ?',
+        [req.params.group_id], function(err, result) {
+            if (err) {return res.status(500).send();}
+            res.status(200).json(result);
+        }
+    );
 });
 
 /**
@@ -59,17 +51,12 @@ router.get('/:group_id', function(req, res) {
  * method: GET
 */
 router.get('/', function(req, res) {
-	pool.getConnection(function(err, connection) {
-		if (!checkConnectionError(err, connection, res)) {return;}
-
-		connection.query('SELECT * FROM newsfeed_post WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?);',
-			[req.session.person_id], function(err, result) {	//req.params.person_id
-				connection.release();
-				if (err) {return res.status(500).send();}
-				res.status(200).json(result);
-			}
-		);
-	});
+    pool.query('SELECT * FROM newsfeed_post WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?);',
+        [req.session.person_id], function(err, result) {	//req.params.person_id
+            if (err) {return res.status(500).send();}
+            res.status(200).json(result);
+        }
+    );
 });
 
 /**
@@ -82,15 +69,11 @@ router.get('/', function(req, res) {
  * }
 */
 router.put('/:post_id', function(req, res) {
-	pool.getConnection(function(err, connection) {
-		if (!checkConnectionError(err, connection, res)) {return;}
-
-		var query = putRequestSetup(req.params.post_id, req.body, connection, "newsfeed_post", "post");
-		connection.query(
-			query[0], query[1],
-			function(err, result) {checkResult(err, result, connection, res);}
-		);
-	});
+    var query = putRequestSetup(req.params.post_id, req.body, "newsfeed_post", "post");
+    pool.query(
+        query[0], query[1],
+        function(err, result) {checkResult(err, result, res);}
+    );
 });
 
 /**
@@ -100,13 +83,9 @@ router.put('/:post_id', function(req, res) {
  * method: DELETE
 */
 router.delete('/:post_id', function(req, res) {
-	pool.getConnection(function(err, connection) {
-		if (!checkConnectionError(err, connection, res)) {return;}
-		
-		connection.query('DELETE FROM newsfeed_post WHERE post_id = ?',
-			[req.params.post_id], function(err, result) {checkResult(err, result, connection, res);}
-		);
-	});
+    pool.query('DELETE FROM newsfeed_post WHERE post_id = ?',
+        [req.params.post_id], function(err, result) {checkResult(err, result, res);}
+    );
 });
 
 // Help methods:
@@ -114,10 +93,9 @@ router.delete('/:post_id', function(req, res) {
 /**
 * Make the neccesary setup for a put request.
 */
-function putRequestSetup(iD, data, connection, tableName, tableIDPrefix) {
+function putRequestSetup(iD, data, tableName, tableIDPrefix) {
 	if (!tableIDPrefix) {tableIDPrefix = tableName;}
 	if(!iD) {
-		connection.release();
 		res.status(400).json({'Error' : (tableIDPrefix + '_id not specified: ') } + err);
 		return;
 	}
@@ -134,25 +112,12 @@ function putRequestSetup(iD, data, connection, tableName, tableIDPrefix) {
 }
 
 /**
-* Check for a database connection error and report if connected.
-*/
-function checkConnectionError(err, connection, res) {
-	if(err) {
-		connection.release();
-		res.status(500).json({'Error' : 'connecting to database: ' } + err);
-		return false;
-	}
-	return true;
-}
-
-/**
 * Check the result, release connection and return.
 */
-function checkResult(err, result, connection, res) {
-	connection.release();
+function checkResult(err, result, res) {
 	if (err) {
 		res.status(500).send();
-		throw err;
+		console.log(err);
 	}
 	if (result) {res.status(200).send();}
 }
