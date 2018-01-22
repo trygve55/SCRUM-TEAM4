@@ -19,9 +19,13 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
 		<script src="https://use.fontawesome.com/dea62227f7.js"></script>
 		<script src="/js/handlebars.js"></script>
 		<script src="js/redirect.js"></script>
+
+		<!--Charts.js.-->
+		<script src="js/Chart.min.js"></script>
 
 		<!--These below are needed for this window to appear correctly.-->
 		<script src="/js/group.js"></script>
@@ -103,11 +107,15 @@
 								<li class="nav-item">
 									<a style="color: black" class="nav-link"  onclick="changeTab('statistics')" href="#references" role="tab" data-toggle="tab" id="desc_title4"></a>
 								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link"  onclick="changeTab('leave')" href="#references" role="tab" data-toggle="tab" id="desc_title7"></a>
+								</li>
 							</ul>
 
 							<!-- Tab panes -->
 							<div class="tab-content">
 								<div role="tabpanel" class="tab-pane fade in active"></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
 								<div role="tabpanel" class="tab-pane fade" ></div>
 								<div role="tabpanel" class="tab-pane fade" ></div>
 								<div role="tabpanel" class="tab-pane fade" ></div>
@@ -227,7 +235,7 @@
 									Close
 								</button>
 								<button  onclick="registerCost()" id="group-registerCostButton" type="button" class="btn btn-primary">
-									Register cost
+									<p class="langtext" id="reg_cost"></p>
 								</button>
 							</div>
 						</div>
@@ -239,8 +247,20 @@
 				<div id="statistics" class="grouptab text-center">
 					<hr width="90%">
 					<!--Here the is the space for the statistics.-->
-					Statistics
+					<canvas id="stat0" class="chart"></canvas>
 				</div>
+				
+				<!--This is the leave group tab.-->
+				<div id="leave" class="grouptab text-center">
+					<hr width="90%">
+					<div>
+						<!--This is the button move it if needed.-->
+						<button type="button" class="btn btn-primary" onclick="leaveGroup()">
+							<p class="langtext" id="desc_button0"></p>
+						</button>
+					</div>
+				</div>
+				
 			</div>
 		</div>
 
