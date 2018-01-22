@@ -2,7 +2,9 @@ var router = require('express').Router(),
     auth = require('../auth'),
     router = require('express').Router(),
     formidable = require('formidable'),
-    Jimp = require("jimp");
+    Jimp = require("jimp"),
+    fs = require('fs'),
+    path = require('path');
 
 module.exports = router;
 
@@ -280,8 +282,15 @@ router.get('/:person_id/picture_tiny', function(req, res){
             }
 
             if(results.length == 0) {
-                res.status(404).json({error: 'no profile picture.'});
-                return;
+                var p = path.join(__dirname, '../public/img/profilPicture.png');
+                var stat = fs.statSync(p);
+
+                res.writeHead(200, {
+                    'Content-Type': 'image/jpeg',
+                    'Content-Length': stat.size
+                });
+
+                return fs.createReadStream(p).pipe(res);
             }
 
             if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');

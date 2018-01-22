@@ -6,7 +6,7 @@
 	"desc_title4": "Statistics",
 	"desc_title5": "Your Tasks",
 	"desc_title6": "Group Tasks",
-	"desc_title7": "Leave Group",
+	"desc_title7": "Administrate",
 	"group-homepageNavbar": "Home",
 	"group-groupsNavbar": "Groups",
 	"group-tasksNavbar": "Tasks",
@@ -27,5 +27,5 @@
 	"settle": "Oppgjør",
 	"add-item": "Add item",
 	"reg_cost": "Register Expense",
-	"desc_button0": "Leave Group"
+	"desc_button0": "Administrate"
 }

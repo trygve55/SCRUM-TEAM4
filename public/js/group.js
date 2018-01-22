@@ -664,6 +664,7 @@ function getPost(){
         success: function (dataFeed) {
             $("#posts").html("");
             for(var i = 0; i < dataFeed.length; i++) {
+                console.log(dataFeed);
                 var length = 50;
                 var text = dataFeed[i].post_text.split(" ");
                 var short = "";
@@ -674,6 +675,8 @@ function getPost(){
                 for(var k = j; k < text.length; k++){
                     rest += text[k] + " ";
                 }
+                a = new Date(dataFeed[i].posted_datetime);
+                testy = a.toDateString();
                 $("#posts").append(feedPost({
                     name: dataFeed[i].posted_by.forename + (dataFeed[i].posted_by.middlename ? ' ' + dataFeed[i].posted_by.middlename : '') + ' ' + dataFeed[i].posted_by.lastname,
                     payload: '',
@@ -681,7 +684,7 @@ function getPost(){
                     rest_text: rest,
                     image_url: (dataFeed[i].attachment_type == 0 ? '/img/profilPicture.png' : ''),
                     data: 'data-id="' + dataFeed[i].post_id + '"',
-                    datetime: dataFeed[i].posted_datetime,
+                    datetime: testy,
                     lang_read_more: "Read more..."
                 }));
                 console.log(j);

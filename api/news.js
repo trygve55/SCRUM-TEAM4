@@ -92,8 +92,8 @@ router.get('/', function(req, res) {
 	pool.getConnection(function(err, connection) {
 		if (!checkConnectionError(err, connection, res)) {return;}
 
-		connection.query('SELECT * FROM newsfeed_post WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?) ORDER BY posted_datetime DESC;',
-			[req.session.person_id], function(err, result) {	//req.params.person_id
+		connection.query('SELECT post_id, post_text, attachment_type, posted_datetime, person.forename, person.middlename, person.lastname, home_group.group_name, person.person_id FROM newsfeed_post LEFT JOIN person ON (person.person_id = newsfeed_post.posted_by_id) LEFT JOIN home_group USING (group_id) WHERE person_id = ? AND group_id IN (SELECT group_id FROM group_person WHERE person_id = ?) ORDER BY posted_datetime DESC;',
+			[req.session.person_id, req.session.person_id], function(err, result) {	//req.params.person_id
 				connection.release();
 				if (err) {return res.status(500).send();}
 				res.status(200).json(result);
