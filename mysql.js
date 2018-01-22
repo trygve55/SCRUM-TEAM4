@@ -1,11 +1,12 @@
 var mysql = require('mysql');
 
 pool = mysql.createPool({
-    connectionLimit : 10,
+    connectionLimit : 2,
     host : 'mysql.stud.iie.ntnu.no',
     user : 'g_tdat2003_t4',
     password : 'bR3n8htW',
     database : 'g_tdat2003_t4',
+    connectTimeout: 120000,
     debug : false,
     typeCast: function castField( field, useDefaultTypeCasting ) {
 

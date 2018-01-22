@@ -54,6 +54,7 @@ CREATE TABLE person (
     gender INTEGER DEFAULT 0,
     profile_pic MEDIUMBLOB,
     profile_pic_tiny BLOB,
+    has_profile_pic BIT NOT NULL DEFAULT 0,
     last_active TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     reset_password_token VARCHAR(255),
     shopping_list_id INTEGER NOT NULL UNIQUE,
@@ -73,6 +74,7 @@ CREATE TABLE home_group (
     cleaning_list_interval INTEGER NOT NULL DEFAULT 0,
     group_pic MEDIUMBLOB,
     group_pic_tiny BLOB,
+    has_group_pic BIT NOT NULL DEFAULT 0,
     default_currency_id INTEGER NOT NULL,
     shopping_list_id INTEGER NOT NULL,
     CONSTRAINT group_currency_fk FOREIGN KEY(default_currency_id) REFERENCES currency(currency_id),
@@ -105,6 +107,7 @@ CREATE TABLE shopping_list_person (
     person_id INTEGER NOT NULL,
     invite_accepted BIT NOT NULL DEFAULT 0,
     invite_sent_datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_hidden BIT NOT NULL DEFAULT 0,
     CONSTRAINT shopping_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
     CONSTRAINT shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT shopping_list_persons_pk PRIMARY KEY(shopping_list_id, person_id)
@@ -779,3 +782,17 @@ INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (75,
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (8, 21, 2, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (61, 10, 1, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (17, 11, 2, False);
+INSERT INTO budget_entry_type(shopping_list_id, entry_type_name) VALUES (1,"Food and similar");
+INSERT INTO budget_entry_type(shopping_list_id, entry_type_name) VALUES (1, "Alcohol");
+INSERT INTO budget_entry_type(shopping_list_id, entry_type_name) VALUES (1, "Cleaning supplies");
+INSERT INTO budget_entry_type(shopping_list_id, entry_type_name) VALUES (1, "Carpentry");
+INSERT INTO budget_entry(budget_entry_type_id, shopping_list_id, added_by_id, amount) VALUES (1,1,1,100);
+INSERT INTO budget_entry(budget_entry_type_id, shopping_list_id, added_by_id, amount) VALUES (1,1,1,320);
+INSERT INTO budget_entry(budget_entry_type_id, shopping_list_id, added_by_id, amount) VALUES (2,1,1,9800);
+INSERT INTO budget_entry(budget_entry_type_id, shopping_list_id, added_by_id, amount) VALUES (2,1,1,3800);
+INSERT INTO budget_entry(budget_entry_type_id, shopping_list_id, added_by_id, amount) VALUES (2,1,1,450);
+INSERT INTO budget_entry(budget_entry_type_id, shopping_list_id, added_by_id, amount) VALUES (2,1,1,1200);
+INSERT INTO budget_entry(budget_entry_type_id, shopping_list_id, added_by_id, amount) VALUES (4,1,1,900);
+INSERT INTO budget_entry(budget_entry_type_id, shopping_list_id, added_by_id, amount) VALUES (4,1,1,8750);
+INSERT INTO budget_entry(shopping_list_id, added_by_id, amount) VALUES (1,1,350);
+INSERT INTO budget_entry(shopping_list_id, added_by_id, amount) VALUES (1,1,200);
