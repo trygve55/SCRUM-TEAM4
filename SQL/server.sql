@@ -782,3 +782,17 @@ INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (75,
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (8, 21, 2, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (61, 10, 1, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (17, 11, 2, False);
+INSERT INTO budget_entry_type(shopping_list_id, entry_type_name) VALUES (1,"Food and similar");
+INSERT INTO budget_entry_type(shopping_list_id, entry_type_name) VALUES (1, "Alcohol");
+INSERT INTO budget_entry_type(shopping_list_id, entry_type_name) VALUES (1, "Cleaning supplies");
+INSERT INTO budget_entry_type(shopping_list_id, entry_type_name) VALUES (1, "Carpentry");
+INSERT INTO budget_entry(budget_entry_type_id, shopping_list_id, added_by_id, amount) VALUES (1,1,1,100);
+INSERT INTO budget_entry(budget_entry_type_id, shopping_list_id, added_by_id, amount) VALUES (1,1,1,320);
+INSERT INTO budget_entry(budget_entry_type_id, shopping_list_id, added_by_id, amount) VALUES (2,1,1,9800);
+INSERT INTO budget_entry(budget_entry_type_id, shopping_list_id, added_by_id, amount) VALUES (2,1,1,3800);
+INSERT INTO budget_entry(budget_entry_type_id, shopping_list_id, added_by_id, amount) VALUES (2,1,1,450);
+INSERT INTO budget_entry(budget_entry_type_id, shopping_list_id, added_by_id, amount) VALUES (2,1,1,1200);
+INSERT INTO budget_entry(budget_entry_type_id, shopping_list_id, added_by_id, amount) VALUES (4,1,1,900);
+INSERT INTO budget_entry(budget_entry_type_id, shopping_list_id, added_by_id, amount) VALUES (4,1,1,8750);
+INSERT INTO budget_entry(shopping_list_id, added_by_id, amount) VALUES (1,1,350);
+INSERT INTO budget_entry(shopping_list_id, added_by_id, amount) VALUES (1,1,200);
