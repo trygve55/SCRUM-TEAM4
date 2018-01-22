@@ -3,6 +3,35 @@ var router = require('express').Router();
 module.exports = router;
 
 /**
+ * Get all tasks to be notified about.
+ *
+ * URL: /api/tasks/notify/
+*/
+router.get('/notify', function(req, res) {
+	console.log("Begin.");
+	pool.getConnection(function(err, connection) {
+		if (!checkConnectionError(err, connection, res)) {return;}
+
+		connection.query(
+			"(SELECT person_id, todo_id, todo_text, datetime_deadline, color_hex, null AS private_list_id FROM " +
+			"todo LEFT JOIN todo_person USING(todo_id) WHERE " +
+			"datetime_deadline < DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL '24:1' HOUR_MINUTE) " +
+			"AND person_id IS NOT NULL AND datetime_done IS NULL ORDER BY datetime_deadline ASC) " +
+			"UNION " +
+			"(SELECT person_id, private_todo_entry_id, todo_text, datetime_deadline, color_hex, private_todo_list_id FROM " +
+			"private_todo_list LEFT JOIN private_todo_entry USING(private_todo_list_id) WHERE " +
+			"datetime_deadline < DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL '24:1' HOUR_MINUTE) AND " +
+			"datetime_done IS NULL ORDER BY datetime_deadline ASC);",
+			[], function(err, result) {
+				connection.release();
+				if (err) {return res.status(500).send(err);}
+				else {res.status(200).json(result);}
+			}
+		);
+	});
+});
+
+/**
  * Add new task to the group task list
  *
  * URL: /api/tasks
@@ -30,7 +59,7 @@ router.post('/', function(req, res) {
 				data.todo_text,
 				data.datetime_deadline,
 				data.datetime_done,
-				checkRange(req.session.person_id, 1, null),	// data.created_by_id to test this.
+				checkRange(data.created_by_id, 1, null),	// req.session.person_id to test this.
 				checkRange(data.done_by_id, 1, null)
 			], function(err, result) {checkResult(err, result, connection, res);}
 		);
@@ -81,7 +110,7 @@ router.get('/private/:todo_id', function(req, res) {
     pool.getConnection(function(err, connection) {
         if (!checkConnectionError(err, connection, res))
             return;
-        connection.query('SELECT * FROM private_todo WHERE todo.todo_id = ?',
+        connection.query('SELECT * FROM private_todo_entry WHERE todo.todo_id = ?',
             [req.params.todo_id], function(err, result) {
                 connection.release();
                 if (err)
@@ -139,21 +168,17 @@ router.get('/:todo_id', function(req, res) {
  * Get all tasks for a user
  *
  * URL: /api/person/
-* The GET request for all tasks for a user.
+ * The GET request for all tasks for a user.
 */
-router.get('/person/:person_id', function(req, res) { // TODO FIX THIS
+router.get('/person/:person_id', function(req, res) {
 	pool.getConnection(function(err, connection) {
-        if(err) {
-            connection.release();
-            res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            return;
-        }
+		if (!checkConnectionError(err, connection, res)) {return;}
 
 		connection.query(
 			'SELECT todo_id, todo_text, datetime_deadline, datetime_added, datetime_done, is_deactivated, color_hex, created_by_id, done_by_id ' +
 			'FROM todo LEFT JOIN todo_person USING(todo_id) WHERE todo_person.person_id = ? UNION (' +
-			'SELECT todo_id, todo_text, datetime_deadline, datetime_added, datetime_done, is_deactivated, color_hex, null, null ' +
-			'FROM private_todo WHERE private_todo.person_id = ?) ;',
+			'SELECT private_todo_entry_id, todo_text, datetime_deadline, datetime_added, datetime_done, is_deactivated, color_hex, null, null ' +
+			'FROM private_todo_list LEFT JOIN private_todo_entry USING(private_todo_list_id) WHERE private_todo_list.person_id = ?) ;',
 			[checkRange(req.params.person_id, 1, null),checkRange(req.params.person_id, 1, null)], function(err, result) {
 				connection.release();
 				if (err) {return res.status(500).send(err);}
