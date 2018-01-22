@@ -12,6 +12,7 @@
     "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "chai": "^4.1.2",
+    "chart.js": "^2.7.1",
     "codecov": "^3.0.0",
     "cookie-parser": "^1.4.3",
     "ejs": "^2.5.7",
