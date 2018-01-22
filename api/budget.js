@@ -400,8 +400,14 @@ router.get('/:shopping_list_id', function(req, res) {
 					for (var i = 0;i < budget_entries.length;i++) {
 						var paid_to_person_index = payPersonExistsInArray(budget_entries[i].added_by.person_id, persons_to_get_paid);
 						if (paid_to_person_index === -1) {
+						    var person = {
+                                "person_id": budget_entries[i].added_by.person_id,
+                                "forename": budget_entries[i].added_by.forename,
+                                "middlename": budget_entries[i].added_by.middlename,
+                                "lastname": budget_entries[i].added_by.lastname
+                            };
 							persons_to_get_paid.push({
-								"person_id": budget_entries[i].added_by.person_id,
+								"person": person,
 								"persons_to_pay": []
 							});
 							paid_to_person_index = persons_to_get_paid.length - 1;
@@ -411,8 +417,14 @@ router.get('/:shopping_list_id', function(req, res) {
                                 if (budget_entries[i].persons_to_pay[j].datetime_paid === null) {
                                     var pay_from_person_index = payPersonExistsInArray(budget_entries[i].persons_to_pay[j].person_id, persons_to_get_paid[paid_to_person_index].persons_to_pay);
                                     if (pay_from_person_index === -1) {
-                                        persons_to_get_paid[paid_to_person_index].persons_to_pay.push({
+                                        var person = {
                                             "person_id": budget_entries[i].persons_to_pay[j].person_id,
+                                            "forename": budget_entries[i].persons_to_pay[j].forename,
+                                            "middlename": budget_entries[i].persons_to_pay[j].middlename,
+                                            "lastname": budget_entries[i].persons_to_pay[j].lastname
+                                        };
+                                        persons_to_get_paid[paid_to_person_index].persons_to_pay.push({
+                                            "person": person,
                                             "amount_to_pay": budget_entries[i].persons_to_pay[j].amount_to_pay
                                         });
                                         pay_from_person_index = persons_to_get_paid[paid_to_person_index].persons_to_pay.length - 1;
