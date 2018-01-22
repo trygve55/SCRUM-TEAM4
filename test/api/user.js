@@ -107,6 +107,7 @@ describe('User API', function() {
     });
 */
 
+/*
     describe('/api/user/all GET', function () {
        it("Should return expected values from database", function (done) {
            request.get('/api/user/all')
@@ -133,6 +134,7 @@ describe('User API', function() {
        });
     });
 
+*/
     describe('/api/user/getUser GET', function () {
         it("Should return the requested user's data (private)", function (done) {
             request.get('/api/user/getUser').query({
