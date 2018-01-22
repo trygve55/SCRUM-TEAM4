@@ -529,7 +529,6 @@ router.post('/forgottenPasswordReset', function(req, res) {
                     return res.status(500).send("Internal database error (2)");
                 }
                 if(result[0].reset_password_token == null) {
-                    console.log(payload.id);
                     return res.status(500).send("Internal database/server error (possible bad token) (3)");
                 }
                 if(result[0].reset_password_token != token) {
