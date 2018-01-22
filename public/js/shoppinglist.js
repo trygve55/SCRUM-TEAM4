@@ -365,7 +365,7 @@ function setupClicks(){
             textfield: lang["shop-input-members"],
             memberlist: h
         }));
-        $.ajax()
+
         $("#popup-members-cancel").click(function () {
             $(this).closest(".pop").remove();
         });
@@ -462,7 +462,7 @@ function setupClicks(){
             url: '/api/shoppingList/' + listid,
             method: 'PUT',
             data: {
-                is_hidden: 1
+                is_hidden: true
             },
             error: console.error
         });
@@ -473,19 +473,34 @@ function setupClicks(){
         if(items.length == 0)
             return;
         var entries = $(items[0]).data("id");
-        var list = "<li class=\"list-group-item\">" + $(items[0]).html() + "</li>";
+        var number = 1;
+        var list = "<li class=\"list-group-item\">"+number+". " + $(items[0]).text() + "</li>";
         for(var i = 1; i < items.length; i++){
+            number++;
             entries += "," + $(items[i]).data("id");
-            list += "<li class=\"list-group-item\">" + $(items[i]).html() + "</li>";
+            list += "<li class=\"list-group-item\">"+number+". " + $(items[i]).text()+ "</li>";
+        }
+        var li = $(this).parent().attr("data-id");
+        var curr = "*";
+        for(var i=0; i<lists.length; i++){
+            if(lists[i].shopping_list_id==li){
+                curr = lists[i].currency_short;
+            }
         }
         $("body").append(popupTextList({
             title: lang["shop-buy-title"],
             list: list,
             textfield: lang["shop-buy-text"],
+            textfield_com: lang["shop-entry-name"],
+            not_needed: lang["shop-not-needed"],
+            textfield_label: lang["shop-entry-label"],
+            currency: curr,
             cancel: lang["shop-cancel"],
             complete: lang["shop-ok"],
             data: "data-id='" + $(this).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
         }));
+        $(this).find(".label-input").append("<p>Fellesmat</p>");
+        $(this).find(".label-input").append("<p>Fest</p>");
 
         $(".pop").find(".fa-times").remove();
         $(".pop").find("input[type=checkbox]").remove();
