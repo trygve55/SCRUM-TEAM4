@@ -65,6 +65,21 @@ $(document).ready(function() {
 	//var groups = $("div.tablink");
 	//if (groups.length > 0) {changeGroup($(groups[0]).html());}
 	
+	
+	// STATISTICS
+	var stats = $.ajax({
+		type:"GET",
+		url:"/api/budget/" + currentGroup.shopping_list_id,
+		contentType:"application/json",
+		dataType:"json",
+		success:function(result) {stats = result;}
+	});
+	if (stats) {
+		
+		
+		drawLineChart("#stat0", stats);
+	}
+	
 	// TEST
 	//addGroupToList("Group E");
 	//addGroupToList("Group 1");
@@ -630,6 +645,7 @@ $(function () {
 
 /**
 * Leave the currently selected group.
+* The page just reloads so that the group is removed from the list.
 */
 function leaveGroup() {
 	$.ajax({url: '/api/group/' + currentGroup.group_id, method: 'DELETE', error: console.error()});
@@ -638,6 +654,7 @@ function leaveGroup() {
 
 /**
 * Statistics for the statistics tab.
+* The month labels will move so that the last column is the current month.
 */
 function drawChart() {
 	// AJAX get all the budget data for the chart.
@@ -676,14 +693,17 @@ function drawChart() {
 	});
 }
 
+/**
+* Draw a "bar" style chart with these labels and the specified data.
+*/
 function drawBarChart(data, labels) {
-	// Build the datasets.
+	// Build the datasets. The colours are defined at the very top of this file.
 	var datasets = [];
 	for (var i = 0; i < data.length; i++) {
 		datasets.push({"label": statLabels[i], "backgroundColor": 'rgba' + statColours[i][0], "borderColor": 'rgba' + statColours[i][1], "data":data[i]});
 	}
 	
-	// Charts.js
+	// The Charts.js part.
 	var chart = new Chart(document.getElementById("stat0").getContext("2d"), {
 		type: 'bar',
 		data: {"labels":labels, "datasets":datasets},
