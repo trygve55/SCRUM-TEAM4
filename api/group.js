@@ -561,7 +561,8 @@ router.get('/:group_id/todo', function(req, res) {
 			[req.params.group_id],
 			function(err, result) {
 				connection.release();
-				if (err) {throw err;}
+				if (err)
+				    return res.status(500).send();
 				if (result) {
 					var people = [];
 					for (i = 0; i < result.length; i++) {people.push({"person_id":result[i].person_id});}

@@ -4,8 +4,20 @@
 	background-color: white;
 	border-radius: 25px;
 	max-height: 670px;
-	min-width: 350px;
+	min-width: 320px;
+
 }
+
+.listeTask{
+	margin: 1%;
+	padding: 2%;
+	background-color: white;
+	border-radius: 25px;
+	max-height: 670px;
+	min-width: 320px;
+	width: 90%;
+}
+
 .adde {
 	margin: 1%;
 	padding: 2%;
@@ -194,6 +206,9 @@ label {
 	min-width: 130px;
 	min-height: 50px;
 	border-radius: 5px;
+    -moz-box-shadow:    inset 0 0 3px grey;
+    -webkit-box-shadow: inset 0 0 3px grey;
+    box-shadow:         inset 0 0 3px grey;
 }
 
 #grouppage{
@@ -211,4 +226,64 @@ div.grouptablink.backvariant{
 
 #groupselection{
 	height: 670px;
+}
+ body{
+     overflow-x: hidden;
+ }
+
+@media screen and (max-width: 375px) {
+    #group-post {
+        display: none!important;
+
+    }
+    #group-post2{
+        display: block!important;
+    }
+
+    #group-time{
+        text-align: center;
+    }
+
+}
+
+#feed{
+    padding-top: 2%;
+}
+
+#group-newsfeedPost{
+    border-style:groove;
+    resize: none;
+    padding-left: 4%;
+    width:85%;
+    text-align: left;
+    height: 80px;
+    border-radius: 5px;
+}
+#group-post{
+    padding-right: 2%;
+}
+
+#group-post2{
+    padding-right: 2%;
+}
+
+.post{
+    padding:2%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    min-height:175px;
+    max-width: 85%;
+    -moz-box-shadow: 0 0 1px grey;
+    -webkit-box-shadow: 0 0 1px grey;
+    box-shadow:  0 0 1px grey;
+    border-radius: 10px;
+	max-height: 350px;
+	overflow-y: auto;
+}
+
+#group-feedProfilPicture{
+    padding: 10%;
+    max-width: 100px;
+    max-height: 100px;
+    image-rendering: crisp-edges;
 }

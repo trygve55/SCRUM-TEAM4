@@ -285,6 +285,7 @@ $(function () {
                     username: $('#register-username').val(),
                     password: $('#register-password').val(),
                     forename: $('#register-firstname').val(),
+                    middlename: $('#register-middelname').val(),
                     lastname: $('#register-lastname').val(),
                     phone: $('#register-phone').val()
                 },
