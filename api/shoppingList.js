@@ -245,7 +245,8 @@ router.get('/:shopping_list_id', function(req, res) {
     pool.query('SELECT * ' +
         'FROM shopping_list LEFT JOIN currency USING(currency_id)  ' +
         'LEFT JOIN shopping_list_entry USING(shopping_list_id)  ' +
-        'lEFT JOIN shopping_list_person USING(shopping_list_id) ' +
+        'LEFT JOIN shopping_list_person USING(shopping_list_id) ' +
+        'LEFT JOIN (SELECT person_id, forename, middlename, lastname FROM person) p USING(person_id) ' +
         'WHERE shopping_list.shopping_list_id = ? AND shopping_list_id IN  ' +
         '(SELECT shopping_list_id FROM person WHERE person_id = ?  ' +
         'UNION  ' +
@@ -262,7 +263,7 @@ router.get('/:shopping_list_id', function(req, res) {
             } else if (!result.length) {
                 return res.status(403).json({error: "no access/does not exist", success: false});
             }
-            var entries = [], person_ids = [];
+            var entries = [], persons = [];
             for (var i = 0; i < result.length; i++) {
                 if (result[i].shopping_list_entry_id) entries.push({
                     "shopping_list_entry_id":result[i].shopping_list_entry_id,
@@ -274,7 +275,12 @@ router.get('/:shopping_list_id', function(req, res) {
                     "datetime_purchased":result[i].datetime_purchased
                 });
                 if (result[i].person_id) {
-                    person_ids.push(result[i].person_id);
+                    persons.push({
+                        "person_id": result[i].person_id,
+                        "forename": result[i].forename,
+                        "middlename": result[i].middlename,
+                        "lastname": result[i].lastname
+                    });
                 }
             }
             res.status(200).json({
@@ -288,7 +294,7 @@ router.get('/:shopping_list_id', function(req, res) {
                 "currency_major":result[0].currency_major,
                 "currency_long":result[0].currency_long,
                 "shopping_list_entries": removeDuplicateUsingFilter(entries),
-                "person_ids": removeDuplicateUsingFilter(person_ids)
+                "persons": removeDuplicateUsingFilter(persons)
             });
         }
     );
