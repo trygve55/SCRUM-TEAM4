@@ -507,18 +507,19 @@ router.post('/forgottenPasswordEmail', function(req,res) {
 /**
  * Set new password with a JWT acquired from an email
  *
- * URL: /api/user/forgottenPasswordReset?token={token}
+ * URL: /api/user/forgottenPasswordReset
  * method: POST
  * data: {
- *      new_password
+ *      new_password,
+ *      token
  * }
  */
 
 router.post('/forgottenPasswordReset', function(req, res) {
-    if(!req.body.new_password || !req.query.token) {
+    if(!req.body.new_password || !req.body.token) {
         return res.status(400).send("Bad request (missing variable");
     }
-    var token = req.query.token;
+    var token = req.body.token;
     jwt.verify(token, secret, {
         iss: issuer
     }, function(err, payload) {
