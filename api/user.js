@@ -507,7 +507,7 @@ router.post('/forgottenPasswordEmail', function(req,res) {
 /**
  * Set new password with a JWT acquired from an email
  *
- * URL: /api/user/forgottenPasswordReset?token={token}
+ * URL: /api/user/forgottenPasswordReset
  * method: POST
  * data: {
  *      new_password,
