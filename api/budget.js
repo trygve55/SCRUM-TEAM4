@@ -396,40 +396,51 @@ router.get('/:shopping_list_id', function(req, res) {
                     }
 					
 					var persons_to_get_paid = [];
-					
+
+                    console.log("test0");
+
 					for (var i = 0;i < budget_entries.length;i++) {
 						var paid_to_person_index = payPersonExistsInArray(budget_entries[i].added_by.person_id, persons_to_get_paid);
 						if (paid_to_person_index === -1) {
-						    var person = {
-                                "person_id": budget_entries[i].added_by.person_id,
-                                "forename": budget_entries[i].added_by.forename,
-                                "middlename": budget_entries[i].added_by.middlename,
-                                "lastname": budget_entries[i].added_by.lastname
-                            };
 							persons_to_get_paid.push({
-								"person": person,
+								/*"person": {
+                                    "person_id": budget_entries[i].added_by.person_id,
+                                    "forename": budget_entries[i].added_by.forename,
+                                    "middlename": budget_entries[i].added_by.middlename,
+                                    "lastname": budget_entries[i].added_by.lastname
+                                },*/
+								"person_id": budget_entries[i].added_by.person_id,
 								"persons_to_pay": []
 							});
 							paid_to_person_index = persons_to_get_paid.length - 1;
 						}
+
                         for (var j = 0; j < budget_entries[i].persons_to_pay.length;j++) {
 						    if (budget_entries[i].persons_to_pay[j].person_id !== persons_to_get_paid[paid_to_person_index].person_id) {
                                 if (budget_entries[i].persons_to_pay[j].datetime_paid === null) {
                                     var pay_from_person_index = payPersonExistsInArray(budget_entries[i].persons_to_pay[j].person_id, persons_to_get_paid[paid_to_person_index].persons_to_pay);
                                     if (pay_from_person_index === -1) {
-                                        var person = {
-                                            "person_id": budget_entries[i].persons_to_pay[j].person_id,
-                                            "forename": budget_entries[i].persons_to_pay[j].forename,
-                                            "middlename": budget_entries[i].persons_to_pay[j].middlename,
-                                            "lastname": budget_entries[i].persons_to_pay[j].lastname
-                                        };
                                         persons_to_get_paid[paid_to_person_index].persons_to_pay.push({
-                                            "person": person,
-                                            "amount_to_pay": budget_entries[i].persons_to_pay[j].amount_to_pay
+                                            /*"person": {
+                                                "person_id": budget_entries[i].persons_to_pay[j].person_id,
+                                                "forename": budget_entries[i].persons_to_pay[j].forename,
+                                                "middlename": budget_entries[i].persons_to_pay[j].middlename,
+                                                "lastname": budget_entries[i].persons_to_pay[j].lastname
+                                            },*/
+                                            "person_id": budget_entries[i].persons_to_pay[j].person_id,
+                                            "amount_to_pay": budget_entries[i].persons_to_pay[j].amount_to_pay,
+                                            "budget_entry_ids": [{
+                                                "budget_entry_id": budget_entries[i].budget_entry_id,
+                                                "person_id": budget_entries[i].persons_to_pay[j].person_id
+                                            }]
                                         });
                                         pay_from_person_index = persons_to_get_paid[paid_to_person_index].persons_to_pay.length - 1;
                                     } else {
                                         persons_to_get_paid[paid_to_person_index].persons_to_pay[pay_from_person_index].amount_to_pay += budget_entries[i].persons_to_pay[j].amount_to_pay;
+                                        persons_to_get_paid[paid_to_person_index].persons_to_pay[pay_from_person_index].budget_entry_ids.push({
+                                            "budget_entry_id": budget_entries[i].budget_entry_id,
+                                            "person_id": budget_entries[i].persons_to_pay[j].person_id
+                                        });
                                     }
                                 }
                             }
@@ -448,9 +459,15 @@ router.get('/:shopping_list_id', function(req, res) {
                                                     persons_to_get_paid[j].persons_to_pay.splice(k,1);
                                                 } else if (persons_to_get_paid[i].persons_to_pay[l].amount_to_pay < persons_to_get_paid[j].persons_to_pay[k].amount_to_pay) {
                                                     persons_to_get_paid[j].persons_to_pay[k].amount_to_pay -= persons_to_get_paid[i].persons_to_pay[l].amount_to_pay;
+                                                    for (var m = 0;m < persons_to_get_paid[i].persons_to_pay[l].budget_entry_ids.length;m++) {
+                                                        persons_to_get_paid[j].persons_to_pay[k].budget_entry_ids.push(persons_to_get_paid[i].persons_to_pay[l].budget_entry_ids[m]);
+                                                    }
                                                     persons_to_get_paid[i].persons_to_pay.splice(l,1);
                                                 } else {
                                                     persons_to_get_paid[i].persons_to_pay[l].amount_to_pay -= persons_to_get_paid[j].persons_to_pay[k].amount_to_pay;
+                                                    for (var m = 0;m < persons_to_get_paid[j].persons_to_pay[k].budget_entry_ids.length;m++) {
+                                                        persons_to_get_paid[i].persons_to_pay[l].budget_entry_ids.push(persons_to_get_paid[j].persons_to_pay[k].budget_entry_ids[m]);
+                                                    }
                                                     persons_to_get_paid[j].persons_to_pay.splice(k,1);
                                                 }
                                             }
@@ -576,7 +593,7 @@ function payPersonExistsInArray(person_id, array) {
 
 function paidPersonExistsInArray(person_id, array) {
     for (var i = 0; i < array.length;i++) {
-        if (array[i].person_id == person_id) return i;
+        if (array[i].person.person_id == person_id) return i;
     }
     return -1;
 }
