@@ -4,7 +4,7 @@
   "register-password": "Password*",
   "register-repeatpassword": "Repeat password*",
   "register-firstname": "Firstname*",
-  "register-lastname": "Lastname",
+  "register-lastname": "Lastname*",
   "register-email": "Email*",
   "register-phone": "Phone number",
   "register-fillIn": "Please fill in each field marked with *"

@@ -8,8 +8,6 @@ var session = require('express-session');
 var app = express();
 require('./mysql');
 
-var auth = require('./auth');
-
 app.use(logger('[:date[web]] ":method :url" :status :res[content-length] - :response-time ms'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -25,9 +23,11 @@ app.use(session({
 }));
 
 app.use('/api', require('./api'));
+app.use('/template', require('./template'));
 
 app.get("*", function(req, res){
     res.status(404).send("Page not found");
 });
 
 module.exports = app;
+

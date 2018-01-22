@@ -1,5 +1,23 @@
 .profil{
     background-color: white;
-    border-radius: 3px;
+    border-radius: 10px;
     height: auto;
+    margin-top: 2%;
+    overflow: auto;
+}
+
+
+.newsfeed{
+    background-color: white;
+    border-radius: 10px;
+    height: auto;
+    margin-top: 2%;
+    overflow: auto;
+}
+
+.index-todo{
+    padding: 20px;
+    background-color: gainsboro;
+    margin: 25px;
+    height: 310px;
 }

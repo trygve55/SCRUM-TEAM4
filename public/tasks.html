@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HHM: Tasks</title>
+
+    <!-- favicon stuff -->
+    <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png">
+    <link rel="manifest" href="img/favicons/manifest.json">
+    <link rel="mask-icon" href="img/favicons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="theme-color" content="#ffffff">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" type="text/css" href="css/tasks.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" ></script>
+    <script src="js/tasks.js"></script>
+    <script src="https://use.fontawesome.com/dea62227f7.js"></script>
+    <script type="text/javascript"> (function() { var css = document.createElement('link'); css.href = '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css'; css.rel = 'stylesheet'; css.type = 'text/css'; document.getElementsByTagName('head')[0].appendChild(css); })(); </script>
+    <script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+<body background="img/BackgroundImage.png">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="index.html" style="color: dimgray">
+            <img src="img/logo.svg" width="30" height="30" alt="">
+            Household Manager
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a id="tasks-homepage" class="nav-item nav-link" href="index.html"></a>
+                <a id="tasks-groups" class="nav-item nav-link" href="group.html"></a>
+                <a id="tasks-tasks" class="nav-item nav-link  active" href="tasks.html"></a>
+                <a id="tasks-shoppinglists" class="nav-item nav-link" href="shoppinglist.html"></a>
+            </div>
+            <div class="navbar-nav ml-auto">
+                <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
+                <a id="tasks-profile" class="nav-item nav-link" href="#"></a>
+
+                <i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
+                <a class="nav-item nav-link" href="login.html" id="tasks-logout"></a>
+            </div>
+        </div>
+    </nav>
+    <br>
+    <div class="flag" style="background-color: white">
+        <img id="tasks-norway" style="position:absolute; right:15px" src="img/norwegianflag.jpg" width="20" height="12">
+        <img id="tasks-england" style="position:absolute; right: 40px" src="img/engelskflagg.png" width="20" height="12">
+    </div>
+    <div  align="center" style="margin-right: 5%; margin-left: 5%;">
+        <div class="row" id="tasks-listgroup">
+            <div class="col-sm adde" id="addlist"><h4 id="tasks-addlist"></h4>
+                <br>
+                <p style="line-height: 500px;"><i class="fa fa-plus-square-o" aria-hidden="true" style="font-size: 90px"></i></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
