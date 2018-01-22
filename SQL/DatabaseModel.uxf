@@ -366,7 +366,8 @@ datetime_purchased</panel_attributes>
     <panel_attributes>Shopping List persons
 --
 invite_sent_datetime
-invite accepted</panel_attributes>
+invite accepted
+is_hidden</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -630,8 +631,7 @@ style=wordwrap</panel_attributes>
 _shopping_list_id_
 shopping_list_name
 currency_id
-color_hex
-is_hidden</panel_attributes>
+color_hex</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
