@@ -65,21 +65,6 @@ $(document).ready(function() {
 	//var groups = $("div.tablink");
 	//if (groups.length > 0) {changeGroup($(groups[0]).html());}
 	
-	
-	// STATISTICS
-	var stats = $.ajax({
-		type:"GET",
-		url:"/api/budget/" + currentGroup.shopping_list_id,
-		contentType:"application/json",
-		dataType:"json",
-		success:function(result) {stats = result;}
-	});
-	if (stats) {
-		
-		
-		drawLineChart("#stat0", stats);
-	}
-	
 	// TEST
 	//addGroupToList("Group E");
 	//addGroupToList("Group 1");
