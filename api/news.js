@@ -51,7 +51,7 @@ router.get('/:group_id', function(req, res) {
  * method: GET
 */
 router.get('/', function(req, res) {
-    poolquery('SELECT * FROM newsfeed_post WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?);',
+    pool.query('SELECT * FROM newsfeed_post WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?);',
         [req.session.person_id], function(err, result) {	//req.params.person_id
             if (err) {return res.status(500).send();}
             res.status(200).json(result);
