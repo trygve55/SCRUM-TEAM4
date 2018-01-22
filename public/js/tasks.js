@@ -1,25 +1,29 @@
 var lang;
 var itemcount = 0;
-/*function clicked(element) {
-    $(element).fadeOut(300);
-    var label = element.id;
-    var listnr = label.split("m").pop()[0];
-    console.log($(label).find("col-sm").html());
-    itemcount++;
-    $('#listoftasks'+listnr).append("" +
-        "<li class=\"list-group-item marked\" id=\"elem"+listnr+"-"+itemcount+"\" style='padding: -2px; margin: -3px; font-size: 15px;'>" +
-        "   <div class='row'>" +
-        "       <div class=\"col-sm-5\" id='theitemdiv"+listnr+"-"+itemcount+"'><i class=\"fa fa-check-circle-o\" aria-hidden=\"true\" id='checked"+listnr+"-"+itemcount+"' style='font-size: 15px;'></i>" +
-        "           <i class=\"fa fa-circle-o\" aria-hidden=\"true\" id='unchecked"+listnr+"-"+itemcount+"' style='font-size: 15px;'></i> " +
-        "           "+item+"</div>" +
-        "       <div class='col-sm-7' style='text-align: right'>" +
-        "       <input class='inputdate' type=\"text\" id=\"datepicker"+listnr+"-"+itemcount+"\"> " +
-        "       <i class=\"fa fa-calendar\" aria-hidden=\"true\" id='calendar"+listnr+"-"+itemcount+"' style='font-size: 20px;'></i>" +
-        "           <i class=\"fa fa-times\" aria-hidden=\"true\" id=\"crossout" +listnr+"-"+ itemcount + "\" style='font-size: 20px;'></i></label> " +
-        "   </div></div>" +
-        "</li>");
-}*/
+var tasklist, completedList, completedItem, taskItem, newListItem;
+
 $('document').ready(function () {
+    $.ajax({
+        url: '/template',
+        method: 'GET',
+        data: {
+            files: [
+                "tasklist.html",
+                "completedTasklist.html",
+                "completedTask.html",
+                "taskItem.html",
+                "newListItem.html"
+            ]
+        },
+        success: function(data){
+            tasklist = Handlebars.compile(data["list.html"]);
+            completedList = Handlebars.compile(data["balance.html"]);
+            completedItem = Handlebars.compile(data["listItem.html"]);
+            taskItem = Handlebars.compile(data["newListItem.html"]);
+            newListItem = Handlebars.compile(data["popupTextfieldList.html"]);
+            prep();
+        }
+    });
     //-----------Language-----------
     $.ajax({
         url: '/api/language',
@@ -104,7 +108,7 @@ $('document').ready(function () {
         donetab[count] = [];
 
         //Adds html to the group of lists
-        $("<div class=\"col-sm liste\" id='listnr"+count+"'><div class='row'>" +
+        /*$("<div class=\"col-sm liste\" id='listnr"+count+"'><div class='row'>" +
             "<div class='col-sm-7' style='text-align: left'>" +
             "<div id='listname"+count+"' style='margin: 6px'><input type='text' class='form-control' id='listnameinput"+count+"'></div>" +
             "<div id='listnamelabel"+count+"'><h4>Liste"+count+"</h4></div></div>"+
@@ -121,7 +125,7 @@ $('document').ready(function () {
             "<i class=\"fa fa-list-ul\" aria-hidden=\"true\" style='font-size: 18px; margin: 7px' id='donebutton"+count+"'> Fullført</i>" +
             "</div><div class='col-sm liste' id='donetasks"+count+"'><h5 align='left'>Done tasks</h5>" +
             "<ul class='list-group' id='donelist"+count+"'><div align='center'><i class=\"fa fa-bars\" aria-hidden=\"true\" style='font-size: 15px; margin: 5px;' id='goback"+count+"'> Go back to tasks</i></div></ul>" +
-            "</div>").insertAfter("#addlist");
+            "</div>").insertAfter("#addlist");*/
 
         //duplicated jqueries
         var listname = $('#listname'+count);
@@ -239,7 +243,7 @@ $('document').ready(function () {
                 $('#newiteminput'+listnr).val('');//Resets inputfield
 
                 //----------Adds item-----------
-                $('#listoftasks'+listnr).append("" +
+                /*$('#listoftasks'+listnr).append("" +
                     "<li class=\"list-group-item marked\" id=\"elem"+listnr+"-"+itemcount+"\" style='padding: -2px; margin: -3px; font-size: 15px;'>" +
                     "   <div class='row'>" +
                     "       <div class=\"col-sm-5\" id='theitemdiv"+listnr+"-"+itemcount+"'><i class=\"fa fa-check-circle-o\" aria-hidden=\"true\" id='checked"+listnr+"-"+itemcount+"' style='font-size: 15px;'></i>" +
@@ -250,7 +254,7 @@ $('document').ready(function () {
                     "       <i class=\"fa fa-calendar\" aria-hidden=\"true\" id='calendar"+listnr+"-"+itemcount+"' style='font-size: 20px;'></i>" +
                     "           <i class=\"fa fa-times\" aria-hidden=\"true\" id=\"crossout" +listnr+"-"+ itemcount + "\" style='font-size: 20px;'></i></label> " +
                     "   </div></div>" +
-                    "</li>");
+                    "</li>");*/
 
                 //-------------Sets dateformat and sets date inthe datedateArrtab------------
                 $( function() {
