@@ -35,18 +35,11 @@ router.get('/name', function(req, res){
         return res.status(403).send("Login required");
     if(!req.query.group_name)
         return res.status(400).send("Bad Request (missing variable 'group_name')");
-    pool.getConnection(function(err, connection){
-        if(err) {
-            connection.release();
-            return res.status(500).send("Error");
-        }
-        connection.query("SELECT COUNT(*) FROM home_group WHERE group_name = ?", [req.query.group_name], function (err, result){
-            connection.release();
+    pool.query("SELECT COUNT(*) FROM home_group WHERE group_name = ?", [req.query.group_name], function (err, result){
             if(err)
                 return res.status(500).send(err.code);
             res.status(200).send(result[0]["COUNT(*)"] == 0);
         });
-    });
 });
 
 /**

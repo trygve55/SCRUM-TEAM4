@@ -437,26 +437,26 @@ function checkRange(value, min, max) {
 }
 
 function removeDuplicateUsingFilter(arr){
-	var added_ids = [], unique_array = arr.filter(function(elem, index, self) {
+    var added_ids = [], unique_array = arr.filter(function(elem, index, self) {
         if (!elem.shopping_list_entry_id && elem.shopping_list_id) {
             if (added_ids.indexOf(elem.shopping_list_id) == -1) {
                 added_ids.push(elem.shopping_list_id);
                 return true;
             } else { return false; }
         } else if (elem.shopping_list_entry_id) {
-        	if (added_ids.indexOf(elem.shopping_list_entry_id) == -1) {
-        		added_ids.push(elem.shopping_list_entry_id);
-        		return true;
-			} else { return false; }
-		}
+            if (added_ids.indexOf(elem.shopping_list_entry_id) == -1) {
+                added_ids.push(elem.shopping_list_entry_id);
+                return true;
+            } else { return false; }
+        }
         return index == self.indexOf(elem);
     });
     return unique_array
 }
 
 function shoppingListExistsInArray(shopping_list_id, array) {
-	for (var i = 0; i < array.length;i++) {
-		if (array[i].shopping_list_id == shopping_list_id) return i;
-	}
-	return -1;
+    for (var i = 0; i < array.length;i++) {
+        if (array[i].shopping_list_id == shopping_list_id) return i;
+    }
+    return -1;
 }

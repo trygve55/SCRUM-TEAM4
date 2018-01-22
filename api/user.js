@@ -294,75 +294,42 @@ function checkValidEmail(email) {
 }
 
 router.get('/:person_id/picture', function(req, res){
-    pool.getConnection(function (err, connection) {
-        connection.query("SELECT profile_pic, has_profile_pic FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
-            connection.release();
+    pool.query("SELECT profile_pic, has_profile_pic FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
             if(err)
                 return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-
             if(!results[0].has_profile_pic)
                 return res.status(404).json({error: 'no profile picture.'});
 
             res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
-        });
     });
 });
 
 router.get('/:person_id/picture_tiny', function(req, res){
-    pool.getConnection(function (err, connection) {
-        if (err) {
-            connection.release();
-            return res.status(500).json({error: err});
-        }
-        connection.query("SELECT profile_pic_tiny, has_profile_pic  FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
-            connection.release();
+    pool.query("SELECT profile_pic_tiny, has_profile_pic  FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
             if(err)
                 return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-
             if(!results[0].has_profile_pic)
                 return res.status(404).json({error: 'no profile picture.'});
-
             res.contentType('jpeg').status(200).end(results[0].profile_pic_tiny, 'binary');
-        });
     });
 });
 
-/*
-router.all('/profile/1/picture', function(req, res, next) {
-
-
-    next();
-});
-
-*/
-
 //update profile
 router.put('/:person_id', function(req, res) {
-    pool.getConnection(function (err, connection) {
-        if(err) {
-            connection.release();
-            return res.status(500).send({"Error" : "Connecting to database"} + err);
-        }
-
-        var parameter = req.params;
-
-        var query = putRequestSetup(parameter.person_id, req.body, connection, "person");
-        connection.query(query[0], query[1], function (err) {
-            connection.release();
+    var parameter = req.params;
+    var query = putRequestSetup(parameter.person_id, req.body, "person");
+    pool.query(query[0], query[1], function (err) {
             if (err) {
                 res.status(500).json({error: err});
             }
             return res.status(200).json({"success" : query[1]});
-        });
     });
 });
 
 router.post('/:person_id/picture', function(req, res){
-
     if (req.session.person_id === req.params.person_id) return res.status(403).json({
         "error": "you can not set the profile picture of someone else"
     });
-
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
         var path = files.file.path,
@@ -391,43 +358,29 @@ router.post('/:person_id/picture', function(req, res){
                             if (err)
                                 return res.status(500).json({'Error': err});
 
-                            pool.getConnection(function (err, connection) {
-                                if (err)
-                                    return res.status(500).json({'Error': err});
-
-                                connection.query("UPDATE person SET profile_pic = ?, profile_pic_tiny = ?, has_profile_pic = 1 WHERE person_id = ?;", [data, data_tiny, req.params.person_id], function (err, results, fields) {
-                                    connection.release();
+                            pool.connection.query("UPDATE person SET profile_pic = ?, profile_pic_tiny = ?, has_profile_pic = 1 WHERE person_id = ?;", [data, data_tiny, req.params.person_id], function (err, results, fields) {
                                     if (err)
                                         return res.status(500).json({'Error': err});
-
                                     res.status(200).json(file_size);
                                 });
                             });
                         });
                 });
         });
-    });
 });
 
-router.delete('/:person_id/picture', function(req, res){
-
+router.delete('/:person_id/picture', function(req, res) {
     if (req.session.person_id === req.params.person_id) return res.status(403).json({
         "error": "you can not set the profile picture of someone else"
     });
 
-    pool.getConnection(function (err, connection) {
-        if (err)
-            return res.status(500).json({'Error': err});
-
-        connection.query("UPDATE person SET profile_pic = NULL, profile_pic_tiny = NULL, has_profile_pic = 0 WHERE person_id = ?;", [data, data_tiny, req.params.person_id], function (err, results, fields) {
-            connection.release();
+    pool.query("UPDATE person SET profile_pic = NULL, profile_pic_tiny = NULL, has_profile_pic = 0 WHERE person_id = ?;", [data, data_tiny, req.params.person_id], function (err, results, fields) {
             if (err)
                 return res.status(500).json({'Error': err});
-
             res.status(200).json(results);
-        });
     });
 });
+
 
 var transporter = nodemailer.createTransport({
         service: 'aol',
@@ -458,17 +411,11 @@ router.post('/forgottenPasswordEmail', function(req,res) {
     if(!req.body.email) {
         return res.status(400).send("Bad request (no email variable)");
     }
-    pool.getConnection(function(err, connection) {
-        if(err) {
-            return res.status(500).send("Failed to connect to database");
-        }
-        connection.query("SELECT COUNT(*), person_id, forename FROM person WHERE email = ?", [req.body.email], function(err, result) {
+    pool.query("SELECT COUNT(*), person_id, forename FROM person WHERE email = ?", [req.body.email], function(err, result) {
             if(err) {
-                connection.release();
                 return res.status(500).send("Internal database error in query (1)");
             }
             if(result[0]["COUNT(*)"] == 0) {
-                connection.release();
                 return res.status(404).send("Email not found");
             }
             var token = jwt.sign({
@@ -486,19 +433,16 @@ router.post('/forgottenPasswordEmail', function(req,res) {
                 "\n\nIf you did not request this, please ignore this email, or respond to let us know. \n\n" +
                 "Thanks, \nHousehold Manager";
             var sql = "UPDATE person SET reset_password_token = ? WHERE email = ?";
-            connection.query(sql, [token, req.body.email], function(err) {
+            pool.query(sql, [token, req.body.email], function(err) {
                 if(err) {
-                    connection.release();
                     return res.status(500).send("Internal database error in query (2)");
                 }
-                connection.release();
                 transporter.sendMail(mailOptions, function(error, info) {
                     if(error) {
                         return res.status(500).send("Internal server error in email (1)");
                     } else {
                         return res.status(200).send("Email sent: " + info.response);
                     }
-                });
             });
         });
     });
@@ -526,13 +470,8 @@ router.post('/forgottenPasswordReset', function(req, res) {
         if(err) {
             return res.status(400).send("Bad token (1)");
         }
-        pool.getConnection(function(err, connection) {
-            if(err) {
-                return res.status(500).send("Internal database error (1)");
-            }
-            connection.query("SELECT reset_password_token FROM person WHERE person_id = ?", [payload.id], function(err, result) {
+        pool.query("SELECT reset_password_token FROM person WHERE person_id = ?", [payload.id], function(err, result) {
                 if(err) {
-                    connection.release();
                     return res.status(500).send("Internal database error (2)");
                 }
                 if(result[0].reset_password_token == null) {
@@ -543,14 +482,11 @@ router.post('/forgottenPasswordReset', function(req, res) {
                 }
                 var user = {password: req.body.new_password};
                 auth.hashPassword(user, function(user) {
-                    connection.query("UPDATE person SET password_hash = ?, reset_password_token = NULL WHERE person_id = ?", [user.password_hash, payload.id], function(err) {
+                    pool.query("UPDATE person SET password_hash = ?, reset_password_token = NULL WHERE person_id = ?", [user.password_hash, payload.id], function(err) {
                         if(err) {
-                            connection.release();
                             return res.status(500).send("Internal database error (4)");
                         }
-                        connection.release();
                         return res.status(200).send("Password updated");
-                    })
                 })
             });
         });
@@ -613,10 +549,7 @@ router.get('/getUser', function(req, res) {
     }
     var users = req.query.users,
         variables = req.query.variables;
-    pool.getConnection(function(err, connection) {
-        if(err) {
-            res.status(500).send("Internal database error");
-        }
+
         //result = getVariables(req.query.variables, req.query.users, connection);
         var sqlQuery = "SELECT";
         variables.forEach(function(element) {
@@ -628,15 +561,12 @@ router.get('/getUser', function(req, res) {
             sqlQuery += ' person_id = ' + element + ' OR'
         });
         sqlQuery = sqlQuery.slice(0,-3);
-        connection.query(sqlQuery, function(err, result) {
+        pool.query(sqlQuery, function(err, result) {
             if(err) {
                 res.status(500).send("Error in SQL query");
-                connection.release();
                 return;
             }
-            connection.release();
             res.status(200).send(result);
-        });
     });
 });
 
@@ -658,9 +588,8 @@ function checkRequestArray(variables, users) {
 }
 
 
-function putRequestSetup(iD, data, connection, tableName) {
+function putRequestSetup(iD, data, tableName) {
     if(!iD) {
-        connection.release();
         res.status(400);
         res.json({'Error' : (tableName + '_id not specified: ') } + err);
         return;
