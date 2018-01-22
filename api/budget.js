@@ -163,11 +163,11 @@ router.delete('/entryType/:budget_entry_type_id', function(req, res) {
  *      text_note,
  *      budget_entry_type_id,
  *      shopping_list_entry_ids[],
- *      person_ids[]
+ *      person_ids[],
+ *      adder_included
  * }
  */
 router.post('/', function(req, res) {
-    console.log();
 
     pool.getConnection(function(err, connection) {
         if(err) {
@@ -202,7 +202,6 @@ router.post('/', function(req, res) {
                             connection.release();
                             res.status(500).json({'Error' : 'connecting to database: ' } + err);
                         });
-                    console.log("test2");
                     if (req.body.shopping_list_entry_ids && req.body.shopping_list_entry_ids.length > 0) {
                         addShoppingListEntryToBudgetEntry(req, res, connection, result);
                     } else if (req.body.person_ids && req.body.person_ids.length > 0) {
@@ -218,7 +217,6 @@ router.post('/', function(req, res) {
 });
 
 function answerPost(req, res, connection, result) {
-    console.error("annswerPost");
 
     connection.commit(function (err) {
         if (err) {
@@ -234,44 +232,50 @@ function answerPost(req, res, connection, result) {
 }
 
 function addPersonBudgetEntry(req, res, connection, result){
-    console.log("adding persons_ids");
     var queryValues = [], query = "";
 
     for (var i = 0; i < req.body.person_ids.length;i++) {
         if (i != 0) query += ",";
-        queryValues.push(req.body.person_ids[i]);
-        queryValues.push(result.insertId);
-        query += "(?,?)";
+        if (req.session.person_id !== req.body.person_ids[i]) {
+            queryValues.push(req.body.person_ids[i]);
+            queryValues.push(result.insertId);
+            query += "(?,?)";
+        }
     }
-
-    console.log(result);
 
     connection.query(
         'INSERT INTO person_budget_entry (person_id, budget_entry_id) VALUES ' + query +';',
         queryValues,
         function (err, result2) {
-            console.log('INSERT INTO person_budget_entry (person_id, budget_entry_id) VALUES ' + query +';');
-            console.log(queryValues);
-            console.log(result2);
 
-            if (err)
-                return connection.rollback(function () {
+            if (err) {
+                connection.rollback(function () {
                     connection.release();
                     res.status(500).json({'Error': 'connecting to database: '} + err);
                 });
+            }
 
-            answerPost(req, res, connection, result);
+            if (req.body.adder_included) connection.query('INSERT INTO person_budget_entry (person_id, budget_entry_id, datetime_paid) VALUES (?,?,CURRENT_TIMESTAMP);',
+                [req.session.person_id, result.insertId],
+                function(err, result3) {
+                    if (err) {
+                        connection.rollback(function () {
+                            connection.release();
+                            res.status(500).json({'Error': 'connecting to database: '} + err);
+                        });
+                    } else answerPost(req, res, connection, result);
             });
+            else answerPost(req, res, connection, result);
+        });
 }
 
 function addShoppingListEntryToBudgetEntry(req, res, connection, result) {
-    console.log("adding shopping_list_entry_ids");
     var queryValues = [], query = "";
     queryValues.push(result.insertId);
     queryValues.push(req.session.person_id);
 
     for (var i = 0; i < req.body.shopping_list_entry_ids.length;i++) {
-        if (i != 0) query += ",";
+        if (i !== 0) query += ",";
         queryValues.push(req.body.shopping_list_entry_ids[i]);
         query += "?";
     }
@@ -303,7 +307,6 @@ function addShoppingListEntryToBudgetEntry(req, res, connection, result) {
 router.get('/:shopping_list_id', function(req, res) {
     pool.getConnection(function(err, connection) {
         if (err) {
-            console.log("test0");
             return res.status(500).json({'Error': 'connecting to database: '} + err);
         }
         connection.query('SELECT ' +
@@ -338,16 +341,15 @@ router.get('/:shopping_list_id', function(req, res) {
             [req.params.shopping_list_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
                 connection.release();
                 if (err) {
-                    console.log("test1");
                     return res.status(500).json({'Error': 'connecting to database: '} + err);
                 }
-                else if (result.length == 0)
+                else if (result.length === 0)
                     res.status(403).json({success: "false", error: "no access"});
                 else {
-                    var budget_entries = [], debt = [];
+                    var budget_entries = [];
                     for (var i = 0; i < result.length;i++) {
                         var current_budget_entry_id = budgetEntryExistsInArray(result[i].budget_entry_id, budget_entries);
-                        if (current_budget_entry_id == -1) {
+                        if (current_budget_entry_id === -1) {
                             budget_entries.push({
                                 "budget_entry_id": result[i].budget_entry_id,
                                 "amount": result[i].amount,
@@ -397,37 +399,33 @@ router.get('/:shopping_list_id', function(req, res) {
 					
 					var persons_to_get_paid = [];
 
-                    console.log("test0");
-
 					for (var i = 0;i < budget_entries.length;i++) {
-						var paid_to_person_index = payPersonExistsInArray(budget_entries[i].added_by.person_id, persons_to_get_paid);
+						var paid_to_person_index = paidPersonExistsInArray(budget_entries[i].added_by.person_id, persons_to_get_paid);
 						if (paid_to_person_index === -1) {
 							persons_to_get_paid.push({
-								/*"person": {
+								"person": {
                                     "person_id": budget_entries[i].added_by.person_id,
                                     "forename": budget_entries[i].added_by.forename,
                                     "middlename": budget_entries[i].added_by.middlename,
                                     "lastname": budget_entries[i].added_by.lastname
-                                },*/
-								"person_id": budget_entries[i].added_by.person_id,
+                                },
 								"persons_to_pay": []
 							});
 							paid_to_person_index = persons_to_get_paid.length - 1;
 						}
 
                         for (var j = 0; j < budget_entries[i].persons_to_pay.length;j++) {
-						    if (budget_entries[i].persons_to_pay[j].person_id !== persons_to_get_paid[paid_to_person_index].person_id) {
+						    if (budget_entries[i].persons_to_pay[j].person_id !== persons_to_get_paid[paid_to_person_index].person.person_id) {
                                 if (budget_entries[i].persons_to_pay[j].datetime_paid === null) {
-                                    var pay_from_person_index = payPersonExistsInArray(budget_entries[i].persons_to_pay[j].person_id, persons_to_get_paid[paid_to_person_index].persons_to_pay);
+                                    var pay_from_person_index = paidPersonExistsInArray(budget_entries[i].persons_to_pay[j].person_id, persons_to_get_paid[paid_to_person_index].persons_to_pay);
                                     if (pay_from_person_index === -1) {
                                         persons_to_get_paid[paid_to_person_index].persons_to_pay.push({
-                                            /*"person": {
+                                            "person": {
                                                 "person_id": budget_entries[i].persons_to_pay[j].person_id,
                                                 "forename": budget_entries[i].persons_to_pay[j].forename,
                                                 "middlename": budget_entries[i].persons_to_pay[j].middlename,
                                                 "lastname": budget_entries[i].persons_to_pay[j].lastname
-                                            },*/
-                                            "person_id": budget_entries[i].persons_to_pay[j].person_id,
+                                            },
                                             "amount_to_pay": budget_entries[i].persons_to_pay[j].amount_to_pay,
                                             "budget_entry_ids": [{
                                                 "budget_entry_id": budget_entries[i].budget_entry_id,
@@ -439,7 +437,13 @@ router.get('/:shopping_list_id', function(req, res) {
                                         persons_to_get_paid[paid_to_person_index].persons_to_pay[pay_from_person_index].amount_to_pay += budget_entries[i].persons_to_pay[j].amount_to_pay;
                                         persons_to_get_paid[paid_to_person_index].persons_to_pay[pay_from_person_index].budget_entry_ids.push({
                                             "budget_entry_id": budget_entries[i].budget_entry_id,
-                                            "person_id": budget_entries[i].persons_to_pay[j].person_id
+                                            //"person_id": budget_entries[i].persons_to_pay[j].person_id
+                                            "person": {
+                                                "person_id": budget_entries[i].persons_to_pay[j].person_id,
+                                                "forename": budget_entries[i].persons_to_pay[j].forename,
+                                                "middlename": budget_entries[i].persons_to_pay[j].middlename,
+                                                "lastname": budget_entries[i].persons_to_pay[j].lastname
+                                            }
                                         });
                                     }
                                 }
@@ -449,11 +453,11 @@ router.get('/:shopping_list_id', function(req, res) {
 
                     for (var i = 0;i < persons_to_get_paid.length;i++) {
 					    for (var j = 0;j < persons_to_get_paid.length;j++) {
-					        if (persons_to_get_paid[i].person_id !== persons_to_get_paid[j].person_id) {
+					        if (persons_to_get_paid[i].person.person_id !== persons_to_get_paid[j].person.person_id) {
                                 for (var k = 0;k < persons_to_get_paid[j].persons_to_pay.length;k++) {
-                                    if (persons_to_get_paid[j].persons_to_pay[k].person_id === persons_to_get_paid[i].person_id) {
+                                    if (persons_to_get_paid[j].persons_to_pay[k].person.person_id === persons_to_get_paid[i].person.person_id) {
                                         for (var l = 0; l < persons_to_get_paid[i].persons_to_pay.length;l++) {
-                                            if (persons_to_get_paid[i].persons_to_pay[l].person_id === persons_to_get_paid[j].person_id) {
+                                            if (persons_to_get_paid[i].persons_to_pay[l].person.person_id === persons_to_get_paid[j].person.person_id) {
                                                 if (persons_to_get_paid[i].persons_to_pay[l].amount_to_pay === persons_to_get_paid[j].persons_to_pay[k].amount_to_pay) {
                                                     persons_to_get_paid[i].persons_to_pay.splice(l,1);
                                                     persons_to_get_paid[j].persons_to_pay.splice(k,1);
@@ -539,30 +543,47 @@ router.post('/pay/:budget_entry_id', function(req, res) {
  * URL: /api/budget/{budget_entry_id}
  * method: PUT
  * data: {
- *      person_id,
+ *      budget_entry_ids[{
+ *          budget_entry_id,
+ *          person {
+ *              person_id
+ *          }
+ *      },
  *      is_paid
  * }
  */
-router.put('/pay/:budget_entry_id', function(req, res) {
+router.put('/pay', function(req, res) {
+
+    var query = "", queryValues = [], bis = req.body.budget_entry_ids;
+
+    if (!bis || bis.length === 0 || req.body.is_paid === null)
+        return res.status(400).send();
+
+    for (var i = 0; i < bis.length;i++) {
+        if (i === 0)  query += " OR ";
+        query += " (budget_entry_id = ? AND person_id = ?)";
+        queryValues.push(bis[i].budget_entry_id);
+        queryValues.push(bis[i].person_id);
+    }
 
     pool.getConnection(function(err, connection) {
         if(err)
             return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-        if(req.body.is_paid) connection.query('UPDATE person_budget_entry SET datetime_paid = CURRENT_TIMESTAMP WHERE budget_entry_id = ? AND person_id = ?;',
-            [req.params.budget_entry_id, req.body.person_id], function(err, result) {
+        if(req.body.is_paid) connection.query('UPDATE person_budget_entry SET datetime_paid = CURRENT_TIMESTAMP WHERE ' + query,
+            queryValues, function(err, result) {
             connection.release();
             if(err)
                 return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            else if (result.affectedRows == 0)
+            else if (result.affectedRows === 0)
                 res.status(403).json({success: "false", error: "no access"});
             else
                 res.status(200).json({success: "true"});
-        }); else connection.query('UPDATE person_budget_entry SET datetime_paid = NULL WHERE budget_entry_id = ? AND person_id = ?;',
-            [req.params.budget_entry_id, req.body.person_id], function(err, result) {
+        }); else connection.query('UPDATE person_budget_entry SET datetime_paid = NULL WHERE ' + query,
+            queryValues, function(err, result) {
             connection.release();
             if(err)
                 return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            else if (result.affectedRows == 0)
+            else if (result.affectedRows === 0)
                 res.status(403).json({success: "false", error: "no access"});
             else
                 res.status(200).send();
@@ -572,28 +593,28 @@ router.put('/pay/:budget_entry_id', function(req, res) {
 
 function budgetEntryExistsInArray(budget_entry_id, array) {
     for (var i = 0; i < array.length;i++) {
-        if (array[i].budget_entry_id == budget_entry_id) return i;
+        if (array[i].budget_entry_id === budget_entry_id) return i;
     }
     return -1;
 }
 
 function shoppingListEntryExistsInArray(shopping_list_entry_id, array) {
     for (var i = 0; i < array.length;i++) {
-        if (array[i].shopping_list_entry_id == shopping_list_entry_id) return i;
+        if (array[i].shopping_list_entry_id === shopping_list_entry_id) return i;
     }
     return -1;
 }
 
 function payPersonExistsInArray(person_id, array) {
     for (var i = 0; i < array.length;i++) {
-        if (array[i].person_id == person_id) return i;
+        if (array[i].person_id === person_id) return i;
     }
     return -1;
 }
 
 function paidPersonExistsInArray(person_id, array) {
     for (var i = 0; i < array.length;i++) {
-        if (array[i].person.person_id == person_id) return i;
+        if (array[i].person.person_id === person_id) return i;
     }
     return -1;
 }
