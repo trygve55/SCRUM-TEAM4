@@ -31,17 +31,9 @@ router.post('/', function(req, res){
                                 res.status(500).json({'Error': err});
                                 return;
                             }
-                            pool.getConnection(function (err, connection) {
-                                if (err) {
-                                    connection.release();
-                                    res.status(500).json({'Error': err});
-                                    return;
-                                }
-                                connection.query("UPDATE person SET profile_pic = ?, profile_pic_tiny = ? WHERE person_id = 1;", [data, data_tiny], function (err, results, fields) {
-                                    connection.release();
+                                pool.query("UPDATE person SET profile_pic = ?, profile_pic_tiny = ? WHERE person_id = 1;", [data, data_tiny], function (err, results, fields) {
                                     if (err) {
-                                        res.status(500).json({'Error': err});
-                                        return;
+                                        return res.status(500).json({'Error': err});
                                     }
                                     res.status(200).json(results);
                                 });
@@ -53,40 +45,24 @@ router.post('/', function(req, res){
 });
 
 router.get('/', function(req, res) {
+    pool.query("SELECT profile_pic FROM person WHERE person_id = 1;", [], function (error, results, fields) {
+        if(err) return res.status(500).json({error:err});
 
-    pool.getConnection(function (err, connection) {
-        if(err) {
-                res.status(500).json({'Error' : 'connecting to database: ' } + err);
-                return;
-        }
-        connection.query("SELECT profile_pic FROM person WHERE person_id = 1;", [], function (error, results, fields) {
-            connection.release();
-            if(err) return res.status(500).json({error:err});
+        if(results.length) res.status(404).json({error: 'no profile picture.'});
 
-            if(results.length) res.status(404).json({error: 'no profile picture.'});
-
-            if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
-        });
+        if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
     });
 });
 
 router.get('/tiny', function(req, res) {
-
-    pool.getConnection(function (err, connection) {
-        if (err) {
-            connection.release();
-            return res.status(500).json({error:'connecting to database' + err});
+    pool.query("SELECT profile_pic_tiny FROM person WHERE person_id = 1;", [], function (error, results, fields) {
+        if(err) {
+            res.status(500).json({'Error' : 'connecting to database: ' } + err);
+            return;
         }
-        connection.query("SELECT profile_pic_tiny FROM person WHERE person_id = 1;", [], function (error, results, fields) {
-            connection.release();
-            if(err) {
-                res.status(500).json({'Error' : 'connecting to database: ' } + err);
-                return;
-            }
 
-            if(results.length) res.status(404).json({error: 'no profile picture.'});
+        if(results.length) res.status(404).json({error: 'no profile picture.'});
 
-            if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
-        });
+        if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
     });
 });
