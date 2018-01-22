@@ -400,7 +400,7 @@ router.post('/:person_id/picture', function(req, res){
                                     if (err)
                                         return res.status(500).json({'Error': err});
 
-                                    res.status(200).json(results);
+                                    res.status(200).json(file_size);
                                 });
                             });
                         });
