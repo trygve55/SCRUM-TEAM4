@@ -72,7 +72,7 @@ $(document).ready(function() {
 	// Add some updating system here.
 	
 	//window.setInterval(getGroups, 5000);	// Every 5 seconds the groups will be loaded.
-	
+
 });
 
 /**
@@ -91,6 +91,10 @@ function loadLanguageText() {
             }
 		}
 	});
+}
+
+function ClearFields() {
+    document.getElementById("group-newsfeedPost").value = "";
 }
 
 /**
@@ -120,6 +124,7 @@ function getGroups() {
 * When the user clicks on a tab, load and show the information within, and hide any other tabs.
 */
 function changeTab(name) {
+    activeTab='feed';
     if(name)
         activeTab = name;
     else
@@ -133,8 +138,8 @@ function changeTab(name) {
         getShoppinglist();
     else if(activeTab=='feed')
         getPost();
-    else if(activeTab=='tasks')
-        setupTasks();
+    //else if(activeTab=='tasks')
+
     else if (activeTab == 'statistics')
         drawChart();
 }
@@ -224,6 +229,12 @@ function attachTasks(tasks) {
 //function countNewPosts() {} // From last login date, display a number of new posts
 //function countNewTasks() {} // From last login date, display a number of new tasks
 
+
+function addGroup(){
+    $('#addGroup-button').click(
+        window.location = 'addGroup.html'
+    )
+}
 
 function getShoppinglist() {
 		$.ajax({
@@ -582,6 +593,7 @@ function saveItemToDB(id, item, ul, cb){
     });
 }
 
+
 $(function () {
     $('#group-postButton').click(function() {
         console.log('hei');
@@ -595,10 +607,12 @@ $(function () {
             success: function (data123) {
                 console.log(data123);
                 getPost();
+                ClearFields();
             }
         })
 
     });
+
 
 	$.ajax({
 		url: '/api/language',
@@ -676,6 +690,10 @@ $(function () {
 
 });
 
+/**
+ * Method for retrieving all posts for a group, given the group ID
+ */
+
 function getPost(){
     $.ajax({
         url:'/api/news/' + currentGroup.group_id,
@@ -748,7 +766,7 @@ function drawChart() {
 				minLimit = minLimit.setFullYear(minLimit.getFullYear() - 1);
 				
 				// Insert the values for every month.
-				var months = Array(2).fill().map(() => Array(12).fill(0));
+				//var months = Array(2).fill().map(() => Array(12).fill(0));
 				for (var i = 0; i < result.budget_entries.length; i++) {
 					var element = result.budget_entries[i];
 					if (element.entry_datetime != null) {
@@ -785,8 +803,8 @@ function setupClicksTask(){
                 var t = this;
                 saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
                     $(t).closest("li").remove();
-                    addNewItem(ul);
-                    setupItemClicks();
+                    addNewTask(ul);
+                    setupTaskClicks();
                 });
             }
             else {
@@ -798,7 +816,7 @@ function setupClicksTask(){
             var text = $(this).val();
             if(text != "") {
                 saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
-                    setupItemClicks();
+                    setupTaskClicks();
                 });
             }
             $(this).closest("li").remove();
@@ -865,22 +883,22 @@ function addNewTask(ul){
         var text = $(this).val();
         if(text != "") {
             var t = this;
-            saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+            saveTaskToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
                 $(t).closest("li").remove();
-                addNewItem(ul);
-                setupItemClicks();
+                addNewTask(ul);
+                setupTaskClicks();
             });
         }
         else {
-            setupItemClicks();
+            setupTaskClicks();
             $(this).closest("li").remove();
         }
     }).focusout(function(){
         var ul = $(this).closest("ul");
         var text = $(this).val();
         if(text != "") {
-            saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
-                setupItemClicks();
+            saveTaskToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                setupTaskClicks();
             });
         }
         $(this).closest("li").remove();
@@ -898,6 +916,27 @@ function saveTaskToDB(id, item, ul, cb){
             $(ul).append(listItem({entry_text: item, entry_id: data.shopping_cart_entry_id}));
             if(cb)
                 cb();
+        }
+    });
+}
+
+function setupTaskClicks(){
+    $(".fa-times").unbind("click").click(function(){
+        var entry_id = $(this).closest("li[data-id]").data("id");
+        $.ajax({
+            url: '/api/shoppingList/entry/' + entry_id,
+            method: 'DELETE',
+            error: console.error
+        });
+        $(this).closest("li[data-id]").remove();
+    });
+
+    $("li[data-id]").unbind("click").click(function(e){
+        if($(this).is('.fa-times'))
+            return;
+        else if(!$(e.target).is('input')) {
+            e.preventDefault();
+            $(this).find("input[type=checkbox]").prop('checked', $(this).find("input:checked").length == 0);
         }
     });
 }
