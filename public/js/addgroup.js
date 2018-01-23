@@ -3,6 +3,10 @@ var allUsers = [];
 var me;
 
 $('document').ready(function(){
+
+    /**
+     * This method retrieves information about the currency.
+     */
     $.ajax({
         url: '/api/currency',
         method: 'GET',
@@ -15,6 +19,9 @@ $('document').ready(function(){
         }
     });
 
+    /**
+     * This method retrieves all users stored in the database.
+     */
     $.ajax({
         url: '/api/user/all',
         method: 'GET',
@@ -28,6 +35,8 @@ $('document').ready(function(){
             }
         }
     });
+
+
 
     $.ajax({
         url: '/api/user/getUser',
