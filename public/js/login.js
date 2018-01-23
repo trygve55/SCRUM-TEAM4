@@ -39,31 +39,24 @@ window.fbAsyncInit = function() {
 function login() {
     FB.login(function (response) {
         if (response.status === 'connected') {
-            FB.api('/me', 'GET', {fields: 'first_name,last_name,id,email'}, function (response) {
+            FB.getLoginStatus(function(response) {
+                if (response.status === 'connected') {
+                    console.log(response.authResponse);
 
-                FB.getLoginStatus(function(response2) {
-                    if (response2.status === 'connected') {
-                        $.ajax({
-                            url: '/api/auth/facebook',
-                            method: 'POST',
-                            data: {
-                                facebook_api_id: response.id,
-                                email: response.email,
-                                forename: response.first_name,
-                                lastname: response.last_name,
-                                accessToken: response2.authResponse.accessToken
-                            },
-                            success: function (data) {
+                    $.ajax({
+                        url: '/api/auth/facebook',
+                        method: 'POST',
+                        data: {
+                            accessToken: response.authResponse.accessToken
+                        },
+                        success: function (data) {
+                            window.location = "/index.html";
+                        },
+                        error: console.error
+                    });
+                }
+            } );
 
-                                window.location = "/index.html";
-                            },
-                            error: console.error
-                        });
-                    }
-                } );
-
-
-            });
         } else if (response.status === 'not_authorized') {
 
         }
