@@ -13,7 +13,6 @@ module.exports = router;
  *
  * URL: /api/tasks/notify/
 */
-
 router.get('/notify', function(req, res) {
 	pool.query(
         "(SELECT person_id, todo_id, todo_text, datetime_deadline, color_hex, null AS private_list_id FROM " +
@@ -25,10 +24,7 @@ router.get('/notify', function(req, res) {
         "private_todo_list LEFT JOIN private_todo_entry USING(private_todo_list_id) WHERE " +
         "datetime_deadline < DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL '24:1' HOUR_MINUTE) AND " +
         "datetime_done IS NULL ORDER BY datetime_deadline ASC);",
-        [], function(err, result) {
-            if (err) {return res.status(500).send(err);}
-            else {res.status(200).json(result);}
-        }
+        [], function(err, result) {return (err) ? (res.status(500).send(err)) : (res.status(200).json(result));}
     );
 });
 
@@ -45,8 +41,7 @@ router.get('/repeat/:group_id', function(req, res) {
 		'WHERE group_id = ? AND autogen_id != 0',
 		[req.params.group_id], function(err, result) {
 			if (err) {return res.status(500).send();}
-			if (result.length > 0) {res.status(200).json(result);}
-			else {res.status(400).json(result);}
+			return (result.length > 0) ? (res.status(200).json(result)) : (res.status(400).json(result));
 		}
 	);
 });
@@ -72,7 +67,6 @@ router.post('/', function(req, res) {
 	var data = req.body, input = [];
 	var query = "INSERT INTO todo (datetime_deadline, group_id, todo_text, datetime_done, created_by_id, done_by_id, autogen_id) VALUES ";
 	if (data.time_interval > 0) {
-
 		// Find the maximum autogen_id and increment it. This ensures that it will be unique.
 		pool.query("SELECT MAX(autogen_id) AS auto FROM todo;", [], function(err, result) {
 			if (err) {return res.status(500).send();}
@@ -118,22 +112,17 @@ router.post('/', function(req, res) {
 */
 router.post('/person/:todo_id', function(req, res) {
 	var data = req.body.people;
-	if (data.length < 0) {
-		res.status(400).send();
-		return;
-	}
+	if (data.length < 0) {return res.status(400).send();}
 
 	var resultQuery = multipleRequestSetup(
-									checkRange(req.params.todo_id, 1, null), data,
-									'INSERT INTO todo_person (todo_id, person_id) VALUES ',
-									'(?, ?)', false
-								);
+		checkRange(req.params.todo_id, 1, null), data,
+		'INSERT INTO todo_person (todo_id, person_id) VALUES ',
+		'(?, ?)', false
+	);
 	
 	pool.query(resultQuery[0], resultQuery[1], function(err) {
-		if(err) { res.status(500).send(); }
-			res.status(200).send();
-		}
-	);
+		return (err) ? (res.status(500).send()) : (res.status(200).send());
+	});
 });
 
 /**
@@ -157,10 +146,9 @@ router.get('/private/:todo_id', function(req, res) {
                     values[p] = result[0][p];
                 delete values.person_id;
                 values.people = people;
-                res.status(200).json(values);
+                return res.status(200).json(values);
             }
-            else
-                res.status(400).json(result);
+            res.status(400).json(result);
         }
     );
 });
@@ -172,14 +160,12 @@ router.get('/private/:todo_id', function(req, res) {
 * The GET request for all tasks for a user.
 */
 router.get('/person/:person_id?*', function(req, res) { // TODO FIX THIS
-	console.log("HEy YO");
 	if(!req.params.person_id)
 		req.params.person_id = req.session.person_id;
 	pool.getConnection(function(err, connection) {
         if(err) {
             connection.release();
-            res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            return;
+            return res.status(500).json({'Error' : 'connecting to database: ' } + err);
         }
 
 		connection.query(
@@ -188,6 +174,7 @@ router.get('/person/:person_id?*', function(req, res) { // TODO FIX THIS
 			[checkRange(req.params.person_id, 1, null)], function(err, result) {
 				connection.release();
 				if (err) {return res.status(500).send(err);}
+				// Arrange the results in an array with less repetition.
 				var entries = [];
 				for (var i = 0; i < result.length; i++) {
 					var values = {};
@@ -195,7 +182,6 @@ router.get('/person/:person_id?*', function(req, res) { // TODO FIX THIS
 					delete values.person_id;
 					entries.push(values);
 				}
-				console.log(entries);
 				res.status(200).json(entries);
 			}
 		);
@@ -216,14 +202,14 @@ router.get('/person/:person_id', function(req, res) {
         'FROM private_todo_list LEFT JOIN private_todo_entry USING(private_todo_list_id) WHERE private_todo_list.person_id = ?) ;',
         [checkRange(req.params.person_id, 1, null), checkRange(req.params.person_id, 1, null)], function(err, result) {
             if (err) {return res.status(500).send(err);}
+			// Arrange the results in an array with less repetition.
             var entries = [];
             for (var i = 0; i < result.length; i++) {
                 var values = {}; for (var p in result[i]) {values[p] = result[i][p];}
                 delete values.person_id;
                 entries.push(values);
             }
-            if (entries.length > 0) {res.status(200).json(entries);}
-            else {res.status(400).json(result);}
+            return (entries.length > 0) ? (res.status(200).json(entries)) : (res.status(400).json(result));
         }
     );
 });
@@ -259,9 +245,7 @@ router.delete('/person/:todo_id', function(req, res) {
         'DELETE FROM todo_person WHERE todo_id = ? AND person_id IN (',
         '', true
     );
-    resultQuery[0] += ')';
-
-    pool.query(resultQuery[0], resultQuery[1], function(err, result) {checkResult(err, result, res);});
+    pool.query(resultQuery[0] + ')', resultQuery[1], function(err, result) {checkResult(err, result, res);});
 });
 
 /**
@@ -333,10 +317,8 @@ router.get('/todo/:todo_id', function(req, res) {
  */
 router.get('/:group_id', function(req, res) {
 	pool.query('SELECT todo_id, datetime_deadline, datetime_added, datetime_done, forename, middlename, lastname, todo_text, is_deactivated, color_hex FROM todo LEFT JOIN home_group USING (group_id) LEFT Join person ON done_by_id = person.person_id WHERE group_id = ?',
-	[req.params.group_id], function(err, result){
-			if(err)
-				return res.status(500).send();
-			res.status(200).json(result);
+		[req.params.group_id], function(err, result){
+			return (err) ? (res.status(500).send()) : (res.status(200).json(result));
 		});
 });
 
@@ -352,8 +334,7 @@ function putRequestSetup(iD, data, tableName) {
 	var parameters = [], request = 'UPDATE ' + tableName + ' SET ';
 	var first = true;
 	for (var k in data) {
-		if (!first) {request += ', ';}
-		else {first = false;}
+		(!first) ? (request += ', ') : (first = false);
 		request += k + ' = ?';
 		parameters.push(data[k]);
 	}
@@ -382,7 +363,6 @@ function multipleRequestSetup(iD, data, query, repetitiveElement, iDFirstOnly) {
 /**
 * Check the result, release connection and return.
 */
-
 function checkResult(err, result, res) {
 	if (err)
 		return res.status(500).send()

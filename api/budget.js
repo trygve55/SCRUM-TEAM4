@@ -108,16 +108,15 @@ router.put('/entryType/:budget_entry_type_id', function(req, res) {
  */
 router.delete('/entryType/:budget_entry_type_id', function(req, res) {
     pool.query('DELETE FROM budget_entry_type ' +
-        'WHERE ' +
-        'budget_entry_type_id = ? AND ' +
+        'WHERE budget_entry_type_id = ? AND ' +
         'shopping_list_id IN ' +
         '(SELECT shopping_list_id FROM person WHERE person_id = 1 ' +
-        'UNION  ' +
-        'SELECT home_group.shopping_list_id FROM person   ' +
-        'LEFT JOIN group_person USING(person_id)  ' +
-        'LEFT JOIN home_group USING(group_id)  ' +
+        'UNION ' +
+        'SELECT home_group.shopping_list_id FROM person ' +
+        'LEFT JOIN group_person USING(person_id) ' +
+        'LEFT JOIN home_group USING(group_id) ' +
         'WHERE person.person_id = 1 ' +
-        'UNION  ' +
+        'UNION ' +
         'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = 1) LIMIT 1',
         [req.params.budget_entry_type_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
             if (err) return res.status(500).json({'Error' : err});

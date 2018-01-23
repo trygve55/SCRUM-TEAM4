@@ -1,5 +1,5 @@
 /*
-Authors: Andrzej Cabala, Andreas Hammer (main author), Magnus Eilertsen
+Authors: A.C., Andreas Hammer (main author), Magnus Eilertsen
 
     home_group columns:
 
@@ -36,10 +36,8 @@ router.get('/name', function(req, res){
     if(!req.query.group_name)
         return res.status(400).send("Bad Request (missing variable 'group_name')");
     pool.query("SELECT COUNT(*) FROM home_group WHERE group_name = ?", [req.query.group_name], function (err, result){
-            if(err)
-                return res.status(500).send(err.code);
-            res.status(200).send(result[0]["COUNT(*)"] == 0);
-        });
+		return (err) ? (res.status(500).send(err.code)) : (res.status(200).send(result[0]["COUNT(*)"] == 0));
+	});
 });
 
 /**
@@ -51,16 +49,14 @@ router.get('/name', function(req, res){
 router.get('/me', function(req, res){
     if(!req.session.person_id)
         return res.status(500).send();
-    pool.getConnection(function(err, connection){
+    pool.getConnection(function(err, connection){	// pool.query...
         if(err) {
             connection.release();
             return res.status(500).send();
         }
         connection.query('SELECT * FROM home_group WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?)', [req.session.person_id], function(err, result){
             connection.release();
-            if(err)
-                return res.status(500).send();
-            res.status(200).json(result);
+            return (err) ? (res.status(500).send()): (res.status(200).json(result));
         });
     });
 });
@@ -71,7 +67,6 @@ router.get('/me', function(req, res){
  * URL: /api/group/{group_id}
  * method: GET
  */
-
 router.get('/:group_id', function(req, res){
     if(!req.session.person_id)
         return res.status(500).send();
@@ -82,10 +77,7 @@ router.get('/:group_id', function(req, res){
         }
         connection.query("SELECT * FROM home_group WHERE group_id = ?;", [req.params.group_id], function(err, result){
             connection.release();
-            if(err){
-                return res.status(400).send(err.code + "\n" + err.sqlMessage);
-            }
-            res.status(200).json(result);
+            return (err) ? (res.status(400).send(err.code + "\n" + err.sqlMessage)) : (res.status(200).json(result));
         });
     });
 });
@@ -213,15 +205,13 @@ router.post('/:group_id/members', function(req, res){
  * }
  */
 router.delete('/:group_id', function(req, res){
+	// Check if this request is ok.
     if(!req.session.person_id)
         return res.status(500).send();
     if(!req.params.group_id)
         return res.status(400).send();
     pool.getConnection(function(err, connection){
-        if(err) {
-            connection.release();
-            return res.status(500).send("Internal Error");
-        }/*
+        if (!checkConnectionError(err, connection, res)) {return;}/*
         connection.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
             if(err) {
                 connection.release();
@@ -265,10 +255,7 @@ router.put('/:group_id/userPrivileges', function(req, res){
     if(!req.body.person_id || !req.body.role_id)
         return res.status(400).send();
     pool.getConnection(function(err, connection){
-        if(err) {
-            connection.release();
-            return res.status(500).send("Internal Error");
-        }
+        if (!checkConnectionError(err, connection, res)) {return;}
         connection.query("SELECT role_id FROM group_person WHERE person_id = ? AND group_id = ?", [req.session.person_id, req.params.group_id], function(err, result){
             if(err) {
                 connection.release();
@@ -384,10 +371,8 @@ router.get('/:group_id/picture', function(req, res){
  */
 router.get('/:group_id/picture_tiny', function(req, res){
     pool.getConnection(function (err, connection) {
-        if (err) {
-            connection.release();
-            return res.status(500).json({error: err});
-        }
+        if (!checkConnectionError(err, connection, res)) {return;}
+		
         connection.query("SELECT group_pic_tiny, has_group_pic  FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
             connection.release();
             if(err)
@@ -401,18 +386,22 @@ router.get('/:group_id/picture_tiny', function(req, res){
     });
 });
 
+/**
+ * Remove the image for a group.
+ *
+ * URL: /api/group/{group_id}/picture
+ * method: DELETE
+ */
 router.delete('/:group_id/picture', function(req, res){
 
     pool.getConnection(function (err, connection) {
-        if (err)
-            return res.status(500).json({'Error': err});
+        if (!checkConnectionError(err, connection, res)) {return;}
 
         connection.query("UPDATE home_group SET group_pic = NULL, group_pic_tiny = NULL, has_group_pic = 0 WHERE group_id = ?;", [data, data_tiny, req.params.person_id], function (err, results, fields) {
             connection.release();
             if (err)
                 return res.status(500).json({'Error': err});
-
-            res.status(200).json(results);
+			res.status(200).json(results);
         });
     });
 });
@@ -466,7 +455,7 @@ router.get('/:group_id/todo', function(req, res) {
 			function(err, result) {
 				connection.release();
 				if (err)
-				    return res.status(500).send();
+					return res.status(500).send();
 				if (result) {
 					var people = [];
 					for (i = 0; i < result.length; i++) {people.push({"person_id":result[i].person_id});}
@@ -529,9 +518,7 @@ router.put('/:group_id', function(req, res){
             qry += " WHERE group_name = ?";
             connection.query(qry, vals, function (err, result) {
                 connection.release();
-                if (err)
-                    return res.status(400).send(err.code + "\n" + err.sqlMessage);
-                return res.status(200).json(result);
+                return (err) ? (res.status(400).send(err.code + "\n" + err.sqlMessage)) : (res.status(200).json(result));
             });
         });
     });
@@ -620,10 +607,8 @@ router.post('/', function(req, res){
 function checkConnectionError(err, connection, res) {
 	if(err) {
 		connection.release();
-		res.status(500);
-		res.json({'Error' : 'connecting to database: ' } + err);
+		res.status(500).json({'Error' : 'connecting to database: ' } + err);
 		return false;
 	}
-
 	return true;
 }
