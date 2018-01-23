@@ -338,21 +338,14 @@ router.get('/:person_id/picture_tiny', function(req, res){
 
 //update profile
 router.put('/:person_id', function(req, res) {
-    pool.getConnection(function (err, connection) {
-        if(err) {
-            connection.release();
-            return res.status(500).send({"Error" : "Connecting to database"} + err);
+    var parameter = req.params;
+    var query = putRequestSetup(parameter.person_id, req.body, "person");
+    console.log(query);
+    pool.query(query[0], query[1], function (err) {
+        if (err) {
+            return res.status(500).json({error: err});
         }
-
-        var parameter = req.params;
-
-        var query = putRequestSetup(parameter.person_id, req.body, connection, "person");
-        connection.query(query[0], query[1], function (err) {
-            connection.release();
-            if(err)
-                return res.status(500).send({"Error" : "Connecting to database"} + err);
-            return res.status(200).json({"success" : query[1] + " updated"});
-        });
+        return res.status(200).json({"success" : query[1]});
     });
 });
 
@@ -414,18 +407,6 @@ router.delete('/:person_id/picture', function(req, res) {
         if (err)
             return res.status(500).json({'Error': err});
         res.status(200).json(results);
-    });
-});
-
-//update profile
-router.put('/:person_id', function(req, res) {
-    var parameter = req.params;
-    var query = putRequestSetup(parameter.person_id, req.body, "person");
-    pool.query(query[0], query[1], function (err) {
-            if (err) {
-                res.status(500).json({error: err});
-            }
-            return res.status(200).json({"success" : query[1]});
     });
 });
 
