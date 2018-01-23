@@ -1,4 +1,5 @@
 var router = require('express').Router();
+const var MILLIS_DAY = 86400000;
 
 module.exports = router;
 
@@ -36,7 +37,7 @@ router.get('/repeat/:group_id', function(req, res) {
 	pool.query(
 		'SELECT todo.*, person_id, forename, lastname ' +
 		'FROM todo LEFT JOIN todo_person USING(todo_id) LEFT JOIN person USING(person_id) ' +
-		'WHERE group_id = ? AND todo_interval != 0',
+		'WHERE group_id = ? AND autogen_id != 0',
 		[req.params.group_id], function(err, result) {
 			if (err) {return res.status(500).send();}
 			if (result.length > 0) {res.status(200).json(values);}
@@ -56,27 +57,41 @@ router.get('/repeat/:group_id', function(req, res) {
  *
  *      Optional:
  *      datetime_deadline,
- *      datetime_done,
- *      done_by_id,
- *		todo_interval
+ *		datetime_done,
+ *      time_interval	// Milliseconds
  * }
 */
 router.post('/', function(req, res) {
-	var data = req.body;
-	pool.query(
-		'INSERT INTO todo (' +
-		'group_id, todo_text, datetime_deadline, datetime_done, created_by_id, done_by_id, todo_interval' +
-		') VALUES (?,?,?,?,?,?,?);',
-		[
-			checkRange(data.group_id, 1, null),
+	var data = req.body, input = [];
+	var query = "INSERT INTO todo (datetime_deadline, group_id, todo_text, datetime_done, created_by_id, done_by_id, autogen_id) VALUES ";
+	if (data.time_interval > 0) {
+		
+		// Find the maximum autogen_id and increment it. This ensures that it will be unique.
+		var auto = 0;
+		pool.query("SELECT MAX(autogen_id) AS auto FROM todo;", [], function(err, result) {(result) ? (auto = result.auto + 1) : (auto = -1);})
+		if (auto < 1) {return res.status(500).send();}
+		
+		var all = [data.group_id, data.todo_text, null, req.session.person_id, null, auto], interval = Math.round(data.time_interval / MILLIS_DAY);
+		for (var i = new Date().setTime(new Date.getTime() + interval); i < data.datetime_deadline; i.setTime(i.getTime() + interval)) {
+			query += "(?,?,?,?,?,?,?), ";
+			inputs.push(i);
+			for (var v in all) {inputs.push(v);}
+		}	// How many tasks to add to the query? Add the interval until deadline < the new value.
+		query.slice(0, -2);
+	}
+	else {
+		query += "(?,?,?,?,?,?,?);";
+		input = [
+			data.group_id,
 			data.todo_text,
 			data.datetime_deadline,
-			data.datetime_done,
-			checkRange(data.req.session.person_id, 1, null),
+			(data.datetime_done ? data.datetime_done : null),
+			checkRange(req.session.person_id, 1, null),
 			checkRange(data.done_by_id, 1, null),
-			(data.todo_interval ? data.todo_interval : null)
-		], function(err, result) {checkResult(err, result, res);}
-	);
+			0
+		];
+	}
+	pool.query(query, input, function(err, result) {checkResult(err, result, res);});
 });
 
 /**
@@ -261,8 +276,6 @@ function multipleRequestSetup(iD, data, query, repetitiveElement, iDFirstOnly) {
 		else {query += data[i];}
 		if (i < data.length - 1) {query += ', ';}
 	}
-	console.log(query);
-	console.log(inputs);
 	return [query, inputs];
 }
 
