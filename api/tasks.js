@@ -1,5 +1,10 @@
 var router = require('express').Router();
-const var MILLIS_DAY = 86400000;
+
+/* 
+ * Milliseconeds in one day.
+ * Also, extra delay for deadlines to make sure the last day is included for repeating tasks.
+*/
+const MILLIS_DAY = 86400000, EXTRA_DELAY = 10000;
 
 module.exports = router;
 
@@ -30,7 +35,7 @@ router.get('/notify', function(req, res) {
 /**
  * Get the data for all tasks that repeat.
  *
- * URL: /api/tasks/{group_id}
+ * URL: /api/tasks/repeat/{group_id}
  * method: GET
 */
 router.get('/repeat/:group_id', function(req, res) {
@@ -40,14 +45,16 @@ router.get('/repeat/:group_id', function(req, res) {
 		'WHERE group_id = ? AND autogen_id != 0',
 		[req.params.group_id], function(err, result) {
 			if (err) {return res.status(500).send();}
-			if (result.length > 0) {res.status(200).json(values);}
+			if (result.length > 0) {res.status(200).json(result);}
 			else {res.status(400).json(result);}
 		}
 	);
 });
 
 /**
- * Add new task to the group task list
+ * Add new task to the group task list.
+ * The task will be made a repeating if time_interval is specified and > 0.
+ * It will repeat until the date specified as deadline.
  *
  * URL: /api/tasks
  * method: POST
@@ -58,40 +65,46 @@ router.get('/repeat/:group_id', function(req, res) {
  *      Optional:
  *      datetime_deadline,
  *		datetime_done,
- *      time_interval	// Milliseconds
+ *      time_interval	// days
  * }
 */
 router.post('/', function(req, res) {
 	var data = req.body, input = [];
 	var query = "INSERT INTO todo (datetime_deadline, group_id, todo_text, datetime_done, created_by_id, done_by_id, autogen_id) VALUES ";
 	if (data.time_interval > 0) {
-		
+
 		// Find the maximum autogen_id and increment it. This ensures that it will be unique.
-		var auto = 0;
-		pool.query("SELECT MAX(autogen_id) AS auto FROM todo;", [], function(err, result) {(result) ? (auto = result.auto + 1) : (auto = -1);})
-		if (auto < 1) {return res.status(500).send();}
-		
-		var all = [data.group_id, data.todo_text, null, req.session.person_id, null, auto], interval = Math.round(data.time_interval / MILLIS_DAY);
-		for (var i = new Date().setTime(new Date.getTime() + interval); i < data.datetime_deadline; i.setTime(i.getTime() + interval)) {
-			query += "(?,?,?,?,?,?,?), ";
-			inputs.push(i);
-			for (var v in all) {inputs.push(v);}
-		}	// How many tasks to add to the query? Add the interval until deadline < the new value.
-		query.slice(0, -2);
+		pool.query("SELECT MAX(autogen_id) AS auto FROM todo;", [], function(err, result) {
+			if (err) {return res.status(500).send();}
+			var auto = result[0].auto ? (result[0].auto + 1) : 1;
+
+			var all = [data.group_id, data.todo_text, null, req.session.person_id, null, auto], interval = Math.round(data.time_interval * MILLIS_DAY);
+			var end = new Date(new Date(data.datetime_deadline).getTime() + EXTRA_DELAY);
+			for (var i = new Date(new Date().getTime() + interval); i <= end; i.setTime(i.getTime() + interval)) {
+				query += "(?,?,?,?,?,?,?), ";
+				input.push(new Date(i));
+				for (var v in all) {input.push(all[v]);}
+			}	// How many tasks to add to the query? Add the interval until deadline < the new value.
+
+			query = query.slice(0, -2) + ";";
+			if (!input.length) {return res.status(400).send();}
+			pool.query(query, input, function(err, result) {checkResult(err, result, res);});
+		});
 	}
 	else {
+		// If we want to post a simple task, this happens.
 		query += "(?,?,?,?,?,?,?);";
 		input = [
+			data.datetime_deadline,
 			data.group_id,
 			data.todo_text,
-			data.datetime_deadline,
 			(data.datetime_done ? data.datetime_done : null),
 			checkRange(req.session.person_id, 1, null),
-			checkRange(data.done_by_id, 1, null),
-			0
+			(data.done_by_id ? data.done_by_id : null),
+			null
 		];
+		pool.query(query, input, function(err, result) {checkResult(err, result, res);});
 	}
-	pool.query(query, input, function(err, result) {checkResult(err, result, res);});
 });
 
 /**
@@ -190,7 +203,7 @@ router.get('/person/:person_id', function(req, res) {
         'FROM todo LEFT JOIN todo_person USING(todo_id) WHERE todo_person.person_id = ? UNION (' +
         'SELECT private_todo_entry_id, todo_text, datetime_deadline, datetime_added, datetime_done, is_deactivated, color_hex, null, null ' +
         'FROM private_todo_list LEFT JOIN private_todo_entry USING(private_todo_list_id) WHERE private_todo_list.person_id = ?) ;',
-        [checkRange(req.params.person_id, 1, null),checkRange(req.params.person_id, 1, null)], function(err, result) {
+        [checkRange(req.params.person_id, 1, null), checkRange(req.params.person_id, 1, null)], function(err, result) {
             if (err) {return res.status(500).send(err);}
             var entries = [];
             for (var i = 0; i < result.length; i++) {
