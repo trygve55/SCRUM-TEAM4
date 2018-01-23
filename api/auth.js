@@ -1,7 +1,6 @@
 var router = require('express').Router();
 var bcrypt = require('bcrypt');
-var Client = require('node-rest-client').Client;
-var client = new Client();
+var FB = require('fb');
 
 module.exports = router;
 
@@ -81,74 +80,75 @@ router.get('/', function(req, res) {
  * }
  */
 router.post('/facebook', function(req, res){
-    /*client.get("https://graph.facebook.com/v2.5/debug_token?input_token=" + req.body.accessToken, function (data, response) {
-        console.log(data.toString());
-    });*/
 
+    FB.api('me', 'GET', { fields: ['first_name,last_name,id,email'], access_token: req.body.accessToken }, function (fbRes) {
+        if (fbRes.id === null) {
+            return res.status(400).json({"Error": "facebook login failed"});
+        }
 
-    pool.getConnection(function (err, connection) {
-        connection.query("SELECT person_id FROM person WHERE facebook_api_id = ?;", [req.body.facebook_api_id], function (error, results) {
-            if(err) {
-                connection.release();
-                res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            } else if (results.length == 1) {
-                connection.release();
+        pool.getConnection(function (err, connection) {
+            connection.query("SELECT person_id FROM person WHERE facebook_api_id = ?;", [fbRes.id], function (error, results) {
+                if(err) {
+                    connection.release();
+                    res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                } else if (results.length == 1) {
+                    connection.release();
 
-                req.session.person_id = results[0].person_id;
-                res.cookie('person_id', results[0].person_id);
-                req.session.save();
+                    req.session.person_id = results[0].person_id;
+                    res.cookie('person_id', results[0].person_id);
+                    req.session.save();
 
-                res.status(200).json({login: true, person_id: results[0].person_id});
-            } else {
-                connection.beginTransaction(function(err){
-                    if(err) {
-                        connection.release();
-                        res.status(500).send("Error");
-                    }
-                    else connection.query("INSERT INTO shopping_list (currency_id) VALUES (?)", [100], function(err, result){
-                        if (err) {
+                    res.status(200).json({login: true, person_id: results[0].person_id});
+                } else {
+                    connection.beginTransaction(function(err){
+                        if(err) {
                             connection.release();
-                            res.status(500).json({'error': 'connecting to database'} + err);
+                            res.status(500).send("Error");
                         }
-                        else {
-                            var values = [
-                                req.body.email,
-                                req.body.forename.substring(0, 3) + req.body.lastname.substring(0, 3) + result.insertId,
-                                req.body.forename,
-                                req.body.lastname,
-                                result.insertId,
-                                req.body.facebook_api_id
-                            ];
+                        else connection.query("INSERT INTO shopping_list (currency_id) VALUES (?)", [100], function(err, result){
+                            if (err) {
+                                connection.release();
+                                res.status(500).json({'error': 'connecting to database'} + err);
+                            }
+                            else {
+                                var values = [
+                                    fbRes.email,
+                                    fbRes.first_name.substring(0, 3) + fbRes.last_name.substring(0, 3) + result.insertId,
+                                    fbRes.first_name,
+                                    fbRes.last_name,
+                                    result.insertId,
+                                    fbRes.id
+                                ];
 
-                            connection.query('INSERT INTO person ' +
-                                '(email, username, forename, lastname, shopping_list_id, facebook_api_id) ' +
-                                'VALUES (?,?,?,?,?,?)', values, function(err, result) {
-                                if(err) {
-                                    connection.release();
-                                    res.status(500).send("Fail");
-                                }
-                                else {
-                                    connection.commit(function (err) {
-                                        if (err) {
-                                            connection.rollback(function (err) {
+                                connection.query('INSERT INTO person ' +
+                                    '(email, username, forename, lastname, shopping_list_id, facebook_api_id) ' +
+                                    'VALUES (?,?,?,?,?,?)', values, function(err, result) {
+                                    if(err) {
+                                        connection.release();
+                                        res.status(500).send("Fail");
+                                    }
+                                    else {
+                                        connection.commit(function (err) {
+                                            if (err) {
+                                                connection.rollback(function (err) {
+                                                    connection.release();
+                                                    if (err) console.error(err);
+                                                    res.status(500).send("Transaction fail");
+                                                });
+                                            } else {
                                                 connection.release();
-                                                if (err) console.error(err);
-                                                res.status(500).send("Transaction fail");
-                                            });
-                                        } else {
-                                            connection.release();
-                                            req.session.person_id = result.insertId;
-                                            req.session.save();
-                                            res.cookie('person_id', result.insertId);
-                                            res.status(200).send(true);
-                                        }
-                                    });
-                                }
-                            });
-                        }
+                                                req.session.person_id = result.insertId;
+                                                req.session.save();
+                                                res.status(200).send(true);
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
                     });
-                });
-            }
+                }
+            });
         });
     });
 });
