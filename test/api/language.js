@@ -27,16 +27,14 @@ after(function(){
  *  method reboots login after fail.
  *
  */
-/*afterEach(function(done) {
+
+
+afterEach(function() {
     if(pool._allConnections.length > 1) {
-        console.log('Method does not close connection\n');
-        pool.end();
-        done();
-    } else {
-        console.log('Connections OK\n');
-        done();
+       console.log("This method does not close all connections");
     }
-});*/
+});
+
 
 /**
  * Test for the language API

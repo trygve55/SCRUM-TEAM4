@@ -1,17 +1,8 @@
 .profil{
     background-color: white;
     border-radius: 10px;
-    height: auto;
-    margin-top: 2%;
-    overflow: auto;
-}
-
-
-.newsfeed{
-    background-color: white;
-    border-radius: 10px;
-    height: auto;
-    margin-top: 2%;
+    height: 670px;
+    margin-top: 20px;
     overflow: auto;
 }
 
@@ -20,4 +11,61 @@
     background-color: gainsboro;
     margin: 25px;
     height: 310px;
+}
+
+.newsfeed{
+    padding:2%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    min-height:175px;
+    max-width: 85%;
+    -moz-box-shadow: 0 0 1px grey;
+    -webkit-box-shadow: 0 0 1px grey;
+    box-shadow:  0 0 1px grey;
+    border-radius: 10px;
+    max-height: 670px;
+    overflow-y: auto;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.group-feedProfilPicture{
+    padding: 10%;
+    max-width: 100px;
+    max-height: 100px;
+    image-rendering: crisp-edges;
+}
+
+body{
+    overflow-x: hidden;
+    width: 100%;
+}
+
+@media screen and (max-width: 1024px) {
+    .profil{
+
+        min-width: 90%;
+        text-align: center;
+    }
+    .newsfeed{
+        padding-left: 2%;
+        padding-right: 2%;
+        min-width: 100%;
+        text-align: center;
+    }
+}
+
+@media screen and (max-width: 375px) {
+    .profil{
+
+        padding-left: 50px;
+        padding-right: 50px ;
+        text-align: center;
+    }
+    .newsfeed{
+
+        padding-left: 50px;
+        padding-right: 50px ;
+        text-align: center;
+    }
 }

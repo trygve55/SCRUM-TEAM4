@@ -1,15 +1,28 @@
-<div class="pop">
-    <div {{{data}}} class="pop-content" id="shop-popup">
+<div class="pop" >
+    <div {{{data}}} class="pop-content" id="shop-popup" style=" min-width: 60vh;">
         <p align="center" style="font-size: 20px;">{{title}}</p>
-        <ul class="list-group" style="margin-top: 10px; margin-bottom: 10px; max-height: 30vh;">{{{list}}}</ul>
         <div class="row">
-            <div class="col-md-8" id="scrollable-dropdown-menu">
-                <input class="form-control" id="shop-member" placeholder="{{textfield}}">
+            <div class="col-sm-6">
+                <div style="border: inset; padding: 2vh; border-radius: 10px; min-height: 30vh;">
+                    <div class="row"  style="margin-bottom: 3vh">
+                        <div class="col-sm-5" style="text-align: left"> <label>{{textfield}} ({{currency}}):</label></div>
+                        <div class="col-sm-7"><input class="form-control" id="shop-entry-cost" placeholder=""></div>
+                    </div>
+                    <div class="row"  style="margin-bottom: 3vh">
+                        <div class="col-sm-5" style="text-align: left"> <label>{{textfield_label}}:</label></div>
+                        <div class="col-sm-7"><select class="form-control label-input" style="color: grey">{{{label}}}</select></div>
+                    </div>
+                    <div class="row"  style="margin-bottom: 1vh">
+                        <div class="col-sm-5" style="text-align: left"> <label>{{textfield_com}}:</label></div>
+                        <div class="col-sm-7"><input class="form-control" id="shop-entry-name" placeholder=""></div>
+                    </div>
+                </div>
             </div>
+            <div class="col-sm-6" ><ul class="list-group" style="max-height: 30vh; margin-top: 1vh">{{{list}}}</ul></div>
         </div>
         <div align="center" style="margin-top: 5%">
             <button align="right" id="popup-cancel" type="button" class="btn" style="background-color: lightgrey">{{cancel}}</button>
             <button align="right" id="popup-complete" type="button" class="btn" style="background-color: lightgrey">{{complete}}</button>
         </div>
-    </div>
+</div>
 </div>

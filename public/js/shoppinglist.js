@@ -1,10 +1,26 @@
 var lang;
 var users = [];
 var lists = [];
+var newmembers = [];
 var curBudget, currencies;
 var list, balance, listItem, newListItem, popupTextList, popupList, balanceItem, listReplace, popupMembers;
+var me;
 
 $('document').ready(function () {
+    $.ajax({
+        url: '/api/user/getUser',
+        method: 'GET',
+        data: {
+            variables: [
+                'person_id',
+                'forename',
+                'lastname'
+            ]
+        },
+        success: function(data){
+            me = data[0];
+        }
+    });
     $.ajax({
         url: '/api/currency',
         method: 'GET',
@@ -268,7 +284,8 @@ function setupClicks(){
                 method: 'PUT',
                 data: {
                     shopping_list_name: text
-                }
+                },
+                error: console.error
             });
         }
     });
@@ -357,20 +374,82 @@ function setupClicks(){
     colorRefresh();
 
     $(".fa-users").unbind("click").click(function () {
-        var h = "<li class='list-group-item'>h</li>"
+        var h = "";
+        var theuser;
+        var li = $(this).parent().attr("data-id");
+        for(var j=0; j<lists.length; j++){
+            if(lists[j].shopping_list_id==li){
+                var peps = lists[j].persons;
+                for(var k=0; k<peps.length; k++){
+                    theuser = {
+                        name: peps[k].forename + " " + peps[k].lastname
+                    };
+                    users.push(theuser);
+                    h += "<li class='list-group-item'>"+ peps[k].forename + " " + peps[k].lastname+"<i data-pid=" + k + " style=\"float: right;\" class=\"fa fa-times\" area-hidden=\"true\"></i></li>";
+                }
+            }
+        }
         $("body").append(popupMembers({
             members: lang["shop-add-members"],
             cancel: lang["shop-cancel"],
             complete: lang["shop-ok"],
             textfield: lang["shop-input-members"],
-            memberlist: h
+            memberlist: h,
+            data: "data-id='"+li+"'"
         }));
-        $.ajax()
+
+
+        $('#scrollable-dropdown-menu .typeahead').typeahead({
+                highlight: true
+            },
+            {
+                name: 'user-names',
+                display: 'name',
+                source: new Bloodhound({
+                    datumTokenizer: function(d){
+                        return Bloodhound.tokenizers.whitespace(d.name).concat([d.email]);
+                    },
+                    queryTokenizer: Bloodhound.tokenizers.whitespace,
+                    prefetch: '/api/user/all?slim=1'
+                }),
+                templates: {
+                    empty: [
+                        '<div class="empty-message">',
+                        'No users found',
+                        '</div>'
+                    ].join('\n'),
+                    suggestion: Handlebars.compile('<div>{{name}} – {{email}}</div>')
+                }
+            });
+
+        $(".typeahead").bind('typeahead:select', function(a, data){
+            console.log(data);
+            newmembers.push(data);
+            users.push(data);
+            updateList();
+        });
+
+        $(".typeahead").bind('typeahead:close', function(){
+            $(".typeahead").val("");
+        });
+
         $("#popup-members-cancel").click(function () {
             $(this).closest(".pop").remove();
         });
         $("#popup-members-complete").click(function () {
-
+            var li = $(this).closest('div[data-id]').attr('data-id');
+            for(var j=0; j<newmembers.length; j++){
+                $.ajax({
+                    url: '/api/shoppingList/invite',
+                    method: 'POST',
+                    data: {
+                        shopping_list_id: li,
+                        person_id: newmembers[j].id
+                    },
+                    error: console.error
+                })
+            }
+            $(this).closest(".pop").remove();
         });
     });
 
@@ -459,10 +538,10 @@ function setupClicks(){
         var listid = $(this).parent().attr("data-id");
         $(this).closest("div[data-id]").remove();
         $.ajax({
-            url: '/api/shoppingList/' + listid,
+            url: '/api/shoppingList/info/' + listid,
             method: 'PUT',
             data: {
-                is_hidden: 1
+                "is_hidden": true
             },
             error: console.error
         });
@@ -473,15 +552,38 @@ function setupClicks(){
         if(items.length == 0)
             return;
         var entries = $(items[0]).data("id");
-        var list = "<li class=\"list-group-item\">" + $(items[0]).html() + "</li>";
+        var number = 1;
+        var list = "<li class=\"list-group-item\">"+number+". " + $(items[0]).text() + "</li>";
         for(var i = 1; i < items.length; i++){
+            number++;
             entries += "," + $(items[i]).data("id");
-            list += "<li class=\"list-group-item\">" + $(items[i]).html() + "</li>";
+            list += "<li class=\"list-group-item\">"+number+". " + $(items[i]).text()+ "</li>";
         }
+        var li = $(this).parent().attr("data-id");
+        var curr = "*";
+        for(var i=0; i<lists.length; i++){
+            if(lists[i].shopping_list_id==li){
+                curr = lists[i].currency_short;
+            }
+        }
+        /*$.ajax({
+            url: '/api/shoppingList/info/' + li,
+            method: 'PUT',
+            data: {
+                "is_hidden": true
+            },
+            error: console.error
+        });
+        var lbi =*/
         $("body").append(popupTextList({
             title: lang["shop-buy-title"],
             list: list,
             textfield: lang["shop-buy-text"],
+            textfield_com: lang["shop-entry-name"],
+            not_needed: lang["shop-not-needed"],
+            textfield_label: lang["shop-entry-label"],
+            currency: curr,
+            //label-input: lbi,
             cancel: lang["shop-cancel"],
             complete: lang["shop-ok"],
             data: "data-id='" + $(this).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
@@ -520,10 +622,12 @@ function setupClicks(){
                                 shopping_list_id: id,
                                 purchased_by_person_id: 2,
                                 budget_entry_id: data.budget_entry_id
-                            }
+                            },
+                            error: console.error
                         });
                     }
-                }
+                },
+                error: console.error
             });
             for(var i = 0; i < e.length; i++){
                 $("div[data-id=" + id + "]").find('li[data-id=' + e[i] + ']').remove();
@@ -621,4 +725,24 @@ function rgb2hex(rgb) {
 
 function hex(x) {
     return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
+}
+
+function updateList(){
+    console.log("updatelist called");
+    var h = "";
+    for(var i = 0; i < users.length; i++){
+        h += '<li class="list-group-item">' + users[i].name + '<i data-pid="' + users[i].id + '" style="float: right;" class="fa fa-times" area-hidden="true"></i></li>';
+    }
+    console.log(h);
+    $(".memberlist").html(h);
+    $(".fa-times").click(function(){
+        var id = $(this).data('pid');
+        for(var i = 0; i < users.length; i++){
+            if(users[i].id == id){
+                users.splice(i, 1);
+                break;
+            }
+        }
+    });
+
 }

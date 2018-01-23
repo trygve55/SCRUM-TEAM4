@@ -75,16 +75,14 @@
 
 
 		<!--This is the div that is the entire window. It is a separate div so it can be moved into a different HMTL file.-->
-		<div  id="grouppage" class="row" align="center">
+		<div id="grouppage" class="row" align="center">
 			<br>
-				<div id="groupselection" class="transparency text-center col-sm-3">
-
+			<div id="groupselection" class="transparency text-center col-sm-3">
 				<!--These are the groups available to the user. The javascript will add entries here.-->
-					<p class="langtext" id="desc_title0"></p>
+				<p class="langtext" id="desc_title0"></p>
+				<div class="tablink text-center backvariant"></div>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
 
-					<div onclick="addGroup()" style="padding-top: 2px; height: 30px; border-radius: 10px; background-color: white; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class="tablink text-center backvariant group" id="addGroup-button">Add Group</div>
-					<br>
-				</div>
+			</div>
 
 			<br>
 
@@ -94,27 +92,26 @@
 					<div class="container">
 						<ul class="nav nav-tabs">
 							<ul class="nav nav-tabs" role="tablist">
-
 								<li class="nav-item">
-									<a style="color: black" class="nav-link active" onclick="changeTab('feed')" role="tab" data-toggle="tab" id="desc_title2"></a>
+									<a style="color: black" class="nav-link active" onclick="changeTab('tasks')" href="#profile" role="tab" data-toggle="tab" id="desc_title1"></a>
 								</li>
 								<li class="nav-item">
-									<a style="color: black" class="nav-link" onclick="changeTab('tasks')"  role="tab" data-toggle="tab" id="desc_title1"></a>
+									<a style="color: black" class="nav-link" href="#buzz" onclick="changeTab('feed')" role="tab" data-toggle="tab" id="desc_title2"></a>
 								</li>
 								<li class="nav-item">
-									<a style="color: black" class="nav-link" onclick="changeTab('shopping')" role="tab" data-toggle="tab" id="desc_title3"></a>
+									<a style="color: black" class="nav-link" onclick="changeTab('shopping')" href="#references" role="tab" data-toggle="tab" id="desc_title3"></a>
 								</li>
 								<li class="nav-item">
-									<a style="color: black" class="nav-link"  onclick="changeTab('statistics')"  role="tab" data-toggle="tab" id="desc_title4"></a>
+									<a style="color: black" class="nav-link"  onclick="changeTab('statistics')" href="#references" role="tab" data-toggle="tab" id="desc_title4"></a>
 								</li>
 								<li class="nav-item">
-									<a style="color: black" class="nav-link"  onclick="changeTab('leave')"  role="tab" data-toggle="tab" id="desc_title7"></a>
+									<a style="color: black" class="nav-link"  onclick="changeTab('leave')" href="#references" role="tab" data-toggle="tab" id="desc_title7"></a>
 								</li>
 							</ul>
 
 							<!-- Tab panes -->
 							<div class="tab-content">
-								<div role="tabpanel" class="tab-pane fade"></div>
+								<div role="tabpanel" class="tab-pane fade in active"></div>
 								<div role="tabpanel" class="tab-pane fade" ></div>
 								<div role="tabpanel" class="tab-pane fade" ></div>
 								<div role="tabpanel" class="tab-pane fade" ></div>
@@ -124,68 +121,46 @@
 					</div>
 				</div>
 
-				<!--This is the news tab.-->
 
-				<div id="feed" class="row grouptab text-center">
-					<div>
-						<div align="center">
-							<textarea placeholder="Anything you want to say...?" id="group-newsfeedPost"></textarea>
-						</div>
 
-						<div class="row" >
-							<div id="group-picturePost" class="col-sm-4" align="center">
-								<i  class="fa fa-camera" aria-hidden="true"> Add picture</i>
-							</div>
-							<div id="group-post" class="group-post col-sm-7">
-								<div align="right">
-									<i id="group-postButton" class="fa fa-sticky-note" aria-hidden="true">  Post</i>
-								</div>
-							</div>
-							<div  id="group-post2" class="group-post col-sm-7" style="display: none">
-									<i class="fa fa-sticky-note" aria-hidden="true">  Post</i>
+
+				<br>
+				<!--This is the tasks tab.-->
+				<div id="tasks" class="grouptab text-center" style="display: block; padding-right: 5%">
+					<div class="row">
+						<div id="yourtasks" style="text-align:center; " class="yourTasks col-sm-5">
+						<!--These are the tasks assigned to the user. The javascript will add entries here.-->
+							<p id="desc_title5"></p>
+							<div class="chbox">
+								<input type="checkbox" value="">
+								<p>Task N</p>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
 							</div>
 						</div>
 
-						<div id="posts" align="center"></div>
-						<br>
-
+						<div id="grouptasks" class="groupTasks col-sm-5">
+							<!--These are all the tasks in the group. The javascript will add entries here.-->
+							<p class="langtext" id="desc_title6"></p>
+							<div class="task">
+								<input type="checkbox" value="">
+								<!--The format here is just temporary. Change if something better gets decided.-->
+								<p>Task N - Person - Time</p>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
+							</div>
+						</div>
 					</div>
 				</div>
 
-				<!--This is the tasks tab.-->
-				<div id="tasks" class="grouptab" style="padding-left: 7%; padding-right: 7%">
-					<div class="row">
-						<div class="col-sm listeTask" style="background-color: #{{color_hex}}; width: 90%">
-							<div class="row">
-								<div class="col-sm-7" style="text-align: left">
-									<div class="list-name-div-task" style="margin-bottom: 6px; display: none;">
-										<input type="text" class="form-control list-name-input-task">
-									</div>
-									<h4 id="list-name-task" class="list-name-task"></h4>
-								</div>
-								<div class="col-sm-5" style="text-align: right">
-									<h4>
-										<i class="fa fa-circle white-select-tasks" aria-hidden="true" data-color="#FFFFFF" style="color: white; text-shadow: 0px 0px 3px #000;"></i>
-										<i class="fa fa-circle pink-select-tasks" aria-hidden="true" data-color="#FFB6C1" style="color: lightpink; text-shadow: 0px 0px 3px #000;"></i>
-										<i class="fa fa-circle yellow-select-tasks" aria-hidden="true" data-color="#FFEC8E" style="color: #ffec8e; text-shadow: 0px 0px 3px #000;"></i>
-										<i class="fa fa-circle green-select-tasks" aria-hidden="true" data-color="#90EE90" style="color: lightgreen; text-shadow: 0px 0px 3px #000;"></i>
-									</h4>
-								</div>
-							</div>
-							<ul class="list-group itemlist-task"></ul>
-							<ul class="list-group">
-								<li class="list-group-item add-task">
-									<i class="fa fa-plus-circle" aria-hidden="true" id="add-task"></i>
-								</li>
-							</ul>
-						</div>
-					</div>
+				<!--This is the news tab.-->
+				<div id="feed" class="grouptab text-center">
+					<hr width="90%">
+					<!--Here the Javascript will put the posts.-->
+					<div><p class="post">A POST</p></div>	<!--REMOVE THIS LINE BEFORE SHIPPING-->
 				</div>
 
 				<!--This is the shopping lists tab.-->
 				<div id="shopping" class="grouptab">
+					<hr width="90%">
 					<!--Here the Javascript will put the lists.-->
-					<div class="col-sm liste" style="background-color: #{{color_hex}}; width: 90%">
+					<div class="col-sm liste" style="background-color: #{{color_hex}};">
 						<div class="row">
 							<div class="col-sm-7" style="text-align: left">
 								<div class="list-name-div" style="margin-bottom: 6px; display: none;">
@@ -212,7 +187,6 @@
 						<i class="fa fa-money" style="font-size: 1.8vh" aria-hidden="true" id="settle"></i>
 					</div>
 
-					<!--
 					<div data-toggle="modal" data-target="#myModalNorm" style="border-radius: 10px; max-width: 13%" id="group-registerCost" class="registerCost tablink backvariant">
 
 						Register Cost
@@ -222,9 +196,9 @@
 				<div class="modal fade" id="myModalNorm" tabindex="-1" role="dialog"
 					 aria-labelledby="myModalLabel" aria-hidden="true">
 					<div class="modal-dialog">
-						<div class="modal-content">-->
+						<div class="modal-content">
 							<!-- Modal Header -->
-							<!--<div class="modal-header">
+							<div class="modal-header">
 								<h4 class="modal-title" id="registercost-modalLabel">
 									Register Cost
 								</h4>
@@ -234,10 +208,10 @@
 									<span class="sr-only">Close</span>
 								</button>
 
-							</div> -->
+							</div>
 
 							<!-- Modal Body -->
-							<!--<div class="modal-body">
+							<div class="modal-body">
 
 								<form role="form">
 									<div align="left" class="form-group">
@@ -250,9 +224,9 @@
 
 
 							</div>
--->
+
 							<!-- Modal Footer -->
-							<!--<div class="modal-footer">
+							<div class="modal-footer">
 								<button type="button" class="btn btn-default"
 										data-dismiss="modal">
 									Close
@@ -263,7 +237,7 @@
 							</div>
 						</div>
 					</div>
-				</div> -->
+				</div>
 
 
 				<!--This is the statistics lists tab.-->
@@ -282,10 +256,17 @@
 							<p class="langtext" id="desc_button0"></p>
 						</button>
 					</div>
+					
+					<div>
+						<!--This is the extra stuff, move it later.-->
+						<button type="button" class="btn btn-primary" onclick="leaveGroup()">
+							<p class="langtext" id="desc_button0"></p>
+						</button>
+					</div>
 				</div>
 				
 			</div>
 		</div>
-		</div>
+
 	</body>
 </html>
