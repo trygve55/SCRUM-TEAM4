@@ -317,13 +317,25 @@ router.get('/:person_id/picture', function(req, res){
 
 router.get('/:person_id/picture_tiny', function(req, res){
     pool.query("SELECT profile_pic_tiny, has_profile_pic  FROM person WHERE person_id = ?;", [req.params.person_id], function (err, results, fields) {
-        if(err)
-            return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-        if(!results[0].has_profile_pic)
+        if (err)
+            return res.status(500).json({'Error': 'connecting to database: '} + err);
+        if (!results[0].has_profile_pic)
             return res.status(404).json({error: 'no profile picture.'});
         res.contentType('jpeg').status(200).end(results[0].profile_pic_tiny, 'binary');
 
-        if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
+        if (results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
+    });
+});
+
+//update profile
+router.put('/:person_id', function(req, res) {
+    var parameter = req.params;
+    var query = putRequestSetup(parameter.person_id, req.body, "person");
+    pool.query(query[0], query[1], function (err) {
+            if (err) {
+                res.status(500).json({error: err});
+            }
+            return res.status(200).json({"success" : query[1]});
     });
 });
 
@@ -624,3 +636,4 @@ function putRequestSetup(iD, data, tableName) {
     request += ' WHERE ' + tableName + '_id = ' + iD;
     return [request, parameters];
 }
+
