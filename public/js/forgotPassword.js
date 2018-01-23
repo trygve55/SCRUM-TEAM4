@@ -96,6 +96,22 @@ $('document').ready(function () {
             error: console.error
         });
     });
+
+    $('#emailadr').keypress(function (e) {
+        if(e.keyCode!=13||e.which!=13)
+            return;
+        $.ajax({
+            url: '/api/user/forgottenPasswordEmail',
+            method: 'POST',
+            data: {
+                email: $('#emailadr').val()
+            },
+            success: function (data){
+                console.log(data)
+            },
+            error: console.error
+        });
+    });
 });
 /*
 function reset() {
