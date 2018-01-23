@@ -449,6 +449,7 @@ function setupClicks(){
                     error: console.error
                 })
             }
+            $(this).closest(".pop").remove();
         });
     });
 
