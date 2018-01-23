@@ -134,6 +134,7 @@ $(document).ready(function () {
             $('#profile-phone2').text(data[0].phone ? data[0].phone : "");
             $('#profile-username2').text(data[0].username == data[0].facebook_api_id ? "" : data[0].username);
             $('#profpic').attr("src","api/user/" + data[0].person_id + "/picture");
+            $('#uploadPic').attr("action","api/user/" + data[0].person_id + "/picture");
             //setupShoppingList();
 
 

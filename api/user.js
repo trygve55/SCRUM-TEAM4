@@ -361,8 +361,10 @@ router.post('/:person_id/picture', function(req, res){
             return res.status(500).json({'Error': err});
         }
 
-        var path = files.file.path,
-            file_size = files.file.size;
+        console.log(files.File);
+
+        var path = files.File.path,
+            file_size = files.File.size;
 
         if (file_size > 4000000) {
             res.status(400).json({'error': 'image file over 4MB'});
