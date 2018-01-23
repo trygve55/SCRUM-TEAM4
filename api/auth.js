@@ -1,5 +1,7 @@
 var router = require('express').Router();
 var bcrypt = require('bcrypt');
+var Client = require('node-rest-client').Client;
+var client = new Client();
 
 module.exports = router;
 
@@ -78,6 +80,11 @@ router.get('/', function(req, res) {
  * }
  */
 router.post('/facebook', function(req, res){
+    /*client.get("https://graph.facebook.com/v2.5/debug_token?input_token=" + req.body.accessToken, function (data, response) {
+        console.log(data.toString());
+    });*/
+
+
     pool.getConnection(function (err, connection) {
         connection.query("SELECT person_id FROM person WHERE facebook_api_id = ?;", [req.body.facebook_api_id], function (error, results) {
             if(err) {
@@ -104,7 +111,7 @@ router.post('/facebook', function(req, res){
                         else {
                             var values = [
                                 req.body.email,
-                                req.body.facebook_api_id,
+                                req.body.forename.substring(0, 3) + req.body.lastname.substring(0, 3) + result.insertId,
                                 req.body.forename,
                                 req.body.lastname,
                                 result.insertId,
