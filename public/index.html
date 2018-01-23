@@ -19,10 +19,13 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
         <script src="https://use.fontawesome.com/dea62227f7.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
         <link rel="stylesheet" href="css/common.css">
         <link rel="stylesheet" href="css/index.css">
+        <script src="/js/handlebars.js"></script>
         <script src="js/index.js"></script>
         <script src="js/redirect.js"></script>
+        <script src="/js/notifications.js"></script>
     </head>
 
     <body>
@@ -88,9 +91,8 @@
 
             <br>
 
-            <div class = "newsfeed col-sm-8"></div>
-
-            <div class = "col-sm-8"><br></div>
+            <div id="newsfeedPost" class = "newsfeed col-sm-8">
+            </div>
 
         </div>
 
