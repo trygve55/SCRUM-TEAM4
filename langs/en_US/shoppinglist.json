@@ -22,6 +22,11 @@
   "shop-price": "Price",
   "shop-input-members": "Enter new member here",
   "shop-entry-name": "Comment",
-  "shop-entry-label": "Type",
-  "shop-not-needed": "Not necessary"
+  "shop-entry-label": "Label",
+  "shop-not-needed": "Not necessary",
+  "label1": "Party",
+  "label2": "Shared food",
+  "label3": "Supplies",
+  "label4": "Repairs",
+  "newlabel": "New label"
 }
