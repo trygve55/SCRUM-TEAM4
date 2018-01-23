@@ -35,18 +35,11 @@ router.get('/name', function(req, res){
         return res.status(403).send("Login required");
     if(!req.query.group_name)
         return res.status(400).send("Bad Request (missing variable 'group_name')");
-    pool.getConnection(function(err, connection){
-        if(err) {
-            connection.release();
-            return res.status(500).send("Error");
-        }
-        connection.query("SELECT COUNT(*) FROM home_group WHERE group_name = ?", [req.query.group_name], function (err, result){
-            connection.release();
+    pool.query("SELECT COUNT(*) FROM home_group WHERE group_name = ?", [req.query.group_name], function (err, result){
             if(err)
                 return res.status(500).send(err.code);
             res.status(200).send(result[0]["COUNT(*)"] == 0);
         });
-    });
 });
 
 /**
@@ -272,6 +265,8 @@ router.post('/:group_id/members', function(req, res){
         return res.status(500).send("Person_id");
     req.body.members = req.body['members[]'];
     delete req.body['members[]'];
+    if(!(req.body.members instanceof Array))
+        req.body.members = [req.body.members];
     if(!req.body.members || req.body.members.length == 0)
         return res.status(400).send("Bad Request");
     pool.getConnection(function(err, connection){
@@ -279,46 +274,58 @@ router.post('/:group_id/members', function(req, res){
             connection.release();
             return res.status(500).send("Internal Error");
         }
-        connection.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
+        connection.query("SELECT group_name FORM home_group WHERE group_id = ?", [req.params.group_id], function(err, result) {
             if(err) {
                 connection.release();
-                return res.status(500).send(err);
+                return res.status(500).send("Internal Error");
             }
-            if(result.length == 0 || result[0].role_id != 2) {
-                connection.release();
-                return res.status(400).send("You not admin");
-            }
-            var qry = "INSERT INTO group_person (person_id, group_id) VALUES (?, ?)";
-            var vals = [req.body.members[0], req.params.group_id];
-            for (var i = 1; i < req.body.members.length; i++) {
-                qry += ", (?, ?)";
-                vals.push(req.body.members[i], req.params.group_id);
-            }
-            qry += ";";
-            connection.beginTransaction(function (err) {
-
+            group = result[0];
+            connection.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function (err, result) {
                 if (err) {
+                    console.error(err);
                     connection.release();
-                    return res.status(500).send();
+                    return res.status(500).send(err);
                 }
+                if (result.length == 0 || result[0].role_id != 2) {
+                    connection.release();
+                    return res.status(400).send("You're not the admin");
+                }
+                var qry = "INSERT INTO group_person (person_id, group_id, was_invited) VALUES (?, ?)";
+                var vals = [req.body.members[0], req.params.group_id, 1];
+                socket.person_data('invite group', req.body.members[0], group);
+                for (var i = 1; i < req.body.members.length; i++) {
+                    qry += ", (?, ?)";
+                    vals.push(req.body.members[i], req.params.group_id, 1);
+                    socket.person_data('invite group', req.body.members[i], group);
+                }
+                qry += ";";
+                connection.beginTransaction(function (err) {
 
-                connection.query(qry, vals, function (err, result) {
                     if (err) {
+                        console.error(err);
                         connection.release();
-                        return res.status(500).send(err.code);
+                        return res.status(500).send();
                     }
-                    connection.commit(function (err) {
-                        if (err)
-                            return connection.rollback(function (err) {
-                                connection.release();
-                                if (err) {
-                                    console.error(err);
 
-                                    res.status(500).send("Transaction fail");
-                                }
-                            });
-                        connection.release();
-                        res.status(200).json(result);
+                    connection.query(qry, vals, function (err, result) {
+                        if (err) {
+                            console.error(err);
+                            connection.release();
+                            return res.status(500).send(err.code);
+                        }
+                        connection.commit(function (err) {
+                            if (err)
+                                return connection.rollback(function (err) {
+                                    connection.release();
+                                    if (err) {
+                                        console.error(err);
+
+                                        res.status(500).send("Transaction fail");
+                                    }
+                                });
+                            connection.release();
+                            res.status(200).json(result);
+                        });
                     });
                 });
             });
@@ -329,23 +336,22 @@ router.post('/:group_id/members', function(req, res){
 /**
  * Removes a users access to the group
  *
- * URL: /api/group/{group_id}/user
+ * URL: /api/group/{group_id}
  * method: DELETE
  * data: {
- *      person_id, person to be updated
- *      role_id new role for person
+ *      person_id, person to delete
  * }
  */
-router.delete('/:group_id/user', function(req, res){
+router.delete('/:group_id', function(req, res){
     if(!req.session.person_id)
         return res.status(500).send();
-    if(!req.body.person_id || !req.body.role_id)
+    if(!req.params.group_id)
         return res.status(400).send();
     pool.getConnection(function(err, connection){
         if(err) {
             connection.release();
             return res.status(500).send("Internal Error");
-        }
+        }/*
         connection.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
             if(err) {
                 connection.release();
@@ -363,15 +369,15 @@ router.delete('/:group_id/user', function(req, res){
                 if(result.length <= 1){
                     connection.release();
                     return res.status(400).send();
-                }
-                connection.query("DELETE FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.body.person_id], function (err, result) {
-                    connection.release();
-                    if (err)
-                        return res.status(500).send();
-                    res.status(200).send();
-                });
-            });
-        });
+                }*/
+		connection.query("DELETE FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function (err, result) {
+			connection.release();
+			if (err)
+				return res.status(500).send();
+			res.status(200).send();
+		});
+            //});
+        //});
     });
 });
 
@@ -555,7 +561,8 @@ router.get('/:group_id/todo', function(req, res) {
 			[req.params.group_id],
 			function(err, result) {
 				connection.release();
-				if (err) {throw err;}
+				if (err)
+				    return res.status(500).send();
 				if (result) {
 					var people = [];
 					for (i = 0; i < result.length; i++) {people.push({"person_id":result[i].person_id});}
