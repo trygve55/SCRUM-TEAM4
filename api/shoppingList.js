@@ -65,6 +65,7 @@ router.post('/', function(req, res) {
  * }
  */
 router.post('/invite', function(req, res) {
+    console.log(req.body);
     if(!req.body.shopping_list_id || !req.body.person_id)
         return res.status(400).send();
     pool.query('INSERT INTO shopping_list_person(shopping_list_id, person_id) SELECT ?,? FROM shopping_list_person ' +
@@ -398,7 +399,7 @@ function putRequestSetup(id, req, tableName) {
         ' AND shopping_list_id IN  ' +
         '(SELECT t.shopping_list_id FROM (SELECT shopping_list_id, person_id FROM person) t WHERE person_id = ?  ' +
         'UNION  ' +
-        'SELECT n.shopping_list_id FROM (SELECT home_group.shopping_list_id, person_id person  ' +
+        'SELECT n.shopping_list_id FROM (SELECT home_group.shopping_list_id, person_id FROM person  ' +
         'LEFT JOIN group_person USING(person_id) ' +
         'LEFT JOIN home_group USING(group_id)) n ' +
         'WHERE person_id = ? ' +
