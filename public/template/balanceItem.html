@@ -1,7 +1,13 @@
 <div class="pop">
     <div class="pop-content" id="shop-popup">
-        <p align="center" style="font-size: 20px;">{{title}}</p>
-        <ul class="list-group" style="margin-top: 10px; margin-bottom: 10px; max-height: 30vh;">{{{list}}}</ul>
+        <p align="center" style="font-size: 20px;">{{comment}}</p>
+        <div>
+            <div class="col-sm">Kjøpt av: {{bought_by}}</div>
+            <div class="col-sm">Tidspunkt: {{time}}</div>
+            <div class="col-sm">Kostnad: {{cost}}</div>
+            <div class="col-sm">Betalere: <ul class="list-group">{{{payers}}}</ul></div>
+            <div class="col-sm">Varer:<ul class="list-group">{{{goods}}}</ul></div>
+        </div>
         <div align="center" style="margin-top: 5%">
             <button align="right" id="balance-info-complete" type="button" class="btn" style="background-color: lightgrey">{{complete}}</button>
         </div>
