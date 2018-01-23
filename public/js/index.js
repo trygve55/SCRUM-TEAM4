@@ -1,7 +1,22 @@
 /**
  * Created by odasteinlandskaug on 10.01.2018.
  */
+var homeFeedPost;
 $(function () {
+    $.ajax({
+        url: '/template',
+        method: 'GET',
+        data: {
+            files: [
+                'newsfeedPostHome.html'
+            ]
+        },
+        success: function (data){
+            homeFeedPost = Handlebars.compile(data['newsfeedPostHome.html']);
+            prep();
+        }
+    });
+
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -99,3 +114,50 @@ $(function () {
         error: console.error
     });
 });
+
+function prep() {
+    $.ajax({
+        url: '/api/news/',
+        method: 'GET',
+        success: function (feed) {
+            $('#newsfeedPost').html("");
+            console.log(feed);
+            for (var i = 0; i < feed.length; i++) {
+                var length = 50;
+                var text = feed[i].post_text.split(" ");
+                var short = "";
+                var rest = "";
+                for (var j = 0; j < length && j < text.length; j++) {
+                    short += text[j] + " ";
+                }
+                for (var k = j; k < text.length; k++) {
+                    rest += text[k] + " ";
+                }
+                a = new Date(feed[i].posted_datetime);
+                testy = a.toDateString();
+                $('#newsfeedPost').append(homeFeedPost({
+                    name: feed[i].forename + (feed[i].middlename ? ' ' + feed[i].middlename : '') + ' ' + feed[i].lastname,
+                    payload: '',
+                    groupname: feed[i].group_name,
+                    text: short,
+                    rest_text: rest,
+                    image_url: '/api/user/' + feed[i].person_id + '/picture_tiny',
+                    data: 'data-id="' + feed[i].post_id + '"',
+                    datetime: testy,
+                    lang_read_more: "Read more..."
+                }));
+                console.log(k);
+                if(k <= length) {
+                    $("#newsfeedPost div[data-id=" + feed[i].post_id + "] a").hide();
+                } else {
+                    $("#newsfeedPost div[data-id=" + feed[i].post_id + "] a").click(function(){
+                        console.log("HEI");
+                        $(this).closest("div").find("span").show();
+                        $(this).remove();
+                    });
+                }
+
+            }
+        }
+    });
+}

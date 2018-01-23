@@ -1,0 +1,26 @@
+ <div class="post" {{{data}}}>
+    <div  class= "row">
+        <div class ="col-xs-4">
+            <h3></h3>
+            <img id="group-feedProfilPicture" src="{{image_url}}">
+            <h3></h3>
+            <div align="center">
+                <div id="group-feedName">{{name}}</div>
+            </div>
+        </div>
+        <br>
+        <div class="col-sm-9">
+            <div align="right">
+                <div  id="group-feedTime">{{datetime}}</div>
+            </div>
+            <br>
+            <div style="text-align: left; " id="group-feedText">
+                {{{text}}}
+                <a href="#" class="read-more">{{lang_read_more}}</a>
+                <span class="text-rest" style="display: none;">{{{rest_text}}}</span>
+            </div>
+            <br>
+            <img src="{{payload}}" style="max-width: 730px; max-height: 750px;">
+        </div>
+    </div>
+</div>
