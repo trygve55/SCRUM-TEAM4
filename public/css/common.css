@@ -11,3 +11,7 @@ body{
 i {
     cursor: pointer;
 }
+
+.flag {
+    cursor: pointer;
+}
