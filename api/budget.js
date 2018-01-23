@@ -33,7 +33,7 @@ router.post('/entryType', function(req, res) {
 });
 
 /**
- * Returns a budget entry label
+ * Returns a budget entry labels
  *
  * URL: /api/budget/entryType
  * method: GET
@@ -108,17 +108,16 @@ router.put('/entryType/:budget_entry_type_id', function(req, res) {
  */
 router.delete('/entryType/:budget_entry_type_id', function(req, res) {
     pool.query('DELETE FROM budget_entry_type ' +
-        'WHERE ' +
-        'budget_entry_type_id = ? AND ' +
+        'WHERE budget_entry_type_id = ? AND ' +
         'shopping_list_id IN ' +
-        '(SELECT shopping_list_id FROM person WHERE person_id = 1 ' +
-        'UNION  ' +
-        'SELECT home_group.shopping_list_id FROM person   ' +
-        'LEFT JOIN group_person USING(person_id)  ' +
-        'LEFT JOIN home_group USING(group_id)  ' +
-        'WHERE person.person_id = 1 ' +
-        'UNION  ' +
-        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = 1) LIMIT 1',
+        '(SELECT shopping_list_id FROM person WHERE person_id = ? ' +
+        'UNION ' +
+        'SELECT home_group.shopping_list_id FROM person ' +
+        'LEFT JOIN group_person USING(person_id) ' +
+        'LEFT JOIN home_group USING(group_id) ' +
+        'WHERE person.person_id = ? ' +
+        'UNION ' +
+        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?) LIMIT 1',
         [req.params.budget_entry_type_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
             if (err) return res.status(500).json({'Error' : err});
             if (result.rowsAffected == 0) return res.status(400).json({success: "false", error: "No access or does not exist"});
@@ -178,10 +177,8 @@ router.post('/', function(req, res) {
                         });
                     if (req.body.shopping_list_entry_ids && req.body.shopping_list_entry_ids.length > 0) {
                         addShoppingListEntryToBudgetEntry(req, res, connection, result);
-                    } else if (req.body.person_ids && req.body.person_ids.length > 0) {
-                        addPersonBudgetEntry(req, res, connection, result);
                     } else {
-                        answerPost(req, res, connection, result);
+                        addPersonBudgetEntry(req, res, connection, result);
                     }
                 });
         });
@@ -195,51 +192,81 @@ function answerPost(req, res, connection, result) {
         if (err) {
             connection.rollback(function () {
                 connection.release();
-                return res.status(500).json({error: err});
+                return res.status(500).json({error: err, err: 2});
             });
-            return res.status(500).json({error: err});
+            return res.status(500).json({error: err, err: 3});
         }
         connection.release();
         res.status(200).json({budget_entry_id: result.insertId})
     });
 }
 
-function addPersonBudgetEntry(req, res, connection, result){
-    var queryValues = [], query = "";
+function addPersonBudgetEntry(req, res, connection, result) {
 
-    for (var i = 0; i < req.body.person_ids.length;i++) {
-        if (i != 0) query += ",";
-        if (req.session.person_id !== req.body.person_ids[i]) {
-            queryValues.push(req.body.person_ids[i]);
-            queryValues.push(result.insertId);
-            query += "(?,?)";
-        }
-    }
-
+    //if (req.person_ids && req.person_ids.length > 0);
+    console.log("test0");
     connection.query(
-        'INSERT INTO person_budget_entry (person_id, budget_entry_id) VALUES ' + query +';',
-        queryValues,
-        function (err, result2) {
+        'SELECT person_id FROM shopping_list_person WHERE shopping_list_id = ? ' +
+        'UNION ' +
+        'SELECT DISTINCT person_id FROM home_group LEFT JOIN shopping_list USING(shopping_list_id) LEFT JOIN group_person  USING(group_id) LEFT JOIN person USING(person_id) WHERE shopping_list.shopping_list_id = ?',
+        [req.body.shopping_list_id, req.body.shopping_list_id], function (err, result2) {
+        if (err) {
+            connection.rollback(function () {
+                connection.release();
+                return res.status(500).json({error: err, err: 0});
+            });
+            return res.status(500).json({error: err, err: 1});
+        }
+
+        person_ids = [];
+        for (var i = 0; i < result2.length; i++) person_ids.push(result2[i].person_id);
+
+        if (req.body.person_ids && req.body.person_ids.length > 0) person_ids = req.body.person_ids;
+
+        var queryValues = [], query = "", adderIncluded = false;
+
+        for (var i = 0; i < person_ids.length;i++) {
+            if (req.session.person_id !== person_ids[i]) {
+                if (i != 0) query += ",";
+                queryValues.push(person_ids[i]);
+                queryValues.push(result.insertId);
+                query += "(?,?)";
+            } else {
+                adderIncluded = true;
+            }
+        }
+
+        console.log(person_ids);
+
+        connection.query(
+            'INSERT INTO person_budget_entry (person_id, budget_entry_id) VALUES ' + query +';',
+            queryValues,
+            function (err, result2) {
 
             if (err) {
                 connection.rollback(function () {
                     connection.release();
-                    res.status(500).json({'Error': 'connecting to database: '} + err);
+                    res.status(500).json({'Error': err, err: 6});
                 });
             }
 
-            if (req.body.adder_included) connection.query('INSERT INTO person_budget_entry (person_id, budget_entry_id, datetime_paid) VALUES (?,?,CURRENT_TIMESTAMP);',
+            if (adderIncluded) connection.query('INSERT INTO person_budget_entry (person_id, budget_entry_id, datetime_paid) VALUES (?,?,CURRENT_TIMESTAMP);',
                 [req.session.person_id, result.insertId],
                 function(err, result3) {
-                    if (err) {
-                        connection.rollback(function () {
-                            connection.release();
-                            res.status(500).json({'Error': 'connecting to database: '} + err);
-                        });
-                    } else answerPost(req, res, connection, result);
+                if (err) {
+                    connection.rollback(function () {
+                        connection.release();
+                        res.status(500).json({'Error': err, err: 5});
+                    });
+                } else answerPost(req, res, connection, result);
             });
             else answerPost(req, res, connection, result);
         });
+
+    });
+
+
+
 }
 
 function addShoppingListEntryToBudgetEntry(req, res, connection, result) {
@@ -257,18 +284,14 @@ function addShoppingListEntryToBudgetEntry(req, res, connection, result) {
         'UPDATE shopping_list_entry SET budget_entry_id = ?, purchased_by_person_id = ?, datetime_purchased = CURRENT_TIMESTAMP WHERE shopping_list_entry_id IN (' + query +');',
         queryValues,
         function (err, result2) {
-            if(err)
-                return connection.rollback(function () {
-                    connection.release();
-                    res.status(500).json({'Error' : 'connecting to database: ' } + err);
-                });
+        if(err)
+            return connection.rollback(function () {
+                connection.release();
+                res.status(500).json({'Error' : 'connecting to database: ' } + err);
+            });
 
-            if (req.body.person_ids && req.body.person_ids.length > 0) {
-                addPersonBudgetEntry(req, res, connection, result);
-            } else {
-                answerPost(req, res, connection, result);
-            }
-        });
+        addPersonBudgetEntry(req, res, connection, result);
+    });
 }
 
 /**

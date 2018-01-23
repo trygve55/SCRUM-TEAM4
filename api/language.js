@@ -13,11 +13,13 @@ router.get('/', function(req, res){
     if(!req.query.path && !req.header('referer'))
         return res.status(400).send();
     var pth = req.query.path || req.header('referer').split(":8000")[1];
+	
     if(!lang){
         req.session.lang = "nb_NO";
         req.session.save();
         lang = "nb_NO";
     }
+	// Is the path wrong?
     if(!pth)
         return res.status(400).send("Bad request");
     pth = pth.split('.')[0];

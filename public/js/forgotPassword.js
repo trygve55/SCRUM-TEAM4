@@ -1,6 +1,3 @@
-/**
- * Created by Eline on 15.01.2018.
- */
 $('document').ready(function () {
     /* Language */
 
@@ -132,3 +129,15 @@ function reset() {
 	}
 }
 */
+
+$('#nogroup-logoutNavbar').click(function () {
+    $.ajax({
+        url: '/api/auth/logout',
+        method: 'POST',
+        success: function (data) {
+            if(!data.login){
+                window.top.location="http://localhost:8000/login.html";
+            }
+        }
+    });
+});
