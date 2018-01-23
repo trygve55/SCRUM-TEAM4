@@ -433,18 +433,7 @@ router.get('/:person_id/picture_tiny', function(req, res){
     });
 });
 
-<<<<<<< HEAD
-//update profile
-router.put('/:person_id', function(req, res) {
-    var parameter = req.params;
-    var query = putRequestSetup(parameter.person_id, req.body, "person");
-    console.log(query);
-    pool.query(query[0], query[1], function (err) {
-        if (err) {
-            return res.status(500).json({error: err});
-        }
-        return res.status(200).json({"success" : query[1]});
-=======
+
 /**
  * Update profile
  *
@@ -486,7 +475,6 @@ router.put('/', function(req, res) {
                 return res.status(500).send("Internal database error(1)");
             }
             return res.status(200).send("Profile updated");
->>>>>>> 52c693f5315757211ea1f6b92f941fd103503817
     });
 });
 
@@ -549,10 +537,6 @@ router.delete('/picture', function(req, res) {
     });
 });
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 52c693f5315757211ea1f6b92f941fd103503817
 var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
