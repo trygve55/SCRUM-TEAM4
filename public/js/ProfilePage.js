@@ -122,10 +122,8 @@ $(document).ready(function () {
             $('#p-usernam').val(data[0].username);
             $('#p-phonenumb').val(data[0].phone);
             var date = data[0].birth_date;
-            var formattedDate = date.split("T")[0];
+            var formattedDate = date;//.split("T")[0];
             $('#datepicker').val(formattedDate);
-
-
 
 
             $('#profile-email').text(data[0].email);
@@ -135,7 +133,8 @@ $(document).ready(function () {
             $('#profile-email2').text(data[0].email);
             $('#profile-phone2').text(data[0].phone ? data[0].phone : "");
             $('#profile-username2').text(data[0].username == data[0].facebook_api_id ? "" : data[0].username);
-            setupShoppingList();
+            $('#profpic').attr("src","api/user/" + data[0].person_id + "/picture");
+            //setupShoppingList();
 
 
         }
