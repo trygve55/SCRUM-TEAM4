@@ -1,6 +1,3 @@
-/**
- * Created by odasteinlandskaug on 10.01.2018.
- */
 $(function () {
     $.ajax({
         url: '/api/language',

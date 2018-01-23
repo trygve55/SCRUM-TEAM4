@@ -1,6 +1,3 @@
-/**
- * Created by odasteinlandskaug on 10.01.2018.
- */
 var connected = false;
 window.fbAsyncInit = function() {
     FB.init({
@@ -177,5 +174,3 @@ $(function () {
         });
     })
 });
-
-

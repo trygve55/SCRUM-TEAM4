@@ -884,3 +884,15 @@ function drawBarChart(data, labels) {
 function mod(n, m) {
     return ((n % m) + m) % m;
 };
+
+$('#group-logoutNavbar').click(function () {
+    $.ajax({
+        url: '/api/auth/logout',
+        method: 'POST',
+        success: function (data) {
+            if(!data.login){
+                window.top.location="http://localhost:8000/login.html";
+            }
+        }
+    });
+});
