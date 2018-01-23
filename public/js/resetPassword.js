@@ -95,16 +95,32 @@ $('document').ready(function () {
             url: '/api/user/forgottenPasswordReset',
             method: 'POST',
             data: {
-                new_password: '',
-                token: ''
+                new_password: $('#rp-repeat').val(),
+                token: window.location.search.split("=")[1].split("&")[0]
             },
             success: function (data){
                 console.log(data)
             },
             error: console.error
         });
-    })
+    });
+
+    $('#rp-repeat').keypress(function (e) {
+        if(e.keyCode!=13||e.which!=13)
+            return;
+        $.ajax({
+            url: '/api/user/forgottenPasswordReset',
+            method: 'POST',
+            data: {
+                new_password: $('#rp-repeat').val(),
+                token: window.location.search.split("=")[1].split("&")[0]
+            },
+            success: function (data){
+                console.log(data)
+            },
+            error: console.error
+        });
 
 
-
+    });
 });
