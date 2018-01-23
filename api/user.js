@@ -8,6 +8,14 @@ var router = require('express').Router(),
 
 module.exports = router;
 
+/**
+ * Get person-info
+ *
+ * URL: /api/user/all
+ * method: GET
+ *
+ */
+
 router.get('/all', function(req, res){
    if(!req.session.person_id)
         return res.status(403).send();
@@ -41,11 +49,28 @@ router.get('/all', function(req, res){
     });
 });
 
+/**
+ * Change password
+ *
+ * URL: /api/user/:person_id/password
+ * method: PUT
+ * data: {
+ *      password
+ * }
+ */
+
 router.put('/:person_id/password', function (req, res) {
-    console.log(req.session.person_id);
-    console.log(req.params.person_id);
-    if(req.session.person_id === req.params.person_id)
+    if(req.session.person_id != req.params.person_id)
         return res.status(403).send("ERROR: NO ACCESS");
+
+    var user = req.body;
+
+    if(!user.password)
+        return res.status(400).send("empty password body");
+
+    if(!checkValidPassword(user.password))
+        return res.status(400).json({"error":"Minimum eight characters, at least one letter and one number:"});
+
     pool.query('SELECT facebook_api_id FROM person WHERE person_id = ?', [req.params.person_id], function (err, result) {
         if(err) {
             return res.status(500).send("DB_ERROR");
@@ -53,7 +78,6 @@ router.put('/:person_id/password', function (req, res) {
             if (result[0].facebook_api_id)
                 return res.status(200).send("ERROR");
             else {
-                var user = req.body;
                 auth.hashPassword(user, function(user) {
                     pool.query(
                         'UPDATE person SET password_hash = ? WHERE person_id = ?;',
@@ -84,6 +108,7 @@ router.put('/:person_id/password', function (req, res) {
  *      [phone]
  * }
  */
+
 router.post('/register', function(req, res) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -207,7 +232,14 @@ router.post('/register', function(req, res) {
     });
 });
 
-//call for checking if username is valid
+/**
+ * Check username syntax/availability
+ *
+ * URL: /api/user/user
+ * method: GET
+ *
+ */
+
 router.get('/user', function (req, res) {
     pool.getConnection(function (err, connection) {
         if(err) {
@@ -233,7 +265,14 @@ router.get('/user', function (req, res) {
     });
 });
 
-//call for checking if email is valid
+/**
+ * Check email syntax/availability
+ *
+ * URL: /api/user/email
+ * method: GET
+ *
+ */
+
 router.get('/mail', function (req, res) {
     pool.getConnection(function (err, connection) {
         if(err) {
@@ -259,33 +298,69 @@ router.get('/mail', function (req, res) {
     });
 });
 
+/**
+ *
+ *
+ *
+ */
+
 function checkValidPhone(phonenumber){
     var phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im; //TODO: find better solution for regex
     return phoneRegex.test(phonenumber);
 }
 
-//returns true if valid
+/**
+ * Excludes numbers and special characters
+ */
+
 function checkValidName(nameString) {
     var nameRegex = /[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
     if (nameString) return nameRegex.test(nameString);
 }
 
-//spaces not allowed
+/**
+ * Excludes numbers, spaces and special characters
+ */
+
 function checkValidForename(nameString) {
     var nameRegex = /^\S[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
     if (nameString) return nameRegex.test(nameString);
 }
 
-//spaces allowed
+/**
+ * Excludes all special characters and spaces
+ */
+
 function checkValidUsername(username) {
     var usernameRegex = /^[a-zA-Z0-9]+$/;
     if(username) return usernameRegex.test(username.toLowerCase());
 }
 
+/**
+ * Minimum 8 characters, one upper case letter and one number
+ */
+
+function checkValidPassword(password) {
+    var usernameRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    return usernameRegex.test(password);
+}
+
+/**
+ * Only valid email will return true
+ * [username]@[domain]
+ */
+
 function checkValidEmail(email) {
     var emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (email) return emailRegex.test(email.toLowerCase());
 }
+
+
+/**
+ *
+ *
+ *
+ */
 
 router.get('/:person_id/picture', function(req, res){
     pool.query("SELECT profile_pic, has_profile_pic FROM person WHERE person_id = ?;", [req.params.person_id], function (error, results, fields) {
