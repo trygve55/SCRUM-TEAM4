@@ -398,7 +398,7 @@ function putRequestSetup(id, req, tableName) {
         ' AND shopping_list_id IN  ' +
         '(SELECT t.shopping_list_id FROM (SELECT shopping_list_id, person_id FROM person) t WHERE person_id = ?  ' +
         'UNION  ' +
-        'SELECT n.shopping_list_id FROM (SELECT home_group.shopping_list_id, person_id person  ' +
+        'SELECT n.shopping_list_id FROM (SELECT home_group.shopping_list_id, person_id FROM person  ' +
         'LEFT JOIN group_person USING(person_id) ' +
         'LEFT JOIN home_group USING(group_id)) n ' +
         'WHERE person_id = ? ' +
