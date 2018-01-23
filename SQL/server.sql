@@ -50,7 +50,7 @@ CREATE TABLE person (
     lastname NVARCHAR(255) NOT NULL,
     phone VARCHAR(15),
     birth_date DATE,
-    is_verified BIT NOT NULL DEFAULT 0,
+    verify_token VARCHAR(255),
     gender INTEGER DEFAULT 0,
     profile_pic MEDIUMBLOB,
     profile_pic_tiny BLOB,

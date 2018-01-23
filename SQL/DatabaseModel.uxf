@@ -42,7 +42,7 @@ middlename
 lastname
 phone_number
 birth_date
-is_verified
+verify_token
 gender
 profile_pic
 has_profile_pic

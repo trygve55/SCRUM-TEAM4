@@ -396,14 +396,14 @@ function putRequestSetup(id, req, tableName) {
     }
     request += ' WHERE ' + tableName + '_id = ? ' +
         ' AND shopping_list_id IN  ' +
-        '(SELECT t.shopping_list_id FROM (SELECT shopping_list_id FROM person) t WHERE person_id = ?  ' +
+        '(SELECT t.shopping_list_id FROM (SELECT shopping_list_id, person_id FROM person) t WHERE person_id = ?  ' +
         'UNION  ' +
-        'SELECT n.shopping_list_id FROM (SELECT home_group.shopping_list_id person  ' +
+        'SELECT n.shopping_list_id FROM (SELECT home_group.shopping_list_id, person_id person  ' +
         'LEFT JOIN group_person USING(person_id) ' +
-        'LEFT JOIN home_group USING(group_id) n) ' +
-        'WHERE person.person_id = ? ' +
+        'LEFT JOIN home_group USING(group_id)) n ' +
+        'WHERE person_id = ? ' +
         'UNION ' +
-        'SELECT k.shopping_list_id FROM (SELECT shopping_list_id FROM shopping_list_person) k WHERE person_id = ? AND invite_accepted = 1) LIMIT 1';
+        'SELECT k.shopping_list_id FROM (SELECT shopping_list_id, person_id, invite_accepted FROM shopping_list_person) k WHERE person_id = ? AND invite_accepted = 1) LIMIT 1';
     parameters.push(id);
     parameters.push(req.session.person_id);
     parameters.push(req.session.person_id);
