@@ -4,7 +4,7 @@
 
 var lang;
 
-$(document).ready(function () {
+$('document').ready(function () {
 
     $.ajax({
         url: '/api/language',
@@ -20,6 +20,9 @@ $(document).ready(function () {
                     $("#" + p).html(data[p]);
                 }
             }
+
+            $("#rp-new").attr("placeholder", data["rp-new"]);
+            $("#rp-repeat").attr("placeholder", data["rp-repeat"]);
         }
     });
 
@@ -45,6 +48,8 @@ $(document).ready(function () {
                                 $("#" + p).html(data[p]);
                             }
                         }
+                        $("#rp-new").attr("placeholder", data["rp-new"]);
+                        $("#rp-repeat").attr("placeholder", data["rp-repeat"]);
                     }
                 });
             },
@@ -75,6 +80,9 @@ $(document).ready(function () {
                                 $("#" + p).html(data[p]);
                             }
                         }
+
+                        $("#rp-new").attr("placeholder", data["rp-new"]);
+                        $("#rp-repeat").attr("placeholder", data["rp-repeat"]);
                     }
                 });
             },
@@ -96,4 +104,7 @@ $(document).ready(function () {
             error: console.error
         });
     })
+
+
+
 });
