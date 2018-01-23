@@ -32,7 +32,11 @@ $(document).ready(function() {
         }
     });
 
-	$.ajax({
+    /**
+     *  Retrieves the group information for groups the current user inhabit. Group information
+     *  changes based on which group the user clicks on.
+     */
+    $.ajax({
 		url:'/api/group/me',
 		method:'GET',
 		success: function (data) {
@@ -58,22 +62,7 @@ $(document).ready(function() {
 		},
 		error: console.error()
 	});
-
 	loadLanguageText();
-	
-	//var groups = $("div.tablink");
-	//if (groups.length > 0) {changeGroup($(groups[0]).html());}
-	
-	// TEST
-	//addGroupToList("Group E");
-	//addGroupToList("Group 1");
-	//attachTasks(testtasks.tasks);
-	
-	// Add some updating system here.
-	
-	//window.setInterval(getGroups, 5000);	// Every 5 seconds the groups will be loaded.
-
-
 });
 
 /**
@@ -94,31 +83,11 @@ function loadLanguageText() {
     });
 }
 
+/**
+ * This method clears the feed post inputfield when user press the post-button
+ */
 function ClearFields() {
     document.getElementById("group-newsfeedPost").value = "";
-}
-
-/**
- * Get all the groups this user can access.
- * This is a separate function so it can be run when the number of groups change.
- */
-function getGroups() {
-    var response;
-    // AJAX GET all groups available to user.
-    //.get("URL", function(result){response = result});
-    /*$.ajax({
-        type:"GET",
-        url:"URL",
-        contentType:"application/json",
-        dataType:"json",
-        success:function(result) {response = result;}
-    });	// GET all group names for this user.
-    */
-    var names = response.groupnames;
-    for (var i = 0; i < names.length; i++) {
-        addGroupToList(names[i]);
-    }
-    removeDeletedGroups(names);
 }
 
 /**
@@ -139,42 +108,10 @@ function changeTab(name) {
         getShoppinglist();
     else if(activeTab=='feed')
         getPost();
-    //else if(activeTab=='tasks')
-       // getTasks();
+    else if(activeTab=='tasks')
+        getTasks();
     else if (activeTab == 'statistics')
         drawChart();
-}
-
-/**
- * When the user clicks on a group, load it and show the content.
- */
-function changeGroup(name) {
-    if (currentGroup != name) {
-        $("title").html(name);
-        currentGroup = name;
-        loadGroup(name);
-    }
-}
-
-/**
- * After a group is clicked, it will be loaded. Only one is loaded at a time so that
- * it can appear faster.
- */
-function loadGroup(name) {
-    // LOAD GROUP INFO AJAX
-
-    var response;
-    /*$.ajax({
-        type:"GET",
-        url:"",
-        contentType:"application/json",
-        dataType:"json",
-        success:function(result) {response = result;}
-    });	// GET all data for this group.
-    */
-    // PUT ALL THE DATA ON THE PAGE
-    //attachTasks(result.youtasks);
-
 }
 
 /**
@@ -200,37 +137,9 @@ function removeDeletedGroups(validNames) {
     });
 }
 
-/*
-function registerGroupForSystem() {} // AJAX Post the new group.
-function postNewTask() {} // AJAX Post the new task.
-function postNewPost() {} // AJAX Post the new post.
-function addNewLsit() {} // AJAX Post the new shopping list.
-function loadStatistics() {} // AJAX Get the group statistics.
-*/
-
 /**
- * This adds the HTML elements for the task.
+ * This method redirect the user to the add group page when the addGroup button is clicked.
  */
-function attachTasks(tasks) {
-    for (var i = 0; i < tasks.length; i++) {
-        var task = tasks[i];
-        if (!task.completed) {
-            if (person = task.person) {
-                $("#yourtasks").append(
-                    '<div class="chbox"><input type="checkbox" value=""><p>' + task.name + '</p></div>'
-                );
-            }
-            $("#grouptasks").append(
-                '<div class="task"><input type="checkbox" value=""><p>' + task.name + ' - ' + task.person + ' - ' + task.time + '</p></div>'
-            ); // The format here is just temporary. Change if something better gets decided.
-        }
-    }
-}
-
-//function countNewPosts() {} // From last login date, display a number of new posts
-//function countNewTasks() {} // From last login date, display a number of new tasks
-
-
 function addGroup(){
     $('#addGroup-button').click(
         window.location = 'addGroup.html'
@@ -238,6 +147,11 @@ function addGroup(){
 }
 
 
+/**
+ * This method retrieves the shoppinglists from the database and puts the entires, if there
+ * are any, into the shoppinglist.
+ *
+ */
 function getShoppinglist() {
     $.ajax({
         url: "/api/shoppingList/" + currentGroup.shopping_list_id,
@@ -258,29 +172,9 @@ function getShoppinglist() {
     });
 }
 
-function getTasksWindow() {
-    $.ajax({
-        url: '/api/tasks' + currentGroup.group_id,
-        method: 'GET',
-        success: function (dataTask) {
-            console.log(dataTask);
-            setupTasks();
-        }
-    })
-}
-
-function getTasks() {
-    $.ajax({
-        url: "/api/tasks/person/",
-        method: 'GET',
-        success: function (dataperson) {
-            console.log(dataperson);
-        }
-    })
-}
-
-
-
+/**
+ * This function
+ */
 function setupClicks(){
     $(".list-name").unbind("click").click(function(){
         var listId = $(this).closest("div[data-id]").data("id");
@@ -526,6 +420,9 @@ function setupClicks(){
     setupItemClicks();
 }
 
+/**
+ * This function
+ */
 function setupItemClicks(){
     $(".fa-times").unbind("click").click(function(){
         var entry_id = $(this).closest("li[data-id]").data("id");
@@ -546,6 +443,11 @@ function setupItemClicks(){
         }
     });
 }
+
+/**
+ * This function lets a user add new items to the shoppinglist.
+ * @param ul
+ */
 
 function addNewItem(ul){
     $(ul).append(newListItem());
@@ -579,6 +481,14 @@ function addNewItem(ul){
     }).focus();
 }
 
+
+/**
+ *This function saves the new items to the database.
+ * @param id
+ * @param item
+ * @param ul
+ * @param cb
+ */
 function saveItemToDB(id, item, ul, cb){
     $.ajax({
         url: '/api/shoppingList/entry',
@@ -595,8 +505,12 @@ function saveItemToDB(id, item, ul, cb){
     });
 }
 
-
 $(function () {
+    /**
+     * This method posts new posts from a user to a group. Then call
+     * the method getPost() to post the post to the page then ClearFields()
+     * to reset the inputfield.
+     */
     $('#group-postButton').click(function() {
         console.log('hei');
         $.ajax({
@@ -615,6 +529,10 @@ $(function () {
 
     });
 
+    /**
+     * This method calls the language api and sets the standard language as
+     * norwegian.
+     */
 	$.ajax({
 		url: '/api/language',
 		method: 'GET',
@@ -633,6 +551,10 @@ $(function () {
         error: console.error
     });
 
+    /**
+     * This method calls the language api and sets the language to norwegian
+     * if the user clicks on the norwegian flag.
+     */
     $('#group-norway').click(function () {
         $.ajax({
             url: '/api/language',
@@ -661,6 +583,10 @@ $(function () {
         });
     });
 
+    /**
+     * This method calls the language api and sets the language to english
+     * if the user clicks on the british flag.
+     */
     $('#group-england').click(function () {
         $.ajax({
             url: '/api/language',
@@ -791,23 +717,30 @@ function drawChart() {
 }
 
 /**
- * START GET TASKS FOR GROUP
+ * Method to retrieve all tasks given for one group, given the group ID.
  **/
 
 function getTasks() {
     $.ajax({
-        url:'',
+        url:'/api/tasks/' + currentGroup,
         method:'GET',
         success: function (dataTask) {
+            console.log(dataTask);
             $('.itemlist-task').html("");
             for(var i = 0; i < dataTask.length; i++){
-                //Getting and setting the tasks
+                $('.itemlist-task').append(listItem({
+                    entry_id: dataTask[i],
+                    entry_text:dataTask[i]
+                }))
             }
             setupClicksTask();
         }
     });
 }
 
+/**
+ * This function
+ */
 function setupClicksTask(){
     $(".add-task").unbind("click").click(function(){
         $(this).closest("div").children(".itemlist-task").append(newListItem());
@@ -819,21 +752,21 @@ function setupClicksTask(){
             var text = $(this).val();
             if(text != "") {
                 var t = this;
-                saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                saveTaskToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
                     $(t).closest("li").remove();
                     addNewTask(ul);
                     setupTaskClicks();
                 });
             }
             else {
-                setupItemClicks();
+                setupTaskClicks();
                 $(this).closest("li").remove();
             }
         }).focusout(function(){
             var ul = $(this).closest("ul");
             var text = $(this).val();
             if(text != "") {
-                saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                saveTaskToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
                     setupTaskClicks();
                 });
             }
@@ -843,6 +776,10 @@ function setupClicksTask(){
 
 }
 
+/**
+ * This function adds a new task to the list when enter is pressed
+ * @param ul
+ */
 function addNewTask(ul){
     $(ul).append(newListItem());
 
@@ -875,6 +812,13 @@ function addNewTask(ul){
     }).focus();
 }
 
+/**
+ *This function saves the new tasks to the database.
+ * @param id
+ * @param item
+ * @param ul
+ * @param cb
+ */
 function saveTaskToDB(id, item, ul, cb){
     $.ajax({
         url: '/api/tasks/',
@@ -890,12 +834,15 @@ function saveTaskToDB(id, item, ul, cb){
     });
 }
 
+/**
+ * This function
+ */
 function setupTaskClicks(){
     $(".fa-times").unbind("click").click(function(){
         var entry_id = $(this).closest("li[data-id]").data("id");
         $.ajax({
             url: '/api/shoppingList/entry/' + entry_id,
-            method: 'DELETE',
+            method: 'PUT',
             error: console.error
         });
         $(this).closest("li[data-id]").remove();
