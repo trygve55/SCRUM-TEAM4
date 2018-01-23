@@ -278,6 +278,13 @@ function updateList(){
     });
 }
 
+
+/**
+ * This function makes sure that when you are making a group, your own name wont
+ * show up when searching for uses to include in your group.
+ * @param u
+ * @returns {boolean}
+ */
 function check(u){
     if(u.id == me.person_id)
         return false;
@@ -288,6 +295,9 @@ function check(u){
     return true;
 }
 
+/**
+ * This function makes it possible for a user to logout on the add group page.
+ */
 $('#addgroup-logout').click(function () {
     $.ajax({
         url: '/api/auth/logout',

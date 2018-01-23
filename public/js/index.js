@@ -137,6 +137,9 @@ $(function () {
         });
     });
 
+    /**
+     * This function makes it possible for a user to logout when on the home/index page.
+     */
     $('#index-logoutNavbar').click(function () {
         $.ajax({
             url: '/api/auth/logout',
@@ -149,6 +152,10 @@ $(function () {
         });
     });
 
+    /**
+     * This method retrives information about the user, forename and lastname, and posts
+     * it on the home/index page.
+     */
     $.ajax({
         url:'/api/user/getUser',
         method:'GET',
@@ -165,6 +172,10 @@ $(function () {
     });
 });
 
+/**
+ * This function retrieves all posts, from all the groups the user has access too/is a part of,
+ * and post them on the homepage. They will appear in a order set by when the post was posted.
+ */
 function prep() {
     $.ajax({
         url: '/api/news/',
