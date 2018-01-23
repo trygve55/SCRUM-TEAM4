@@ -18,6 +18,8 @@ module.exports = router;
 */
 router.post('/', function(req, res) {
 	var data = req.body;
+	
+	// Check if this request is ok.
 	if(!data.group_id || !data.post_text)
 		return res.status(400).send();
 	var extraData = null;
@@ -25,6 +27,7 @@ router.post('/', function(req, res) {
 		extraData = data.attachment_data;
 	if(!data.attachment_type)
 		data.attachment_type = 0;
+
     pool.query(
         'INSERT INTO newsfeed_post (' +
         'group_id, posted_by_id, post_text, attachment_type, attachment_data' +
@@ -43,8 +46,7 @@ router.post('/', function(req, res) {
 router.get('/:group_id', function(req, res) {
     pool.query('SELECT ' +
 		'post_id, posted_by_id, post_text, attachment_type, posted_datetime, ' +
-		'forename, middlename, lastname ' +
-		'FROM newsfeed_post ' +
+		'forename, middlename, lastname FROM newsfeed_post ' +
 		'LEFT JOIN person ON person.person_id = newsfeed_post.posted_by_id ' +
 		'WHERE group_id = ? ORDER BY posted_datetime DESC',
 		[req.params.group_id], function(err, result) {
@@ -76,11 +78,10 @@ router.get('/:group_id', function(req, res) {
  * method: GET
 */
 router.get('/', function(req, res) {
-		pool.query('SELECT post_id, post_text, attachment_type, posted_datetime, person.forename, person.middlename, person.lastname, home_group.group_name, person.person_id FROM newsfeed_post LEFT JOIN person ON (person.person_id = newsfeed_post.posted_by_id) LEFT JOIN home_group USING (group_id) WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?) ORDER BY posted_datetime DESC;',
-			[req.session.person_id, req.session.person_id], function(err, result) {
-				if (err) {return res.status(500).send();}
-				res.status(200).json(result);
-		});
+	pool.query('SELECT post_id, post_text, attachment_type, posted_datetime, person.forename, person.middlename, person.lastname, home_group.group_name, person.person_id FROM newsfeed_post LEFT JOIN person ON (person.person_id = newsfeed_post.posted_by_id) LEFT JOIN home_group USING (group_id) WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?) ORDER BY posted_datetime DESC;',
+		[req.session.person_id, req.session.person_id], function(err, result) {
+			return (err) ? (res.status(500).send()) : (res.status(200).json(result));
+	});
 });
 
 /**
