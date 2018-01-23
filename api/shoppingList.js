@@ -20,31 +20,19 @@ router.post('/', function(req, res) {
             return res.status(500).json({'Error' : 'connecting to database: ' } + err);
         var data = req.body;
         connection.beginTransaction(function (err) {
-            if(err)
-                return connection.rollback(function () {
-                    res.status(500).json({'Error' : err});
-                    connection.release();
-                });
+            if (!rollbackC(err, connection, res)) {return;}
+			
             connection.query('INSERT INTO shopping_list (shopping_list_name, currency_id) VALUES (?,?)',
                 [data.shopping_list_name, checkRange(data.currency_id, 1, null)], function(err, result) {
-                    if(err)
-                        return connection.rollback(function () {
-                            res.status(500).json({'Error' : err});
-                            connection.release();
-                        });
+                    if (!rollbackC(err, connection, res)) {return;}
+					
                     connection.query('INSERT INTO shopping_list_person(shopping_list_id, person_id, invite_accepted) VALUES (?,?,?);',
                         [result.insertId, req.session.person_id, true], function (err) {
-                            if (err)
-                                return connection.rollback(function () {
-                                    res.status(500).json({'Error': err});
-                                    connection.release();
-                                });
+                            if (!rollbackC(err, connection, res)) {return;}
+							
                             connection.commit(function (err) {
-                                if (err)
-                                    return connection.rollback(function () {
-                                        res.status(500).json({'Error': err});
-                                        connection.release();
-                                    });
+                                if (!rollbackC(err, connection, res)) {return;}
+								
                                 connection.release();
                                 res.status(200).json({success: "true", shopping_list_id: result.insertId});
                             });
@@ -73,10 +61,9 @@ router.post('/invite', function(req, res) {
         [req.body.shopping_list_id, req.body.person_id, req.session.person_id, req.body.shopping_list_id], function(err, result) {
             if(err)
                 return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            else if (result.affectedRows != 1)
-                res.status(403).json({success: "false", error: "no access"});
-            else
-                res.status(200).json({success: "true"});
+            if (result.affectedRows != 1)
+                return res.status(403).json({success: "false", error: "no access"});
+            res.status(200).json({success: "true"});
         });
 });
 
@@ -191,7 +178,7 @@ router.get('/', function(req, res) {
             console.log(result);
             var shopping_lists = [];
             for (var i = 0; i < result.length;i++) {
-                var current_shopping_list_id = shoppingListExistsInArray(result[i].shopping_list_id, shopping_lists);
+                var current_shopping_list_id = existsInArray(result[i].shopping_list_id, shopping_lists);
                 if (current_shopping_list_id == -1) {
                     shopping_lists.push({
                         "shopping_list_id":result[i].shopping_list_id,
@@ -230,8 +217,8 @@ router.get('/', function(req, res) {
                 }
             }
             for (i = 0; i < shopping_lists.length; i++) {
-                shopping_lists[i].shopping_list_entries = removeDuplicateUsingFilter(shopping_lists[i].shopping_list_entries);
-                shopping_lists[i].persons = removeDuplicateUsingFilter(shopping_lists[i].persons);
+                shopping_lists[i].shopping_list_entries = removeDuplicates(shopping_lists[i].shopping_list_entries);
+                shopping_lists[i].persons = removeDuplicates(shopping_lists[i].persons);
             }
             res.status(200).json(shopping_lists);
         }
@@ -264,7 +251,8 @@ router.get('/:shopping_list_id', function(req, res) {
         function(err, result) {
             if (err) {
                 return res.status(500).json({error: err});
-            } else if (!result.length) {
+            }
+			if (!result.length) {
                 return res.status(403).json({error: "no access/does not exist", success: false});
             }
             var entries = [], persons = [];
@@ -297,8 +285,8 @@ router.get('/:shopping_list_id', function(req, res) {
                 "currency_sign":result[0].currency_sign,
                 "currency_major":result[0].currency_major,
                 "currency_long":result[0].currency_long,
-                "shopping_list_entries": removeDuplicateUsingFilter(entries),
-                "persons": removeDuplicateUsingFilter(persons)
+                "shopping_list_entries": removeDuplicates(entries),
+                "persons": removeDuplicates(persons)
             });
         }
     );
@@ -447,7 +435,11 @@ function checkRange(value, min, max) {
     return value;
 }
 
-function removeDuplicateUsingFilter(arr){
+
+/**
+* Make sure the array only contains unique elements.
+*/
+function removeDuplicates(arr) {
     var added_ids = [], unique_array = arr.filter(function(elem, index, self) {
         if (elem.person_id) {
             if (added_ids.indexOf(elem.person_id) == -1) {
@@ -467,12 +459,28 @@ function removeDuplicateUsingFilter(arr){
         }
         return index == self.indexOf(elem);
     });
-    return unique_array
+    return unique_array;
 }
 
-function shoppingListExistsInArray(shopping_list_id, array) {
-    for (var i = 0; i < array.length;i++) {
+/**
+* Find the index of this in this JSON array, if it exists. -1 otherwise.
+*/
+function existsInArray(shopping_list_id, array) {
+    for (var i = 0; i < array.length; i++) {
         if (array[i].shopping_list_id == shopping_list_id) return i;
     }
     return -1;
+}
+
+/**
+ * The code to be executed if something failed and the transaction should cancel.
+*/
+function rollbackC(err, connection, res) {
+	if (err)
+		connection.rollback(function () {
+			res.status(500).json({'Error': err});
+			connection.release();
+			return false;
+		});
+	return true;
 }
