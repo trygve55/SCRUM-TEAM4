@@ -12,7 +12,7 @@ router.use('*', function(req, res, next){
         'mail',
         'user'
     ];
-    if(excludes.indexOf(req.url) > -1 && req.originalUrl.indexOf('/api/user') > -1)
+    if(!req.session.person_id && excludes.indexOf(req.url) > -1 && req.originalUrl.indexOf('/api/user') > -1)
         return res.status(403).send();
     next();
 });
