@@ -35,3 +35,37 @@
     max-height: 100px;
     image-rendering: crisp-edges;
 }
+
+body{
+    overflow-x: hidden;
+    width: 100%;
+}
+
+@media screen and (max-width: 800px) {
+    .profil{
+
+        min-width: 90%;
+        text-align: center;
+    }
+    .newsfeed{
+        padding-left: 2%;
+        padding-right: 2%;
+        min-width: 100%;
+        text-align: center;
+    }
+}
+
+@media screen and (max-width: 375px) {
+    .profil{
+
+        padding-left: 50px;
+        padding-right: 50px ;
+        text-align: center;
+    }
+    .newsfeed{
+
+        padding-left: 50px;
+        padding-right: 50px ;
+        text-align: center;
+    }
+}

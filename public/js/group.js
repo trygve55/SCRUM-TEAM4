@@ -139,7 +139,7 @@ function changeTab(name) {
     else if(activeTab=='feed')
         getPost();
     //else if(activeTab=='tasks')
-
+       // getTasks();
     else if (activeTab == 'statistics')
         drawChart();
 }
@@ -235,6 +235,7 @@ function addGroup(){
         window.location = 'addGroup.html'
     )
 }
+
 
 function getShoppinglist() {
 		$.ajax({
@@ -789,7 +790,24 @@ function drawChart() {
 	});
 }
 
-/** START GET TASKS FOR GROUP */
+/**
+ * START GET TASKS FOR GROUP
+ **/
+
+function getTasks() {
+    $.ajax({
+        url:'',
+        method:'GET',
+        success: function (dataTask) {
+            $('.itemlist-task').html("");
+            for(var i = 0; i < dataTask.length; i++){
+                //Getting and setting the tasks
+            }
+            setupClicksTask();
+        }
+    });
+}
+
 function setupClicksTask(){
     $(".add-task").unbind("click").click(function(){
         $(this).closest("div").children(".itemlist-task").append(newListItem());
@@ -821,54 +839,6 @@ function setupClicksTask(){
             }
             $(this).closest("li").remove();
         }).focus();
-    });
-
-    $('.pink-select').unbind("click").click(function () {
-        var ls = $(this).closest("div[data-id]");
-        var id = $(ls).css('background-color', $(this).data('color')).data("id");
-        $.ajax({
-            url: '/api/shoppingList/' + id,
-            method: 'PUT',
-            data: {
-                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
-            }
-        });
-    });
-
-    $('.yellow-select').unbind("click").click(function () {
-        var ls = $(this).closest("div[data-id]");
-        var id = $(ls).css('background-color', $(this).data('color')).data("id");
-        $.ajax({
-            url: '/api/shoppingList/' + id,
-            method: 'PUT',
-            data: {
-                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
-            }
-        });
-    });
-
-    $('.green-select').unbind("click").click(function () {
-        var ls = $(this).closest("div[data-id]");
-        var id = $(ls).css('background-color', $(this).data('color')).data("id");
-        $.ajax({
-            url: '/api/shoppingList/' + id,
-            method: 'PUT',
-            data: {
-                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
-            }
-        });
-    });
-
-    $('.white-select').unbind("click").click(function () {
-        var ls = $(this).closest("div[data-id]");
-        var id = $(ls).css('background-color', $(this).data('color')).data("id");
-        $.ajax({
-            url: '/api/shoppingList/' + id,
-            method: 'PUT',
-            data: {
-                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
-            }
-        });
     });
 
 }
