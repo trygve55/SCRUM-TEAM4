@@ -22,12 +22,15 @@
     <script src="https://use.fontawesome.com/dea62227f7.js"></script>
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/noGroup.css">
-    <script src="js/noGroup.js"></script>
+    <script src="/js/handlebars.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src="/js/notifications.js"></script>
+    <script src="/js/noGroup.js"></script>
 
 </head>
 <body>
     <nav style="width: 100%" class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#" style="color: dimgray">
+        <a class="navbar-brand" href="index.html" style="color: dimgray">
             <img src="img/logo.svg" width="30" height="30" alt="">
             Household Manager
         </a>
@@ -37,7 +40,7 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
                 <a id="nogroup-homepageNavbar" class="nav-item nav-link" href="index.html"></a>
-                <a id="nogroup-groupsNavbar" class="nav-item nav-link" onclick="new function () {
+                <a id="nogroup-groupsNavbar" class="nav-item nav-link" href="#" onclick="new function () {
               $.ajax({
                 url: '/api/group/me',
                 method: 'GET',
@@ -62,9 +65,10 @@
     </nav>
 
     <br>
+	<!--Language selection.-->
     <div class="flag" style="background-color: white">
-        <img id="nogroup-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
-        <img id="nogroup-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+        <img class="flag" id="nogroup-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+        <img class="flag" id="nogroup-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
     </div>
 
 

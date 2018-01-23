@@ -1,6 +1,3 @@
-/**
- * Created by odasteinlandskaug on 10.01.2018.
- */
 var connected = false;
 window.fbAsyncInit = function() {
     FB.init({
@@ -39,25 +36,24 @@ window.fbAsyncInit = function() {
 function login() {
     FB.login(function (response) {
         if (response.status === 'connected') {
-            FB.api('/me', 'GET', {fields: 'first_name,last_name,id,email'}, function (response) {
+            FB.getLoginStatus(function(response) {
+                if (response.status === 'connected') {
+                    console.log(response.authResponse);
 
-                $.ajax({
-                    url: '/api/auth/facebook',
-                    method: 'POST',
-                    data: {
-                        facebook_api_id: response.id,
-                        email: response.email,
-                        forename: response.first_name,
-                        lastname: response.last_name
-                    },
-                    success: function (data) {
+                    $.ajax({
+                        url: '/api/auth/facebook',
+                        method: 'POST',
+                        data: {
+                            accessToken: response.authResponse.accessToken
+                        },
+                        success: function (data) {
+                            window.location = "/index.html";
+                        },
+                        error: console.error
+                    });
+                }
+            } );
 
-
-                        window.location = "/index.html";
-                    },
-                    error: console.error
-                });
-            });
         } else if (response.status === 'not_authorized') {
 
         }
@@ -178,5 +174,3 @@ $(function () {
         });
     })
 });
-
-

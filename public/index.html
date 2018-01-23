@@ -23,13 +23,15 @@
         <link rel="stylesheet" href="css/common.css">
         <link rel="stylesheet" href="css/index.css">
         <script src="/js/handlebars.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+        <script src="/js/notifications.js"></script>
         <script src="js/index.js"></script>
         <script src="js/redirect.js"></script>
-        <script src="/js/notifications.js"></script>
     </head>
 
     <body>
         <nav style="width: 100%" class="navbar navbar-expand-lg navbar-light bg-light">
+			<!--The top navigation bar.-->
             <a class="navbar-brand" href="#" style="color: dimgray">
                 <img src="img/logo.svg" width="30" height="30" alt="">
                 Household Manager
@@ -40,7 +42,7 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
                     <a id="index-homepageNavbar" class="nav-item nav-link" href="index.html"></a>
-                    <a id="index-groupsNavbar" class="nav-item nav-link" onclick="new function () {
+                    <a id="index-groupsNavbar" class="nav-item nav-link" href="#" onclick="new function () {
               $.ajax({
                 url: '/api/group/me',
                 method: 'GET',
@@ -65,9 +67,10 @@
         </nav>
         <br>
 
+		<!--Language selection.-->
         <div class="flag" style="background-color: white">
-            <img id="index-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
-            <img id="index-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+            <img class="flag" id="index-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+            <img class="flag" id="index-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
         </div>
 
         <div class="row" align="center">

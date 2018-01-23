@@ -31,16 +31,13 @@ router.post('/', function(req, res){
                                 res.status(500).json({'Error': err});
                                 return;
                             }
-                                pool.query("UPDATE person SET profile_pic = ?, profile_pic_tiny = ? WHERE person_id = 1;", [data, data_tiny], function (err, results, fields) {
-                                    if (err) {
-                                        return res.status(500).json({'Error': err});
-                                    }
-                                    res.status(200).json(results);
-                                });
-                            });
-                        });
-                });
-        });
+					pool.query("UPDATE person SET profile_pic = ?, profile_pic_tiny = ? WHERE person_id = 1;", [data, data_tiny], function (err, results, fields) {
+						return (err) ? (res.status(500).json({'Error': err})) : (res.status(200).json(results));
+					});
+				});
+			});
+		});
+	});
 });
 
 router.get('/', function(req, res) {

@@ -24,7 +24,12 @@ $('document').ready(function () {
             prep();
         }
     });
-    //-----------Language-----------
+
+
+    /**
+     * This method calls the language api and sets the standard language as
+     * norwegian.
+     */
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -41,6 +46,11 @@ $('document').ready(function () {
             }
         }
     });
+
+    /**
+     * This method calls the language api and sets the language to norwegian
+     * if the user clicks on the norwegian flag.
+     */
     $('#tasks-norway').click(function () {
         $.ajax({
             url: '/api/language',
@@ -68,6 +78,11 @@ $('document').ready(function () {
             }
         });
     });
+
+    /**
+     * This method calls the language api and sets the language to english
+     * if the user clicks on the british flag.
+     */
     $('#tasks-england').click(function () {
         $.ajax({
             url: '/api/language',
@@ -470,3 +485,15 @@ function saveItemToDB(id, item, ul, cb){
         }
     });
 }
+
+$('#shop-logout').click(function () {
+    $.ajax({
+        url: '/api/auth/logout',
+        method: 'POST',
+        success: function (data) {
+            if(!data.login){
+                window.top.location="http://localhost:8000/login.html";
+            }
+        }
+    });
+});

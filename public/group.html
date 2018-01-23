@@ -22,6 +22,8 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
 		<script src="https://use.fontawesome.com/dea62227f7.js"></script>
 		<script src="/js/handlebars.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+		<script src="/js/notifications.js"></script>
 		<script src="js/redirect.js"></script>
 
 		<!--These below are needed for this window to appear correctly.-->
@@ -33,7 +35,7 @@
 	<body>
 
 	<nav style="width: 100%" class="navbar navbar-expand-lg navbar-light bg-light">
-		<a class="navbar-brand" href="#" style="color: dimgray">
+		<a class="navbar-brand" href="index.html" style="color: dimgray">
 			<img src="img/logo.svg" width="30" height="30" alt="">
 			Household Manager
 		</a>
@@ -43,7 +45,7 @@
 		<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
 			<div class="navbar-nav">
 				<a id="group-homepageNavbar" class="nav-item nav-link" href="index.html"></a>
-				<a id="group-groupsNavbar" class="nav-item nav-link" onclick="new function () {
+				<a id="group-groupsNavbar" class="nav-item nav-link" href="#" onclick="new function () {
               $.ajax({
                 url: '/api/group/me',
                 method: 'GET',
@@ -68,11 +70,11 @@
 	</nav>
 
 	<br>
+	<!--Language selection.-->
 	<div class="flag" style="background-color: white">
-		<img id="group-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
-		<img id="group-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+		<img class="flag" id="group-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+		<img class="flag" id="group-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
 	</div>
-
 
 		<!--This is the div that is the entire window. It is a separate div so it can be moved into a different HMTL file.-->
 		<div  id="grouppage" class="row" align="center">
@@ -165,6 +167,7 @@
 								</div>
 								<div class="col-sm-5" style="text-align: right">
 									<h4>
+										<!--Colours.-->
 										<i class="fa fa-circle white-select-tasks" aria-hidden="true" data-color="#FFFFFF" style="color: white; text-shadow: 0px 0px 3px #000;"></i>
 										<i class="fa fa-circle pink-select-tasks" aria-hidden="true" data-color="#FFB6C1" style="color: lightpink; text-shadow: 0px 0px 3px #000;"></i>
 										<i class="fa fa-circle yellow-select-tasks" aria-hidden="true" data-color="#FFEC8E" style="color: #ffec8e; text-shadow: 0px 0px 3px #000;"></i>

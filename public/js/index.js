@@ -1,6 +1,3 @@
-/**
- * Created by odasteinlandskaug on 10.01.2018.
- */
 var homeFeedPost;
 $(function () {
     $.ajax({
@@ -17,6 +14,10 @@ $(function () {
         }
     });
 
+    /**
+     * This method calls the language api and sets the standard language as
+     * norwegian.
+     */
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -33,6 +34,10 @@ $(function () {
         }
     });
 
+    /**
+     * This method calls the language api and sets the language to norwegian
+     * if the user clicks on the norwegian flag.
+     */
     $('#index-norway').click(function () {
         $.ajax({
             url: '/api/language',
@@ -60,6 +65,10 @@ $(function () {
         });
     });
 
+    /**
+     * This method calls the language api and sets the language to english
+     * if the user clicks on the british flag.
+     */
     $('#index-england').click(function () {
         $.ajax({
             url: '/api/language',
