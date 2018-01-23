@@ -418,6 +418,9 @@ var transporter = nodemailer.createTransport({
         auth: {
             user: "hhmanager4@gmail.com",
             pass: "SCRuMteAm4"
+        },
+        tls: {
+            rejectUnauthorized: false
         }
     }), mailOptions = {
         from: "hhmanager4@gmail.com",
@@ -470,6 +473,7 @@ router.post('/forgottenPasswordEmail', function(req,res) {
                 }
                 transporter.sendMail(mailOptions, function(error, info) {
                     if(error) {
+                        console.log(error);
                         return res.status(500).send("Internal server error in email (1)");
                     } else {
                         return res.status(200).send("Email sent: " + info.response);
