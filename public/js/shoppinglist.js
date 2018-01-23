@@ -436,7 +436,6 @@ function setupClicks(){
 
         //Adds member to list when clicked
         $(".typeahead").bind('typeahead:select', function(a, data){
-            console.log(data);
             newmembers.push(data);
             users.push(data);
             updateList();
@@ -492,7 +491,6 @@ function setupClicks(){
 
                 //Adds all budget-entries to the list
                 for(var i = data.budget_entries.length-1; i >= 0 ; i--){
-                    console.log(data.budget_entries[i]);
                     entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].text_note +"</td><td>" + data.budget_entries[i].amount + " "+sign+"</td>";
                 }
                 $(mbutton).closest("div[data-id]").html(balance({
@@ -611,47 +609,49 @@ function setupClicks(){
             data: {
                 shopping_list_id: li
             },
-            success: function (data){
-                for(i = 0; i < data.budget_entry_types.length; i++){
+            success: function (data) {
+                console.log(data);
+                for (i = 0; i < data.budget_entry_types.length; i++) {
                     labelz[i] = data.budget_entry_types[i].entry_type_name;
                     h += '<option value="' + data.budget_entry_types[i].budget_entry_type_id + '">' + data.budget_entry_types[i].entry_type_name + '</option>';
+                    console.log(h);
                 }
                 var found = false;
-                for(var j=0; j<generalLabels.length; j++){
-                    for(var k=0; k<labelz.length; k++){
-                        if(labelz[k] == generalLabels[j]){
-                            found=true;
+                for (var j = 0; j < generalLabels.length; j++) {
+                    for (var k = 0; k < labelz.length; k++) {
+                        if (labelz[k] == generalLabels[j]) {
+                            found = true;
                         }
                     }
-                    if(!found){
-                        h +=  '<option value="0">' + generalLabels[j] + '</option>';
+                    if (!found) {
+                        h += '<option value="0">' + generalLabels[j] + '</option>';
                     }
                     found = false;
                 }
                 h += '<option value="-1">None</option>';
 
                 var items = $(mycart).closest("div[data-id]").find(".list-group-item input:checked").closest('li[data-id]');
-                if(items.length == 0)
+                if (items.length == 0)
                     return;
                 var entries = $(items[0]).data("id");
                 var number = 1;
-                var list = "<li class=\"list-group-item\">"+number+". " + $(items[0]).text() + "</li>";
+                var list = "<li class=\"list-group-item\">" + number + ". " + $(items[0]).text() + "</li>";
 
                 var itemsstring = []; //a table with items in stringformat
                 itemsstring[0] = $(items[0]).text().trim();
 
                 //adds bought items to the list in the popup
-                for(var i = 1; i < items.length; i++){
+                for (var i = 1; i < items.length; i++) {
                     number++;
                     entries += "," + $(items[i]).data("id");
-                    list += "<li class=\"list-group-item\">"+number+". " + $(items[i]).text()+ "</li>";
+                    list += "<li class=\"list-group-item\">" + number + ". " + $(items[i]).text() + "</li>";
                     itemsstring[i] = $(items[i]).text().trim();
                 }
 
                 //adds currency value at cost-label
                 var curr = "*";
-                for(var i=0; i<lists.length; i++){
-                    if(lists[i].shopping_list_id==li){
+                for (var i = 0; i < lists.length; i++) {
+                    if (lists[i].shopping_list_id == li) {
                         curr = lists[i].currency_short;
                     }
                 }
@@ -674,19 +674,19 @@ function setupClicks(){
                 //if labelscrolldown changes value
                 $("#labelid").change(function () {
                     //if new label is selected
-                    if($("#labelid").find('option:selected').html()==thenewlabel){
+                    if ($("#labelid").find('option:selected').html() == thenewlabel) {
                         $('.newlabel').append('<input class="form-control" id="newlabelinput" placeholder="">');
                         $('#newlabelinput').focus();
-                    }else{
+                    } else {
                         //if others are selected and newlabelinput is showing
-                        if($('#newlabelinput').length){
+                        if ($('#newlabelinput').length) {
                             $('#newlabelinput').remove();
                         }
                     }
 
                     //if focus goes out from newlabelinput, make red
                     $('#newlabelinput').focusout(function () {
-                        if($('#newlabelinput').val()==""){
+                        if ($('#newlabelinput').val() == "") {
                             $('#newlabelinput').addClass("is-invalid");
                         }
                     });
@@ -695,136 +695,86 @@ function setupClicks(){
                     $('#newlabelinput').focusin(function () {
                         $('#newlabelinput').removeClass("is-invalid");
                     });
+                });
+                //if cancel is pressed
+                $("#popup-cancel").click(function () {
+                    $(this).closest(".pop").remove();
+                });
 
-                    //if cancel is pressed
-                    $("#popup-cancel").click(function(){
-                        $(this).closest(".pop").remove();
-                    });
+                //if OK is pressed
+                $("#popup-complete").click(function () {
+                    //if no value is given to the cost input, do nothing
+                    if (isNaN(Number($(this).closest('.pop').find('input').val())))
+                        return;
 
-                    //if OK is pressed
-                    $("#popup-complete").click(function(){
-                        //if no value is given to the cost input, do nothing
-                        if(isNaN(Number($(this).closest('.pop').find('input').val())))
-                            return;
+                    var id = $(this).closest("div[data-id]").data("id"); //listid
+                    var e = $(this).closest("div[data-entries]").data("entries"); //entries in numbervalue
+                    var theitemss = itemsstring.join(" ,");
 
-                        var id = $(this).closest("div[data-id]").data("id"); //listid
-                        var e = $(this).closest("div[data-entries]").data("entries"); //entries in numbervalue
-                        var theitemss = itemsstring.join(" ,");
+                    var comment = $(this).closest('.pop').find('#shop-entry-name').val();
+                    var textnote;
+                    var theis = this;
 
-                        var comment = $(this).closest('.pop').find('#shop-entry-name').val();
-                        var textnote;
-                        var theis = this;
+                    //if no comment is given, text_note is set to a string of all items bought
+                    if (comment == "") {
+                        textnote = theitemss;
+                    } else {
+                        textnote = comment;
+                    }
+                    if (Number(e) !== e)
+                        e = e.split(",");
+                    else
+                        e = [e];
 
-                        //if no comment is given, text_note is set to a string of all items bought
-                        if(comment==""){
-                            textnote = theitemss;
-                        }else{
-                            textnote = comment;
-                        }
-                        if(Number(e) !== e)
-                            e = e.split(",");
-                        else
-                            e = [e];
-
-                        //Id of label chosen
-                        var labelid;
-                        if($(this).closest('.pop').find('.label-input').val() == -1){ //If "none" is selected
-                            console.log("'none' was selected");
-                            //Add new shoplist-entry w/o label
-                            $.ajax({
-                                url: '/api/budget',
-                                method: 'POST',
-                                data: {
-                                    shopping_list_id: id,
-                                    shopping_list_entry_ids: e,
-                                    amount: Number($(this).closest('.pop').find('input').val()),
-                                    text_note: textnote
-                                },
-                                success: function(data){
-                                    //Set all entries to bought
-                                    for(var i = 0; i < e.length; i++){
-                                        $.ajax({
-                                            url: '/api/shoppingList/entry/' + e[i],
-                                            method: 'PUT',
-                                            data: {
-                                                shopping_list_id: id,
-                                                purchased_by_person_id: me.person_id,
-                                                budget_entry_id: data.budget_entry_id
-                                            },
-                                            error: console.error
-                                        });
-                                    }
-                                },
-                                error: console.error
-                            });
-                        }else {
-                            console.log("other than 'none' was selected");
-                            if ($(this).closest('.pop').find('.label-input').val() == 0){ //If general labels are selected
-                                console.log("'general label' was selected");
-                                //The text of the selected label
-                                var selec = $(this).closest('.pop').find('.label-input').find('option:selected').html();
-                                if(selec == thenewlabel){ //If new label are selected
-                                    console.log("'new label' was selected");
-                                    var l = $('#newlabelinput').val();
-                                    if(l==""){
-                                        $('#newlabelinput').addClass("is-invalid");
-                                    }else{
-                                        //Add new label to DB
-                                        $.ajax({
-                                            url: '/api/budget/entryType',
-                                            method: 'POST',
-                                            data: {
-                                                entry_type_name: l,
-                                                shopping_list_id: id
-                                            },
-                                            success: function(data){
-                                                //Set labelid to the id of selected label
-                                                console.log( data.budget_entry_type_id);
-                                                $.ajax({
-                                                    url: '/api/budget',
-                                                    method: 'POST',
-                                                    data: {
-                                                        shopping_list_id: id,
-                                                        shopping_list_entry_ids: e,
-                                                        budget_entry_type_id: data.budget_entry_type_id,
-                                                        amount: Number($(theis).closest('.pop').find('input').val()),
-                                                        text_note: textnote
-                                                    },
-                                                    success: function(data){
-                                                        //Set all items to bought
-                                                        for(var i = 0; i < e.length; i++){
-                                                            $.ajax({
-                                                                url: '/api/shoppingList/entry/' + e[i],
-                                                                method: 'PUT',
-                                                                data: {
-                                                                    shopping_list_id: id,
-                                                                    purchased_by_person_id: me.person_id,
-                                                                    budget_entry_id: data.budget_entry_id,
-                                                                    budget_entry_type_id: labelid
-                                                                },
-                                                                error: console.error
-                                                            });
-                                                        }
-                                                    },
-                                                    error: console.error
-                                                });
-                                            },
-                                            error: console.error
-                                        });
-                                    }
-                                }else{ //If other general labels are selected
-                                    console.log("'other general label' was selected");
-                                    //Add general label to DB
+                    //Id of label chosen
+                    var labelid;
+                    if ($(this).closest('.pop').find('.label-input').val() == -1) { //If "none" is selected
+                        //Add new shoplist-entry w/o label
+                        $.ajax({
+                            url: '/api/budget',
+                            method: 'POST',
+                            data: {
+                                shopping_list_id: id,
+                                shopping_list_entry_ids: e,
+                                amount: Number($(this).closest('.pop').find('input').val()),
+                                text_note: textnote
+                            },
+                            success: function (data) {
+                                //Set all entries to bought
+                                for (var i = 0; i < e.length; i++) {
+                                    $.ajax({
+                                        url: '/api/shoppingList/entry/' + e[i],
+                                        method: 'PUT',
+                                        data: {
+                                            shopping_list_id: id,
+                                            purchased_by_person_id: me.person_id,
+                                            budget_entry_id: data.budget_entry_id
+                                        },
+                                        error: console.error
+                                    });
+                                }
+                            },
+                            error: console.error
+                        });
+                    } else {
+                        if ($(this).closest('.pop').find('.label-input').val() == 0) { //If general labels are selected
+                            //The text of the selected label
+                            var selec = $(this).closest('.pop').find('.label-input').find('option:selected').html();
+                            if (selec == thenewlabel) { //If new label are selected
+                                var l = $('#newlabelinput').val();
+                                if (l == "") {
+                                    $('#newlabelinput').addClass("is-invalid");
+                                } else {
+                                    //Add new label to DB
                                     $.ajax({
                                         url: '/api/budget/entryType',
                                         method: 'POST',
                                         data: {
-                                            entry_type_name: selec,
+                                            entry_type_name: l,
                                             shopping_list_id: id
                                         },
-                                        success: function(data){
-                                            //Set labelid to id of the new label
-                                            console.log(data.budget_entry_type_id);
+                                        success: function (data) {
+                                            //Set labelid to the id of selected label
                                             $.ajax({
                                                 url: '/api/budget',
                                                 method: 'POST',
@@ -835,9 +785,9 @@ function setupClicks(){
                                                     amount: Number($(theis).closest('.pop').find('input').val()),
                                                     text_note: textnote
                                                 },
-                                                success: function(data){
+                                                success: function (data) {
                                                     //Set all items to bought
-                                                    for(var i = 0; i < e.length; i++){
+                                                    for (var i = 0; i < e.length; i++) {
                                                         $.ajax({
                                                             url: '/api/shoppingList/entry/' + e[i],
                                                             method: 'PUT',
@@ -857,49 +807,90 @@ function setupClicks(){
                                         error: console.error
                                     });
                                 }
-                            }else{ //If own labels are selected
-                                console.log("'own label' was selected");
-                                //Set labelid to the label-id
-                                labelid = $(this).closest('.pop').find('.label-input').val();
+                            } else { //If other general labels are selected
+                                //Add general label to DB
                                 $.ajax({
-                                    url: '/api/budget',
+                                    url: '/api/budget/entryType',
                                     method: 'POST',
                                     data: {
-                                        shopping_list_id: id,
-                                        shopping_list_entry_ids: e,
-                                        budget_entry_type_id: labelid,
-                                        amount: Number($(theis).closest('.pop').find('input').val()),
-                                        text_note: textnote
+                                        entry_type_name: selec,
+                                        shopping_list_id: id
                                     },
-                                    success: function(data){
-                                        //Set all items to bought
-                                        for(var i = 0; i < e.length; i++){
-                                            $.ajax({
-                                                url: '/api/shoppingList/entry/' + e[i],
-                                                method: 'PUT',
-                                                data: {
-                                                    shopping_list_id: id,
-                                                    purchased_by_person_id: me.person_id,
-                                                    budget_entry_id: data.budget_entry_id,
-                                                    budget_entry_type_id: labelid
-                                                },
-                                                error: console.error
-                                            });
-                                        }
+                                    success: function (data) {
+                                        //Set labelid to id of the new label
+                                        $.ajax({
+                                            url: '/api/budget',
+                                            method: 'POST',
+                                            data: {
+                                                shopping_list_id: id,
+                                                shopping_list_entry_ids: e,
+                                                budget_entry_type_id: data.budget_entry_type_id,
+                                                amount: Number($(theis).closest('.pop').find('input').val()),
+                                                text_note: textnote
+                                            },
+                                            success: function (data) {
+                                                //Set all items to bought
+                                                for (var i = 0; i < e.length; i++) {
+                                                    $.ajax({
+                                                        url: '/api/shoppingList/entry/' + e[i],
+                                                        method: 'PUT',
+                                                        data: {
+                                                            shopping_list_id: id,
+                                                            purchased_by_person_id: me.person_id,
+                                                            budget_entry_id: data.budget_entry_id,
+                                                            budget_entry_type_id: labelid
+                                                        },
+                                                        error: console.error
+                                                    });
+                                                }
+                                            },
+                                            error: console.error
+                                        });
                                     },
                                     error: console.error
                                 });
                             }
-
+                        } else { //If own labels are selected
+                            //Set labelid to the label-id
+                            labelid = $(this).closest('.pop').find('.label-input').val();
+                            $.ajax({
+                                url: '/api/budget',
+                                method: 'POST',
+                                data: {
+                                    shopping_list_id: id,
+                                    shopping_list_entry_ids: e,
+                                    budget_entry_type_id: labelid,
+                                    amount: Number($(theis).closest('.pop').find('input').val()),
+                                    text_note: textnote
+                                },
+                                success: function (data) {
+                                    //Set all items to bought
+                                    for (var i = 0; i < e.length; i++) {
+                                        $.ajax({
+                                            url: '/api/shoppingList/entry/' + e[i],
+                                            method: 'PUT',
+                                            data: {
+                                                shopping_list_id: id,
+                                                purchased_by_person_id: me.person_id,
+                                                budget_entry_id: data.budget_entry_id,
+                                                budget_entry_type_id: labelid
+                                            },
+                                            error: console.error
+                                        });
+                                    }
+                                },
+                                error: console.error
+                            });
                         }
 
-                        //Removes all bought items from shoppinglist
-                        for(var i = 0; i < e.length; i++){
-                            $("div[data-id=" + id + "]").find('li[data-id=' + e[i] + ']').remove();
-                        }
-                        //Closes popup
-                        $(this).closest(".pop").remove();
-                    });
+                    }
+
+                    //Removes all bought items from shoppinglist
+                    for (var i = 0; i < e.length; i++) {
+                        $("div[data-id=" + id + "]").find('li[data-id=' + e[i] + ']').remove();
+                    }
+                    //Closes popup
+                    $(this).closest(".pop").remove();
                 });
             }
         });
@@ -996,12 +987,10 @@ function hex(x) {
 }
 
 function updateList(){
-    console.log("updatelist called");
     var h = "";
     for(var i = 0; i < users.length; i++){
         h += '<li class="list-group-item">' + users[i].name + '</li>';
     }
-    console.log(h);
     $(".memberlist").html(h);
 }
 
