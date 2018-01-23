@@ -136,6 +136,9 @@ router.put('/info/:shopping_list_id', function(req, res) {
     if(!req.params.shopping_list_id)
         return res.status(400).json({error: "no shopping list id"});
 
+    if (req.body.is_hidden === "true") req.body.is_hidden = true;
+    if (req.body.is_hidden === "false") req.body.is_hidden = true;
+
     var parameters = [], request = 'UPDATE shopping_list_person SET ', first = true;
     for (var k in req.body) {
         if (k !== req.body.invite_sent_datetime) {
@@ -156,7 +159,7 @@ router.put('/info/:shopping_list_id', function(req, res) {
     parameters.push(req.session.person_id);
 
     pool.query(request, parameters, function(err, result) {
-        if (err) return res.status(500).json({error: err});
+        if (err) return res.status(500).json({error: err, parameters: parameters});
         res.status(200).json({request: request,result: result, parameters: parameters});
     });
 });
@@ -395,7 +398,7 @@ function putRequestSetup(id, req, tableName) {
             parameters.push(req.body[k]);
         }
     }
-    request += ' WHERE ' + tableName + '_id = ? ' +
+    request += ' WHERE ' + tableName + '_id = ? ';/* +
         ' AND shopping_list_id IN  ' +
         '(SELECT t.shopping_list_id FROM (SELECT shopping_list_id, person_id FROM person) t WHERE person_id = ?  ' +
         'UNION  ' +
@@ -404,7 +407,7 @@ function putRequestSetup(id, req, tableName) {
         'LEFT JOIN home_group USING(group_id)) n ' +
         'WHERE person_id = ? ' +
         'UNION ' +
-        'SELECT k.shopping_list_id FROM (SELECT shopping_list_id, person_id, invite_accepted FROM shopping_list_person) k WHERE person_id = ? AND invite_accepted = 1) LIMIT 1';
+        'SELECT k.shopping_list_id FROM (SELECT shopping_list_id, person_id, invite_accepted FROM shopping_list_person) k WHERE person_id = ? AND invite_accepted = 1) LIMIT 1';*/
     parameters.push(id);
     parameters.push(req.session.person_id);
     parameters.push(req.session.person_id);
