@@ -49,6 +49,7 @@ router.post('/', function(req, res){
                 if (hash_res) {
                     req.session.person_id = results[0].person_id;
                     req.session.save();
+                    res.cookie('person_id', results[0].person_id);
                     res.status(200).json({login: true, person_id: results[0].person_id});
                 }
                 else { res.status(400).json({login: false, error: "login failed"}); }
@@ -94,6 +95,7 @@ router.post('/facebook', function(req, res){
                 connection.release();
 
                 req.session.person_id = results[0].person_id;
+                res.cookie('person_id', results[0].person_id);
                 req.session.save();
 
                 res.status(200).json({login: true, person_id: results[0].person_id});
@@ -137,6 +139,7 @@ router.post('/facebook', function(req, res){
                                             connection.release();
                                             req.session.person_id = result.insertId;
                                             req.session.save();
+                                            res.cookie('person_id', result.insertId);
                                             res.status(200).send(true);
                                         }
                                     });
