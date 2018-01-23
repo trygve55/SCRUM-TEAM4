@@ -6,7 +6,7 @@
 	"desc_title4": "Statistikk",
 	"desc_title5": "Dine Oppgaver",
 	"desc_title6": "Gruppens oppgaver",
-	"desc_title7": "Forlat Gruppen",
+	"desc_title7": "Administrer",
 	"group-homepageNavbar": "Hjem",
 	"group-groupsNavbar": "Grupper",
 	"group-tasksNavbar": "Gjøremål",
@@ -27,5 +27,7 @@
 	"shop-price": "Pris",
 	"shop-cancel": "Avbryt",
 	"reg_cost": "Registrer Kostnad",
-	"desc_button0": "Forlat Gruppen"
+	"desc_button0": "Administrer",
+	"list-name-task": "Gjøremål",
+	"add-task": " Legg til gjøremål"
 }

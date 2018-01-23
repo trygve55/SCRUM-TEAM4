@@ -16,11 +16,11 @@ $('document').ready(function () {
             ]
         },
         success: function(data){
-            tasklist = Handlebars.compile(data["list.html"]);
-            completedList = Handlebars.compile(data["balance.html"]);
-            completedItem = Handlebars.compile(data["listItem.html"]);
-            taskItem = Handlebars.compile(data["newListItem.html"]);
-            newListItem = Handlebars.compile(data["popupTextfieldList.html"]);
+            tasklist = Handlebars.compile(data["tasklist.html"]);
+            completedList = Handlebars.compile(data["completedTasklist.html"]);
+            completedItem = Handlebars.compile(data["completedTask.html"]);
+            taskItem = Handlebars.compile(data["taskItem.html"]);
+            newListItem = Handlebars.compile(data["newListItem.html"]);
             prep();
         }
     });
@@ -95,228 +95,378 @@ $('document').ready(function () {
             }
         });
     });
+});
 
-    //-----------Add new list-----------
-    var count = 0; //the listnumber
-    //Table with all dates in all lists
-    var dateArr = [];
-    //Table with all 'done'-items
-    var donetab = [];
-    $('#addlist').click(function () {
-        count++;
-        dateArr[count] = [];
-        donetab[count] = [];
-
-        //Adds html to the group of lists
-        /*$("<div class=\"col-sm liste\" id='listnr"+count+"'><div class='row'>" +
-            "<div class='col-sm-7' style='text-align: left'>" +
-            "<div id='listname"+count+"' style='margin: 6px'><input type='text' class='form-control' id='listnameinput"+count+"'></div>" +
-            "<div id='listnamelabel"+count+"'><h4>Liste"+count+"</h4></div></div>"+
-            "<div class='col-sm-5' style='text-align: right'>" +
-            "    <h4><i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: white;' id='whitebutt"+count+"'></i>" +
-            "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: lightpink;' id='pinkbutt"+count+"'></i> " +
-            "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: #ffec8e;' id='yellowbutt"+count+"'></i> " +
-            "        <i class=\"fa fa-circle\" aria-hidden=\"true\" style='color: lightgreen;' id='greenbutt"+count+"'></i></h4></div>" +
-            "</div>" +
-            "<ul class=\"list-group\" id=\"listoftasks"+count+"\"></ul>"+
-            "<ul class=\"list-group\">"+
-            "<li class=\"list-group-item\" id=\"newitem"+count+"\"><input type=\"text\" class=\"form-control\" id=\"newiteminput"+count+"\"></li>" +
-            "<li class=\"list-group-item greyhover\" id=\"additem"+count+"\"><i class=\"fa fa-plus-circle\" aria-hidden=\"true\"></i> Add item</li></ul>" +
-            "<i class=\"fa fa-list-ul\" aria-hidden=\"true\" style='font-size: 18px; margin: 7px' id='donebutton"+count+"'> Fullført</i>" +
-            "</div><div class='col-sm liste' id='donetasks"+count+"'><h5 align='left'>Done tasks</h5>" +
-            "<ul class='list-group' id='donelist"+count+"'><div align='center'><i class=\"fa fa-bars\" aria-hidden=\"true\" style='font-size: 15px; margin: 5px;' id='goback"+count+"'> Go back to tasks</i></div></ul>" +
-            "</div>").insertAfter("#addlist");*/
-
-        //duplicated jqueries
-        var listname = $('#listname'+count);
-
-        //Hides a number of elements to be shown with clicks etc
-        listname.hide();
-        $('#newitem'+count).hide();
-        $('#dialog'+count).hide();
-        $('#sharediv'+count).hide();
-        $('#donetasks'+count).hide();
-
-        //---------Opens input-field to change name of list--------
-        $('#listnamelabel'+count).click(function(){
-            var listnr = this.id.split("l").pop();
-            $('#listnamelabel'+listnr).hide();
-            $('#listname'+listnr).show();
-            $('#listnameinput'+listnr).focus();
-        });
-
-        //---------Opens input-field for adding new tasks-------
-        $('#additem'+count).click(function () {
-            var label = this.id;
-            var listnr = label.split("m").pop();
-            $('#additem'+listnr).hide();
-            $('#newitem'+listnr).show();
-            $('#newiteminput'+listnr).focus();
-        });
-
-        //---------Edits name of list when enter is pressed-------
-        $('#listnameinput'+count).keypress(function(event) {
-            var label = this.id;
-            var listnr = label.split("t").pop();
-            if (event.keyCode === 13 || event.which === 13) {
-                var name = $('#listnameinput'+listnr).val();
-                var listnamelabel = $('#listnamelabel'+listnr);
-                listnamelabel.show();
-                listnamelabel.html('<h4>'+name+'</h4>');
-                $('#listname'+listnr).hide();
-            }
-        });
-
-        //---------Changes the background-colors when circles are clicked-------
-        $('#pinkbutt'+count).click(function () {
-            var label = this.id;
-            var listnr = label.split("t").pop();
-            var list = $('#listnr'+listnr);
-            list.removeClass("pink green white yellow");
-            list.addClass("pink");
-        });
-        $('#yellowbutt'+count).click(function () {
-            var label = this.id;
-            var listnr = label.split("t").pop();
-            var list = $('#listnr'+listnr);
-            list.removeClass("pink green white yellow");
-            list.addClass("yellow");
-        });
-        $('#greenbutt'+count).click(function () {
-            var label = this.id;
-            var listnr = label.split("t").pop();
-            var list = $('#listnr'+listnr);
-            list.removeClass("pink green white yellow");
-            list.addClass("green");
-        });
-        $('#whitebutt'+count).click(function () {
-            var label = this.id;
-            var listnr = label.split("t").pop();
-            var list = $('#listnr'+listnr);
-            list.removeClass("pink green white yellow");
-            list.addClass("white");
-        });
-
-
-
-
-        //-------------Opens a list of all tasks that are done------------
-        $('#donebutton'+count).click(function () {
-            var listnr = this.id.split("n").pop();
-            $('#donetasks'+listnr).show();
-            $('#listnr'+listnr).hide();
-            //Adds all elements in done-list to the current list
-            if(donetab.length>1){
-                for (var i=0; i<donetab[listnr].length; i++){
-                    $('#donelist'+listnr).prepend('<li class="list-group-item marked" onclick="clicked(this)" id="doneitem'+listnr+"-"+i+'"><div class="row"><i class="fa fa-check-circle-o" aria-hidden="true" id="checked'+i+'" style="font-size: 15px;"></i>' +
-                        '<i class="fa fa-circle-o" aria-hidden="true" id="unchecked'+i+'" style="font-size: 15px;"></i><div class="col-sm" id="doneitemtext'+listnr+'">'+donetab[listnr][i]+'</div></div>' +
-                        '</li>');
-                    $('#unchecked'+i).hide();
-                }
-                donetab[listnr]=[]; //resets done-tab
-
-
-                //-------------------Goes back to main list of tasks-----------------
-                $('#goback'+listnr).click(function () {
-                    $('#donetasks'+listnr).hide();
-                    $('#listnr'+listnr).show();
-                });
-            }
-        });
-
-        //-----------Hide input when focus goes out-----
-        $("#newiteminput"+count).focusout(function () {
-            var listnr = this.id.split("t").pop();
-            $('#additem'+listnr).show();
-            $('#newitem'+listnr).hide();
-        });
-
-        //---------Adds item to list when Enter is pressed----
-        $("#newiteminput"+count).keypress(function(event) {
-            if (event.keyCode === 13 || event.which === 13) {
-                itemcount++;
-
-                var listnr = this.id.split("t").pop(); //Id of list
-                var item = $('#newiteminput'+listnr).val(); //Value of inputfield
-
-
-                $('#newiteminput'+listnr).val('');//Resets inputfield
-
-                //----------Adds item-----------
-                /*$('#listoftasks'+listnr).append("" +
-                    "<li class=\"list-group-item marked\" id=\"elem"+listnr+"-"+itemcount+"\" style='padding: -2px; margin: -3px; font-size: 15px;'>" +
-                    "   <div class='row'>" +
-                    "       <div class=\"col-sm-5\" id='theitemdiv"+listnr+"-"+itemcount+"'><i class=\"fa fa-check-circle-o\" aria-hidden=\"true\" id='checked"+listnr+"-"+itemcount+"' style='font-size: 15px;'></i>" +
-                    "           <i class=\"fa fa-circle-o\" aria-hidden=\"true\" id='unchecked"+listnr+"-"+itemcount+"' style='font-size: 15px;'></i> " +
-                    "           "+item+"</div>" +
-                    "       <div class='col-sm-7' style='text-align: right'>" +
-                    "       <input class='inputdate' type=\"text\" id=\"datepicker"+listnr+"-"+itemcount+"\"> " +
-                    "       <i class=\"fa fa-calendar\" aria-hidden=\"true\" id='calendar"+listnr+"-"+itemcount+"' style='font-size: 20px;'></i>" +
-                    "           <i class=\"fa fa-times\" aria-hidden=\"true\" id=\"crossout" +listnr+"-"+ itemcount + "\" style='font-size: 20px;'></i></label> " +
-                    "   </div></div>" +
-                    "</li>");*/
-
-                //-------------Sets dateformat and sets date inthe datedateArrtab------------
-                $( function() {
-                    $("#datepicker"+listnr+"-"+itemcount).datepicker({
-                        //dateFormat: 'DD, mm-y'
-                        dateFormat: 'dd/mm/y',
-                        onSelect: function() {
-                            var name = this.id;
-                            var numbers = name.split("r").pop();
-                            var thiscount =  numbers.split("-")[0];
-                            var thisitemcount = numbers.split("-")[1];
-                            dateArr[thiscount][thisitemcount] = $(this).datepicker('getDate');
-                        }
+// TODO: FIX
+function prep(){
+    $.ajax({
+        url: '/api/shoppingList/',
+        method: 'GET',
+        success: function(data){
+            for(var j = 0; j < data.length; j++) {
+                var d = data[j];
+                var entries = "";
+                for (var i = 0; i < d.shopping_list_entries.length; i++) {
+                    if(d.shopping_list_entries[i].purchased_by_person_id)
+                        continue;
+                    entries += taskItem({
+                        entry_text: d.shopping_list_entries[i].entry_text,
+                        entry_id: d.shopping_list_entries[i].shopping_list_entry_id
                     });
-                });
-                //Hides elements yet to be shown
-                $("#datepicker"+listnr+"-"+itemcount).hide();
-                $('#checked'+listnr+"-"+itemcount).hide();
+                }
+                $("#addlist").after(tasklist({
+                    task_list_id: d.shopping_list_id,
+                    task_list_name: (d.shopping_list_name == "" ? lang["task-default-name"] : d.shopping_list_name),
+                    task_list_entries: entries,
+                    lang_add_item: lang["task-add-item"],
+                    lang_done_items: lang["task-done-tasks"],
+                    lang_delete: lang["task-delete"],
+                    color_hex: (d.color_hex ? d.color_hex.toString(16) : "FFFFFF")
+                }));
+            }
+            setupClicks();
+        }
+    });
 
 
-                //----------Makes task go to donelist---------------
-                $('#theitemdiv'+count+"-"+itemcount).click(function(){
-                    var listnr = this.id.split("v").pop();
-                    var thiscount =  listnr.split("-")[0];
-                    var thisitemcount = listnr.split("-")[1];
-
-                    var thetext = $('#theitemdiv'+thiscount+"-"+thisitemcount).html();
-                    var item = thetext.split(">").pop();
-                    var len = donetab[thiscount].length;
-                    donetab[thiscount][len]=item;
-                    $('#checked'+thiscount+"-"+thisitemcount).show();
-                    $('#unchecked'+thiscount+"-"+thisitemcount).hide();
-                    $('#elem'+thiscount+"-"+thisitemcount).fadeOut(300);
-                });
-
-                //----------Deletes item-----------------------------
-                $('#crossout'+count+'-'+itemcount).click(function () {
-                    var numbers = this.id.split("t").pop();
-                    var thiscount =  numbers.split("-")[0];
-                    var thisitemcount = numbers.split("-")[1];
-                    $('#elem'+thiscount+"-"+thisitemcount).remove();
-                });
-
-                //----------Adds due-date to task------------------------
-                $('#calendar'+count+'-'+itemcount).click(function () {
-                    var numbers = this.id.split("r").pop();
-                    var thiscount =  numbers.split("-")[0];
-                    var thisitemcount = numbers.split("-")[1];
-                    var datepicker = $("#datepicker"+thiscount+"-"+thisitemcount);
-                    if(datepicker.is(":visible")){
-                        datepicker.hide();
-                    }else{
-                        if(datepicker.val()===""){
-                            datepicker.show();
-                            datepicker.focus();
-
-                        }else{
-                            datepicker.show();
-                        }
+    //---------------New list-------------
+    $('#addlist').click(function () {
+        $.ajax({
+            url: '/api/shoppingList',
+            method: 'POST',
+            data: {
+                currency_id: 100,
+                shopping_list_name: lang["task-default-name"]
+            },
+            success: function(data){
+                $.ajax({
+                    url: '/api/shoppingList/' + data.shopping_list_id,
+                    method: 'GET',
+                    success: function(data){
+                        $("#addlist").after(tasklist({
+                            shopping_list_id: data.shopping_list_id,
+                            shopping_list_name: data.shopping_list_name,
+                            shopping_list_entries: "",
+                            lang_add_item: lang["task-add-item"],
+                            lang_done_items: lang["task-done-tasks"],
+                            lang_delete: lang["task-delete"],
+                            color_hex: (data.color_hex ? data.color_hex.toString(16) : "FFFFFF")
+                        }));
+                        setupClicks();
                     }
                 });
             }
         });
     });
-});
+}
+
+function setupClicks(){
+    $(".list-name").unbind("click").click(function(){
+        var listId = $(this).closest("div[data-id]").data("id");
+        var title = $(this).html();
+        $(this).hide();
+        var div = $(this).parent().children(".list-name-div");
+        $(div).show();
+        $(div).children(".list-name-input").val(title).focus();
+    });
+
+    $(".list-name-input").unbind("focusout").focusout(function(){
+        var text = $(this).val();
+        var id = $(this).closest("div[data-id]").data("id");
+        var h4 = $(this).parent().parent().children(".list-name");
+        $(h4).html(text);
+        $(this).parent().hide();
+        $(h4).show();
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                shopping_list_name: text
+            }
+        });});
+
+    $(".list-name-input").unbind("keypress").keypress(function(e){
+        if(e.keyCode != 13 && e.which != 13)
+            return;
+        var text = $(this).val();
+        var id = $(this).closest("div[data-id]").data("id");
+        var h4 = $(this).parent().parent().children(".list-name");
+        $(h4).html(text);
+        $(this).parent().hide();
+        $(h4).show();
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                shopping_list_name: text
+            }
+        });
+    });
+
+    $(".add-item").unbind("click").click(function(){
+        $(this).closest("div").children(".itemlist").append(newListItem());
+
+        $("#new-list-item").keypress(function(e){
+            if(e.keyCode != 13 && e.which != 13)
+                return;
+            var ul = $(this).closest("ul");
+            var text = $(this).val();
+            if(text != "") {
+                var t = this;
+                saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                    $(t).closest("li").remove();
+                    addNewItem(ul);
+                    setupItemClicks();
+                });
+            }
+            else {
+                setupItemClicks();
+                $(this).closest("li").remove();
+            }
+        }).focusout(function(){
+            var ul = $(this).closest("ul");
+            var text = $(this).val();
+            if(text != "") {
+                saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                    setupItemClicks();
+                });
+            }
+            $(this).closest("li").remove();
+        }).focus();
+    });
+
+    $('.pink-select').unbind("click").click(function () {
+        var ls = $(this).closest("div[data-id]");
+        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
+            }
+        });
+    });
+
+    $('.yellow-select').unbind("click").click(function () {
+        var ls = $(this).closest("div[data-id]");
+        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
+            }
+        });
+    });
+
+    $('.green-select').unbind("click").click(function () {
+        var ls = $(this).closest("div[data-id]");
+        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
+            }
+        });
+    });
+
+    $('.white-select').unbind("click").click(function () {
+        var ls = $(this).closest("div[data-id]");
+        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+        $.ajax({
+            url: '/api/shoppingList/' + id,
+            method: 'PUT',
+            data: {
+                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
+            }
+        });
+    });
+
+    $(".fa-money").unbind("click").click(function(){
+        var id = $(this).closest("div[data-id]").data("id");
+        $.ajax({
+            url: '/api/budget/' + id,
+            method: 'GET',
+            success: function(data){
+                console.log(data);
+                curBudget = data;
+                var entries = "";
+                for(var i = 0; i < data.budget_entries.length; i++){
+                    entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].entry_datetime + "</td><td>" + data.budget_entries[i].amount + "</td>";
+                }
+                $("body").append(balance({
+                    title: lang["shop-balance"],
+                    complete: lang["shop-ok"],
+                    data: "data-id='" + id + "'",
+                    lang_trip: lang["shop-trip"],
+                    lang_price: lang["shop-price"],
+                    budget_entries: entries
+                }));
+
+                $('tr[data-id]').click(function(){
+                    var id = $(this).closest("tr[data-id]").data("id");
+                    var entry = null;
+                    for(var i = 0; i < curBudget.budget_entries.length; i++){
+                        if(curBudget.budget_entries[i].budget_entry_id == id){
+                            entry = curBudget.budget_entries[i];
+                        }
+                    }
+                    if(!entry)
+                        return;
+                    var d = "<li class='list-group-item'>Work in progress (data about a entry)</li>";
+                    $(this).closest(".pop").hide();
+                    $("body").append(balanceItem({
+                        title: entry.entry_datetime,
+                        complete: lang["shop-ok"],
+                        list: d
+                    }));
+                    $("#balance-info-complete").click(function(){
+                        $(this).closest(".pop").remove();
+                        $(".pop").show();
+                    });
+                });
+
+                $('#popup-complete').click(function(){
+                    $(this).closest(".pop").remove();
+                });
+            },
+            error: console.error
+        });
+    });
+
+    $(".fa-shopping-cart").unbind("click").click(function(){
+        var items = $(this).closest("div[data-id]").find(".list-group-item input:checked").closest('li[data-id]');
+        if(items.length == 0)
+            return;
+        var entries = $(items[0]).data("id");
+        var list = "<li class=\"list-group-item\">" + $(items[0]).html() + "</li>";
+        for(var i = 1; i < items.length; i++){
+            entries += "," + $(items[i]).data("id");
+            list += "<li class=\"list-group-item\">" + $(items[i]).html() + "</li>";
+        }
+        $("body").append(popupTextList({
+            title: lang["shop-buy-title"],
+            list: list,
+            textfield: lang["shop-buy-text"],
+            cancel: lang["shop-cancel"],
+            complete: lang["shop-ok"],
+            data: "data-id='" + $(this).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
+        }));
+
+        $(".pop").find(".fa-times").remove();
+        $(".pop").find("input[type=checkbox]").remove();
+
+        $("#popup-cancel").click(function(){
+            $(this).closest(".pop").remove();
+        });
+
+        $("#popup-complete").click(function(){
+            if(isNaN(Number($(this).closest('.pop').find('input').val())))
+                return;
+            var id = $(this).closest("div[data-id]").data("id");
+            var e = $(this).closest("div[data-entries]").data("entries");
+            if(Number(e) !== e)
+                e = e.split(",");
+            else
+                e = [e];
+            $.ajax({
+                url: '/api/budget',
+                method: 'POST',
+                data: {
+                    shopping_list_id: id,
+                    amount: Number($(this).closest('.pop').find('input').val()),
+                    text_note: e.join(",")
+                },
+                success: function(data){
+                    for(var i = 0; i < e.length; i++){
+                        $.ajax({
+                            url: '/api/shoppingList/entry/' + e[i],
+                            method: 'PUT',
+                            data: {
+                                shopping_list_id: id,
+                                purchased_by_person_id: 2,
+                                budget_entry_id: data.budget_entry_id
+                            }
+                        });
+                    }
+                }
+            });
+            for(var i = 0; i < e.length; i++){
+                $("div[data-id=" + id + "]").find('li[data-id=' + e[i] + ']').remove();
+            }
+            $(this).closest(".pop").remove();
+        });
+    });
+
+    setupItemClicks();
+}
+
+function setupItemClicks(){
+    $(".fa-times").unbind("click").click(function(){
+        var entry_id = $(this).closest("li[data-id]").data("id");
+        $.ajax({
+            url: '/api/shoppingList/entry/' + entry_id,
+            method: 'DELETE',
+            error: console.error
+        });
+        $(this).closest("li[data-id]").remove();
+    });
+
+    $("li[data-id]").unbind("click").click(function(e){
+        if($(this).is('.fa-times'))
+            return;
+        else if(!$(e.target).is('input')) {
+            e.preventDefault();
+            $(this).find("input[type=checkbox]").prop('checked', $(this).find("input:checked").length == 0);
+        }
+    });
+}
+
+function addNewItem(ul){
+    $(ul).append(newListItem());
+
+    $("#new-list-item").keypress(function(e){
+        if(e.keyCode != 13 && e.which != 13)
+            return;
+        var ul = $(this).closest("ul");
+        var text = $(this).val();
+        if(text != "") {
+            var t = this;
+            saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                $(t).closest("li").remove();
+                addNewItem(ul);
+                setupItemClicks();
+            });
+        }
+        else {
+            setupItemClicks();
+            $(this).closest("li").remove();
+        }
+    }).focusout(function(){
+        var ul = $(this).closest("ul");
+        var text = $(this).val();
+        if(text != "") {
+            saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                setupItemClicks();
+            });
+        }
+        $(this).closest("li").remove();
+    }).focus();
+}
+
+function saveItemToDB(id, item, ul, cb){
+    $.ajax({
+        url: '/api/shoppingList/entry',
+        method: 'POST',
+        data: {
+            shopping_list_id: id,
+            entry_text: item
+        },
+        success: function(data){
+            $(ul).append(taskItem({entry_text: item, entry_id: data.shopping_cart_entry_id}));
+            if(cb)
+                cb();
+        }
+    });
+}

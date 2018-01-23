@@ -10,6 +10,9 @@
   "tasks-share": "Medlemmer",
   "tasks-addmemberstolist": "Medlemmer",
   "tasks-cancel": "Lukk",
-  "tasks-adduser": "Legg til"
-
+  "tasks-adduser": "Legg til",
+  "task-default-name": "Gjøremål",
+  "task-add-item": "Legg til gjøremål",
+  "task-delete": "Slett liste",
+  "task-done-tasks": "Utførte gjøremål"
 }

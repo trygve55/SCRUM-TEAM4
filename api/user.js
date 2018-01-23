@@ -3,6 +3,8 @@ var router = require('express').Router(),
     router = require('express').Router(),
     formidable = require('formidable'),
     Jimp = require("jimp"),
+    fs = require('fs'),
+    path = require('path'),
     nodemailer = require('nodemailer'),
     jwt = require('jsonwebtoken');
 
@@ -297,8 +299,17 @@ router.get('/:person_id/picture', function(req, res){
     pool.query("SELECT profile_pic, has_profile_pic FROM person WHERE person_id = ?;", [req.params.person_id], function (err, results, fields) {
             if(err)
                 return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            if(!results[0].has_profile_pic)
-                return res.status(404).json({error: 'no profile picture.'});
+            if(!results[0].has_profile_pic){
+                var p = path.join(__dirname, '../public/img/profilPicture.png');
+                var stat = fs.statSync(p);
+
+                res.writeHead(200, {
+                    'Content-Type': 'image/jpeg',
+                    'Content-Length': stat.size
+                });
+
+                return fs.createReadStream(p).pipe(res);
+            }
 
             res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
     });
@@ -306,11 +317,13 @@ router.get('/:person_id/picture', function(req, res){
 
 router.get('/:person_id/picture_tiny', function(req, res){
     pool.query("SELECT profile_pic_tiny, has_profile_pic  FROM person WHERE person_id = ?;", [req.params.person_id], function (err, results, fields) {
-            if(err)
-                return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            if(!results[0].has_profile_pic)
-                return res.status(404).json({error: 'no profile picture.'});
-            res.contentType('jpeg').status(200).end(results[0].profile_pic_tiny, 'binary');
+        if(err)
+            return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+        if(!results[0].has_profile_pic)
+            return res.status(404).json({error: 'no profile picture.'});
+        res.contentType('jpeg').status(200).end(results[0].profile_pic_tiny, 'binary');
+
+        if(results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
     });
 });
 
