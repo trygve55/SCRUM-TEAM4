@@ -1,5 +1,11 @@
 var router = require('express').Router();
 
+/* 
+ * Milliseconeds in one day.
+ * Also, extra delay for deadlines to make sure the last day is included for repeating tasks.
+*/
+const MILLIS_DAY = 86400000, EXTRA_DELAY = 10000;
+
 module.exports = router;
 
 /**
@@ -27,6 +33,81 @@ router.get('/notify', function(req, res) {
 });
 
 /**
+ * Get the data for all tasks that repeat.
+ *
+ * URL: /api/tasks/repeat/{group_id}
+ * method: GET
+*/
+router.get('/repeat/:group_id', function(req, res) {
+	pool.query(
+		'SELECT todo.*, person_id, forename, lastname ' +
+		'FROM todo LEFT JOIN todo_person USING(todo_id) LEFT JOIN person USING(person_id) ' +
+		'WHERE group_id = ? AND autogen_id != 0',
+		[req.params.group_id], function(err, result) {
+			if (err) {return res.status(500).send();}
+			if (result.length > 0) {res.status(200).json(result);}
+			else {res.status(400).json(result);}
+		}
+	);
+});
+
+/**
+ * Add new task to the group task list.
+ * The task will be made a repeating if time_interval is specified and > 0.
+ * It will repeat until the date specified as deadline.
+ *
+ * URL: /api/tasks
+ * method: POST
+ * data: {
+ *      group_id,
+ *      todo_text
+ *
+ *      Optional:
+ *      datetime_deadline,
+ *		datetime_done,
+ *      time_interval	// days
+ * }
+*/
+router.post('/', function(req, res) {
+	var data = req.body, input = [];
+	var query = "INSERT INTO todo (datetime_deadline, group_id, todo_text, datetime_done, created_by_id, done_by_id, autogen_id) VALUES ";
+	if (data.time_interval > 0) {
+
+		// Find the maximum autogen_id and increment it. This ensures that it will be unique.
+		pool.query("SELECT MAX(autogen_id) AS auto FROM todo;", [], function(err, result) {
+			if (err) {return res.status(500).send();}
+			var auto = result[0].auto ? (result[0].auto + 1) : 1;
+
+			var all = [data.group_id, data.todo_text, null, req.session.person_id, null, auto], interval = Math.round(data.time_interval * MILLIS_DAY);
+			var end = new Date(new Date(data.datetime_deadline).getTime() + EXTRA_DELAY);
+			for (var i = new Date(new Date().getTime() + interval); i <= end; i.setTime(i.getTime() + interval)) {
+				query += "(?,?,?,?,?,?,?), ";
+				input.push(new Date(i));
+				for (var v in all) {input.push(all[v]);}
+			}	// How many tasks to add to the query? Add the interval until deadline < the new value.
+
+			query = query.slice(0, -2) + ";";
+			if (!input.length) {return res.status(400).send();}
+			pool.query(query, input, function(err, result) {checkResult(err, result, res);});
+		});
+	}
+	else {
+		// If we want to post a simple task, this happens.
+		query += "(?,?,?,?,?,?,?);";
+		input = [
+			data.datetime_deadline,
+			data.group_id,
+			data.todo_text,
+			(data.datetime_done ? data.datetime_done : null),
+			checkRange(req.session.person_id, 1, null),
+			(data.done_by_id ? data.done_by_id : null),
+			null
+		];
+		pool.query(query, input, function(err, result) {checkResult(err, result, res);});
+	}
+});
+
+/**
  * Add a person to a task
  *
  * URL: /api/tasks/person/{todo_id}
@@ -36,23 +117,23 @@ router.get('/notify', function(req, res) {
  * }
 */
 router.post('/person/:todo_id', function(req, res) {
-		var data = req.body.people;
-		if (data.length < 0) {
-			res.status(400).send();
-			return;
-		}
+	var data = req.body.people;
+	if (data.length < 0) {
+		res.status(400).send();
+		return;
+	}
 
-		var resultQuery = multipleRequestSetup(
-										checkRange(req.params.todo_id, 1, null), data,
-										'INSERT INTO todo_person (todo_id, person_id) VALUES ',
-										'(?, ?)', false
-									);
-		
-		pool.query(resultQuery[0], resultQuery[1], function(err) {
-			if(err) { res.status(500).send(); }
-				res.status(200).send();
-            }
-        );
+	var resultQuery = multipleRequestSetup(
+									checkRange(req.params.todo_id, 1, null), data,
+									'INSERT INTO todo_person (todo_id, person_id) VALUES ',
+									'(?, ?)', false
+								);
+	
+	pool.query(resultQuery[0], resultQuery[1], function(err) {
+		if(err) { res.status(500).send(); }
+			res.status(200).send();
+		}
+	);
 });
 
 /**
@@ -62,7 +143,8 @@ router.post('/person/:todo_id', function(req, res) {
  * method: GET
  */
 router.get('/private/:todo_id', function(req, res) {
-    pool.query('SELECT * FROM private_todo_entry WHERE todo.todo_id = ?',
+    pool.query(
+		'SELECT * FROM private_todo_entry WHERE todo.todo_id = ?',
         [req.params.todo_id], function(err, result) {
             if (err)
                 return res.status(500).send();
@@ -132,7 +214,7 @@ router.get('/person/:person_id', function(req, res) {
         'FROM todo LEFT JOIN todo_person USING(todo_id) WHERE todo_person.person_id = ? UNION (' +
         'SELECT private_todo_entry_id, todo_text, datetime_deadline, datetime_added, datetime_done, is_deactivated, color_hex, null, null ' +
         'FROM private_todo_list LEFT JOIN private_todo_entry USING(private_todo_list_id) WHERE private_todo_list.person_id = ?) ;',
-        [checkRange(req.params.person_id, 1, null),checkRange(req.params.person_id, 1, null)], function(err, result) {
+        [checkRange(req.params.person_id, 1, null), checkRange(req.params.person_id, 1, null)], function(err, result) {
             if (err) {return res.status(500).send(err);}
             var entries = [];
             for (var i = 0; i < result.length; i++) {
@@ -157,10 +239,7 @@ router.get('/person/:person_id', function(req, res) {
 */
 router.put('/:todo_id', function(req, res) {
     var query = putRequestSetup(checkRange(req.params.todo_id, 1, null), req.body, "todo");
-    pool.query(
-        query[0], query[1],
-        function(err, result) {checkResult(err, result, res);}
-    );
+    pool.query(query[0], query[1], function(err, result) {checkResult(err, result, res);});
 });
 
 /**
@@ -174,10 +253,7 @@ router.put('/:todo_id', function(req, res) {
 */
 router.delete('/person/:todo_id', function(req, res) {
     var data = req.body.people, todo = checkRange(req.params.todo_id, 1, null);
-    if (data.length < 0) {
-        res.status(400).send();
-        return;
-    }
+    if (data.length < 0) {return res.status(400).send();}
     var resultQuery = multipleRequestSetup(
         checkRange(req.params.todo_id, 1, null), data,
         'DELETE FROM todo_person WHERE todo_id = ? AND person_id IN (',
@@ -185,12 +261,7 @@ router.delete('/person/:todo_id', function(req, res) {
     );
     resultQuery[0] += ')';
 
-    pool.query(
-        resultQuery[0], resultQuery[1],
-        function(err, result) {
-            checkResult(err, result, res);
-        }
-    );
+    pool.query(resultQuery[0], resultQuery[1], function(err, result) {checkResult(err, result, res);});
 });
 
 /**
@@ -305,8 +376,6 @@ function multipleRequestSetup(iD, data, query, repetitiveElement, iDFirstOnly) {
 		else {query += data[i];}
 		if (i < data.length - 1) {query += ', ';}
 	}
-	console.log(query);
-	console.log(inputs);
 	return [query, inputs];
 }
 

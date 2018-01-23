@@ -226,6 +226,8 @@ div.grouptablink.backvariant{
 
 #groupselection{
 	height: 670px;
+	overflow-y: auto;
+
 }
  body{
      overflow-x: hidden;
@@ -287,3 +289,4 @@ div.grouptablink.backvariant{
     max-height: 100px;
     image-rendering: crisp-edges;
 }
+
