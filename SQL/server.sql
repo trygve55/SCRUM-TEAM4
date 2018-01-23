@@ -225,7 +225,7 @@ CREATE TABLE todo (
     done_by_id INTEGER,
     is_deactivated BIT NOT NULL DEFAULT 0,
     color_hex INTEGER,
-    cleaning_list_interval INTEGER NOT NULL DEFAULT 0,
+    autogen_id INTEGER,
     CONSTRAINT todo_group_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
     CONSTRAINT created_by_fk FOREIGN KEY(created_by_id) REFERENCES person(person_id),
     CONSTRAINT done_by_fk FOREIGN KEY(done_by_id) REFERENCES person(person_id),

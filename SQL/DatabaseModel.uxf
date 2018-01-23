@@ -27,9 +27,9 @@ group_deactivated</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>568</x>
-      <y>376</y>
+      <y>368</y>
       <w>168</w>
-      <h>280</h>
+      <h>288</h>
     </coordinates>
     <panel_attributes>Person
 --
@@ -106,10 +106,10 @@ was_invited</panel_attributes>
       <x>640</x>
       <y>336</y>
       <w>24</w>
-      <h>56</h>
+      <h>48</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -253,7 +253,7 @@ created_by_id
 done_by_id
 is_deactivated
 color_hex
-todo_interval</panel_attributes>
+autogen_id</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
