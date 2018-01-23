@@ -296,6 +296,33 @@ router.get('/:shopping_list_id', function(req, res) {
 });
 
 /**
+ * Get all entries with a label in a time interval for a group.
+ *
+ * URL: /api/shoppingList/statistic/{budget_entry_type_id}
+ * method: GET
+ * data: {
+ *     group_id,
+ *     start,
+ *     end
+ * }
+ */
+router.get('/statistic/:budget_entry_type_id', function(req, res) {
+	var group = req.body.group_id, start = new Date(req.body.start), end = new Date(req.body.end);
+
+	// Is this request ok?
+	if (!start || !end || !group || !req.session.person_id) {return res.status(400).send();}
+
+	pool.query(	// Test this at 24/01/2018.
+		'SELECT amount, entry_datetime FROM budget_entry WHERE budget_entry_type_id = ? AND (entry_datetime BETWEEN ? AND ?) ' +
+		'AND shopping_list_id IN (SELECT shopping_list_id FROM home_group WHERE group_id = ?);',
+		[checkRange(req.params.budget_entry_type_id, 1, null), group, start, end],
+		function(err, result) {
+			return (err) ? (res.status(500).json({error: err})) : ((result.length < 1) ? (res.status(403).json({error: "no data"})) : (res.status(200).json(result)));
+		}
+	);
+});
+
+/**
  * Add entry to shopping_list
  *
  * URL: /api/shoppingList/entry
