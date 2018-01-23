@@ -65,6 +65,7 @@ router.post('/', function(req, res) {
  * }
  */
 router.post('/invite', function(req, res) {
+    console.log(req.body);
     if(!req.body.shopping_list_id || !req.body.person_id)
         return res.status(400).send();
     pool.query('INSERT INTO shopping_list_person(shopping_list_id, person_id) SELECT ?,? FROM shopping_list_person ' +
