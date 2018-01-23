@@ -90,7 +90,7 @@ $('document').ready(function () {
         });
     });
 
-    $('#resetbutton').click(function () {
+    $('#rp-save').click(function () {
         $.ajax({
             url: '/api/user/forgottenPasswordReset',
             method: 'POST',
@@ -104,6 +104,9 @@ $('document').ready(function () {
             error: console.error
         });
     });
+
+
+
 
     $('#rp-repeat').keypress(function (e) {
         if(e.keyCode!=13||e.which!=13)
@@ -120,7 +123,5 @@ $('document').ready(function () {
             },
             error: console.error
         });
-
-
     });
 });
