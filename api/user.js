@@ -199,8 +199,6 @@ router.post('/register', function(req, res) {
                                                 });
                                             } else {
                                                 connection.release();
-                                                //req.session.person_id = result.insertId;
-                                                //req.session.save();
                                                 res.status(200).json({message: "Transaction successful"});
                                             }
                                         });

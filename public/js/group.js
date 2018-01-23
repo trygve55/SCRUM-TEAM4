@@ -693,7 +693,9 @@ function drawChart() {
 				minLimit = minLimit.setFullYear(minLimit.getFullYear() - 1);
 				
 				// Insert the values for every month.
-				//var months = Array(2).fill().map(() => Array(12).fill(0));
+				var months = Array(2).fill().map(function(){
+				    return Array(12).fill(0)
+				});
 				for (var i = 0; i < result.budget_entries.length; i++) {
 					var element = result.budget_entries[i];
 					if (element.entry_datetime != null) {
@@ -882,3 +884,15 @@ function drawBarChart(data, labels) {
 function mod(n, m) {
     return ((n % m) + m) % m;
 };
+
+$('#group-logoutNavbar').click(function () {
+    $.ajax({
+        url: '/api/auth/logout',
+        method: 'POST',
+        success: function (data) {
+            if(!data.login){
+                window.top.location="http://localhost:8000/login.html";
+            }
+        }
+    });
+});

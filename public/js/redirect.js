@@ -1,5 +1,5 @@
 $(document).ajaxSuccess(function(e, r){
-    if(r.responseJSON.redirect)
+    if(r && r.responseJSON && r.responseJSON.redirect)
         window.location = r.responseJSON.redirect;
 });
 

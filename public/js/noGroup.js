@@ -80,3 +80,15 @@ $('document').ready(function () {
         location.href = "addGroup.html";
     });
 });
+
+$('#nogroup-logoutNavbar').click(function () {
+    $.ajax({
+        url: '/api/auth/logout',
+        method: 'POST',
+        success: function (data) {
+            if(!data.login){
+                window.top.location="http://localhost:8000/login.html";
+            }
+        }
+    });
+});

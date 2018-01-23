@@ -48,6 +48,7 @@ router.post('/', function(req, res){
                 if (hash_res) {
                     req.session.person_id = results[0].person_id;
                     req.session.save();
+                    res.cookie('person_id', results[0].person_id);
                     res.status(200).json({login: true, person_id: results[0].person_id});
                 }
                 else { res.status(400).json({login: false, error: "login failed"}); }
@@ -81,8 +82,6 @@ router.get('/', function(req, res) {
 router.post('/facebook', function(req, res){
 
     FB.api('me', 'GET', { fields: ['first_name,last_name,id,email'], access_token: req.body.accessToken }, function (fbRes) {
-
-
         if (fbRes.id === null) {
             return res.status(400).json({"Error": "facebook login failed"});
         }
@@ -96,6 +95,7 @@ router.post('/facebook', function(req, res){
                     connection.release();
 
                     req.session.person_id = results[0].person_id;
+                    res.cookie('person_id', results[0].person_id);
                     req.session.save();
 
                     res.status(200).json({login: true, person_id: results[0].person_id});

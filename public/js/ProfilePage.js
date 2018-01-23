@@ -395,3 +395,15 @@ function saveItemToDB(id, item, ul, cb){
         }
     });
 }
+
+$('#profile-logout').click(function () {
+    $.ajax({
+        url: '/api/auth/logout',
+        method: 'POST',
+        success: function (data) {
+            if(!data.login){
+                window.top.location="http://localhost:8000/login.html";
+            }
+        }
+    });
+});

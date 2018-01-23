@@ -124,7 +124,10 @@ router.put('/info/:shopping_list_id', function(req, res) {
         return res.status(400).json({error: "no shopping list id"});
 
     if (req.body.is_hidden === "true") req.body.is_hidden = true;
-    if (req.body.is_hidden === "false") req.body.is_hidden = true;
+    if (req.body.is_hidden === "false") req.body.is_hidden = false;
+
+    if (req.body.invite_accepted === "true") req.body.invite_accepted = true;
+    if (req.body.invite_accepted === "false") req.body.invite_accepted = false;
 
     var parameters = [], request = 'UPDATE shopping_list_person SET ', first = true;
     for (var k in req.body) {

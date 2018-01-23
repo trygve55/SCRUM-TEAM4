@@ -37,7 +37,9 @@ $('document').ready(function(){
     });
 
 
-
+    /**
+     * This method retrvies information about a user: person_id,forname and lastname
+     */
     $.ajax({
         url: '/api/user/getUser',
         method: 'GET',
@@ -53,6 +55,11 @@ $('document').ready(function(){
         }
     });
 
+    /**
+     * This method creates a new group, with the information filled in by the
+     * user, when a user presses the addgroup-button. If a input field misses information
+     * it will turn red.
+     */
     $('#addgroup-checkbutton').click(function() {
         var groupname = $('#addgroup-groupname-input').val();
         if (groupname == "") {
@@ -109,6 +116,11 @@ $('document').ready(function(){
         });
     });
 
+
+    /**
+     * This method allows a user to search all names or emails in the database by simply
+     * entering a letter, optionally more, when adding more members to a group
+     */
     $('#scrollable-dropdown-menu .typeahead').typeahead({
             highlight: true
         },
@@ -130,7 +142,8 @@ $('document').ready(function(){
                 ].join('\n'),
                 suggestion: Handlebars.compile('<div>{{name}} – {{email}}</div>')
             }
-        });
+        }
+    );
 
     $(".typeahead").bind('typeahead:select', function(a, data){
         if(!check(data))
@@ -143,6 +156,10 @@ $('document').ready(function(){
         $(".typeahead").val("");
     });
 
+    /**
+     * This method calls the language api and sets the standard language as
+     * norwegian.
+     */
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -159,7 +176,10 @@ $('document').ready(function(){
         }
     });
 
-
+    /**
+     * This method calls the language api and sets the language to norwegian
+     * if the user clicks on the norwegian flag.
+     */
     $('#login-norway').click(function () {
         $.ajax({
             url: '/api/language',
@@ -178,6 +198,10 @@ $('document').ready(function(){
         });
     });
 
+    /**
+     * This method calls the language api and sets the language to english
+     * if the user clicks on the british flag.
+     */
     $('#login-england').click(function () {
         $.ajax({
             url: '/api/language',
@@ -196,6 +220,9 @@ $('document').ready(function(){
         });
     });
 
+    /**
+     * This method sets the groups name.
+     */
     $("#addgroup-groupname-input").focusout(function(){
         if($("#addgroup-groupname-input").val() == ""){
             $("#addgroup-groupname-input").css({
@@ -227,6 +254,10 @@ $('document').ready(function(){
     });
 });
 
+/**
+ * This function updates the memberlist, based on the name input from the user,
+ * which members he wants to add.
+ */
 function updateList(){
     var h = "";
     for(var i = 0; i < users.length; i++){
@@ -256,3 +287,15 @@ function check(u){
     }
     return true;
 }
+
+$('#addgroup-logout').click(function () {
+    $.ajax({
+        url: '/api/auth/logout',
+        method: 'POST',
+        success: function (data) {
+            if(!data.login){
+                window.top.location="http://localhost:8000/login.html";
+            }
+        }
+    });
+});
