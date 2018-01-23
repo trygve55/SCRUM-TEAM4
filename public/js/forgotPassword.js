@@ -4,7 +4,7 @@
 $('document').ready(function () {
     /* Language */
 
-    /*
+
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -81,7 +81,7 @@ $('document').ready(function () {
         });
     });
 
-    */
+
 
     $('#resetbut').click(function () {
         $.ajax({
