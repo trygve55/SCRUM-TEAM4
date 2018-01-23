@@ -414,13 +414,13 @@ router.put('/:person_id', function(req, res) {
 
 
 var transporter = nodemailer.createTransport({
-        service: 'aol',
+        service: 'gmail',
         auth: {
-            user: "HHManagerMail@aol.com",
+            user: "hhmanager4@gmail.com",
             pass: "SCRuMteAm4"
         }
     }), mailOptions = {
-        from: "HHManagerMail@aol.com",
+        from: "hhmanager4@gmail.com",
         to: "",
         subject: "",
         text: ""
