@@ -1026,6 +1026,11 @@ function setupTaskClicks(){
         dateFormat: 'dd/mm/y',
         onSelect: function() {
             console.log(this);
+        },
+        beforeShow: function (event, ui) {
+            setTimeout(function () {
+                ui.dpDiv.css({ left: left, top: top });
+            }, 5);
         }
     });
     //Hides elements yet to be shown
@@ -1033,8 +1038,23 @@ function setupTaskClicks(){
     $('.checked').hide();
 
     $('.fa-calendar').unbind('click').click(function () {
-        a = this;
+        /*var left = $(this).offset().left, right = $(this).offset().right;
+        $(this).parent().find(".datepicker").datepicker({
+            //dateFormat: 'DD, mm-y'
+            dateFormat: 'dd/mm/y',
+            onSelect: function() {
+                console.log(this);
+            },
+            beforeShow: function (event, ui) {
+                setTimeout(function () {
+                    ui.dpDiv.css({ left: left, top: top });
+                }, 5);
+            }
+        }).datepicker("show");
+        return;
+        a = this;*/
         var datepicker = $(this).parent().find(".datepicker");
+        $(datepicker).css('background-color: white');
         if(datepicker.is(":visible")){
             datepicker.hide();
         }else{

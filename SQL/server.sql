@@ -264,6 +264,7 @@ CREATE TABLE recipe_ingredient (
 	ingredient_id INTEGER NOT NULL AUTO_INCREMENT,
 	ingredient_amount FLOAT,
 	ingredient_unit NVARCHAR(20),
+	ingredient_name NVARCHAR(255),
 	ingredient_optional BIT NOT NULL,
 	recipe_id INTEGER NOT NULL,
 	CONSTRAINT recipe_ingredient_fk FOREIGN KEY(recipe_id) REFERENCES recipe(recipe_id),
@@ -273,9 +274,10 @@ CREATE TABLE recipe_ingredient (
 CREATE TABLE group_recipe (
 	recipe_id INTEGER NOT NULL,
 	group_id INTEGER NOT NULL,
+	meal_datetime DATE NOT NULL,
 	CONSTRAINT group_recipe_fk FOREIGN KEY(recipe_id) REFERENCES recipe(recipe_id),
 	CONSTRAINT home_group_recipe_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
-	CONSTRAINT group_recipe_pk PRIMARY KEY(recipe_id, group_id)
+	CONSTRAINT group_recipe_pk PRIMARY KEY(recipe_id, group_id, meal_datetime)
 );
 
 INSERT INTO home_role(role_id, role_name) VALUES (1, 'Member');
