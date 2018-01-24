@@ -523,6 +523,7 @@ router.put('/', function(req, res) {
 
     pool.query(sqlQuery, values, function (err) {
             if (err) {
+                console.log(err);
                 return res.status(500).send("Internal database error(1)");
             }
             return res.status(200).send("Profile updated");
@@ -662,6 +663,7 @@ router.post('/verifyAccount', function(req, resp) {
         }
         pool.query('SELECT verify_token FROM person WHERE person_id = ?', [payload.id], function(err, result) {
             if(err) {
+                console.log(err);
                 return resp.status(500).send("Internal database error (1)");
             }
             if(result[0].verify_token != token) {

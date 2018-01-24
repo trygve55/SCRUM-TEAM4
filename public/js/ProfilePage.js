@@ -139,6 +139,7 @@ $(document).ready(function () {
             var date = data[0].birth_date;
             var formattedDate = date.split("T")[0];
             $('#datepicker').val(formattedDate);
+            $('#p-gen').val(data[0].gender);
 
 
             $('#profile-email').text(data[0].email);
@@ -196,7 +197,7 @@ $(document).ready(function () {
                     middlename: $('#p-middlenam').val(),
                     lastname: $('#p-lastnam').val(),
                     phone: $('#p-phonenumb').val(),
-                    //gender: $('#p-gen').valueOf(),
+                    gender: $('#p-gen').val(),
                     birth_date: null
                 },
                 success: function (data) {
@@ -215,7 +216,7 @@ $(document).ready(function () {
                     middlename: $('#p-middlenam').val(),
                     lastname: $('#p-lastnam').val(),
                     phone: $('#p-phonenumb').val(),
-                    //gender: $('#p-gen').valueOf(),
+                    gender: $('#p-gen').val(),
                     birth_date: $('#datepicker').val()
                 },
                 success: function (data) {

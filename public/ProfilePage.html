@@ -184,7 +184,7 @@
                         <label for="p-usernam" id="p-username"></label>
                     </div>
                     <div class="col-8">
-                        <input type="text" class="form-control" id="p-usernam"  placeholder="">
+                        <input type="text" class="form-control inpt" id="p-usernam"  placeholder="" style="width: 100%">
                     </div>
                 </div>
                 <div class="row form-group">
@@ -192,7 +192,7 @@
                         <label for="p-forenam" id="p-forename"></label>
                     </div>
                     <div class="col-8">
-                        <input type="text" class="form-control" id="p-forenam"  placeholder="">
+                        <input type="text" class="form-control inpt" id="p-forenam"  placeholder="">
                     </div>
                 </div>
                 <div class="row form-group">
@@ -221,20 +221,18 @@
                 </div>
 
                 <div class="row form-group">
-                    <!--
+
                     <div class="col-4" align="left">
                         <label for="p-gen" id="p-gender"></label>
                     </div>
                     <div class="col-8">
-                        <select class="dropdown" id="p-gen" >
-                            <option id="p-other"></option>
-                            <option id="p-female"></option>
-                            <option id="p-male"></option>
-                            <option id="p-genderopt" selected></option>
+                        <select class="form-control" id="p-gen" style="width: 100%" >
+                            <option value="4" id="p-genderopt"></option>
+                            <option value="0" id="p-other"></option>
+                            <option value="1" id="p-female"></option>
+                            <option value="2" id="p-male"></option>
                         </select>
                     </div>
-
-                    -->
                 </div>
 
                 <div class="row form-group">
@@ -243,7 +241,7 @@
                     </div>
                     <div class="col-8">
 
-                        <input type="text" id="datepicker">
+                        <input class="form-control" type="text" id="datepicker" style="width: 100%">
                     </div>
                 </div>
 
