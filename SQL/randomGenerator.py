@@ -1,12 +1,18 @@
 from random import *
-import random
 from pathlib import Path
+import os.path
 
 fileName = "random.sql";
 
+if os.path.exists("random.sql"):
+    os.remove("random.sql");
+
 def writeFile(file, data):
-        file = open(file, "a");
-        file.write(data + "\n");
+	file = open(file, "a");
+	file.write(data + "\n");
+
+firstN = [line.rstrip("\n") for line in open("r0.txt")];
+lastN = [line.rstrip("\n") for line in open("r1.txt")];
 
 lists = 15;
 currencies = 150;
@@ -20,8 +26,10 @@ currentGroups = 1;
 currentShoppingItems = 0;
 
 names = [];
+lasts = [];
 for i in range(0, people):
-	names.append("Human_" + str(i));
+	names.append(firstN[randint(0, len(firstN) - 1)]);
+	lasts.append(lastN[randint(0, len(lastN) - 1)]);
 
 for i in range(0, people):
 	query = "INSERT INTO shopping_list (shopping_list_name, currency_id) VALUES ('PList " + str(i) +"', "+ str(randint(1, currencies)) +");";
@@ -30,8 +38,8 @@ for i in range(0, people):
 
 for i in range(0, people):
 	query = ("INSERT INTO person(email, username, password_hash, forename, middlename, lastname, phone, birth_date, verify_token, gender, profile_pic, last_active, reset_password_token, shopping_list_id, user_language) " 
-	+"VALUES ('Human" + str(i) + "@Earth.com', '"+ names[i] +"', x'243261243130244c6b3943524f466835467471577158506756766c772e586b473269397a653473336d5a667a6a502e545131545162793945676b3647',"
-	+" '"+ names[i] +"', NULL, '"+ names[i] +"', '"+ str(randint(10000000, 99999999)) +"', CURRENT_DATE,"
+	+"VALUES ('"+ names[i] +"@"+ lasts[i] +".com', '"+ names[i] +"_"+ lasts[i] +"', x'243261243130244c6b3943524f466835467471577158506756766c772e586b473269397a653473336d5a667a6a502e545131545162793945676b3647',"
+	+" '"+ names[i] +"', NULL, '"+ lasts[i] +"', '"+ str(randint(10000000, 99999999)) +"', CURRENT_DATE,"
 	+" "+ str(bool(randint(0, 1))) +", 0, NULL, DEFAULT, NULL, "+ str(currentLists + i) +", DEFAULT);");
 	
 	writeFile(fileName, query);
@@ -63,7 +71,7 @@ for i in uniqueIDs:
 	
 	writeFile(fileName, query);
 
-uniqueIDs = sample(range(currentPeople + 1, people + currentPeople), people);
+uniqueIDs = sample(range(currentPeople + 1, people + currentPeople), people - 1);
 
 for i in uniqueIDs:
 	query = ("INSERT INTO shopping_list_person (shopping_list_id, person_id, invite_accepted, invite_sent_datetime) "
