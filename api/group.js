@@ -286,13 +286,19 @@ router.post('/:group_id/picture', function(req, res){
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
 
-        var path = files.file.path,
-            file_size = files.file.size;
-
-        if (file_size > 4000000) {
-            res.status(400).json({'error': 'image file over 4MB'});
-            return;
+        if (err) {
+            return res.status(500).json({'Error': err});
         }
+
+        if (!files.File || !files.File.path)
+            return res.status(400).json({'error': 'file error'});
+
+        var path = files.File.path,
+            file_size = files.File.size;
+
+        if (file_size > 4000000)
+            return res.status(400).json({'error': 'image file over 4MB'});
+
         Jimp.read(path, function (err, img) {
             if (err) {
                 console.log(err);
@@ -327,7 +333,7 @@ router.post('/:group_id/picture', function(req, res){
                                     res.status(500).json({'Error': err});
                                     return;
                                 }
-                                connection.query("UPDATE home_group SET group_pic = ?, group_pic_tiny = ? has_group_pic WHERE group_id = ?;", [data, data_tiny, req.params.group_id], function (err, results, fields) {
+                                connection.query("UPDATE home_group SET group_pic = ?, group_pic_tiny = ?, has_group_pic = 1 WHERE group_id = ?;", [data, data_tiny, req.params.group_id], function (err, results, fields) {
                                     connection.release();
                                     if (err) {
                                         console.log("error 4");
@@ -350,10 +356,9 @@ router.post('/:group_id/picture', function(req, res){
  * method: POST
  */
 router.get('/:group_id/picture', function(req, res){
-    connection.query("SELECT group_pic, has_group_pic FROM home_group WHERE group_id = ?;", [req.params.group_id], function (error, results, fields) {
-        connection.release();
+    pool.query("SELECT group_pic, has_group_pic FROM home_group WHERE group_id = ?;", [req.params.group_id], function (err, results, fields) {
         if(err)
-            return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+            return res.status(500).json({'Error' :err });
 
         if(!results[0].has_group_pic)
             return res.status(404).json({error: 'no group picture.'});

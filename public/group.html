@@ -204,24 +204,27 @@
 						<i class="fa fa-money" style="font-size: 1.8vh" aria-hidden="true" id="settle"></i>
 					</div>
 				</div>
-
 				<div id="statistics" class="grouptab text-center">
 					<hr width="90%">
 					<canvas id="stat0" class="chart"></canvas>
 					<canvas id="stat1" class="chart"></canvas>
 				</div>
-
 				<div id="leave" class="grouptab text-center">
 					<hr width="90%">
 					<div>
 						<button type="button" class="btn btn-primary" onclick="leaveGroup()">
 							<p class="langtext" id="desc_button0"></p>
 						</button>
+						<br>
+						<div id="upload-button">
+							<i class="fa fa-picture-o" aria-hidden="true"> <text id="p-changephoto"> </text></i>
+						</div>
+						<form id="uploadPic" action="" enctype="multipart/form-data" method="post" style="visibility:hidden">
+							<input type="file" name="File" id="file-upload"><br>
+						</form>
 					</div>
 				</div>
-				
 			</div>
-		</div>
 		</div>
 	</body>
 </html>
