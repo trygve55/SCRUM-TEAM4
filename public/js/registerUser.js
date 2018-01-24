@@ -183,8 +183,9 @@ $(function () {
     });
 
     /**
-     * This function alerts a user that tries to register if the username is invalid, happens
-     * if the username is allreay in use or if the field is empty.
+     * This function gets the username and posts it to the database, or alerts a user that tries to
+     * register if the username is invalid, happens if the username is already in use or if the field
+     * is empty.
      */
     $("#register-username").focusout(function(){
         if($(this).val() === "") {
@@ -220,6 +221,10 @@ $(function () {
     });
 
 
+    /**
+     * This function gets the users email, written in the input field, and posts it to the database,
+     * or alerts a user that tries to register if this field is empty.
+     */
     $("#register-email").focusout(function(){
         if($(this).val() == "") {
             $("#register-email-error").hide();
@@ -252,6 +257,11 @@ $(function () {
         });
     });
 
+    /**
+     * This method registers the users information into the database, as long as all the fields
+     * are field and there is no invalid information in any of the fields. Else it alerts the
+     * user that one or more fields are invalid/empty.
+     */
     $('#register-done').click(function (e) {
         e.preventDefault();
         var isValid = true;

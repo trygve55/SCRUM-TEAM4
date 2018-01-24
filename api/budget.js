@@ -236,9 +236,9 @@ function addPersonBudgetEntry(req, res, connection, result) {
             }
         }
 
-        console.log(person_ids);
+        console.error(person_ids);
 
-        connection.query(
+        if (query.length > 0) connection.query(
             'INSERT INTO person_budget_entry (person_id, budget_entry_id) VALUES ' + query +';',
             queryValues,
             function (err, result2) {
@@ -250,23 +250,26 @@ function addPersonBudgetEntry(req, res, connection, result) {
                 });
             }
 
-            if (adderIncluded) connection.query('INSERT INTO person_budget_entry (person_id, budget_entry_id, datetime_paid) VALUES (?,?,CURRENT_TIMESTAMP);',
-                [req.session.person_id, result.insertId],
-                function(err, result3) {
-                if (err) {
-                    return connection.rollback(function () {
-                        connection.release();
-                        res.status(500).json({'Error': err, err: 5});
-                    });
-                } else answerPost(req, res, connection, result);
-            });
+            if (adderIncluded) insertAdderPersonEntryToShoppingList(req, res, connection, result);
             else answerPost(req, res, connection, result);
         });
+        else if (adderIncluded) insertAdderPersonEntryToShoppingList(req, res, connection, result);
+        else answerPost(req, res, connection, result);
 
     });
+}
 
-
-
+function insertAdderPersonEntryToShoppingList(req, res, connection, result) {
+    connection.query('INSERT INTO person_budget_entry (person_id, budget_entry_id, datetime_paid) VALUES (?,?,CURRENT_TIMESTAMP);',
+        [req.session.person_id, result.insertId],
+        function(err, result3) {
+            if (err) {
+                connection.rollback(function () {
+                    connection.release();
+                    res.status(500).json({'Error': err, err: 5});
+                });
+            } else answerPost(req, res, connection, result);
+        });
 }
 
 function addShoppingListEntryToBudgetEntry(req, res, connection, result) {
