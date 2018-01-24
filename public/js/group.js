@@ -42,6 +42,7 @@ socket.on('group post', function(data){
     }
 });
 
+
 /**
  * When the page loads, the page must find the groups available to the user so they can be selected.
  */
@@ -152,6 +153,8 @@ function changeTab(name) {
         getTasks();
     else if (activeTab == 'statistics')
         drawChart();
+    else if(activeTab == 'food')
+        getCalendar();
 }
 
 /**
@@ -943,3 +946,24 @@ $('#group-logoutNavbar').click(function () {
         }
     });
 });
+
+
+function getCalendar() {
+    $('#calendar').fullCalendar({
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay,listWeek'
+        },
+        defaultDate: '2017-12-12',
+        navLinks: true, // can click day/week names to navigate views
+        editable: true,
+        eventLimit: true, // allow "more" link when too many events
+        events: [
+            {
+                title: 'All Day Event',
+                start: '2017-12-01',
+            }
+        ]
+    });
+}

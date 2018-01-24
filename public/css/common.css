@@ -24,3 +24,7 @@ i {
 .list-group-item{
     padding: -6px;
 }
+
+#popup{
+    z-index: 100;
+}

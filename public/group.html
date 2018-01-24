@@ -26,6 +26,12 @@
 		<script src="/js/notifications.js"></script>
 		<script src="js/redirect.js"></script>
 
+		<link rel="stylesheet"  href="/css/fullcalendar.min.css">
+
+		<script src='/js/lib/moment.min.js'></script>
+		<script src='/js/lib/jquery-ui.min.js'></script>
+		<script src='/js/lib/fullcalendar.min.js'></script>
+
 		<script src="/js/group.js"></script>
 		<link rel="stylesheet" href="css/common.css">
 		<link rel="stylesheet" type="text/css" href="/css/group.css">
@@ -33,7 +39,7 @@
 
 	<body>
 
-	<nav style="width: 100%" class="navbar navbar-expand-lg navbar-light bg-light">
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 		<a class="navbar-brand" href="index.html" style="color: dimgray">
 			<img src="img/logo.svg" width="30" height="30" alt="">
 			Household Manager
@@ -108,10 +114,14 @@
 								<li class="nav-item">
 									<a style="color: black" class="nav-link"  onclick="changeTab('leave')"  role="tab" data-toggle="tab" id="desc_title7"></a>
 								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link"  onclick="changeTab('food')"  role="tab" data-toggle="tab" id="desc_title8"></a>
+								</li>
 							</ul>
 
 							<div class="tab-content">
 								<div role="tabpanel" class="tab-pane fade"></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
 								<div role="tabpanel" class="tab-pane fade" ></div>
 								<div role="tabpanel" class="tab-pane fade" ></div>
 								<div role="tabpanel" class="tab-pane fade" ></div>
@@ -206,22 +216,27 @@
 				</div>
 
 				<div id="statistics" class="grouptab text-center">
-					<hr width="90%">
+					<br>
 					<canvas id="stat0" class="chart"></canvas>
 					<canvas id="stat1" class="chart"></canvas>
 				</div>
 
 				<div id="leave" class="grouptab text-center">
-					<hr width="90%">
+					<br>
 					<div>
 						<button type="button" class="btn btn-primary" onclick="leaveGroup()">
 							<p class="langtext" id="desc_button0"></p>
 						</button>
 					</div>
 				</div>
-				
+
+				<div id="food" class="grouptab">
+					<br>
+						<div id='calendar'></div>
+					<br>
+						<button onclick="window.location='/mealPlanner.html'" id="food-button" style="-moz-box-shadow: 0 0 1px grey; -webkit-box-shadow: 0 0 1px grey; box-shadow:  0 0 1px grey; border-radius: 10px;"></button>
+				</div>
 			</div>
-		</div>
 		</div>
 	</body>
 </html>
