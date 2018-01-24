@@ -12,7 +12,7 @@ lists = 15;
 currencies = 150;
 people = 10;
 groups = 5;
-shoppingItems = 50;
+shoppingItems = 60;
 
 currentLists = 4;
 currentPeople = 2;
@@ -56,24 +56,24 @@ for i in range(0, groups):
 	
 	writeFile(fileName, query);
 
-uniqueIDs = sample(range(currentPeople, people + currentPeople), int(people/5) * 4);
+uniqueIDs = sample(range(currentPeople + 1, people + currentPeople), int(people/5) * 4);
 
 for i in uniqueIDs:
-	query = ("INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES ("+ str(i) +", "+ str(randint(currentGroups, groups + currentGroups)) +", "+ str(randint(1, 2)) +", "+ str(bool(randint(0, 1))) +");");
+	query = ("INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES ("+ str(i) +", "+ str(randint(currentGroups + 1, groups + currentGroups)) +", "+ str(randint(1, 2)) +", "+ str(bool(randint(0, 1))) +");");
 	
 	writeFile(fileName, query);
 
-uniqueIDs = sample(range(currentPeople, people + currentPeople), people);
+uniqueIDs = sample(range(currentPeople + 1, people + currentPeople), people);
 
 for i in uniqueIDs:
 	query = ("INSERT INTO shopping_list_person (shopping_list_id, person_id, invite_accepted, invite_sent_datetime) "
-	+"VALUES ("+ str(randint(currentLists, lists + currentLists)) +", "+ str(i) +", "+ str(bool(randint(0, 1))) +", CURRENT_DATE);")
+	+"VALUES ("+ str(randint(currentLists + 1, lists + currentLists)) +", "+ str(i) +", "+ str(bool(randint(0, 1))) +", CURRENT_DATE);")
 	
 	writeFile(fileName, query);
 
 for i in range(0, shoppingItems):
         query = ("INSERT INTO shopping_list_entry (shopping_list_id, entry_text, added_by_person_id, purchased_by_person_id, cost) "
-	+ "VALUES ("+ str(randint(currentLists, lists + currentLists)) +", 'Thing "+ str(i) +"', "+ str(randint(currentPeople, people + currentPeople)) +", "+ str(randint(currentPeople, people + currentPeople)) +", "+ str(randint(0, 4200)) +");");
+	+ "VALUES ("+ str(randint(currentLists + 1, lists + currentLists)) +", 'Thing "+ str(i) +"', "+ str(randint(currentPeople + 1, people + currentPeople)) +", "+ str(randint(currentPeople + 1, people + currentPeople)) +", "+ str(randint(0, 4200)) +");");
 
         writeFile(fileName, query);
         
