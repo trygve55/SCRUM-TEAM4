@@ -26,5 +26,6 @@ router.use('/tasks', require('./api/tasks'));
 router.use('/budget', require('./api/budget'));
 router.use('/news', require('./api/news'));
 router.use('/notify', require('./api/notify'));
+router.use('/recipe', require('./api/recipe'));
 
 module.exports = router;
