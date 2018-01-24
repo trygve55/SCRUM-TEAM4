@@ -1,12 +1,19 @@
-<div class="pop">
-    <div class="pop-content" id="shop-popup">
+<div class="pop" >
+    <div class="pop-content" id="shop-popup" style="min-width: 400px">
         <p align="center" style="font-size: 20px;">{{comment}}</p>
-        <div>
-            <div class="col-sm">Kjøpt av: {{bought_by}}</div>
-            <div class="col-sm">Tidspunkt: {{time}}</div>
-            <div class="col-sm">Kostnad: {{cost}}</div>
-            <div class="col-sm">Betalere: <ul class="list-group">{{{payers}}}</ul></div>
-            <div class="col-sm">Varer:<ul class="list-group">{{{goods}}}</ul></div>
+        <div class="row">
+            <div class="col-sm">
+                <div style="border: outset 2px; padding: 1vh; border-radius: 15px; margin-bottom: 1vh">
+                    <div>{{bought_by_label}}: {{bought_by}}</div>
+                    <div>{{time_label}}: {{time}}</div>
+                    <div>{{cost_label}}: {{cost}}</div>
+                    {{{labelhtml}}}
+                </div>
+                <div style="border: outset 2px; background-color: lightsteelblue; padding: 1vh; border-radius: 15px;"><div style="max-height: 20vh; overflow-y:scroll;">{{goods_label}}:<ul class="list-group">{{{goods}}}</ul></div></div>
+            </div>
+            <div class="col-sm">
+                <div style="height:39vh; overflow: scroll; border: outset 2px; padding: 1vh; border-radius: 15px;">{{payers_label}}: <ul class="list-group">{{{payers}}}</ul></div>
+            </div>
         </div>
         <div align="center" style="margin-top: 5%">
             <button align="right" id="balance-info-complete" type="button" class="btn" style="background-color: lightgrey">{{complete}}</button>

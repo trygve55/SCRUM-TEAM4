@@ -47,61 +47,6 @@ router.get('/repeat/:group_id', function(req, res) {
 });
 
 /**
- * Add new task to the group task list.
- * The task will be made a repeating if time_interval is specified and > 0.
- * It will repeat until the date specified as deadline.
- *
- * URL: /api/tasks
- * method: POST
- * data: {
- *      group_id,
- *      todo_text
- *
- *      Optional:
- *      datetime_deadline,
- *		datetime_done,
- *      time_interval	// days
- * }
-*/
-router.post('/', function(req, res) {
-	var data = req.body, input = [];
-	var query = "INSERT INTO todo (datetime_deadline, group_id, todo_text, datetime_done, created_by_id, done_by_id, autogen_id) VALUES ";
-	if (data.time_interval > 0) {
-		// Find the maximum autogen_id and increment it. This ensures that it will be unique.
-		pool.query("SELECT MAX(autogen_id) AS auto FROM todo;", [], function(err, result) {
-			if (err) {return res.status(500).send();}
-			var auto = result[0].auto ? (result[0].auto + 1) : 1;
-
-			var all = [data.group_id, data.todo_text, null, req.session.person_id, null, auto], interval = Math.round(data.time_interval * MILLIS_DAY);
-			var end = new Date(new Date(data.datetime_deadline).getTime() + EXTRA_DELAY);
-			for (var i = new Date(new Date().getTime() + interval); i <= end; i.setTime(i.getTime() + interval)) {
-				query += "(?,?,?,?,?,?,?), ";
-				input.push(new Date(i));
-				for (var v in all) {input.push(all[v]);}
-			}	// How many tasks to add to the query? Add the interval until deadline < the new value.
-
-			query = query.slice(0, -2) + ";";
-			if (!input.length) {return res.status(400).send();}
-			pool.query(query, input, function(err, result) {checkResult(err, result, res);});
-		});
-	}
-	else {
-		// If we want to post a simple task, this happens.
-		query += "(?,?,?,?,?,?,?);";
-		input = [
-			data.datetime_deadline,
-			data.group_id,
-			data.todo_text,
-			(data.datetime_done ? data.datetime_done : null),
-			checkRange(req.session.person_id, 1, null),
-			(data.done_by_id ? data.done_by_id : null),
-			null
-		];
-		pool.query(query, input, function(err, result) {checkResult(err, result, res);});
-	}
-});
-
-/**
  * Add a person to a task
  *
  * URL: /api/tasks/person/{todo_id}
@@ -302,10 +247,67 @@ router.get('/todo/:todo_id', function(req, res) {
  * method: GET
  */
 router.get('/:group_id', function(req, res) {
+	console.log(req.params.group_id);
 	pool.query('SELECT todo_id, datetime_deadline, datetime_added, datetime_done, forename, middlename, lastname, todo_text, is_deactivated, color_hex FROM todo LEFT JOIN home_group USING (group_id) LEFT Join person ON done_by_id = person.person_id WHERE group_id = ?',
 		[req.params.group_id], function(err, result){
+		console.log(result);
 			return (err) ? (res.status(500).send()) : (res.status(200).json(result));
 		});
+});
+
+/**
+ * Add new task to the group task list.
+ * The task will be made a repeating if time_interval is specified and > 0.
+ * It will repeat until the date specified as deadline.
+ *
+ * URL: /api/tasks
+ * method: POST
+ * data: {
+ *      group_id,
+ *      todo_text
+ *
+ *      Optional:
+ *      datetime_deadline,
+ *		datetime_done,
+ *      time_interval	// days
+ * }
+ */
+router.post('/', function(req, res) {
+    var data = req.body, input = [];
+    var query = "INSERT INTO todo (datetime_deadline, group_id, todo_text, datetime_done, created_by_id, done_by_id, autogen_id) VALUES ";
+    if (data.time_interval > 0) {
+        // Find the maximum autogen_id and increment it. This ensures that it will be unique.
+        pool.query("SELECT MAX(autogen_id) AS auto FROM todo;", [], function(err, result) {
+            if (err) {return res.status(500).send();}
+            var auto = result[0].auto ? (result[0].auto + 1) : 1;
+
+            var all = [data.group_id, data.todo_text, null, req.session.person_id, null, auto], interval = Math.round(data.time_interval * MILLIS_DAY);
+            var end = new Date(new Date(data.datetime_deadline).getTime() + EXTRA_DELAY);
+            for (var i = new Date(new Date().getTime() + interval); i <= end; i.setTime(i.getTime() + interval)) {
+                query += "(?,?,?,?,?,?,?), ";
+                input.push(new Date(i));
+                for (var v in all) {input.push(all[v]);}
+            }	// How many tasks to add to the query? Add the interval until deadline < the new value.
+
+            query = query.slice(0, -2) + ";";
+            if (!input.length) {return res.status(400).send();}
+            pool.query(query, input, function(err, result) {checkResult(err, result, res);});
+        });
+    }
+    else {
+        // If we want to post a simple task, this happens.
+        query += "(?,?,?,?,?,?,?);";
+        input = [
+            data.datetime_deadline,
+            data.group_id,
+            data.todo_text,
+            (data.datetime_done ? data.datetime_done : null),
+            checkRange(req.session.person_id, 1, null),
+            (data.done_by_id ? data.done_by_id : null),
+            null
+        ];
+        pool.query(query, input, function(err, result) {checkResult(err, result, res);});
+    }
 });
 
 // Help methods:
