@@ -5,6 +5,10 @@
 var lang;
 
 $('document').ready(function () {
+    $("#success-alert").hide();
+    $("#warning-alert").hide();
+
+
 
     $.ajax({
         url: '/api/language',
@@ -91,25 +95,35 @@ $('document').ready(function () {
     });
 
     $('#rp-save').click(function () {
-        $.ajax({
-            url: '/api/user/forgottenPasswordReset',
-            method: 'POST',
-            data: {
-                new_password: $('#rp-repeat').val(),
-                token: window.location.search.split("=")[1].split("&")[0]
-            },
-            success: function (data){
-                console.log(data)
-            },
-            error: console.error
-        });
+        if($('#rp-repeat').val() == $("#rp-new").val()){
+            $.ajax({
+                url: '/api/user/forgottenPasswordReset',
+                method: 'POST',
+                data: {
+                    new_password: $('#rp-repeat').val(),
+                    token: window.location.search.split("=")[1].split("&")[0]
+                },
+                success: function (data){
+                    console.log(data);
+                },
+                error: console.error
+            });
+
+            window.location.href = "login.html";
+            $("#success-alert").show();
+
+        }else{
+            $("#warning-alert").show();
+            setTimeout(function () {
+                $("#warning-alert").alert('close');
+            }, 2000);
+        }
+
+
     });
 
-
-
-
     $('#rp-repeat').keypress(function (e) {
-        if(e.keyCode!=13||e.which!=13)
+        if(e.keyCode!=13||e.which!=13 && $('#rp-repeat').val() != $("#rp-new").val())
             return;
         $.ajax({
             url: '/api/user/forgottenPasswordReset',
@@ -124,4 +138,6 @@ $('document').ready(function () {
             error: console.error
         });
     });
+
+
 });
