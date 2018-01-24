@@ -3,10 +3,11 @@ var users = [];
 var lists = [];
 var newmembers = [];
 var curBudget, currencies;
-var list, balance, listItem, newListItem, popupTextList, popupList, balanceItem, listReplace, popupMembers;
+var list, balance, listItem, newListItem, popupTextList, popupList, balanceItem, listReplace, popupMembers, newlabel;
 var me;
 var generalLabels;
-var thenewlabel;
+var thenewlabel, byersSelect, byersAll;
+var buyers = [];
 
 $('document').ready(function () {
     $('#shop-logout').click(function () {
@@ -69,8 +70,10 @@ $('document').ready(function () {
             $(".fa-users").html(" " + data["shop-share"]);
             $(".fa-trash").html(" " + data["shop-delete"]);
             $(".fa-plus-circle").html(" " + data["shop-additem"]);
-            generalLabels = [data["label1"], data["label2"], data["label3"], data["label4"], data["newlabel"]];
+            generalLabels = [data["newlabel"],data["label1"], data["label2"], data["label3"], data["label4"]];
             thenewlabel = data["newlabel"];
+            byersSelect = data["byers-select"];
+            byersAll = data["byers-all"];
         }
     });
     $('#login-norway').click(function () {
@@ -102,8 +105,11 @@ $('document').ready(function () {
                         $(".fa-trash").html(" " + data["shop-delete"]);
                         $(".fa-plus-circle").html(" " + data["shop-add-item"]);
                         $(".list-name-input").attr('placeholder', data["shop-list-name-input"]);
-                        generalLabels = [data["label1"], data["label2"], data["label3"], data["label4"], data["newlabel"]];
+                        generalLabels = [data["newlabel"],data["label1"], data["label2"], data["label3"], data["label4"]];
                         thenewlabel = data["newlabel"];
+                        byersSelect = data["byers-select"];
+                        byersAll = data["byers-all"];
+
                     }
                 });
             }
@@ -138,8 +144,12 @@ $('document').ready(function () {
                         $(".fa-trash").html(" " + data["shop-delete"]);
                         $(".fa-plus-circle").html(" " + data["shop-add-item"]);
                         $(".list-name-input").attr('placeholder', data["shop-list-name-input"]);
-                        generalLabels = [data["label1"], data["label2"], data["label3"], data["label4"], data["newlabel"]];
+                        generalLabels = [data["newlabel"],data["label1"], data["label2"], data["label3"], data["label4"]];
                         thenewlabel = data["newlabel"];
+                        byersSelect = data["byers-select"];
+                        byersAll = data["byers-all"];
+
+
                     }
                 });
             }
@@ -160,7 +170,8 @@ $('document').ready(function () {
                 "popupList.html",
                 "popupTextfieldList.html",
                 "listReplace.html",
-                "popupMembers.html"
+                "popupMembers.html",
+                "newlabel.html"
             ]
         },
         success: function(data){
@@ -173,6 +184,7 @@ $('document').ready(function () {
             balanceItem = Handlebars.compile(data["balanceItem.html"]);
             listReplace = Handlebars.compile(data["listReplace.html"]);
             popupMembers = Handlebars.compile(data["popupMembers.html"]);
+            newlabel = Handlebars.compile(data["newlabel.html"]);
             prep();
         }
     });
@@ -539,8 +551,7 @@ function setupClicks(){
                     var timeNsec = time.split(":")[0] + ":" + time.split(":")[1];
                     var formattedDateTime = date + "/" + month + "/" + year + ", " + timeNsec;
                     var la = entry.budget_entry_type.budget_entry_type_name;
-                    //var bc = entry.budget_entry_type.budget_entry_type_color;
-                    var bc = '4286f4';
+                    var bc = Number(entry.budget_entry_type.budget_entry_type_color).toString(16);
                     var lh = '<div style="background-color: #'+bc+'; padding-left: 1vh; padding-top: 0.5vh; padding-bottom: 0.5vh;border-radius: 15px;">'+lang["label-label"]+': '+la+'</div>'
                     $("body").append(balanceItem({
                         comment: entry.text_note,
@@ -620,6 +631,8 @@ function setupClicks(){
         var li = $(this).parent().attr("data-id");
         var mycart = this;
         var h = "";
+        h += '<option value="-1">----</option>';
+        h += '<option value="0">' + generalLabels[0] + '</option>';
         var labelz = [];
         //-----------------Open popup with bought items--------------
         $.ajax({
@@ -634,7 +647,7 @@ function setupClicks(){
                     h += '<option value="' + data.budget_entry_types[i].budget_entry_type_id + '">' + data.budget_entry_types[i].entry_type_name + '</option>';
                 }
                 var found = false;
-                for (var j = 0; j < generalLabels.length; j++) {
+                for (var j = 1; j < generalLabels.length; j++) {
                     for (var k = 0; k < labelz.length; k++) {
                         if (labelz[k] == generalLabels[j]) {
                             found = true;
@@ -645,7 +658,6 @@ function setupClicks(){
                     }
                     found = false;
                 }
-                h += '<option value="-1">None</option>';
 
                 var items = $(mycart).closest("div[data-id]").find(".list-group-item input:checked").closest('li[data-id]');
                 if (items.length == 0)
@@ -672,6 +684,8 @@ function setupClicks(){
                         curr = lists[i].currency_short;
                     }
                 }
+                var bye = '<option>'+lang["byers-all"]+'</option>';
+                bye += '<option>'+lang["byers-select"]+'</option>';
 
                 //Append popup
                 $("body").append(popupTextList({
@@ -682,22 +696,81 @@ function setupClicks(){
                     not_needed: lang["shop-not-needed"],
                     textfield_label: lang["shop-entry-label"],
                     currency: curr,
+                    advanced: lang["advanced"],
+                    byers_label: lang["byers-label"],
+                    byers: bye,
                     label: h,
                     cancel: lang["shop-cancel"],
                     complete: lang["shop-ok"],
                     data: "data-id='" + $(mycart).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
                 }));
 
+                //If 'select users' are selected in Byers
+                $("#byersid").change(function () {
+
+                    if ($("#byersid").find('option:selected').html() == byersSelect) {
+                        $('.addbyers').show();
+                        /**
+                         * This method allows a user to search all names or emails in the database by simply
+                         * entering a letter, optionally more, when adding more members to a group
+                         */
+                        $('#scrollable-dropdown-menu2 .typeahead2').typeahead({
+                                highlight: true
+                            },
+                            {
+                                name: 'user-names',
+                                display: 'name',
+                                source: new Bloodhound({
+                                    datumTokenizer: function(d){
+                                        return Bloodhound.tokenizers.whitespace(d.name).concat([d.email]);
+                                    },
+                                    queryTokenizer: Bloodhound.tokenizers.whitespace,
+                                    prefetch: '/api/shoppingList/'+li+'/users'
+                                }),
+                                templates: {
+                                    empty: [
+                                        '<div class="empty-message">',
+                                        'No users found',
+                                        '</div>'
+                                    ].join('\n'),
+                                    suggestion: Handlebars.compile('<div>{{name}} – {{email}}</div>')
+                                }
+                            }
+                        );
+
+                        $(".typeahead2").bind('typeahead:select', function(a, data){
+                            if(!check(data))
+                                return;
+                            buyers.push(data);
+                            updateList2();
+                        });
+
+                        $(".typeahead2").bind('typeahead:close', function(){
+                            $(".typeahead2").val("");
+                        });
+
+                    }
+                    if($("#byersid").find('option:selected').html() == byersAll){
+                        $('.addbyers').hide();
+
+                    }
+                });
+
                 //if labelscrolldown changes value
                 $("#labelid").change(function () {
                     //if new label is selected
                     if ($("#labelid").find('option:selected').html() == thenewlabel) {
-                        $('.newlabel').append('<input class="form-control" id="newlabelinput" placeholder="">');
+                        $('.labelrow').after(newlabel({
+                            "new_label_color": lang["new-label-color"],
+                            "new_label_name": lang["new-label-name"]
+                        }));
+
+
                         $('#newlabelinput').focus();
                     } else {
                         //if others are selected and newlabelinput is showing
-                        if ($('#newlabelinput').length) {
-                            $('#newlabelinput').remove();
+                        if ($('#new-label').length) {
+                            $('#new-label').remove();
                         }
                     }
 
@@ -767,6 +840,14 @@ function setupClicks(){
                                             purchased_by_person_id: me.person_id,
                                             budget_entry_id: data.budget_entry_id
                                         },
+                                        success: function () {
+                                            //Removes all bought items from shoppinglist
+                                            for (var i = 0; i < e.length; i++) {
+                                                $("div[data-id=" + id + "]").find('li[data-id=' + e[i] + ']').remove();
+                                            }
+                                            //Closes popup
+                                            $(".pop").remove();
+                                        },
                                         error: console.error
                                     });
                                 }
@@ -779,15 +860,29 @@ function setupClicks(){
                             var selec = $(this).closest('.pop').find('.label-input').find('option:selected').html();
                             if (selec == thenewlabel) { //If new label are selected
                                 var l = $('#newlabelinput').val();
-                                if (l == "") {
+                                var found = false;
+                                for(var j=0; j<labelz.length; j++){
+                                    if(labelz[i]==l){
+                                        found=true;
+                                    }
+                                }
+                                if (l == "" || found) {
                                     $('#newlabelinput').addClass("is-invalid");
                                 } else {
                                     //Add new label to DB
+                                    var colorlab = $('#newlabelcolorinput').val();
+                                    if(colorlab==""){
+                                        colorlab = parseInt('23e05c', 16);
+                                    }else{
+                                        colorlab = parseInt(colorlab, 16);
+                                    }
+                                    console.log(parseInt('23e05c', 16));
                                     $.ajax({
                                         url: '/api/budget/entryType',
                                         method: 'POST',
                                         data: {
                                             entry_type_name: l,
+                                            entry_type_color: colorlab,
                                             shopping_list_id: id
                                         },
                                         success: function (data) {
@@ -813,6 +908,14 @@ function setupClicks(){
                                                                 purchased_by_person_id: me.person_id,
                                                                 budget_entry_id: data.budget_entry_id,
                                                                 budget_entry_type_id: labelid
+                                                            },
+                                                            success: function(){
+                                                                //Removes all bought items from shoppinglist
+                                                                for (var i = 0; i < e.length; i++) {
+                                                                    $("div[data-id=" + id + "]").find('li[data-id=' + e[i] + ']').remove();
+                                                                }
+                                                                //Closes popup
+                                                                $(".pop").remove();
                                                             },
                                                             error: console.error
                                                         });
@@ -857,6 +960,14 @@ function setupClicks(){
                                                             budget_entry_id: data.budget_entry_id,
                                                             budget_entry_type_id: labelid
                                                         },
+                                                        success: function(){
+                                                            //Removes all bought items from shoppinglist
+                                                            for (var i = 0; i < e.length; i++) {
+                                                                $("div[data-id=" + id + "]").find('li[data-id=' + e[i] + ']').remove();
+                                                            }
+                                                            //Closes popup
+                                                            $(".pop").remove();
+                                                        },
                                                         error: console.error
                                                     });
                                                 }
@@ -891,6 +1002,14 @@ function setupClicks(){
                                                 purchased_by_person_id: me.person_id,
                                                 budget_entry_id: data.budget_entry_id
                                             },
+                                            success: function () {
+                                                //Removes all bought items from shoppinglist
+                                                for (var i = 0; i < e.length; i++) {
+                                                    $("div[data-id=" + id + "]").find('li[data-id=' + e[i] + ']').remove();
+                                                }
+                                                //Closes popup
+                                                $(".pop").remove();
+                                            },
                                             error: console.error
                                         });
                                     }
@@ -900,13 +1019,6 @@ function setupClicks(){
                         }
 
                     }
-
-                    //Removes all bought items from shoppinglist
-                    for (var i = 0; i < e.length; i++) {
-                        $("div[data-id=" + id + "]").find('li[data-id=' + e[i] + ']').remove();
-                    }
-                    //Closes popup
-                    $(this).closest(".pop").remove();
                 });
             }
         });
@@ -1008,4 +1120,11 @@ function updateList(){
         h += '<li class="list-group-item">' + users[i].name + '</li>';
     }
     $(".memberlist").html(h);
+}
+function updateList2(){
+    var h = "";
+    for(var i = 0; i < users.length; i++){
+        h += buyers.forename + " " + buyers.lastname.charAt(0).toUpperCase() + ".,";
+    }
+    $(".users-entry").html(h);
 }

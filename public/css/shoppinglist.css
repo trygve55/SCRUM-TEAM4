@@ -135,11 +135,15 @@ label {
 }
 
 #scrollable-dropdown-menu .tt-dropdown-menu {
+     max-height: 150px;
+     overflow-y: auto;
+ }
+#scrollable-dropdown-menu2 .tt-dropdown-menu {
     max-height: 150px;
     overflow-y: auto;
 }
-
 .typeahead,
+.typeahead2,
 .tt-query,
 .tt-hint {
     width: 150%;
@@ -147,11 +151,13 @@ label {
     outline: none;
 }
 
-.typeahead {
+.typeahead,
+.typeahead2{
     background-color: #fff;
 }
 
-.typeahead:focus {
+.typeahead:focus,
+.typeahead2:focus{
     border: 2px solid #0097cf;
 }
 
