@@ -102,6 +102,31 @@ $(function() {
 		},
 		error: console.error()
 	});
+
+    $("#upload-button").click(function () {
+        console.log("test0");
+        $("#file-upload").trigger("click");
+    });
+
+    $("#file-upload").change(function () {
+        console.log("test1");
+
+        var formData = new FormData();
+        formData.append('File', $("#file-upload")[0].files[0]);
+
+        $.ajax({
+            url : 'api/group/' + currentGroup.group_id + '/picture',
+            type : 'POST',
+            data : formData,
+            processData: false,  // tell jQuery not to process the data
+            contentType: false,  // tell jQuery not to set contentType
+            success : function(data) {
+                console.log(data);
+                //$('#profpic').attr("src","api/group/" + currentGroup + "/picture");
+            }
+        });
+    });
+
 	loadLanguageText();
 });
 

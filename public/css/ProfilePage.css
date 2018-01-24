@@ -4,6 +4,7 @@ body{
     font-style: inherit;
     background-attachment: fixed;
 
+
 }
 
 div.container1{
@@ -14,47 +15,82 @@ div.container1{
     background-color: white;
     border-radius: 15px;
     overflow: hidden;
+    padding-bottom: 2%;
 
 
 }
 
+/*
+div.bordr{
+    border-right: 1px solid lightgrey;
+    height: 450px;
+}
+*/
+
 div.changeinfo {
     margin-top: 5%;
-    width: 95%;
     padding: 2%;
     font-size: 90%;
 
 }
 
+.colu1{
+}
 
+.colu2{
+    width: auto;
 
-div.background1{
-    background-color: white;
-    border-radius: 15px;
 }
 
 div.personaliaborder{
-    padding-bottom: 10%;
-
-}
-
-div.listborder {
-    background-color: white;
+    padding: 2%;
 }
 
 div.textarea{
-
-    width: 95%;
-    padding: 1%;
     font-size: 90%;
-    background-color: white;
-
-    height: 200px;
 }
+
+
+@media (max-width: 900px){
+    #profpic{
+        width: 150px;
+        height: 150px;
+    }
+
+}
+
+
+@media (min-width: 500px) and (max-width: 768px) {
+    .colu1{
+        min-width: 500px;
+    }
+
+    .colu2{
+        min-width: 500px;
+    }
+}
+
+/*
+@media(max-width:767px){
+    .colu1 {
+    }
+}
+
+@media(min-width:375px){
+    .colu1 {
+        min-width: 500px;
+    }
+}
+*/
 
 #okok{
     overflow-y: scroll;
 
+}
+
+#profpic{
+    width: 180px;
+    height: 180px;
 }
 
 .okoko2{
@@ -72,10 +108,16 @@ div.textarea{
 
 .fa-picture-o{
     font-size: 20px;
+    color: grey;
+    padding: 2%;
+}
+
+.fa-picture-o:hover{
+    color: #00BFF3;
 }
 
 /*
-
+@include media-breakpoint-up(sm) { ... }
 @media screen and (max-width: 375px) {
     .picture img {
         display: none!important;
@@ -98,11 +140,9 @@ div.textarea{
 }
 
 div.debtborder{
-    height: 46%;
-    width: 100%;
-    margin-left: -5%;
-    margin-right: -5%;
-    padding-bottom: 5%;
+    padding: 2%;
+    margin-bottom: 5%;
+    margin-top: 8%;
 }
 
 
