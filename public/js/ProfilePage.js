@@ -103,21 +103,20 @@ $(document).ready(function () {
      * Method that checks if the user is logged into facebook, if so
      * the password fields and change password button will be hidden.
      */
-
-
     $.ajax({
         url: '/api/user/checkFacebook',
         method: 'GET',
         success: function (data) {
             console.log(data);
-            $('#passwordarea').hide();
+            if(data.facebook == true) {
+                $('#passwordarea').hide();
+            }else{
+                $('#passwordarea').show();
+            }
 
         },
         error: console.error
     });
-
-
-
 
     /**
      * Method to get information about the logged in user
