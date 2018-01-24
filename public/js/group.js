@@ -22,7 +22,7 @@ socket.on('group post', function(data){
         }
         $("#posts").prepend(feedPost({
             name: data[i].forename + (data[i].middlename ? ' ' + data[i].middlename : '') + ' ' + data[i].lastname,
-            payload: '',
+            payload: ((data[i].attachment_type === 1) ? '/api/news/data/' + data[i].post_id : ''),
             text: short,
             rest_text: rest,
             image_url: '/api/user/' + data[i].person_id + '/picture_tiny',
@@ -103,28 +103,9 @@ $(function() {
 		error: console.error()
 	});
 
-    $("#upload-button").click(function () {
+    $("#group-picturePost").click(function () {
         console.log("test0");
-        $("#file-upload").trigger("click");
-    });
-
-    $("#file-upload").change(function () {
-        console.log("test1");
-
-        var formData = new FormData();
-        formData.append('File', $("#file-upload")[0].files[0]);
-
-        $.ajax({
-            url : 'api/group/' + currentGroup.group_id + '/picture',
-            type : 'POST',
-            data : formData,
-            processData: false,  // tell jQuery not to process the data
-            contentType: false,  // tell jQuery not to set contentType
-            success : function(data) {
-                console.log(data);
-                //$('#profpic').attr("src","api/group/" + currentGroup + "/picture");
-            }
-        });
+        $("#file-attachment").trigger("click");
     });
 
 	loadLanguageText();
@@ -575,18 +556,25 @@ $(function () {
      */
     $('#group-postButton').click(function() {
 
+        console.log("test1");
+
+        var formData = new FormData();
+        formData.append('File', $("#file-attachment")[0].files[0]);
+        formData.append('post_text', $('#group-newsfeedPost').val());
+        formData.append('group_id', currentGroup.group_id);
+        formData.append('attachment_type', 1);
+
         $.ajax({
-            url: '/api/news',
-            method: 'POST',
-            data: {
-                post_text: $('#group-newsfeedPost').val(),
-                group_id: currentGroup.group_id
-            },
-            success: function (data123) {
+            url : '/api/news',
+            type : 'POST',
+            data : formData,
+            processData: false,
+            contentType: false,
+            success : function(data) {
+                console.log(data);
                 ClearFields();
             }
-        })
-
+        });
     });
 
     /**
@@ -705,7 +693,7 @@ function getPost(){
                 testy = a.toDateString();
                 $("#posts").append(feedPost({
                     name: dataFeed[i].posted_by.forename + (dataFeed[i].posted_by.middlename ? ' ' + dataFeed[i].posted_by.middlename : '') + ' ' + dataFeed[i].posted_by.lastname,
-                    payload: '',
+                    payload: ((dataFeed[i].attachment_type === 1) ? '/api/news/data/' + dataFeed[i].post_id : ''),
                     text: short,
                     rest_text: rest,
                     image_url: '/api/user/' + dataFeed[i].posted_by.person_id + '/picture_tiny',
