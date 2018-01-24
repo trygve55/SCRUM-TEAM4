@@ -7,7 +7,7 @@ var listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingL
 
 $(document).ready(function () {
 
-    $('#myModal').hide();
+    //$('#passwordarea').hide();
 
     $('#profpic').attr("src","api/user/" + localStorage.person_id + "/picture");
 
@@ -99,7 +99,29 @@ $(document).ready(function () {
         });
     });
 
+    /**
+     * Method that checks if the user is logged into facebook, if so
+     * the password fields and change password button will be hidden.
+     */
 
+
+    $.ajax({
+        url: '/api/user/checkFacebook',
+        method: 'GET',
+        success: function (data) {
+            console.log(data);
+            $('#passwordarea').hide();
+
+        },
+        error: console.error
+    });
+
+
+
+
+    /**
+     * Method to get information about the logged in user
+     */
     $.ajax({
         url: '/api/user/getUser',
         method: 'GET',
@@ -138,10 +160,12 @@ $(document).ready(function () {
 
             if (data[0].birth_date) {
                 var date = data[0].birth_date;
+                //var formattedDate = new Date(date).toIsoString().slice(0,10); //split("T")[0];
                 var formattedDate = date.split("T")[0];
+
+                console.log(date);
                 $('#datepicker').val(formattedDate);
             }
-
 
             $('#profile-email').text(data[0].email);
             $('#profile-phone').text(data[0].phone ? data[0].phone : "");
@@ -153,6 +177,9 @@ $(document).ready(function () {
         }
     });
 
+    /**
+     * Method to change format for datepicker
+     */
     $( "#datepicker" ).datepicker({
         dateFormat: 'yy-mm-dd',
         changeMonth: true,
@@ -184,6 +211,9 @@ $(document).ready(function () {
         });
     });
 
+    /**
+     * Method for saving info that has been written into input fields
+     */
     $("#but").click(function () {
         if($('#datepicker').val() == '') {
             $.ajax({
@@ -225,8 +255,14 @@ $(document).ready(function () {
         }
     });
 
+
+
+    /**
+     * Method that first checks if the old password that the user has
+     * written is correct, if so it changes password.
+     */
     $("#pwbut").click(function () {
-        // check password
+        // outer ajax checks if old password is correct
         $.ajax({
             url: '/api/user/checkPassword',
             method: 'POST',
@@ -235,7 +271,7 @@ $(document).ready(function () {
             },
             success: function (data) {
 
-                // change password if check password is succsesfullll
+                // inner ajax changes password, if old password was correct
                 $.ajax({
                     url: '/api/user/password',
                     method: 'PUT',
@@ -253,12 +289,8 @@ $(document).ready(function () {
         });
     });
 
-    /**
-     * Hides buttons, input
-     */
-    function inits(){
 
-    }
+
 
     /*
     $('#media').carousel({
@@ -279,3 +311,4 @@ $(document).ready(function () {
         });
     });
 });
+

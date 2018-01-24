@@ -58,7 +58,9 @@ router.get('/checkFacebook', function(req, res){
         if(err) {
             return res.status(500).json({error: err});
         } else {
-            if (!result[0].length)
+            console.log(result.length);
+            console.log(req.session.person_id);
+            if (result.length !== 1)
                 return res.status(400).json({facebook: false});
             else
                 return res.status(200).json({facebook: true});
