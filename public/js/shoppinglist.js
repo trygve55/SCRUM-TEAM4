@@ -491,7 +491,7 @@ function setupClicks(){
 
                 //Adds all budget-entries to the list
                 for(var i = data.budget_entries.length-1; i >= 0 ; i--){
-                    entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].text_note +"</td><td>" + data.budget_entries[i].amount + " "+sign+"</td>";
+                    entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].text_note +"</td><td>" + data.budget_entries[i].amount/100 + " "+sign+"</td>";
                 }
                 $(mbutton).closest("div[data-id]").html(balance({
                     title: lang["shop-balance"],
@@ -520,7 +520,15 @@ function setupClicks(){
                     var p = "";
                     var payerlist = entry.persons_to_pay;
                     for(var k=0; k<payerlist.length; k++){
-                        p += "<li class='list-group-item'>"+payerlist[k].forename+"</li>";
+                        if(payerlist[k].person_id == me.person_id){
+                            if(me.person_id == entry.added_by.person_id){
+                                p += "<li class='list-group-item'>"+lang["me"]+"</li>";
+                            }else{
+                                p += "<li class='list-group-item'><div class='row'><div class='col-sm'>"+lang["me"]+"</div><div class='col-sm' style='text-align: right'><button type='button' class='btn' style='background-color: lightgrey'>"+lang["settle"]+"</button></div></div></li>";
+                            }
+                        }else{
+                            p += "<li class='list-group-item'>"+payerlist[k].forename+" "+payerlist[k].lastname+"</li>";
+                        }
                     }
                     $(this).closest(".pop").hide();
                     var datetime = entry.entry_datetime;
@@ -530,14 +538,23 @@ function setupClicks(){
                     var time = datetime.split("T")[1].split(".")[0]; //09:23:02
                     var timeNsec = time.split(":")[0] + ":" + time.split(":")[1];
                     var formattedDateTime = date + "/" + month + "/" + year + ", " + timeNsec;
+                    var la = entry.budget_entry_type.budget_entry_type_name;
+                    //var bc = entry.budget_entry_type.budget_entry_type_color;
+                    var bc = '4286f4';
+                    var lh = '<div style="background-color: #'+bc+'; padding-left: 1vh; padding-top: 0.5vh; padding-bottom: 0.5vh;border-radius: 15px;">'+lang["label-label"]+': '+la+'</div>'
                     $("body").append(balanceItem({
-                        title: entry.entry_datetime,
                         comment: entry.text_note,
                         bought_by: entry.added_by.forename + " " + entry.added_by.lastname,
-                        cost: entry.amount + " " + sign,
+                        bought_by_label: lang["bought-by-label"],
+                        cost: entry.amount/100 + " " + sign,
+                        cost_label: lang["cost-label"],
                         payers: p,
+                        labelhtml: lh,
+                        payers_label: lang["payers-label"],
                         goods: g,
+                        goods_label: lang["goods-label"],
                         time: formattedDateTime,
+                        time_label: lang["time-label"],
                         complete: lang["shop-ok"]
                     }));
                     $("#balance-info-complete").click(function(){
@@ -571,9 +588,11 @@ function setupClicks(){
                         lang_buy_items: lang["shop-buy"],
                         lang_share_members: lang["shop-share"],
                         lang_delete_list: lang["shop-delete"],
+                        lang_currency: currencies,
                         lang_settlement: lang["shop-balance"],
                         color_hex: (d.color_hex ? d.color_hex.toString(16) : "FFFFFF")
                     }));
+                    $('div[data-id=' + id + ']').find("select").val(d.currency_id);
                     setupClicks();
                     colorRefresh();
                 });
@@ -610,11 +629,9 @@ function setupClicks(){
                 shopping_list_id: li
             },
             success: function (data) {
-                console.log(data);
                 for (i = 0; i < data.budget_entry_types.length; i++) {
                     labelz[i] = data.budget_entry_types[i].entry_type_name;
                     h += '<option value="' + data.budget_entry_types[i].budget_entry_type_id + '">' + data.budget_entry_types[i].entry_type_name + '</option>';
-                    console.log(h);
                 }
                 var found = false;
                 for (var j = 0; j < generalLabels.length; j++) {
@@ -736,7 +753,7 @@ function setupClicks(){
                             data: {
                                 shopping_list_id: id,
                                 shopping_list_entry_ids: e,
-                                amount: Number($(this).closest('.pop').find('input').val()),
+                                amount: Number($(this).closest('.pop').find('input').val())*100,
                                 text_note: textnote
                             },
                             success: function (data) {
@@ -782,7 +799,7 @@ function setupClicks(){
                                                     shopping_list_id: id,
                                                     shopping_list_entry_ids: e,
                                                     budget_entry_type_id: data.budget_entry_type_id,
-                                                    amount: Number($(theis).closest('.pop').find('input').val()),
+                                                    amount: Number($(theis).closest('.pop').find('input').val())*100,
                                                     text_note: textnote
                                                 },
                                                 success: function (data) {
@@ -825,7 +842,7 @@ function setupClicks(){
                                                 shopping_list_id: id,
                                                 shopping_list_entry_ids: e,
                                                 budget_entry_type_id: data.budget_entry_type_id,
-                                                amount: Number($(theis).closest('.pop').find('input').val()),
+                                                amount: Number($(theis).closest('.pop').find('input').val())*100,
                                                 text_note: textnote
                                             },
                                             success: function (data) {
@@ -860,7 +877,7 @@ function setupClicks(){
                                     shopping_list_id: id,
                                     shopping_list_entry_ids: e,
                                     budget_entry_type_id: labelid,
-                                    amount: Number($(theis).closest('.pop').find('input').val()),
+                                    amount: Number($(theis).closest('.pop').find('input').val())*100,
                                     text_note: textnote
                                 },
                                 success: function (data) {
@@ -872,8 +889,7 @@ function setupClicks(){
                                             data: {
                                                 shopping_list_id: id,
                                                 purchased_by_person_id: me.person_id,
-                                                budget_entry_id: data.budget_entry_id,
-                                                budget_entry_type_id: labelid
+                                                budget_entry_id: data.budget_entry_id
                                             },
                                             error: console.error
                                         });
@@ -993,5 +1009,3 @@ function updateList(){
     }
     $(".memberlist").html(h);
 }
-
-
