@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Log In</title>
+    <title>HHM: Profilepage</title>
 
-    <!-- favicon stuff -->
     <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png">
@@ -26,6 +25,14 @@
     <script src="/js/ProfilePage.js"></script>
     <script src="/js/redirect.js"></script>
     <script src="https://use.fontawesome.com/dea62227f7.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
     <script type="text/javascript"> (function() { var css = document.createElement('link'); css.href = '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css'; css.rel = 'stylesheet'; css.type = 'text/css'; document.getElementsByTagName('head')[0].appendChild(css); })(); </script>
 </head>
 
@@ -36,12 +43,15 @@
 </style>
 
 <script type="text/javascript">
+
+/*
     $(document).ready(function () {
         $('#media').carousel({
             pause: true,
             interval: false,
         });
     });
+    */
 </script>
 
 <body>
@@ -81,7 +91,6 @@
     </div>
 </nav>
 
-<!--Language selection.-->
 <div class="flag" style="background-color: white">
     <img class="flag" id="profile-norway" style="position:absolute; right:15px; margin-top: 1%" src="/img/norwegianflag.jpg" width="20" height="12">
     <img class="flag" id="profile-england" style="position:absolute; right: 40px; margin-top: 1%" src="/img/engelskflagg.png" width="20" height="12">
@@ -91,18 +100,22 @@
 <div class="container container1" align="center">
     <br>
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-6 bordr colu1">
 
             <div class="container personaliaborder">
+                <div>
                 <div class="row textarea">
-                    <div class="picture col-sm">
-                        <img  src="https://lh3.googleusercontent.com/AkTbUA_l8OICZ7xKGMY3-w0_kgCIRz_yEXMOYgHokTR9P_vszUvdp4udMP_o4VaCDkg=w300" height="190px" width="190px" style="padding-top: 10%">
-                        <div class="row">
-                            <i class="fa fa-picture-o" aria-hidden="true"> Change photo</i>
+                    <div class="col-sm" style="margin-left: 5%">
+                        <div class="row picture">
+                            <img  id="profpic" style="border:none" >
                         </div>
-
+                        <div class="row">
+                            <i class="fa fa-picture-o" aria-hidden="true"> <text id="p-changephoto"> </text></i>
+                            <form id="uploadPic" action="" enctype="multipart/form-data" method="post" style="visibility:hidden">
+                                <input type="file" name="File" id="file-upload"><br>
+                            </form>
+                        </div>
                     </div>
-
 
                     <div class="col-sm" align="left">
                         <div style="height:auto" id="profile-name" class="okoko"></div>
@@ -126,13 +139,12 @@
                         <div style="height: auto" id="profile-username2" class="okoko2"></div>
                         <h4></h4>
                     </div>
-                    <br>
 
-
+                </div>
                 </div>
             </div>
 
-            <div class="container debtborder">
+            <div class="container debtborder tester">
                 <div id="media" class="carousel slide media-carousel" data-ride="carousel">
                     <ol class="carousel-indicators">
                         <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
@@ -162,7 +174,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-6 colu2" style="padding-right: 5%">
 
             <h6 id="p-changeinfo"></h6>
 
@@ -207,19 +219,56 @@
                         <input type="text" class="form-control" id="p-phonenumb"  placeholder="">
                     </div>
                 </div>
+
+                <div class="row form-group">
+                    <!--
+                    <div class="col-4" align="left">
+                        <label for="p-gen" id="p-gender"></label>
+                    </div>
+                    <div class="col-8">
+                        <select class="dropdown" id="p-gen" >
+                            <option id="p-other"></option>
+                            <option id="p-female"></option>
+                            <option id="p-male"></option>
+                            <option id="p-genderopt" selected></option>
+                        </select>
+                    </div>
+
+                    -->
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-4" align="left">
+                        <label for="datepicker">Birthdate</label>
+                    </div>
+                    <div class="col-8">
+
+                        <input type="text" id="datepicker">
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-4" align="left">
+                    </div>
+                    <div class="col-8" align="right">
+                        <button type="button" id="but" class="btn btn-default buttonstyle">Save info</button>
+                    </div>
+                </div>
+
+
                 <!-- <button type="default" class="btn btn-primary" style="align:right">Save info</button> -->
             </form>
 
 
             <form>
-            <div style="align: left;">
+            <div style="align: left; padding-top: 5%">
                 <h6 id="p-changepassword"></h6>
                 <div class="row form-group">
                     <div class="col-4" align="left">
                         <label for="usr" id="p-oldpassword"></label>
                     </div>
                     <div class="col-8">
-                        <input type="password" class="form-control" id="usr" placeholder="old password">
+                        <input type="password" class="form-control" id="usr">
                     </div>
                 </div>
                 <div class="row form-group">
@@ -227,10 +276,16 @@
                         <label for="pwd" id="p-newpassword"></label>
                     </div>
                     <div class="col-8">
-                        <input type="password" class="form-control" id="pwd" placeholder="new password">
+                        <input type="password" class="form-control" id="pwd">
                     </div>
                 </div>
-                <button type="default" class="btn btn-primary" style="align:right">Save password</button>
+                <div class="row form-group">
+                    <div class="col-4" align="left">
+                    </div>
+                    <div class="col-8" align="right">
+                        <button id="but1" type="button" class="btn btn-default buttonstyle" style="align:right">Save password</button>
+                    </div>
+                </div>
             </div>
             </form>
         </div>

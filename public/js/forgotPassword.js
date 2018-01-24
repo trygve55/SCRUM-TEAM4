@@ -19,7 +19,7 @@ $('document').ready(function () {
         }
     });
 
-    $('#profile-norway').click(function () {
+    $('#forgotPassword-norway').click(function () {
         $.ajax({
             url: '/api/language',
             method: 'POST',
@@ -49,7 +49,7 @@ $('document').ready(function () {
 
     });
 
-    $('#profile-england').click(function () {
+    $('#forgorPassword-england').click(function () {
         $.ajax({
             url: '/api/language',
             method: 'POST',

@@ -24,5 +24,11 @@
   "p-savepassword": "Lagre passord",
   "p-saveinfo": "Lagre info",
   "p-changepassword": "Endre passord",
-  "p-changeinfo": "Endre info"
+  "p-changeinfo": "Endre info",
+  "p-changephoto": "Bytt bilde",
+  "p-gender": "Kjønn",
+  "p-genderopt": "< Kjønn (valgfritt) >",
+  "p-female": "Kvinne",
+  "p-male": "Mann",
+  "p-other": "Annet"
 }

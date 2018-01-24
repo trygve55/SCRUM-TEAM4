@@ -6,7 +6,8 @@ var router = require('express').Router(),
     fs = require('fs'),
     path = require('path'),
     nodemailer = require('nodemailer'),
-    jwt = require('jsonwebtoken');
+    jwt = require('jsonwebtoken'),
+    bcrypt = require('bcrypt');
 
 module.exports = router;
 
@@ -17,7 +18,6 @@ module.exports = router;
  * method: GET
  *
  */
-
 router.get('/all', function(req, res){
    if(!req.session.person_id)
         return res.status(403).send();
@@ -52,6 +52,57 @@ router.get('/all', function(req, res){
 });
 
 /**
+ * Check password
+ *
+ * URL: /api/user/checkPassword
+ * method: POST
+ * data: {
+ *      password
+ * }
+ */
+
+
+router.post('/checkPassword', function (req, res) {
+   if (req.session.person_id == null) {
+       return res.status(403).send("Invalid request, you must log in");
+   }
+
+   var user = req.body;
+
+   if (!user.password) {
+       return res.status(400).send("No data");
+   }
+
+   pool.query('SELECT facebook_api_id FROM person WHERE person_id = ?', [req.session.person_id], function (err, result) {
+        if(err) {
+            return res.status(500).send("DB_ERROR");
+        } else {
+            if (result[0].facebook_api_id)
+                return res.status(200).send("ERROR");
+            else {
+                pool.query(
+                    'SELECT password_hash FROM person WHERE person_id = ?;',
+                    [req.session.person_id],
+                    function (err, result) {
+                        if (err)
+                            return res.status(500).send("ERROR: executing query");
+                        if (result.length == 0){
+                            console.log(result.length);
+                            return res.status(400).json({password: false});
+                        }
+                        else bcrypt.compare(user.password, result[0].password_hash, function(err, hash_res){
+                            if(hash_res)
+                                return res.status(200).json({password: true});
+                            else
+                                return res.status(400).json({password: false});
+                    });
+                });
+            }
+        }
+   });
+});
+
+/**
  * Change password for the currently logged in user
  *
  * URL: /api/user/password
@@ -60,6 +111,7 @@ router.get('/all', function(req, res){
  *      password
  * }
  */
+
 
 router.put('/password', function (req, res) {
     if(req.session.person_id == null) {
@@ -84,7 +136,7 @@ router.put('/password', function (req, res) {
                 auth.hashPassword(user, function(user) {
                     pool.query(
                         'UPDATE person SET password_hash = ? WHERE person_id = ?;',
-                        [user.password_hash, req.params.person_id],
+                        [user.password_hash, req.session.person_id],
                         function (err) {
                             if (err)
                                 return res.status(500).send("ERROR: executing query");
@@ -428,10 +480,9 @@ router.get('/:person_id/picture_tiny', function(req, res){
         }
 
         res.contentType('jpeg').status(200).end(results[0].profile_pic_tiny, 'binary');
-
-        if (results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
     });
 });
+
 
 /**
  * Update profile
@@ -488,13 +539,14 @@ router.post('/picture', function(req, res){
             return res.status(500).json({'Error': err});
         }
 
-        var path = files.file.path,
-            file_size = files.file.size;
+        if (!files.File || !files.File.path)
+            return res.status(400).json({'error': 'file error'});
 
-        if (file_size > 4000000) {
-            res.status(400).json({'error': 'image file over 4MB'});
-            return;
-        }
+        var path = files.File.path,
+            file_size = files.File.size;
+
+        if (file_size > 4000000)
+            return res.status(400).json({'error': 'image file over 4MB'});
 
         Jimp.read(path, function (err, img) {
             if (err)
@@ -503,7 +555,7 @@ router.post('/picture', function(req, res){
             var img_tiny = img.clone();
 
             img.background(0xFFFFFFFF)
-                .contain(500, 500)
+                .cover(500, 500)
                 .quality(70)
                 .getBuffer(Jimp.MIME_JPEG, function (err, data) {
                     if (err)
