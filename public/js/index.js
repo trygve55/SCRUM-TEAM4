@@ -1,4 +1,45 @@
 var homeFeedPost;
+
+socket.on('group post', function(data){
+    console.log(data);
+    for (var i = 0; i < data.length; i++) {
+        var length = 50;
+        var text = data[i].post_text.split(" ");
+        var short = "";
+        var rest = "";
+        for (var j = 0; j < length && j < text.length; j++) {
+            short += text[j] + " ";
+        }
+        for (var k = j; k < text.length; k++) {
+            rest += text[k] + " ";
+        }
+        a = new Date(data[i].posted_datetime);
+        testy = a.toDateString();
+        $('#newsfeedPost').prepend(homeFeedPost({
+            name: data[i].forename + (data[i].middlename ? ' ' + data[i].middlename : '') + ' ' + data[i].lastname,
+            payload: '',
+            groupname: data[i].group_name,
+            text: short,
+            rest_text: rest,
+            image_url: '/api/user/' + data[i].person_id + '/picture_tiny',
+            data: 'data-id="' + data[i].post_id + '"',
+            datetime: testy,
+            lang_read_more: "Read more..."
+        }));
+
+        if(k <= length) {
+            $("#newsfeedPost div[data-id=" + data[i].post_id + "] a").hide();
+        } else {
+            $("#newsfeedPost div[data-id=" + data[i].post_id + "] a").click(function(){
+
+                $(this).closest("div").find("span").show();
+                $(this).remove();
+            });
+        }
+
+    }
+});
+
 $(function () {
     $.ajax({
         url: '/template',
@@ -96,6 +137,9 @@ $(function () {
         });
     });
 
+    /**
+     * This function makes it possible for a user to logout when on the home/index page.
+     */
     $('#index-logoutNavbar').click(function () {
         $.ajax({
             url: '/api/auth/logout',
@@ -108,6 +152,10 @@ $(function () {
         });
     });
 
+    /**
+     * This method retrives information about the user, forename and lastname, and posts
+     * it on the home/index page.
+     */
     $.ajax({
         url:'/api/user/getUser',
         method:'GET',
@@ -124,13 +172,17 @@ $(function () {
     });
 });
 
+/**
+ * This function retrieves all posts, from all the groups the user has access too/is a part of,
+ * and post them on the homepage. They will appear in a order set by when the post was posted.
+ */
 function prep() {
     $.ajax({
         url: '/api/news/',
         method: 'GET',
         success: function (feed) {
             $('#newsfeedPost').html("");
-            console.log(feed);
+
             for (var i = 0; i < feed.length; i++) {
                 var length = 50;
                 var text = feed[i].post_text.split(" ");
@@ -155,12 +207,12 @@ function prep() {
                     datetime: testy,
                     lang_read_more: "Read more..."
                 }));
-                console.log(k);
+
                 if(k <= length) {
                     $("#newsfeedPost div[data-id=" + feed[i].post_id + "] a").hide();
                 } else {
                     $("#newsfeedPost div[data-id=" + feed[i].post_id + "] a").click(function(){
-                        console.log("HEI");
+
                         $(this).closest("div").find("span").show();
                         $(this).remove();
                     });

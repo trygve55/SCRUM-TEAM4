@@ -33,7 +33,15 @@ router.post('/', function(req, res) {
         'group_id, posted_by_id, post_text, attachment_type, attachment_data' +
         ') VALUES (?,?,?,?,?);',
         [data.group_id, req.session.person_id, data.post_text, data.attachment_type, extraData],	// data.posted_by_id to test this.
-        function(err, result) {checkResult(err, result, res);}
+        function(err, result) {
+            if(err)
+                return res.status(500).send();
+            pool.query('SELECT post_id, post_text, attachment_type, posted_datetime, person.forename, person.middlename, person.lastname, home_group.group_id, home_group.group_name, person.person_id FROM newsfeed_post LEFT JOIN person ON (person.person_id = newsfeed_post.posted_by_id) LEFT JOIN home_group USING (group_id) WHERE post_id = ?;',
+                [result.insertId], function(err, result){
+                    checkResult(err, {}, res);
+                    socket.group_data('group post', data.group_id, result);
+                });
+        }
     );
 });
 

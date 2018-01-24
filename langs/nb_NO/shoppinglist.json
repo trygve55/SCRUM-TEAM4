@@ -1,6 +1,7 @@
 {
   "shop-homepage": "Hjem",
   "shop-groups": "Grupper",
+  "me": "Meg",
   "shop-tasks": "Gjøremål",
   "shop-shoppinglists": "Handlelister",
   "shop-profile": "Profil",
@@ -23,5 +24,17 @@
   "shop-input-members": "Skriv inn nytt medlem her",
   "shop-entry-name": "Kommentar",
   "shop-entry-label": "Type",
-  "shop-not-needed": "Ikke nødvendig"
+  "shop-not-needed": "Ikke nødvendig",
+  "bought-by-label": "Kjøpt av",
+  "time-label": "Tidspunkt",
+  "cost-label": "Kostnad",
+  "payers-label": "Betalere",
+  "goods-label": "Varer",
+  "label-label": "Kategori",
+  "label1": "Fest",
+  "label2": "Fellesmat",
+  "label3": "Renhold",
+  "label4": "Reparasjoner",
+  "newlabel": "Ny type",
+  "settle": "Gjør opp"
 }

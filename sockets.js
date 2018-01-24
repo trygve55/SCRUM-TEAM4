@@ -15,11 +15,19 @@ module.exports = function(http){
                 }
             }
             pool.query('SELECT group_id FROM group_person WHERE person_id = ?', [data.person_id], function(err, result){
+                var groups = [];
+                for(var i = 0; i < result.length; i++){
+                    groups.push(result[i].group_id);
+                }
                 if(err){
                     console.error(err);
                     return scket.emit('error', err);
                 }
-                pool.query('SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?', [data.person_id], function(err, result2){
+                pool.query('SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?', [data.person_id], function(err, result){
+                    var slist = [];
+                    for(var i = 0; i < result.length; i++){
+                        slist.push(result[i].shopping_list_id);
+                    }
                     if(err){
                         console.error(err);
                         return scket.emit('error', err);
@@ -27,8 +35,8 @@ module.exports = function(http){
                     socks.push({
                         socket: scket,
                         person_id: data.person_id,
-                        groups: result,
-                        shopping_lists: result2
+                        groups: groups,
+                        shopping_lists: slist
                     });
                 });
             });
@@ -76,21 +84,30 @@ module.exports = function(http){
 
     return {
         group_data: function(channel, group_id, data){
+            console.log(socks[0].groups.indexOf(Number(group_id)));
             for(var i = 0; i < socks.length; i++){
-                if(socks[i].groups.indexOf(group_id) > -1)
+                if(socks[i].groups.indexOf(Number(group_id)) > -1) {
+                    console.log(socks[i]);
                     socks[i].socket.emit(channel, data);
+                }
             }
         },
         person_data: function(channel, person_id, data){
+            console.log(arguments);
             for(var i = 0; i < socks.length; i++){
-                if(socks[i].person_id == person_id)
+                if(socks[i].person_id == person_id) {
+                    console.log(socks[i]);
                     socks[i].socket.emit(channel, data);
+                }
             }
         },
         shopping_list_data: function(channel, shopping_list_id, data){
+            console.log(arguments);
             for(var i = 0; i < socks.length; i++){
-                if(socks[i].shopping_lists.indexOf(shopping_list_id) > -1)
+                if(socks[i].shopping_lists.indexOf(Number(shopping_list_id)) > -1) {
+                    console.log(socks[i]);
                     socks[i].socket.emit(channel, data);
+                }
             }
         }
     };

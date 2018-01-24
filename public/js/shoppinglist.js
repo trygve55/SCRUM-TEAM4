@@ -5,8 +5,28 @@ var newmembers = [];
 var curBudget, currencies;
 var list, balance, listItem, newListItem, popupTextList, popupList, balanceItem, listReplace, popupMembers;
 var me;
+var generalLabels;
+var thenewlabel;
 
 $('document').ready(function () {
+
+    $('#shop-logout').click(function () {
+        $.ajax({
+            url: '/api/auth/logout',
+            method: 'POST',
+            success: function (data) {
+                if(!data.login){
+                    window.top.location="http://localhost:8000/login.html";
+                }
+            }
+        });
+    });
+    //------------------Setting a variable to the logged in user------------
+
+    /**
+     * This method retrieves information about the user; person_id, forename and lastname.
+     */
+
     $.ajax({
         url: '/api/user/getUser',
         method: 'GET',
@@ -21,6 +41,14 @@ $('document').ready(function () {
             me = data[0];
         }
     });
+
+    //------------------Setting a variable to all currencies in the database------------
+
+
+    /**
+     * This method retrieves information the set currency for a shoppinglist.
+     */
+
     $.ajax({
         url: '/api/currency',
         method: 'GET',
@@ -32,7 +60,13 @@ $('document').ready(function () {
             currencies=h;
         }
     });
+
     //--------------Languages------------
+
+    /**
+     * This method calls the language api and sets the standard language as
+     * norwegian.
+     */
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -53,9 +87,16 @@ $('document').ready(function () {
             $(".fa-users").html(" " + data["shop-share"]);
             $(".fa-trash").html(" " + data["shop-delete"]);
             $(".fa-plus-circle").html(" " + data["shop-additem"]);
+            generalLabels = [data["label1"], data["label2"], data["label3"], data["label4"], data["newlabel"]];
+            thenewlabel = data["newlabel"];
         }
     });
-    $('#login-norway').click(function () {
+
+    /**
+     * This method calls the language api and sets the language to norwegian
+     * if the user clicks on the norwegian flag.
+     */
+    $('#shop-norway').click(function () {
         $.ajax({
             url: '/api/language',
             method: 'POST',
@@ -84,13 +125,19 @@ $('document').ready(function () {
                         $(".fa-trash").html(" " + data["shop-delete"]);
                         $(".fa-plus-circle").html(" " + data["shop-add-item"]);
                         $(".list-name-input").attr('placeholder', data["shop-list-name-input"]);
-
+                        generalLabels = [data["label1"], data["label2"], data["label3"], data["label4"], data["newlabel"]];
+                        thenewlabel = data["newlabel"];
                     }
                 });
             }
         });
     });
-    $('#login-england').click(function () {
+
+    /**
+     * This method calls the language api and sets the language to english
+     * if the user clicks on the british flag.
+     */
+    $('#shop-england').click(function () {
         $.ajax({
             url: '/api/language',
             method: 'POST',
@@ -119,11 +166,20 @@ $('document').ready(function () {
                         $(".fa-trash").html(" " + data["shop-delete"]);
                         $(".fa-plus-circle").html(" " + data["shop-add-item"]);
                         $(".list-name-input").attr('placeholder', data["shop-list-name-input"]);
+                        generalLabels = [data["label1"], data["label2"], data["label3"], data["label4"], data["newlabel"]];
+                        thenewlabel = data["newlabel"];
                     }
                 });
             }
         });
     });
+
+
+    //----------------Importes all html-templates------------
+
+    /**
+     * This method retrieves the templates and lets us use them.
+     */
 
     $.ajax({
         url: '/template',
@@ -157,6 +213,14 @@ $('document').ready(function () {
 });
 
 function prep(){
+
+    //-----------------Gets all shoppinglists and shows them in the website------------
+
+    /**
+     * This method retrieves all shopping lists on the database and sets them up when
+     * the user foes into the shoppinglist site.
+     */
+
     $.ajax({
         url: '/api/shoppingList/',
         method: 'GET',
@@ -193,8 +257,15 @@ function prep(){
         }
     });
 
-
     //---------------New list-------------
+
+
+
+    /**
+     * This function makes it possible for a user to add a new shoppinglist. Posts the users
+     * input into the database.
+     */
+
     $('#addlist').click(function () {
         $.ajax({
             url: '/api/shoppingList',
@@ -228,11 +299,18 @@ function prep(){
     });
 }
 
+//-----------------Sets up the buttons so the functionality will work------------
+
+
+/**
+ * This function
+ */
+
 function setupClicks(){
+    //-----------------Change currency------------
     $(".currency-input").change(function () {
         var newCurrId =  $(this).val();
         var listid = $(this).parent().attr("data-id");
-
        $.ajax({
            url: '/api/shoppingList/' + listid,
            method: 'PUT',
@@ -242,6 +320,7 @@ function setupClicks(){
        });
     });
 
+    //-----------------Opens inputfield for changing listtitle------------
     $(".list-name").unbind("click").click(function(){
         var listId = $(this).closest("div[data-id]").data("id");
         var title = $(this).html();
@@ -251,21 +330,7 @@ function setupClicks(){
         $(div).children(".list-name-input").val(title).focus();
     });
 
-    /*$(".list-name-input").unbind("focusout").focusout(function(){
-        var text = $(this).val();
-        var id = $(this).closest("div[data-id]").data("id");
-        var h4 = $(this).parent().parent().children(".list-name");
-        $(h4).html(text);
-        $(this).parent().hide();
-        $(h4).show();
-        $.ajax({
-            url: '/api/shoppingList/' + id,
-            method: 'PUT',
-            data: {
-                shopping_list_name: text
-            }
-        });});*/
-
+    //-----------------Sets new listtitle when enter is pressed------------
     $(".list-name-input").unbind("keypress").keypress(function(e){
         if(e.keyCode != 13 && e.which != 13)
             return;
@@ -290,7 +355,7 @@ function setupClicks(){
         }
     });
 
-
+    //-----------------Add new item to list------------
     $(".add-item").unbind("click").click(function(){
         $(this).closest("div").children(".itemlist").append(newListItem());
 
@@ -322,6 +387,8 @@ function setupClicks(){
             $(this).closest("li").remove();
         }).focus();
     });
+
+    //-----------------Sets up colorbuttons------------
     function colorRefresh() {
         $('.pink-select').unbind("click").click(function () {
             var ls = $(this).closest("div[data-id]");
@@ -334,7 +401,6 @@ function setupClicks(){
                 }
             });
         });
-
         $('.yellow-select').unbind("click").click(function () {
             var ls = $(this).closest("div[data-id]");
             var id = $(ls).css('background-color', $(this).data('color')).data("id");
@@ -346,7 +412,6 @@ function setupClicks(){
                 }
             });
         });
-
         $('.green-select').unbind("click").click(function () {
             var ls = $(this).closest("div[data-id]");
             var id = $(ls).css('background-color', $(this).data('color')).data("id");
@@ -358,7 +423,6 @@ function setupClicks(){
                 }
             });
         });
-
         $('.white-select').unbind("click").click(function () {
             var ls = $(this).closest("div[data-id]");
             var id = $(ls).css('background-color', $(this).data('color')).data("id");
@@ -373,10 +437,13 @@ function setupClicks(){
     }
     colorRefresh();
 
+    //-----------------Opens a popup when usersbutton is clicked------------
     $(".fa-users").unbind("click").click(function () {
         var h = "";
         var theuser;
         var li = $(this).parent().attr("data-id");
+
+        //Adds members of list to a memberlist
         for(var j=0; j<lists.length; j++){
             if(lists[j].shopping_list_id==li){
                 var peps = lists[j].persons;
@@ -385,10 +452,12 @@ function setupClicks(){
                         name: peps[k].forename + " " + peps[k].lastname
                     };
                     users.push(theuser);
-                    h += "<li class='list-group-item'>"+ peps[k].forename + " " + peps[k].lastname+"<i data-pid=" + k + " style=\"float: right;\" class=\"fa fa-times\" area-hidden=\"true\"></i></li>";
+                    h += "<li class='list-group-item'>"+ peps[k].forename + " " + peps[k].lastname+"</li>";
                 }
             }
         }
+
+        //Opens popup
         $("body").append(popupMembers({
             members: lang["shop-add-members"],
             cancel: lang["shop-cancel"],
@@ -398,7 +467,7 @@ function setupClicks(){
             data: "data-id='"+li+"'"
         }));
 
-
+        //Shows suggestions when characters is typed
         $('#scrollable-dropdown-menu .typeahead').typeahead({
                 highlight: true
             },
@@ -422,20 +491,26 @@ function setupClicks(){
                 }
             });
 
+        //Adds member to list when clicked
         $(".typeahead").bind('typeahead:select', function(a, data){
-            console.log(data);
             newmembers.push(data);
             users.push(data);
             updateList();
+            $(".typeahead").val("");
         });
 
+        //Empty inputfield when its closed
         $(".typeahead").bind('typeahead:close', function(){
             $(".typeahead").val("");
         });
 
+        //Deletes all new members and closes the popup
         $("#popup-members-cancel").click(function () {
+            newmembers = [];
             $(this).closest(".pop").remove();
         });
+
+        //Adds members to list in database (Sends invite)
         $("#popup-members-complete").click(function () {
             var li = $(this).closest('div[data-id]').attr('data-id');
             for(var j=0; j<newmembers.length; j++){
@@ -450,21 +525,30 @@ function setupClicks(){
                 })
             }
             $(this).closest(".pop").remove();
+            newmembers=[];
         });
     });
 
+    //----------------Opens settlement box when money-button is clicked----------
     $(".fa-money").unbind("click").click(function(){
         var id = $(this).closest("div[data-id]").data("id");
+        var sign = "";
+        for(var j=0; j<lists.length; j++){
+            if(lists[j].shopping_list_id==id){
+                sign = lists[j].currency_sign;
+            }
+        }
         var mbutton = this;
         $.ajax({
             url: '/api/budget/' + id,
             method: 'GET',
             success: function(data){
-                console.log(data);
                 curBudget = data;
                 var entries = "";
-                for(var i = 0; i < data.budget_entries.length; i++){
-                    entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].entry_datetime + "</td><td>" + data.budget_entries[i].amount + "</td>";
+
+                //Adds all budget-entries to the list
+                for(var i = data.budget_entries.length-1; i >= 0 ; i--){
+                    entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].text_note +"</td><td>" + data.budget_entries[i].amount/100 + " "+sign+"</td>";
                 }
                 $(mbutton).closest("div[data-id]").html(balance({
                     title: lang["shop-balance"],
@@ -474,6 +558,7 @@ function setupClicks(){
                     budget_entries: entries
                 }));
 
+                //Opens popup when a budget-entry is clicked
                 $('tr[data-id]').click(function(){
                     var id = $(this).closest("tr[data-id]").data("id");
                     var entry = null;
@@ -484,12 +569,50 @@ function setupClicks(){
                     }
                     if(!entry)
                         return;
-                    var d = "<li class='list-group-item'>Work in progress (data about a entry)</li>";
+                    var entrylist = entry.budget_shopping_list_entries;
+                    var g = "";
+                    for(var j=0; j<entrylist.length; j++){
+                        g += "<li class='list-group-item'>"+entrylist[j].entry_text+"</li>";
+                    }
+                    var p = "";
+                    var payerlist = entry.persons_to_pay;
+                    for(var k=0; k<payerlist.length; k++){
+                        if(payerlist[k].person_id == me.person_id){
+                            if(me.person_id == entry.added_by.person_id){
+                                p += "<li class='list-group-item'>"+lang["me"]+"</li>";
+                            }else{
+                                p += "<li class='list-group-item'><div class='row'><div class='col-sm'>"+lang["me"]+"</div><div class='col-sm' style='text-align: right'><button type='button' class='btn' style='background-color: lightgrey'>"+lang["settle"]+"</button></div></div></li>";
+                            }
+                        }else{
+                            p += "<li class='list-group-item'>"+payerlist[k].forename+" "+payerlist[k].lastname+"</li>";
+                        }
+                    }
                     $(this).closest(".pop").hide();
+                    var datetime = entry.entry_datetime;
+                    var year = datetime.split("-")[0]; //2018
+                    var month = datetime.split("-")[1]; //01
+                    var date = datetime.split("-")[2].split("T")[0]; //23
+                    var time = datetime.split("T")[1].split(".")[0]; //09:23:02
+                    var timeNsec = time.split(":")[0] + ":" + time.split(":")[1];
+                    var formattedDateTime = date + "/" + month + "/" + year + ", " + timeNsec;
+                    var la = entry.budget_entry_type.budget_entry_type_name;
+                    //var bc = entry.budget_entry_type.budget_entry_type_color;
+                    var bc = '4286f4';
+                    var lh = '<div style="background-color: #'+bc+'; padding-left: 1vh; padding-top: 0.5vh; padding-bottom: 0.5vh;border-radius: 15px;">'+lang["label-label"]+': '+la+'</div>'
                     $("body").append(balanceItem({
-                        title: entry.entry_datetime,
-                        complete: lang["shop-ok"],
-                        list: d
+                        comment: entry.text_note,
+                        bought_by: entry.added_by.forename + " " + entry.added_by.lastname,
+                        bought_by_label: lang["bought-by-label"],
+                        cost: entry.amount/100 + " " + sign,
+                        cost_label: lang["cost-label"],
+                        payers: p,
+                        labelhtml: lh,
+                        payers_label: lang["payers-label"],
+                        goods: g,
+                        goods_label: lang["goods-label"],
+                        time: formattedDateTime,
+                        time_label: lang["time-label"],
+                        complete: lang["shop-ok"]
                     }));
                     $("#balance-info-complete").click(function(){
                         $(this).closest(".pop").remove();
@@ -497,10 +620,9 @@ function setupClicks(){
                     });
                 });
 
+
                 $('#popup-complete').click(function(){
                     var entries = "";
-                    console.log(lists);
-                    console.log(id);
                     for(var j = 0; j < lists.length; j++) {
                         if(lists[j].shopping_list_id != id)
                             continue;
@@ -523,9 +645,11 @@ function setupClicks(){
                         lang_buy_items: lang["shop-buy"],
                         lang_share_members: lang["shop-share"],
                         lang_delete_list: lang["shop-delete"],
+                        lang_currency: currencies,
                         lang_settlement: lang["shop-balance"],
                         color_hex: (d.color_hex ? d.color_hex.toString(16) : "FFFFFF")
                     }));
+                    $('div[data-id=' + id + ']').find("select").val(d.currency_id);
                     setupClicks();
                     colorRefresh();
                 });
@@ -534,6 +658,7 @@ function setupClicks(){
         });
     });
 
+    //-------------Deletes list-----------------
     $(".fa-trash").unbind("click").click(function () {
         var listid = $(this).parent().attr("data-id");
         $(this).closest("div[data-id]").remove();
@@ -547,95 +672,308 @@ function setupClicks(){
         });
     });
 
+
+    //--------------Buy items. Opens popup----------------
+
+    /**
+     * This function makes it possible for a user to 
+     */
+
     $(".fa-shopping-cart").unbind("click").click(function(){
-        var items = $(this).closest("div[data-id]").find(".list-group-item input:checked").closest('li[data-id]');
-        if(items.length == 0)
-            return;
-        var entries = $(items[0]).data("id");
-        var number = 1;
-        var list = "<li class=\"list-group-item\">"+number+". " + $(items[0]).text() + "</li>";
-        for(var i = 1; i < items.length; i++){
-            number++;
-            entries += "," + $(items[i]).data("id");
-            list += "<li class=\"list-group-item\">"+number+". " + $(items[i]).text()+ "</li>";
-        }
         var li = $(this).parent().attr("data-id");
-        var curr = "*";
-        for(var i=0; i<lists.length; i++){
-            if(lists[i].shopping_list_id==li){
-                curr = lists[i].currency_short;
-            }
-        }
-        /*$.ajax({
-            url: '/api/shoppingList/info/' + li,
-            method: 'PUT',
+        var mycart = this;
+        var h = "";
+        var labelz = [];
+        //-----------------Open popup with bought items--------------
+        $.ajax({
+            url: '/api/budget/entryType',
+            method: 'GET',
             data: {
-                "is_hidden": true
+                shopping_list_id: li
             },
-            error: console.error
-        });
-        var lbi =*/
-        $("body").append(popupTextList({
-            title: lang["shop-buy-title"],
-            list: list,
-            textfield: lang["shop-buy-text"],
-            textfield_com: lang["shop-entry-name"],
-            not_needed: lang["shop-not-needed"],
-            textfield_label: lang["shop-entry-label"],
-            currency: curr,
-            //label-input: lbi,
-            cancel: lang["shop-cancel"],
-            complete: lang["shop-ok"],
-            data: "data-id='" + $(this).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
-        }));
+            success: function (data) {
+                for (i = 0; i < data.budget_entry_types.length; i++) {
+                    labelz[i] = data.budget_entry_types[i].entry_type_name;
+                    h += '<option value="' + data.budget_entry_types[i].budget_entry_type_id + '">' + data.budget_entry_types[i].entry_type_name + '</option>';
+                }
+                var found = false;
+                for (var j = 0; j < generalLabels.length; j++) {
+                    for (var k = 0; k < labelz.length; k++) {
+                        if (labelz[k] == generalLabels[j]) {
+                            found = true;
+                        }
+                    }
+                    if (!found) {
+                        h += '<option value="0">' + generalLabels[j] + '</option>';
+                    }
+                    found = false;
+                }
+                h += '<option value="-1">None</option>';
 
-        $(".pop").find(".fa-times").remove();
-        $(".pop").find("input[type=checkbox]").remove();
+                var items = $(mycart).closest("div[data-id]").find(".list-group-item input:checked").closest('li[data-id]');
+                if (items.length == 0)
+                    return;
+                var entries = $(items[0]).data("id");
+                var number = 1;
+                var list = "<li class=\"list-group-item\">" + number + ". " + $(items[0]).text() + "</li>";
 
-        $("#popup-cancel").click(function(){
-            $(this).closest(".pop").remove();
-        });
+                var itemsstring = []; //a table with items in stringformat
+                itemsstring[0] = $(items[0]).text().trim();
 
-        $("#popup-complete").click(function(){
-            if(isNaN(Number($(this).closest('.pop').find('input').val())))
-                return;
-            var id = $(this).closest("div[data-id]").data("id");
-            var e = $(this).closest("div[data-entries]").data("entries");
-            if(Number(e) !== e)
-                e = e.split(",");
-            else
-                e = [e];
-            $.ajax({
-                url: '/api/budget',
-                method: 'POST',
-                data: {
-                    shopping_list_id: id,
-                    amount: Number($(this).closest('.pop').find('input').val()),
-                    text_note: e.join(",")
-                },
-                success: function(data){
-                    for(var i = 0; i < e.length; i++){
+                //adds bought items to the list in the popup
+                for (var i = 1; i < items.length; i++) {
+                    number++;
+                    entries += "," + $(items[i]).data("id");
+                    list += "<li class=\"list-group-item\">" + number + ". " + $(items[i]).text() + "</li>";
+                    itemsstring[i] = $(items[i]).text().trim();
+                }
+
+                //adds currency value at cost-label
+                var curr = "*";
+                for (var i = 0; i < lists.length; i++) {
+                    if (lists[i].shopping_list_id == li) {
+                        curr = lists[i].currency_short;
+                    }
+                }
+
+                //Append popup
+                $("body").append(popupTextList({
+                    title: lang["shop-buy-title"],
+                    list: list,
+                    textfield: lang["shop-buy-text"],
+                    textfield_com: lang["shop-entry-name"],
+                    not_needed: lang["shop-not-needed"],
+                    textfield_label: lang["shop-entry-label"],
+                    currency: curr,
+                    label: h,
+                    cancel: lang["shop-cancel"],
+                    complete: lang["shop-ok"],
+                    data: "data-id='" + $(mycart).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
+                }));
+
+                //if labelscrolldown changes value
+                $("#labelid").change(function () {
+                    //if new label is selected
+                    if ($("#labelid").find('option:selected').html() == thenewlabel) {
+                        $('.newlabel').append('<input class="form-control" id="newlabelinput" placeholder="">');
+                        $('#newlabelinput').focus();
+                    } else {
+                        //if others are selected and newlabelinput is showing
+                        if ($('#newlabelinput').length) {
+                            $('#newlabelinput').remove();
+                        }
+                    }
+
+                    //if focus goes out from newlabelinput, make red
+                    $('#newlabelinput').focusout(function () {
+                        if ($('#newlabelinput').val() == "") {
+                            $('#newlabelinput').addClass("is-invalid");
+                        }
+                    });
+
+                    //if focus goes in to newlabelinput, remove red
+                    $('#newlabelinput').focusin(function () {
+                        $('#newlabelinput').removeClass("is-invalid");
+                    });
+                });
+                //if cancel is pressed
+                $("#popup-cancel").click(function () {
+                    $(this).closest(".pop").remove();
+                });
+
+                //if OK is pressed
+                $("#popup-complete").click(function () {
+                    //if no value is given to the cost input, do nothing
+                    if (isNaN(Number($(this).closest('.pop').find('input').val())))
+                        return;
+
+                    var id = $(this).closest("div[data-id]").data("id"); //listid
+                    var e = $(this).closest("div[data-entries]").data("entries"); //entries in numbervalue
+                    var theitemss = itemsstring.join(" ,");
+
+                    var comment = $(this).closest('.pop').find('#shop-entry-name').val();
+                    var textnote;
+                    var theis = this;
+
+                    //if no comment is given, text_note is set to a string of all items bought
+                    if (comment == "") {
+                        textnote = theitemss;
+                    } else {
+                        textnote = comment;
+                    }
+                    if (Number(e) !== e)
+                        e = e.split(",");
+                    else
+                        e = [e];
+
+                    //Id of label chosen
+                    var labelid;
+                    if ($(this).closest('.pop').find('.label-input').val() == -1) { //If "none" is selected
+                        //Add new shoplist-entry w/o label
                         $.ajax({
-                            url: '/api/shoppingList/entry/' + e[i],
-                            method: 'PUT',
+                            url: '/api/budget',
+                            method: 'POST',
                             data: {
                                 shopping_list_id: id,
-                                purchased_by_person_id: 2,
-                                budget_entry_id: data.budget_entry_id
+                                shopping_list_entry_ids: e,
+                                amount: Number($(this).closest('.pop').find('input').val())*100,
+                                text_note: textnote
+                            },
+                            success: function (data) {
+                                //Set all entries to bought
+                                for (var i = 0; i < e.length; i++) {
+                                    $.ajax({
+                                        url: '/api/shoppingList/entry/' + e[i],
+                                        method: 'PUT',
+                                        data: {
+                                            shopping_list_id: id,
+                                            purchased_by_person_id: me.person_id,
+                                            budget_entry_id: data.budget_entry_id
+                                        },
+                                        error: console.error
+                                    });
+                                }
                             },
                             error: console.error
                         });
+                    } else {
+                        if ($(this).closest('.pop').find('.label-input').val() == 0) { //If general labels are selected
+                            //The text of the selected label
+                            var selec = $(this).closest('.pop').find('.label-input').find('option:selected').html();
+                            if (selec == thenewlabel) { //If new label are selected
+                                var l = $('#newlabelinput').val();
+                                if (l == "") {
+                                    $('#newlabelinput').addClass("is-invalid");
+                                } else {
+                                    //Add new label to DB
+                                    $.ajax({
+                                        url: '/api/budget/entryType',
+                                        method: 'POST',
+                                        data: {
+                                            entry_type_name: l,
+                                            shopping_list_id: id
+                                        },
+                                        success: function (data) {
+                                            //Set labelid to the id of selected label
+                                            $.ajax({
+                                                url: '/api/budget',
+                                                method: 'POST',
+                                                data: {
+                                                    shopping_list_id: id,
+                                                    shopping_list_entry_ids: e,
+                                                    budget_entry_type_id: data.budget_entry_type_id,
+                                                    amount: Number($(theis).closest('.pop').find('input').val())*100,
+                                                    text_note: textnote
+                                                },
+                                                success: function (data) {
+                                                    //Set all items to bought
+                                                    for (var i = 0; i < e.length; i++) {
+                                                        $.ajax({
+                                                            url: '/api/shoppingList/entry/' + e[i],
+                                                            method: 'PUT',
+                                                            data: {
+                                                                shopping_list_id: id,
+                                                                purchased_by_person_id: me.person_id,
+                                                                budget_entry_id: data.budget_entry_id,
+                                                                budget_entry_type_id: labelid
+                                                            },
+                                                            error: console.error
+                                                        });
+                                                    }
+                                                },
+                                                error: console.error
+                                            });
+                                        },
+                                        error: console.error
+                                    });
+                                }
+                            } else { //If other general labels are selected
+                                //Add general label to DB
+                                $.ajax({
+                                    url: '/api/budget/entryType',
+                                    method: 'POST',
+                                    data: {
+                                        entry_type_name: selec,
+                                        shopping_list_id: id
+                                    },
+                                    success: function (data) {
+                                        //Set labelid to id of the new label
+                                        $.ajax({
+                                            url: '/api/budget',
+                                            method: 'POST',
+                                            data: {
+                                                shopping_list_id: id,
+                                                shopping_list_entry_ids: e,
+                                                budget_entry_type_id: data.budget_entry_type_id,
+                                                amount: Number($(theis).closest('.pop').find('input').val())*100,
+                                                text_note: textnote
+                                            },
+                                            success: function (data) {
+                                                //Set all items to bought
+                                                for (var i = 0; i < e.length; i++) {
+                                                    $.ajax({
+                                                        url: '/api/shoppingList/entry/' + e[i],
+                                                        method: 'PUT',
+                                                        data: {
+                                                            shopping_list_id: id,
+                                                            purchased_by_person_id: me.person_id,
+                                                            budget_entry_id: data.budget_entry_id,
+                                                            budget_entry_type_id: labelid
+                                                        },
+                                                        error: console.error
+                                                    });
+                                                }
+                                            },
+                                            error: console.error
+                                        });
+                                    },
+                                    error: console.error
+                                });
+                            }
+                        } else { //If own labels are selected
+                            //Set labelid to the label-id
+                            labelid = $(this).closest('.pop').find('.label-input').val();
+                            $.ajax({
+                                url: '/api/budget',
+                                method: 'POST',
+                                data: {
+                                    shopping_list_id: id,
+                                    shopping_list_entry_ids: e,
+                                    budget_entry_type_id: labelid,
+                                    amount: Number($(theis).closest('.pop').find('input').val())*100,
+                                    text_note: textnote
+                                },
+                                success: function (data) {
+                                    //Set all items to bought
+                                    for (var i = 0; i < e.length; i++) {
+                                        $.ajax({
+                                            url: '/api/shoppingList/entry/' + e[i],
+                                            method: 'PUT',
+                                            data: {
+                                                shopping_list_id: id,
+                                                purchased_by_person_id: me.person_id,
+                                                budget_entry_id: data.budget_entry_id
+                                            },
+                                            error: console.error
+                                        });
+                                    }
+                                },
+                                error: console.error
+                            });
+                        }
+
                     }
-                },
-                error: console.error
-            });
-            for(var i = 0; i < e.length; i++){
-                $("div[data-id=" + id + "]").find('li[data-id=' + e[i] + ']').remove();
+
+                    //Removes all bought items from shoppinglist
+                    for (var i = 0; i < e.length; i++) {
+                        $("div[data-id=" + id + "]").find('li[data-id=' + e[i] + ']').remove();
+                    }
+                    //Closes popup
+                    $(this).closest(".pop").remove();
+                });
             }
-            $(this).closest(".pop").remove();
         });
     });
-
     setupItemClicks();
 }
 
@@ -728,33 +1066,9 @@ function hex(x) {
 }
 
 function updateList(){
-    console.log("updatelist called");
     var h = "";
     for(var i = 0; i < users.length; i++){
-        h += '<li class="list-group-item">' + users[i].name + '<i data-pid="' + users[i].id + '" style="float: right;" class="fa fa-times" area-hidden="true"></i></li>';
+        h += '<li class="list-group-item">' + users[i].name + '</li>';
     }
-    console.log(h);
     $(".memberlist").html(h);
-    $(".fa-times").click(function(){
-        var id = $(this).data('pid');
-        for(var i = 0; i < users.length; i++){
-            if(users[i].id == id){
-                users.splice(i, 1);
-                break;
-            }
-        }
-    });
-
 }
-
-$('#shop-logout').click(function () {
-    $.ajax({
-        url: '/api/auth/logout',
-        method: 'POST',
-        success: function (data) {
-            if(!data.login){
-                window.top.location="http://localhost:8000/login.html";
-            }
-        }
-    });
-});

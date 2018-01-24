@@ -51,7 +51,7 @@ router.get('/entryType', function(req, res) {
         'LEFT JOIN home_group USING(group_id)  ' +
         'WHERE person.person_id = ? ' +
         'UNION  ' +
-        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?) LIMIT 1',
+        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?)',
         [req.query.shopping_list_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
             if(err) return res.status(500).json({'Error' : err});
             var budget_entry_types = [];
@@ -110,14 +110,14 @@ router.delete('/entryType/:budget_entry_type_id', function(req, res) {
     pool.query('DELETE FROM budget_entry_type ' +
         'WHERE budget_entry_type_id = ? AND ' +
         'shopping_list_id IN ' +
-        '(SELECT shopping_list_id FROM person WHERE person_id = 1 ' +
+        '(SELECT shopping_list_id FROM person WHERE person_id = ? ' +
         'UNION ' +
         'SELECT home_group.shopping_list_id FROM person ' +
         'LEFT JOIN group_person USING(person_id) ' +
         'LEFT JOIN home_group USING(group_id) ' +
-        'WHERE person.person_id = 1 ' +
+        'WHERE person.person_id = ? ' +
         'UNION ' +
-        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = 1) LIMIT 1',
+        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?) LIMIT 1',
         [req.params.budget_entry_type_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
             if (err) return res.status(500).json({'Error' : err});
             if (result.rowsAffected == 0) return res.status(400).json({success: "false", error: "No access or does not exist"});
@@ -236,9 +236,9 @@ function addPersonBudgetEntry(req, res, connection, result) {
             }
         }
 
-        console.log(person_ids);
+        console.error(person_ids);
 
-        connection.query(
+        if (query.length > 0) connection.query(
             'INSERT INTO person_budget_entry (person_id, budget_entry_id) VALUES ' + query +';',
             queryValues,
             function (err, result2) {
@@ -250,23 +250,26 @@ function addPersonBudgetEntry(req, res, connection, result) {
                 });
             }
 
-            if (adderIncluded) connection.query('INSERT INTO person_budget_entry (person_id, budget_entry_id, datetime_paid) VALUES (?,?,CURRENT_TIMESTAMP);',
-                [req.session.person_id, result.insertId],
-                function(err, result3) {
-                if (err) {
-                    connection.rollback(function () {
-                        connection.release();
-                        res.status(500).json({'Error': err, err: 5});
-                    });
-                } else answerPost(req, res, connection, result);
-            });
+            if (adderIncluded) insertAdderPersonEntryToShoppingList(req, res, connection, result);
             else answerPost(req, res, connection, result);
         });
+        else if (adderIncluded) insertAdderPersonEntryToShoppingList(req, res, connection, result);
+        else answerPost(req, res, connection, result);
 
     });
+}
 
-
-
+function insertAdderPersonEntryToShoppingList(req, res, connection, result) {
+    connection.query('INSERT INTO person_budget_entry (person_id, budget_entry_id, datetime_paid) VALUES (?,?,CURRENT_TIMESTAMP);',
+        [req.session.person_id, result.insertId],
+        function(err, result3) {
+            if (err) {
+                connection.rollback(function () {
+                    connection.release();
+                    res.status(500).json({'Error': err, err: 5});
+                });
+            } else answerPost(req, res, connection, result);
+        });
 }
 
 function addShoppingListEntryToBudgetEntry(req, res, connection, result) {

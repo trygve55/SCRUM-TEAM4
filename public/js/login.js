@@ -1,4 +1,9 @@
 var connected = false;
+
+/**
+ * This function checks whether the person is logged on facebook or not. If the person is connected
+ * it will retrieve the info about the person stored in the database.
+ */
 window.fbAsyncInit = function() {
     FB.init({
         appId            : '548372472188099',
@@ -25,6 +30,9 @@ window.fbAsyncInit = function() {
     });
 };
 
+/**
+ * This function
+ */
 (function(d, s, id){
     var js, fjs = d.getElementsByTagName(s)[0];
     if (d.getElementById(id)) {return;}
@@ -33,6 +41,13 @@ window.fbAsyncInit = function() {
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
+/**
+ * This is the login to facebook function. It checks if the person is connected
+ * and if the person has authorized us to retrieve their information. If everything
+ * is ok, the person will be able to log in using facebook, and this method will
+ * store information about the person in the database if it's the first they log in
+ * using facebook.
+ */
 function login() {
     FB.login(function (response) {
         if (response.status === 'connected') {
@@ -60,7 +75,12 @@ function login() {
     }, {scope: 'email'});
 }
 
+
 $(function () {
+    /**
+     * This method calls the language api and sets the standard language as
+     * norwegian.
+     */
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -79,6 +99,10 @@ $(function () {
         }
     });
 
+    /**
+     * This method calls the language api and sets the language to norwegian
+     * if the user clicks on the norwegian flag.
+     */
     $('#login-norway').click(function () {
         $.ajax({
             url: '/api/language',
@@ -110,6 +134,10 @@ $(function () {
 
     });
 
+    /**
+     * This method calls the language api and sets the language to english
+     * if the user clicks on the british flag.
+     */
     $('#login-england').click(function () {
         $.ajax({
             url: '/api/language',
@@ -140,6 +168,11 @@ $(function () {
         });
 
     });
+
+    /**
+     * This function makes it possible for a user to login if their user information, password
+     * and username, is correckt, when pushing the login-button
+     */
     $("#login-button").click(function () {
         $.ajax({
             url: '/api/auth',
@@ -156,6 +189,10 @@ $(function () {
         });
     });
 
+    /**
+     * This function makes it possible for a user to login, without pushing the login-button, but
+     * by pressing enter.
+     */
     $("#login-password").keypress(function(e){
         if(e.keyCode!=13||e.which!=13)
             return;

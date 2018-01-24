@@ -3,8 +3,13 @@ var user;
 var curBudget;
 var listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList;
 
-/* Language */
+
 $(document).ready(function () {
+
+    /**
+     * This method calls the language api and sets the standard language as
+     * norwegian.
+     */
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -22,6 +27,10 @@ $(document).ready(function () {
         }
     });
 
+    /**
+     * This method calls the language api and sets the language to norwegian
+     * if the user clicks on the norwegian flag.
+     */
     $('#profile-norway').click(function () {
         $.ajax({
             url: '/api/language',
@@ -52,6 +61,10 @@ $(document).ready(function () {
 
     });
 
+    /**
+     * This method calls the language api and sets the language to english
+     * if the user clicks on the british flag.
+     */
     $('#profile-england').click(function () {
         $.ajax({
             url: '/api/language',
@@ -80,6 +93,7 @@ $(document).ready(function () {
             error: console.error
         });
     });
+
 
     $.ajax({
         url: '/api/user/getUser',

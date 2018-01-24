@@ -22,6 +22,19 @@
   "shop-price": "Price",
   "shop-input-members": "Enter new member here",
   "shop-entry-name": "Comment",
-  "shop-entry-label": "Type",
-  "shop-not-needed": "Not necessary"
+  "shop-entry-label": "Label",
+  "shop-not-needed": "Not necessary",
+  "bought-by-label": "Bought by",
+  "time-label": "Time",
+  "cost-label": "Cost",
+  "payers-label": "Payers",
+  "goods-label": "Goods",
+  "label-label": "Label",
+  "label1": "Party",
+  "label2": "Shared food",
+  "label3": "Supplies",
+  "label4": "Repairs",
+  "newlabel": "New label",
+  "me": "Me",
+  "settle": "Settle"
 }

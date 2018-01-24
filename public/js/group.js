@@ -5,6 +5,42 @@ var person = "Person";
 var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore;
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
 
+socket.on('group post', function(data){
+    for(var i = 0; i < data.length; i++) {
+        if(data[i].group_id != currentGroup.group_id)
+            continue;
+        var length = 50;
+        var text = data[i].post_text.split(" ");
+        var short = "";
+        var rest = "";
+        for(var j = 0; j < length && j < text.length; j++){
+            short += text[j] + " ";
+        }
+        for(var k = j; k < text.length; k++){
+            rest += text[k] + " ";
+        }
+        $("#posts").prepend(feedPost({
+            name: data[i].forename + (data[i].middlename ? ' ' + data[i].middlename : '') + ' ' + data[i].lastname,
+            payload: '',
+            text: short,
+            rest_text: rest,
+            image_url: (data[i].attachment_type == 0 ? '/img/profilPicture.png' : ''),
+            data: 'data-id="' + data[i].post_id + '"',
+            datetime: testy,
+            lang_read_more: "Read more..."
+        }));
+        if(k <= length)
+            $("#posts div[data-id=" + data[i].post_id + "] a").hide();
+        else {
+            $("#posts div[data-id=" + data[i].post_id + "] a").click(function(){
+
+                $(this).closest("div").find("span").show();
+                $(this).remove();
+            });
+        }
+    }
+});
+
 /**
  * When the page loads, the page must find the groups available to the user so they can be selected.
  */
@@ -41,7 +77,7 @@ $(document).ready(function() {
 		method:'GET',
 		success: function (data) {
 			var grouplist = data;
-			console.log(data);
+
 			currentGroup = data[0];
 			for(var i = 0; i < data.length; i++){
 				addGroupToList(data[i]);
@@ -49,16 +85,18 @@ $(document).ready(function() {
 			$(".group").click(function(){
 				$('#groupwindow').show();
 				currentGroup = $(this).data("group-id");
-				console.log(currentGroup);
+
 				for(var i = 0; i < grouplist.length; i++) {
 					if (currentGroup == grouplist[i].group_id){
 						currentGroup = grouplist[i];
 						break;
 					}
 				}
-				console.log(activeTab);
+
 				changeTab();
 			});
+            $('#groupwindow').show();
+			changeTab("tasks");
 		},
 		error: console.error()
 	});
@@ -141,9 +179,7 @@ function removeDeletedGroups(validNames) {
  * This method redirect the user to the add group page when the addGroup button is clicked.
  */
 function addGroup(){
-    $('#addGroup-button').click(
-        window.location = 'addGroup.html'
-    )
+    window.location = 'addGroup.html'
 }
 
 
@@ -305,7 +341,7 @@ function setupClicks(){
             url: '/api/budget/' + id,
             method: 'GET',
             success: function(data){
-                console.log(data);
+
                 curBudget = data;
                 var entries = "";
                 for(var i = 0; i < data.budget_entries.length; i++){
@@ -448,7 +484,6 @@ function setupItemClicks(){
  * This function lets a user add new items to the shoppinglist.
  * @param ul
  */
-
 function addNewItem(ul){
     $(ul).append(newListItem());
 
@@ -512,7 +547,7 @@ $(function () {
      * to reset the inputfield.
      */
     $('#group-postButton').click(function() {
-        console.log('hei');
+
         $.ajax({
             url: '/api/news',
             method: 'POST',
@@ -521,8 +556,6 @@ $(function () {
                 group_id: currentGroup.group_id
             },
             success: function (data123) {
-                console.log(data123);
-                getPost();
                 ClearFields();
             }
         })
@@ -629,7 +662,7 @@ function getPost(){
         success: function (dataFeed) {
             $("#posts").html("");
             for(var i = 0; i < dataFeed.length; i++) {
-                console.log(dataFeed);
+
                 var length = 50;
                 var text = dataFeed[i].post_text.split(" ");
                 var short = "";
@@ -652,12 +685,12 @@ function getPost(){
                     datetime: testy,
                     lang_read_more: "Read more..."
                 }));
-                console.log(j);
+
                 if(k <= length)
                     $("#posts div[data-id=" + dataFeed[i].post_id + "] a").hide();
                 else {
                     $("#posts div[data-id=" + dataFeed[i].post_id + "] a").click(function(){
-                        console.log("HEI");
+
                         $(this).closest("div").find("span").show();
                         $(this).remove();
                     });
@@ -724,16 +757,16 @@ function drawChart() {
 
 function getTasks() {
     $.ajax({
-        url:'/api/tasks/' + currentGroup,
+        url:'/api/tasks/' + currentGroup.group_id,
         method:'GET',
         success: function (dataTask) {
             console.log(dataTask);
             $('.itemlist-task').html("");
             for(var i = 0; i < dataTask.length; i++){
                 $('.itemlist-task').append(listItem({
-                    entry_id: dataTask[i],
-                    entry_text:dataTask[i]
-                }))
+                    entry_id: dataTask[i].todo_id,
+                    entry_text:dataTask[i].todo_text
+                }));
             }
             setupClicksTask();
         }
@@ -826,7 +859,8 @@ function saveTaskToDB(id, item, ul, cb){
         url: '/api/tasks/',
         method: 'POST',
         data: {
-
+            group_id: currentGroup.group_id,
+            todo_text: item
         },
         success: function(data){
             $(ul).append(listItem({entry_text: item, entry_id: data.shopping_cart_entry_id}));
@@ -885,6 +919,9 @@ function mod(n, m) {
     return ((n % m) + m) % m;
 };
 
+/**
+ * This function makes it possible for a user to logout when on the groups page.
+ */
 $('#group-logoutNavbar').click(function () {
     $.ajax({
         url: '/api/auth/logout',
