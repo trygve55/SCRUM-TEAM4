@@ -449,7 +449,6 @@ INSERT INTO todo (group_id, todo_text, created_by_id) VALUES (1, 'test task', 1)
 
 INSERT INTO todo_person(person_id, todo_id) VALUES (1, 1);
 
-
 INSERT INTO shopping_list (shopping_list_name, currency_id) VALUES ('PList 0', 16);
 INSERT INTO shopping_list (shopping_list_name, currency_id) VALUES ('PList 1', 126);
 INSERT INTO shopping_list (shopping_list_name, currency_id) VALUES ('PList 2', 48);
