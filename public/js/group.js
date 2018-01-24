@@ -6,6 +6,7 @@ var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceIte
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
 
 socket.on('group post', function(data){
+    console.log(data);
     for(var i = 0; i < data.length; i++) {
         if(data[i].group_id != currentGroup.group_id)
             continue;
@@ -24,7 +25,7 @@ socket.on('group post', function(data){
             payload: '',
             text: short,
             rest_text: rest,
-            image_url: (data[i].attachment_type == 0 ? '/img/profilPicture.png' : ''),
+            image_url: '/api/user/' + data[i].person_id + '/picture_tiny',
             data: 'data-id="' + data[i].post_id + '"',
             datetime: testy,
             lang_read_more: "Read more..."
@@ -661,6 +662,7 @@ function getPost(){
         method: 'GET',
 
         success: function (dataFeed) {
+            console.log(dataFeed);
             $("#posts").html("");
             for(var i = 0; i < dataFeed.length; i++) {
 
@@ -681,7 +683,7 @@ function getPost(){
                     payload: '',
                     text: short,
                     rest_text: rest,
-                    image_url: (dataFeed[i].attachment_type == 0 ? '/img/profilPicture.png' : ''),
+                    image_url: '/api/user/' + dataFeed[i].posted_by.person_id + '/picture_tiny',
                     data: 'data-id="' + dataFeed[i].post_id + '"',
                     datetime: testy,
                     lang_read_more: "Read more..."
