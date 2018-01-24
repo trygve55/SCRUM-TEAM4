@@ -134,10 +134,6 @@ $(document).ready(function () {
             $('#profile-phone2').text(data[0].phone ? data[0].phone : "");
             $('#profile-username2').text(data[0].username == data[0].facebook_api_id ? "" : data[0].username);
             $('#profpic').attr("src","api/user/" + data[0].person_id + "/picture");
-            $('#uploadPic').attr("action","api/user/" + data[0].person_id + "/picture");
-            //setupShoppingList();
-
-
         }
 
 
@@ -147,6 +143,24 @@ $(document).ready(function () {
         dateFormat: 'yy-mm-dd',
         changeMonth: true,
         changeYear: true
+    });
+
+    $("#p-changephoto").click(function () {
+        var formData = new FormData();
+        formData.append('File', $("#file-upload")[0].files[0]);
+
+        $.ajax({
+            url : 'api/user/picture',
+            type : 'POST',
+            data : formData,
+            processData: false,  // tell jQuery not to process the data
+            contentType: false,  // tell jQuery not to set contentType
+            success : function(data) {
+                console.log(data);
+                d = new Date();
+                $('#profpic').attr("src","api/user/" + testetest + "/picture?t="+d.getTime());
+            }
+        });
     });
 
     $("#but").click(function () {
