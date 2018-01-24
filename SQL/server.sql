@@ -200,7 +200,7 @@ CREATE TABLE private_todo_list (
     is_deactivated BIT NOT NULL DEFAULT 0,
     color_hex INTEGER,
     CONSTRAINT private_todo_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
-    CONSTRAINT priavte_todo_list_pk PRIMARY KEY(private_todo_list_id)
+    CONSTRAINT private_todo_list_pk PRIMARY KEY(private_todo_list_id)
 );
 
 CREATE TABLE private_todo_entry (

@@ -139,7 +139,7 @@ router.post('/facebook', function(req, res){
                                                 connection.release();
                                                 req.session.person_id = result.insertId;
                                                 req.session.save();
-                                                res.status(200).send(true);
+                                                res.status(200).json({person_id: result.insertId});
                                             }
                                         });
                                     }

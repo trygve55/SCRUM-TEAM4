@@ -62,6 +62,9 @@ function login() {
                             accessToken: response.authResponse.accessToken
                         },
                         success: function (data) {
+                            console.log(data);
+
+                            localStorage.person_id=data.person_id;
                             window.location = "/index.html";
                         },
                         error: console.error
