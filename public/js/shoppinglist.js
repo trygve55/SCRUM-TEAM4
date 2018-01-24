@@ -785,7 +785,13 @@ function setupClicks(){
                     complete: lang["shop-ok"],
                     data: "data-id='" + $(mycart).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
                 }));
-
+                $('.addbyers').hide();
+                buyers.push({
+                    email: me.email,
+                    id: me.person_id,
+                    name: me.forename + " " + me.lastname
+                });
+                updateList2();
                 //If 'select users' are selected in Byers
                 $("#byersid").change(function () {
 
@@ -795,6 +801,7 @@ function setupClicks(){
                          * This method allows a user to search all names or emails in the database by simply
                          * entering a letter, optionally more, when adding more members to a group
                          */
+                        console.log(li);
                         $('#scrollable-dropdown-menu2 .typeahead').typeahead({
                                 highlight: true
                             },
@@ -803,6 +810,7 @@ function setupClicks(){
                                 display: 'name',
                                 source: new Bloodhound({
                                     datumTokenizer: function(d){
+                                        console.log(d);
                                         return Bloodhound.tokenizers.whitespace(d.name).concat([d.email]);
                                     },
                                     queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -820,10 +828,11 @@ function setupClicks(){
                         );
 
                         $(".typeahead").bind('typeahead:select', function(a, data){
-                            if(!check(data))
-                                return;
-                            buyers.push(data);
-                            updateList2();
+
+                            if($.inArray(data, buyers) === -1){
+                                buyers.push(data);
+                                updateList2();
+                            }
                         });
 
                         $(".typeahead").bind('typeahead:close', function(){
@@ -919,6 +928,30 @@ function setupClicks(){
                     else
                         e = [e];
 
+                    var therealbuyers = [];
+                    var therealbuyersids = [];
+                    console.log(buyers);
+                    if($("#byersid").find('option:selected').html() == byersSelect){
+                        for (var i=0; i<buyers.length; i++){
+
+                            therealbuyersids[i] = buyers[i].id;
+                        }
+                    }else{
+                        console.log("byersall");
+
+                        for (var i = 0; i < lists.length; i++) {
+                            if (lists[i].shopping_list_id == li) {
+                                console.log("all persons in this list" + lists[i].persons);
+                                therealbuyers = lists[i].persons;
+                            }
+                        }
+                        for (var i=0; i<therealbuyers.length; i++){
+                            therealbuyersids[i] = therealbuyers[i].person_id;
+                        }
+                    }
+                    console.log("The real byers id: " + therealbuyersids);
+
+
                     var labelid;
                     if ($(this).closest('.pop').find('.label-input').val() == -1) { //If "none" is selected
 
@@ -932,7 +965,8 @@ function setupClicks(){
                                 shopping_list_id: id,
                                 shopping_list_entry_ids: e,
                                 amount: Number($(this).closest('.pop').find('input').val())*100,
-                                text_note: textnote
+                                text_note: textnote,
+                                person_ids: therealbuyersids
                             },
                             success: function (data) {
 
@@ -966,7 +1000,7 @@ function setupClicks(){
                         if ($(this).closest('.pop').find('.label-input').val() == 0) { //If general labels are selected
 
                             /**
-                             * The text of th selected label
+                             * The text of the selected label
                              * @type {any}
                              */
                             var selec = $(this).closest('.pop').find('.label-input').find('option:selected').html();
@@ -1015,7 +1049,8 @@ function setupClicks(){
                                                     shopping_list_entry_ids: e,
                                                     budget_entry_type_id: data.budget_entry_type_id,
                                                     amount: Number($(theis).closest('.pop').find('input').val())*100,
-                                                    text_note: textnote
+                                                    text_note: textnote,
+                                                    person_ids: therealbuyersids
                                                 },
                                                 success: function (data) {
 
@@ -1075,7 +1110,8 @@ function setupClicks(){
                                                 shopping_list_entry_ids: e,
                                                 budget_entry_type_id: data.budget_entry_type_id,
                                                 amount: Number($(theis).closest('.pop').find('input').val())*100,
-                                                text_note: textnote
+                                                text_note: textnote,
+                                                person_ids: therealbuyersids
                                             },
                                             success: function (data) {
 
@@ -1125,7 +1161,8 @@ function setupClicks(){
                                     shopping_list_entry_ids: e,
                                     budget_entry_type_id: labelid,
                                     amount: Number($(theis).closest('.pop').find('input').val())*100,
-                                    text_note: textnote
+                                    text_note: textnote,
+                                    person_ids: therealbuyersids
                                 },
                                 success: function (data) {
 
@@ -1280,8 +1317,24 @@ function updateList(){
 }
 function updateList2(){
     var h = "";
-    for(var i = 0; i < users.length; i++){
-        h += buyers.forename + " " + buyers.lastname.charAt(0).toUpperCase() + ".,";
+    for(var i = buyers.length-1; i > 0; i--){
+        var numb = i+1;
+        h += "<p class='entrybuyername' style='font-size: small' id='"+ buyers[i].id + "'>"+numb+". "+ buyers[i].name+"</p>";
     }
+    h += "<p class='entrybuyername' style='font-size: small' id='"+buyers[0].id+"'>1. "+buyers[0].name+"</p>";
+
     $(".users-entry").html(h);
+    $(".entrybuyername").unbind("click").click(function () {
+        var persId = $(this).attr("id");
+        for(var i = 0; i < buyers.length; i++){
+            if(buyers[i].id == persId){
+                if(persId!==me.person_id) {
+                    buyers.splice(i, 1);
+                    $("#" + persId).remove();
+                    break;
+                }
+            }
+        }
+        updateList2();
+    });
 }
