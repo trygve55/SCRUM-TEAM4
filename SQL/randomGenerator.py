@@ -51,8 +51,8 @@ for i in range(0, groups):
 	groupNames.append("Group " + str(i));
 
 for i in range(0, groups):
-	query = ("INSERT INTO home_group (group_name, group_desc, group_type, created_datetime, group_pic, cleaning_list_interval, default_currency_id, shopping_list_id) " 
-	+"VALUES ('"+ groupNames[i] +"', '"+ groupNames[i] +"', DEFAULT, DEFAULT, NULL, DEFAULT, "+ str(randint(1, currencies)) +", "+ str(i + people + currentLists) +");");
+	query = ("INSERT INTO home_group (group_name, group_desc, group_type, created_datetime, group_pic, default_currency_id, shopping_list_id) " 
+	+"VALUES ('"+ groupNames[i] +"', '"+ groupNames[i] +"', DEFAULT, DEFAULT, NULL, "+ str(randint(1, currencies)) +", "+ str(i + people + currentLists) +");");
 	
 	writeFile(fileName, query);
 
