@@ -32,7 +32,7 @@ router.post('/', function(req, res) {
         'INSERT INTO newsfeed_post (' +
         'group_id, posted_by_id, post_text, attachment_type, attachment_data' +
         ') VALUES (?,?,?,?,?);',
-        [data.group_id, req.session.person_id, data.post_text, data.attachment_type, extraData],	// data.posted_by_id to test this.
+        [data.group_id, req.session.person_id, xss(data.post_text), data.attachment_type, extraData],	// data.posted_by_id to test this.
         function(err, result) {
             if(err)
                 return res.status(500).send();
@@ -152,4 +152,18 @@ function checkResult(err, result, res) {
 		return res.status(500).send();
 	if (result)
 		res.status(200).json(result);
+}
+
+function xss(string) {
+	return string
+        .replace(/#/g, "&#35")
+        .replace(/&/g, "&#38")
+		.replace(/</g, "&#60")
+		.replace(/>/g, "&#62")
+		.replace(/"/g, "&#32")
+		.replace(/'/g, "&#39")
+        .replace(/;/g, "&#59")
+        .replace(/\(/g, "&#40")
+        .replace(/\)/g, "&#41")
+        .replace(/\//g, "&#47")
 }
