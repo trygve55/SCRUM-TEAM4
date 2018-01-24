@@ -885,6 +885,9 @@ function mod(n, m) {
     return ((n % m) + m) % m;
 };
 
+/**
+ * This function makes it possible for a user to logout when on the groups page.
+ */
 $('#group-logoutNavbar').click(function () {
     $.ajax({
         url: '/api/auth/logout',

@@ -23,5 +23,10 @@
   "shop-input-members": "Skriv inn nytt medlem her",
   "shop-entry-name": "Kommentar",
   "shop-entry-label": "Type",
-  "shop-not-needed": "Ikke nødvendig"
+  "shop-not-needed": "Ikke nødvendig",
+  "label1": "Fest",
+  "label2": "Fellesmat",
+  "label3": "Renhold",
+  "label4": "Reparasjoner",
+  "newlabel": "Ny type"
 }

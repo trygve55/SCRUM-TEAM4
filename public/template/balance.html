@@ -1,14 +1,16 @@
-<div {{{data}}} class="settlement">
+<div {{{data}}} class="settlement" >
     <h4>{{title}}</h4>
-    <table class="table table-hover table-bordered">
-        <thead>
-        <tr>
-            <th>{{lang_trip}}</th>
-            <th>{{lang_price}}</th>
-        </tr>
-        </thead>
-        <tbody>{{{budget_entries}}}</tbody>
-    </table>
+    <div style="max-height: 65vh; overflow-y: scroll ">
+        <table class="table table-hover table-bordered" >
+            <thead>
+            <tr>
+                <th>{{lang_trip}}</th>
+                <th>{{lang_price}}</th>
+            </tr>
+            </thead>
+            <tbody>{{{budget_entries}}}</tbody>
+        </table>
+    </div>
     <div align="center" style="margin-top: 5%">
         <button align="right" id="popup-complete" type="button" class="btn" style="background-color: lightgrey">{{complete}}</button>
     </div>

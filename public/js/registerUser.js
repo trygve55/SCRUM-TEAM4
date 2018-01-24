@@ -1,4 +1,8 @@
 $(function () {
+    /**
+     * This method calls the language api and sets the standard language as
+     * norwegian.
+     */
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -22,6 +26,10 @@ $(function () {
         }
 
     });
+    /**
+     * This method calls the language api and sets the language to norwegian
+     * if the user clicks on the norwegian flag.
+     */
     $('#register-norway').click(function () {
         $.ajax({
             url: '/api/language',
@@ -58,6 +66,10 @@ $(function () {
         });
     });
 
+    /**
+     * This method calls the language api and sets the language to english
+     * if the user clicks on the british flag.
+     */
     $('#register-england').click(function () {
         $.ajax({
             url: '/api/language',
@@ -90,6 +102,10 @@ $(function () {
         });
     });
 
+    /**
+     * This method alerts a person that want to register if the password is invalid, happens if
+     * password field is empty and if this value does not match the repeat password field.
+     */
     $("#register-password").focusout(function (){
         if($(this).val() === "") {
             $("#register-password-error").hide();
@@ -126,6 +142,10 @@ $(function () {
         }
     });
 
+    /**
+     * This method alerts a person that wants to register if the repeat password is invalied, happens
+     * if the repeat password field is empty and/or does not match the password field.
+     */
     $("#register-repeatpassword").focusout(function (){
         if($(this).val() === "") {
             $("#register-password-error").hide();
@@ -162,6 +182,10 @@ $(function () {
         }
     });
 
+    /**
+     * This function alerts a user that tries to register if the username is invalid, happens
+     * if the username is allreay in use or if the field is empty.
+     */
     $("#register-username").focusout(function(){
         if($(this).val() === "") {
             $("#register-username-error").hide();
@@ -194,6 +218,7 @@ $(function () {
             }
         });
     });
+
 
     $("#register-email").focusout(function(){
         if($(this).val() == "") {
@@ -287,10 +312,15 @@ $(function () {
                     phone: $('#register-phone').val()
                 },
                 success: function (data) {
-                    console.log(data)
                     window.location='/index.html';
                 },
-                error: console.error
+                error: function(err){
+                    console.error(err);
+                    $('#register-email').css({
+                        "border": "1px solid red",
+                        "background": "#FFCECE"
+                    });
+                }
             })
         }
     });
