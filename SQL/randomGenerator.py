@@ -66,8 +66,8 @@ for i in uniqueIDs:
 uniqueIDs = sample(range(currentPeople, people + currentPeople), people);
 
 for i in uniqueIDs:
-	query = ("INSERT INTO shopping_list_person (shopping_list_id, person_id, paid_amount, invite_accepted, invite_sent_datetime) "
-	+"VALUES ("+ str(randint(currentLists, lists + currentLists)) +", "+ str(i) +", "+ str(randint(0, 100000)) +", "+ str(bool(randint(0, 1))) +", CURRENT_DATE);")
+	query = ("INSERT INTO shopping_list_person (shopping_list_id, person_id, invite_accepted, invite_sent_datetime) "
+	+"VALUES ("+ str(randint(currentLists, lists + currentLists)) +", "+ str(i) +", "+ str(bool(randint(0, 1))) +", CURRENT_DATE);")
 	
 	writeFile(fileName, query);
 
