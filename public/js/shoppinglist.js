@@ -884,7 +884,11 @@ function setupClicks(){
                         });
                     } else {
                         if ($(this).closest('.pop').find('.label-input').val() == 0) { //If general labels are selected
-                            //The text of the selected label
+
+                            /**
+                             * The text of th selected label
+                             * @type {any}
+                             */
                             var selec = $(this).closest('.pop').find('.label-input').find('option:selected').html();
                             if (selec == thenewlabel) { //If new label are selected
                                 var l = $('#newlabelinput').val();
@@ -903,7 +907,10 @@ function setupClicks(){
                                             shopping_list_id: id
                                         },
                                         success: function (data) {
-                                            //Set labelid to the id of selected label
+
+                                            /**
+                                             * Sets label-id to the id of selected label
+                                             */
                                             $.ajax({
                                                 url: '/api/budget',
                                                 method: 'POST',
@@ -915,7 +922,10 @@ function setupClicks(){
                                                     text_note: textnote
                                                 },
                                                 success: function (data) {
-                                                    //Set all items to bought
+
+                                                    /**
+                                                     * Sets all items to bought
+                                                     */
                                                     for (var i = 0; i < e.length; i++) {
                                                         $.ajax({
                                                             url: '/api/shoppingList/entry/' + e[i],
@@ -936,8 +946,11 @@ function setupClicks(){
                                         error: console.error
                                     });
                                 }
-                            } else { //If other general labels are selected
-                                //Add general label to DB
+                            } else {
+
+                                /**
+                                 * If other general labels are selected. Add general label to database.
+                                 */
                                 $.ajax({
                                     url: '/api/budget/entryType',
                                     method: 'POST',
@@ -946,7 +959,10 @@ function setupClicks(){
                                         shopping_list_id: id
                                     },
                                     success: function (data) {
-                                        //Set labelid to id of the new label
+
+                                        /**
+                                         * Sets label-id to id of the new label.
+                                         */
                                         $.ajax({
                                             url: '/api/budget',
                                             method: 'POST',
@@ -958,7 +974,10 @@ function setupClicks(){
                                                 text_note: textnote
                                             },
                                             success: function (data) {
-                                                //Set all items to bought
+
+                                                /**
+                                                 * Sets all items to bought.
+                                                 */
                                                 for (var i = 0; i < e.length; i++) {
                                                     $.ajax({
                                                         url: '/api/shoppingList/entry/' + e[i],
@@ -979,8 +998,12 @@ function setupClicks(){
                                     error: console.error
                                 });
                             }
-                        } else { //If own labels are selected
-                            //Set labelid to the label-id
+                        } else {
+
+                            /**
+                             * If own labels are selected; set label-id to the id of the label.
+                             * @type {any}
+                             */
                             labelid = $(this).closest('.pop').find('.label-input').val();
                             $.ajax({
                                 url: '/api/budget',
@@ -993,7 +1016,10 @@ function setupClicks(){
                                     text_note: textnote
                                 },
                                 success: function (data) {
-                                    //Set all items to bought
+
+                                    /**
+                                     * Sets all items to bought.
+                                     */
                                     for (var i = 0; i < e.length; i++) {
                                         $.ajax({
                                             url: '/api/shoppingList/entry/' + e[i],
@@ -1013,7 +1039,9 @@ function setupClicks(){
 
                     }
 
-                    //Removes all bought items from shoppinglist
+                    /**
+                     * Removes all bought items from shoppinglist.
+                     */
                     for (var i = 0; i < e.length; i++) {
                         $("div[data-id=" + id + "]").find('li[data-id=' + e[i] + ']').remove();
                     }
@@ -1028,6 +1056,9 @@ function setupClicks(){
     setupItemClicks();
 }
 
+/**
+ * This function
+ */
 function setupItemClicks(){
     $(".fa-times").unbind("click").click(function(){
         var entry_id = $(this).closest("li[data-id]").data("id");
@@ -1049,6 +1080,10 @@ function setupItemClicks(){
     });
 }
 
+/**
+ * This function adds a new item to the list.
+ * @param ul
+ */
 function addNewItem(ul){
     $(ul).append(newListItem());
 
@@ -1081,6 +1116,13 @@ function addNewItem(ul){
     }).focus();
 }
 
+/**
+ * This function saves all information about the shoppinglist to the database.
+ * @param id
+ * @param item
+ * @param ul
+ * @param cb
+ */
 function saveItemToDB(id, item, ul, cb){
     $.ajax({
         url: '/api/shoppingList/entry',
