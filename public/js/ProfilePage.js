@@ -7,6 +7,8 @@ var listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingL
 
 $(document).ready(function () {
 
+    $('#profpic').attr("src","api/user/" + localStorage.person_id + "/picture");
+
     /**
      * This method calls the language api and sets the standard language as
      * norwegian.
@@ -150,7 +152,6 @@ $(document).ready(function () {
             $('#profile-email2').text(data[0].email);
             $('#profile-phone2').text(data[0].phone ? data[0].phone : "");
             $('#profile-username2').text(data[0].username == data[0].facebook_api_id ? "" : data[0].username);
-            $('#profpic').attr("src","api/user/" + data[0].person_id + "/picture");
         }
 
 

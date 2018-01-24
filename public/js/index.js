@@ -41,6 +41,11 @@ socket.on('group post', function(data){
 });
 
 $(function () {
+
+    $('#profpic').attr("src","api/user/" + localStorage.person_id + "/picture");
+
+    console.log(localStorage.person_id);
+
     $.ajax({
         url: '/template',
         method: 'GET',
