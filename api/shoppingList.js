@@ -317,7 +317,9 @@ router.get('/statistic/:budget_entry_type_id', function(req, res) {
 		if (result.length < 1) {return res.status(403).send("Invalid request: User not in group");}
 		
 		pool.query(	// Test this at 24/01/2018.
-			'SELECT amount, entry_datetime FROM budget_entry WHERE budget_entry_type_id = ? AND (entry_datetime BETWEEN ? AND ?) ' +
+			'SELECT entry_type_name AS name, entry_type_color as colour, amount, entry_datetime AS time FROM ' +
+			'budget_entry LEFT JOIN budget_entry_type USING(budget_entry_type_id) WHERE ' +
+			'budget_entry_type_id = ? AND (entry_datetime BETWEEN ? AND ?) ' +
 			'AND shopping_list_id IN (SELECT shopping_list_id FROM home_group WHERE group_id = ?);',
 			[checkRange(req.params.budget_entry_type_id, 1, null), start, end, group],
 			function(err, result) {

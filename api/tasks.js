@@ -155,10 +155,27 @@ router.get('/person/:person_id', function(req, res) {
  *
  * URL: /api/tasks/{todo_id}
  * method: PUT
+ */
+router.put('/:todo_id/done', function(req, res) {
+    pool.query('UPDATE todo SET datetime_done = CURRENT_TIMESTAMP, done_by_id = ? ' +
+        'WHERE todo_id = ? AND todo_id IN ' +
+        '(SELECT t.todo_id FROM ' +
+        '(SELECT * FROM todo ' +
+        'LEFT JOIN group_person USING (group_id) ' +
+        'WHERE person_id = ?) t)', [req.session.person_id, req.params.todo_id, req.session.person_id], function(err, result) {
+            checkResult(err, result, res);
+    });
+});
+
+/**
+ * Update a task
+ *
+ * URL: /api/tasks/{todo_id}
+ * method: PUT
  * data: {
  *      sql attribute style parameters to set value
  * }
-*/
+ */
 router.put('/:todo_id', function(req, res) {
     var query = putRequestSetup(checkRange(req.params.todo_id, 1, null), req.body, "todo");
     pool.query(query[0], query[1], function(err, result) {checkResult(err, result, res);});
@@ -182,36 +199,6 @@ router.delete('/person/:todo_id', function(req, res) {
         '', true
     );
     pool.query(resultQuery[0] + ')', resultQuery[1], function(err, result) {checkResult(err, result, res);});
-});
-
-/**
- * Add new task to the group task list
- *
- * URL: /api/tasks
- * method: POST
- * data: {
- *      group_id,
- *      todo_text
- *
- *      Optional:
- *      datetime_deadline,
- *      datetime_done,
- *      done_by_id
- * }
- */
-router.post('/', function(req, res) {
-	var data = req.body;
-	pool.query('INSERT INTO todo (' +
-        'group_id, todo_text, datetime_deadline, datetime_done, created_by_id, done_by_id' +
-        ') VALUES (?,?,?,?,?,?);',
-        [
-            checkRange(data.group_id, 1, null),
-            data.todo_text,
-            data.datetime_deadline,
-            data.datetime_done,
-            checkRange(req.session.person_id, 1, null),	// data.created_by_id to test this.
-            checkRange(data.done_by_id, 1, null)
-        ], function(err, result) {checkResult(err, result, connection, res);});
 });
 
 /**
@@ -250,7 +237,6 @@ router.get('/:group_id', function(req, res) {
 	console.log(req.params.group_id);
 	pool.query('SELECT todo_id, datetime_deadline, datetime_added, datetime_done, forename, middlename, lastname, todo_text, is_deactivated, color_hex FROM todo LEFT JOIN home_group USING (group_id) LEFT Join person ON done_by_id = person.person_id WHERE group_id = ?',
 		[req.params.group_id], function(err, result){
-		console.log(result);
 			return (err) ? (res.status(500).send()) : (res.status(200).json(result));
 		});
 });
@@ -274,6 +260,7 @@ router.get('/:group_id', function(req, res) {
  */
 router.post('/', function(req, res) {
     var data = req.body, input = [];
+    console.log(data);
     var query = "INSERT INTO todo (datetime_deadline, group_id, todo_text, datetime_done, created_by_id, done_by_id, autogen_id) VALUES ";
     if (data.time_interval > 0) {
         // Find the maximum autogen_id and increment it. This ensures that it will be unique.
@@ -366,4 +353,13 @@ function checkRange(value, min, max) {
 	if (min != null) {if (value < min) {return min;}}
 	if (max != null) {if (value > max) {return max;}}
 	return value;
+}
+
+/**
+ * Check for a database connection error and report if connected.
+ */
+function checkConnectionError(err, res) {
+    if(err) {
+        res.status(500).json({'Error' : 'connecting to database: ' } + err);
+    }
 }
