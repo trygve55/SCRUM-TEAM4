@@ -410,10 +410,10 @@ style=wordwrap</panel_attributes>
       <x>336</x>
       <y>208</y>
       <w>248</w>
-      <h>312</h>
+      <h>296</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>290.0;10.0;10.0;10.0;10.0;370.0;290.0;370.0</additional_attributes>
+    <additional_attributes>290.0;10.0;10.0;10.0;10.0;350.0;290.0;350.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
@@ -1151,6 +1151,146 @@ style=wordwrap</panel_attributes>
     <coordinates>
       <x>376</x>
       <y>600</y>
+      <w>32</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>1..1
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>304</x>
+      <y>160</y>
+      <w>280</w>
+      <h>368</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;440.0;330.0;440.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>232</x>
+      <y>64</y>
+      <w>168</w>
+      <h>104</h>
+    </coordinates>
+    <panel_attributes>Recipe
+--
+_recipe_id_
+recipe_name
+recipe_directions
+recipe_servings
+recipe_time</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>424</x>
+      <y>32</y>
+      <w>128</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>Group Recipe
+--
+planed_datetime</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>392</x>
+      <y>120</y>
+      <w>224</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=-
+</panel_attributes>
+    <additional_attributes>260.0;80.0;260.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>480</x>
+      <y>72</y>
+      <w>24</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>544</x>
+      <y>496</y>
+      <w>32</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>1..1
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>312</x>
+      <y>168</y>
+      <w>32</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>0..*
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>160</x>
+      <y>224</y>
+      <w>136</w>
+      <h>104</h>
+    </coordinates>
+    <panel_attributes>Recipe Ingredient
+--
+_ingredient_id_
+ingredient_amount
+ingredient_unit
+ingredient_name
+ingredient_optional</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>240</x>
+      <y>160</y>
+      <w>24</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>248</x>
+      <y>208</y>
+      <w>32</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>0..*
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>248</x>
+      <y>168</y>
       <w>32</w>
       <h>24</h>
     </coordinates>

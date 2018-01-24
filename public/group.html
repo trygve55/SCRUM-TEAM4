@@ -93,7 +93,7 @@
 
 			<br>
 
-			<div id="groupwindow" class="transparency col-sm-8">
+			<div id="groupwindow" class="transparency col-sm-8" style="height: 85vh">
 				<div id="grouptabs">
 					<div class="container">
 						<ul class="nav nav-tabs">
@@ -150,6 +150,10 @@
 									<i class="fa fa-sticky-note" aria-hidden="true">  Post</i>
 							</div>
 						</div>
+
+						<form id="news-post-form" action="" enctype="multipart/form-data" method="post" style="visibility:hidden">
+							<input type="file" name="File" id="file-attachment"><br>
+						</form>
 
 						<div id="posts" align="center"></div>
 						<br>
@@ -214,21 +218,27 @@
 						<i class="fa fa-money" style="font-size: 1.8vh" aria-hidden="true" id="settle"></i>
 					</div>
 				</div>
-
 				<div id="statistics" class="grouptab text-center">
 					<br>
 					<canvas id="stat0" class="chart"></canvas>
 					<canvas id="stat1" class="chart"></canvas>
 				</div>
-
 				<div id="leave" class="grouptab text-center">
 					<br>
 					<div>
 						<button type="button" class="btn btn-primary" onclick="leaveGroup()">
 							<p class="langtext" id="desc_button0"></p>
 						</button>
+						<br>
+						<div id="upload-button">
+							<i class="fa fa-picture-o" aria-hidden="true"> <text id="p-changephoto"> </text></i>
+						</div>
+						<form id="uploadPic" action="" enctype="multipart/form-data" method="post" style="visibility:hidden">
+							<input type="file" name="File" id="file-upload"><br>
+						</form>
 					</div>
 				</div>
+
 
 				<div id="food" class="grouptab">
 					<br>
@@ -236,6 +246,7 @@
 					<br>
 						<button onclick="window.location='/mealPlanner.html'" id="food-button" style="-moz-box-shadow: 0 0 1px grey; -webkit-box-shadow: 0 0 1px grey; box-shadow:  0 0 1px grey; border-radius: 10px;"></button>
 				</div>
+
 			</div>
 		</div>
 	</body>

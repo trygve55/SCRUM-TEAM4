@@ -230,6 +230,36 @@ router.get('/', function(req, res) {
 });
 
 /**
+ * Get person-info
+ *
+ * URL: /api/user/all
+ * method: GET
+ *
+ */
+router.get('/:shopping_list_id/users', function(req, res){
+    if(!req.session.person_id)
+        return res.status(403).send();
+    pool.query("SELECT DISTINCT person_id, email, forename, middlename, lastname, username FROM person LEFT JOIN shopping_list_person USING (person_id) WHERE shopping_list_person.shopping_list_id = ?;",
+        [req.params.shopping_list_id], function(err, result){
+        if(err)
+            res.status(500).send(err.code);
+        else {
+            var r = [];
+            for(var i = 0; i < result.length; i++){
+                if(result[i].person_id == req.session.person_id)
+                    continue;
+                r.push({
+                    name: result[i].forename + " " + (result[i].middlename ? result[i].middlename + " " : "") + result[i].lastname,
+                    email: result[i].email,
+                    id: result[i].person_id
+                });
+            }
+            res.status(200).json(r);
+        }
+    });
+});
+
+/**
  * Get all info about one shoppinglist
  *
  * URL: /api/shoppingList/{shopping_list_id}
@@ -299,14 +329,17 @@ router.get('/:shopping_list_id', function(req, res) {
 /**
  * Get all entries with a label in a time interval for a group.
  *
- * URL: /api/shoppingList/statistic/{budget_entry_type_id}
+ * URL: /api/shoppingList/statistic/{entry_type_name}
  * method: GET
  * data: group_id, start, end
  * }
  */
-router.get('/statistic/:budget_entry_type_id', function(req, res) {
+router.get('/statistic/:entry_type_name', function(req, res) {
 	var data = req.query;
-	var group = data.group_id, start = new Date(data.start), end = new Date(data.end), person = req.session.person_id;
+	var group = data.group_id,
+		start = new Date(decodeURIComponent(data.start)),
+		end = new Date(decodeURIComponent(data.end)),
+		person = req.session.person_id;
 
 	// Is this request ok?
 	if (!start || !end || !group || !person) {return res.status(400).send("Input values invalid.");}
@@ -316,12 +349,12 @@ router.get('/statistic/:budget_entry_type_id', function(req, res) {
 		if (err) {return res.status(500).send("Database error:" + err);}
 		if (result.length < 1) {return res.status(403).send("Invalid request: User not in group");}
 		
-		pool.query(	// Test this at 24/01/2018.
-			'SELECT entry_type_name AS name, entry_type_color as colour, amount, entry_datetime AS time FROM ' +
+		pool.query(
+			'SELECT entry_type_color AS colour, amount, entry_datetime AS t FROM ' +
 			'budget_entry LEFT JOIN budget_entry_type USING(budget_entry_type_id) WHERE ' +
-			'budget_entry_type_id = ? AND (entry_datetime BETWEEN ? AND ?) ' +
-			'AND shopping_list_id IN (SELECT shopping_list_id FROM home_group WHERE group_id = ?);',
-			[checkRange(req.params.budget_entry_type_id, 1, null), start, end, group],
+			'entry_type_name = ? AND (entry_datetime BETWEEN ? AND ?) ' +
+			'AND budget_entry.shopping_list_id IN (SELECT shopping_list_id FROM home_group WHERE group_id = ?);',
+			[checkRange(req.params.entry_type_name, 1, null), start, end, group],
 			function(err, result) {
 				return (err) ? (res.status(500).json({error: err})) : ((result.length < 1) ? (res.status(400).send("No data found.")) : (res.status(200).json(result)));
 			}

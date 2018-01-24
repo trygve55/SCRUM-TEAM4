@@ -202,13 +202,21 @@ label {
 }
 
 #group-newsfeed {
-	margin: 5px;
-	min-width: 130px;
-	min-height: 50px;
-	border-radius: 5px;
-    -moz-box-shadow:    inset 0 0 3px grey;
-    -webkit-box-shadow: inset 0 0 3px grey;
-    box-shadow:         inset 0 0 3px grey;
+	padding:2%;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	min-height:175px;
+	min-width:175px;
+	width: 85%;
+	max-width: 85%;
+	max-height: 85vh;
+	-moz-box-shadow: 0 0 1px grey;
+	-webkit-box-shadow: 0 0 1px grey;
+	box-shadow:  0 0 1px grey;
+	border-radius: 10px;
+	overflow-y: auto;
+	background-color: white;
+	border-radius: 10px;
 }
 
 #grouppage{
@@ -275,11 +283,13 @@ div.grouptablink.backvariant{
     margin-bottom: 20px;
     min-height:175px;
     max-width: 85%;
+	width: 85%;
+	max-width: 85%;
+	max-height: 85vh;
     -moz-box-shadow: 0 0 1px grey;
     -webkit-box-shadow: 0 0 1px grey;
     box-shadow:  0 0 1px grey;
     border-radius: 10px;
-	max-height: 350px;
 	overflow-y: auto;
 }
 

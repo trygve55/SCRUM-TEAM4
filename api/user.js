@@ -18,7 +18,6 @@ module.exports = router;
  * method: GET
  *
  */
-
 router.get('/all', function(req, res){
    if(!req.session.person_id)
         return res.status(403).send();
@@ -52,6 +51,21 @@ router.get('/all', function(req, res){
     });
 });
 
+router.get('/checkFacebook', function(req, res){
+    if(!req.session.person_id)
+        return res.status(403).send();
+    pool.query('SELECT facebook_api_id FROM person WHERE person_id = ?', [req.session.person_id], function (err, result) {
+        if(err) {
+            return res.status(500).json({error: err});
+        } else {
+            if (!result[0].length)
+                return res.status(400).json({facebook: false});
+            else
+                return res.status(200).json({facebook: true});
+        }
+    });
+});
+
 /**
  * Check password
  *
@@ -79,7 +93,7 @@ router.post('/checkPassword', function (req, res) {
             return res.status(500).send("DB_ERROR");
         } else {
             if (result[0].facebook_api_id)
-                return res.status(200).send("ERROR");
+                return res.status(400).send("ERROR");
             else {
                 pool.query(
                     'SELECT password_hash FROM person WHERE person_id = ?;',
@@ -87,8 +101,7 @@ router.post('/checkPassword', function (req, res) {
                     function (err, result) {
                         if (err)
                             return res.status(500).send("ERROR: executing query");
-                        if (result.length == 0){
-                            console.log(result.length);
+                        if (result.length == 0) {
                             return res.status(400).json({password: false});
                         }
                         else bcrypt.compare(user.password, result[0].password_hash, function(err, hash_res){
@@ -132,7 +145,7 @@ router.put('/password', function (req, res) {
             return res.status(500).send("DB_ERROR");
         } else {
             if (result[0].facebook_api_id)
-                return res.status(200).send("ERROR");
+                return res.status(400).send("ERROR");
             else {
                 auth.hashPassword(user, function(user) {
                     pool.query(
@@ -449,7 +462,7 @@ router.get('/:person_id/picture', function(req, res){
     pool.query("SELECT profile_pic, has_profile_pic FROM person WHERE person_id = ?;", [req.params.person_id], function (err, results, fields) {
             if(err)
                 return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            if(!results[0].has_profile_pic){
+            if(!results[0] || !results[0].has_profile_pic){
                 var p = path.join(__dirname, '../public/img/profilPicture.png');
                 var stat = fs.statSync(p);
 
@@ -483,6 +496,7 @@ router.get('/:person_id/picture_tiny', function(req, res){
         res.contentType('jpeg').status(200).end(results[0].profile_pic_tiny, 'binary');
     });
 });
+
 
 /**
  * Update profile
@@ -539,13 +553,14 @@ router.post('/picture', function(req, res){
             return res.status(500).json({'Error': err});
         }
 
-        var path = files.file.path,
-            file_size = files.file.size;
+        if (!files.File || !files.File.path)
+            return res.status(400).json({'error': 'file error'});
 
-        if (file_size > 4000000) {
-            res.status(400).json({'error': 'image file over 4MB'});
-            return;
-        }
+        var path = files.File.path,
+            file_size = files.File.size;
+
+        if (file_size > 4000000)
+            return res.status(400).json({'error': 'image file over 4MB'});
 
         Jimp.read(path, function (err, img) {
             if (err)
@@ -554,7 +569,7 @@ router.post('/picture', function(req, res){
             var img_tiny = img.clone();
 
             img.background(0xFFFFFFFF)
-                .contain(500, 500)
+                .cover(500, 500)
                 .quality(70)
                 .getBuffer(Jimp.MIME_JPEG, function (err, data) {
                     if (err)

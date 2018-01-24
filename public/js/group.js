@@ -3,7 +3,10 @@ var person = "Person";
 
 
 var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore;
-var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
+var stTransparent = "0.5",
+	statColours = [["(0, 30, 170, " + stTransparent + ")", "(0, 0, 132, 1)"], ["(170, 30, 0, " + stTransparent + ")", "(132, 0, 0, 1)"]],
+	statLabels = ["Income", "Expenses"];
+const MILLIS_DAY = 86400000;
 
 socket.on('group post', function(data){
     console.log(data);
@@ -22,7 +25,7 @@ socket.on('group post', function(data){
         }
         $("#posts").prepend(feedPost({
             name: data[i].forename + (data[i].middlename ? ' ' + data[i].middlename : '') + ' ' + data[i].lastname,
-            payload: '',
+            payload: ((data[i].attachment_type === 1) ? '/api/news/data/' + data[i].post_id : ''),
             text: short,
             rest_text: rest,
             image_url: '/api/user/' + data[i].person_id + '/picture_tiny',
@@ -103,6 +106,12 @@ $(function() {
 		},
 		error: console.error()
 	});
+
+    $("#group-picturePost").click(function () {
+        console.log("test0");
+        $("#file-attachment").trigger("click");
+    });
+
 	loadLanguageText();
 });
 
@@ -155,6 +164,9 @@ function changeTab(name) {
         drawChart();
     else if(activeTab == 'food')
         getCalendar();
+
+
+    drawLabelChart(new Date("1999-10-10"), new Date(), "Food and similar", 2);
 }
 
 /**
@@ -553,18 +565,25 @@ $(function () {
      */
     $('#group-postButton').click(function() {
 
+        console.log("test1");
+
+        var formData = new FormData();
+        formData.append('File', $("#file-attachment")[0].files[0]);
+        formData.append('post_text', $('#group-newsfeedPost').val());
+        formData.append('group_id', currentGroup.group_id);
+        formData.append('attachment_type', 1);
+
         $.ajax({
-            url: '/api/news',
-            method: 'POST',
-            data: {
-                post_text: $('#group-newsfeedPost').val(),
-                group_id: currentGroup.group_id
-            },
-            success: function (data123) {
+            url : '/api/news',
+            type : 'POST',
+            data : formData,
+            processData: false,
+            contentType: false,
+            success : function(data) {
+                console.log(data);
                 ClearFields();
             }
-        })
-
+        });
     });
 
     /**
@@ -683,7 +702,7 @@ function getPost(){
                 testy = a.toDateString();
                 $("#posts").append(feedPost({
                     name: dataFeed[i].posted_by.forename + (dataFeed[i].posted_by.middlename ? ' ' + dataFeed[i].posted_by.middlename : '') + ' ' + dataFeed[i].posted_by.lastname,
-                    payload: '',
+                    payload: ((dataFeed[i].attachment_type === 1) ? '/api/news/data/' + dataFeed[i].post_id : ''),
                     text: short,
                     rest_text: rest,
                     image_url: '/api/user/' + dataFeed[i].posted_by.person_id + '/picture_tiny',
@@ -733,16 +752,15 @@ function drawChart() {
 				
 				// Insert the values for every month.
 				var months = Array(2).fill().map(function(){
-				    return Array(12).fill(0)
+				    return Array(12).fill(0);
 				});
 				for (var i = 0; i < result.budget_entries.length; i++) {
 					var element = result.budget_entries[i];
 					if (element.entry_datetime != null) {
 						var entryTime = new Date(element.entry_datetime);
 						var entryMonth = mod(entryTime.getMonth() - monthNow - 1, 12);	// Perferably test the mod more.
-						if (entryTime > minLimit) {
-							if (element.amount > 0) {months[0][entryMonth] += element.amount;}
-							else {months[1][entryMonth] += element.amount;}
+						if (entryTime > minLimit && element.amount != 0) {
+							months[(element.amount > 0) ? 0 : 1][entryMonth] += element.amount;
 						}
 					}
 				}
@@ -751,10 +769,105 @@ function drawChart() {
 				var labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], rotate = monthNow + 1;
 				while (rotate-- > 0) {labels.push(labels.shift());}
 				
-				drawBarChart(months, labels);
+				drawBarChart(months, labels, statLabels, statColours, "stat0");
 			}
 		}
 	});
+}
+
+/**
+ * Statistics for the statistics tab. Can draw in years, months or days.
+ * IntervalTypes : 0 = years, 1 = months, 2 = days.
+ */
+function drawLabelChart(start, end, typeName, intervalType) {
+	var min = new Date(start), max = new Date(end);
+
+	// AJAX get all the budget data for the chart.
+	$.ajax({
+		type: "GET",
+		url: "/api/shoppingList/statistic/"+ typeName +"?group_id="+ currentGroup.group_id +"&start="+ encodeURIComponent(min) +"&end="+ encodeURIComponent(max),
+		contentType: "application/json",
+		dataType: "json",
+		success: function(result) {
+			if (!result) {return;}
+			
+			// Insert the values for every interval.
+			var dataPoints = [[], []];
+			var labels = [];
+			for (var i = 0; i < result.length; i++) {
+				var element = result[i], time = new Date(element.t);
+
+				// See if the time is acceptable.
+				if (!time || element.amount == 0) {continue;}
+				if (time < min || time > max) {continue;}
+
+				var label = "" + time.getFullYear();
+				if (intervalType > 0) {label = (time.getMonth() + 1) + "/" + label;}
+				if (intervalType > 1) {label = time.getDay() + "/" + label;}
+
+				// Add to array if it doesn't already exist, otherwise addition.
+				var index = (element.amount > 0) ? 0 : 1;
+				if (function(label, labels) {
+					for (var i = 0; i < labels.length; i++) {if (labels[i] == label) {return true;}}
+					return false;
+				}) {
+					labels.push(label);
+					dataPoints[index].push(element.amount);
+				}
+				else {dataPoints[index] += element.amount;}
+			}
+			var rgb = ((result[0].colour) ? addInvertedColour(result[0].colour) : statColours);
+
+			drawBarChart(dataPoints, labels, statLabels, ((rgb) ? rgb : statColours), "stat1");
+		}
+	});
+}
+
+/**
+ * Draw a "bar" style chart with these labels and the specified data.
+ */
+function drawBarChart(data, labels, mainLabels, colours, element) {
+    // Build the datasets. The default colours are defined at the very top of this file.
+    var datasets = [];
+    for (var i = 0; i < data.length; i++) {
+        datasets.push({
+			"label": mainLabels[i],
+			"backgroundColor": 'rgba' + colours[i][0],
+			"borderColor": 'rgba' + colours[i][1],
+			"data":data[i]
+		});
+    }
+
+    // The Charts.js part.
+    var chart = new Chart(document.getElementById(element).getContext("2d"), {
+        type: 'bar',
+        data: {"labels":labels, "datasets":datasets},
+        options: {"barPercentage":0.95, scales: {xAxes: [{stacked: true}], yAxes: [{stacked: true}]}}
+    });
+}
+
+/**
+* Create an array with both the inverted and the original in a rgba(r, g, b, a) format.
+* This is for the graphs.
+*/
+function addInvertedColour(colour) {
+	var rgb = [];
+	if (colour) {
+		rgb = [["(", "("], ["(", "("]];
+		for (var i = 0; i < 6; i += 2) {
+			var colourPart = parseInt(colour.toString(16).slice(i, i + 2), 10);
+			var rColourPart = (255 - colourPart) + ", ";
+			rgb[0][0] += colourPart + ", ";
+			rgb[0][1] += colourPart + ", ";
+			rgb[1][0] += rColourPart;
+			rgb[1][1] += rColourPart;
+		}
+		rgb[0][0] += stTransparent + ")";
+		rgb[0][1] += "1.0)";
+		rgb[1][0] += stTransparent + ")";
+		rgb[1][1] += "1.0)";
+	}
+	return rgb;
 }
 
 /**
@@ -904,24 +1017,6 @@ function setupTaskClicks(){
             e.preventDefault();
             $(this).find("input[type=checkbox]").prop('checked', $(this).find("input:checked").length == 0);
         }
-    });
-}
-
-/**
- * Draw a "bar" style chart with these labels and the specified data.
- */
-function drawBarChart(data, labels) {
-    // Build the datasets. The colours are defined at the very top of this file.
-    var datasets = [];
-    for (var i = 0; i < data.length; i++) {
-        datasets.push({"label": statLabels[i], "backgroundColor": 'rgba' + statColours[i][0], "borderColor": 'rgba' + statColours[i][1], "data":data[i]});
-    }
-
-    // The Charts.js part.
-    var chart = new Chart(document.getElementById("stat0").getContext("2d"), {
-        type: 'bar',
-        data: {"labels":labels, "datasets":datasets},
-        options: {"barPercentage":0.95, scales: {xAxes: [{stacked: true}], yAxes: [{stacked: true}]}}
     });
 }
 
