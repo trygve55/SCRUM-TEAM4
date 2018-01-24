@@ -136,9 +136,11 @@ $(document).ready(function () {
             $('#p-lastnam').val(data[0].lastname);
             $('#p-usernam').val(data[0].username);
             $('#p-phonenumb').val(data[0].phone);
-            var date = data[0].birth_date;
-            var formattedDate = date.split("T")[0];
-            $('#datepicker').val(formattedDate);
+            if (data[0].birth_date) {
+                var date = data[0].birth_date;
+                var formattedDate = date.split("T")[0];
+                $('#datepicker').val(formattedDate);
+            }
 
 
             $('#profile-email').text(data[0].email);
