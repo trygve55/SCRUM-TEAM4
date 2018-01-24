@@ -45,6 +45,7 @@ socket.on('group post', function(data){
     }
 });
 
+
 /**
  * When the page loads, the page must find the groups available to the user so they can be selected.
  */
@@ -159,10 +160,13 @@ function changeTab(name) {
         getPost();
     else if(activeTab=='tasks')
         getTasks();
-    else if (activeTab == 'statistics') {
+    else if (activeTab == 'statistics')
         drawChart();
-		drawLabelChart(new Date("1999-10-10"), new Date(), "Food and similar", 2);
-	}
+    else if(activeTab == 'food')
+        getCalendar();
+
+
+    drawLabelChart(new Date("1999-10-10"), new Date(), "Food and similar", 2);
 }
 
 /**
@@ -1066,3 +1070,25 @@ $('#group-logoutNavbar').click(function () {
         }
     });
 });
+
+
+function getCalendar() {
+    $('#calendar').fullCalendar({
+        height: 510,
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay,listWeek'
+        },
+        defaultDate: '2017-12-12',
+        navLinks: true, // can click day/week names to navigate views
+        editable: true,
+        eventLimit: true, // allow "more" link when too many events
+        events: [
+            {
+                title: 'All Day Event',
+                start: '2017-12-01',
+            }
+        ]
+    });
+}

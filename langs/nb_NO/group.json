@@ -7,6 +7,7 @@
 	"desc_title5": "Dine Oppgaver",
 	"desc_title6": "Gruppens oppgaver",
 	"desc_title7": "Administrer",
+	"desc_title8": "Måltidsplanlegger",
 	"group-homepageNavbar": "Hjem",
 	"group-groupsNavbar": "Grupper",
 	"group-tasksNavbar": "Gjøremål",
@@ -29,5 +30,6 @@
 	"reg_cost": "Registrer Kostnad",
 	"desc_button0": "Administrer",
 	"list-name-task": "Gjøremål",
-	"add-task": " Legg til gjøremål"
+	"add-task": " Legg til gjøremål",
+	"food-button": "Rediger måltidsplanlegger"
 }
