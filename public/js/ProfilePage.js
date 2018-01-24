@@ -160,6 +160,12 @@ $(document).ready(function () {
     });
 
     $("#p-changephoto").click(function () {
+        $("#file-upload").trigger("click");
+    });
+
+    $("#file-upload").change(function () {
+
+
         var formData = new FormData();
         formData.append('File', $("#file-upload")[0].files[0]);
 

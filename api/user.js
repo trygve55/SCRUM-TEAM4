@@ -428,8 +428,6 @@ router.get('/:person_id/picture_tiny', function(req, res){
         }
 
         res.contentType('jpeg').status(200).end(results[0].profile_pic_tiny, 'binary');
-
-        if (results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
     });
 });
 
@@ -489,15 +487,14 @@ router.post('/picture', function(req, res){
             return res.status(500).json({'Error': err});
         }
 
-        console.log(files.File);
+        if (!files.File || !files.File.path)
+            return res.status(400).json({'error': 'file error'});
 
         var path = files.File.path,
             file_size = files.File.size;
 
-        if (file_size > 4000000) {
-            res.status(400).json({'error': 'image file over 4MB'});
-            return;
-        }
+        if (file_size > 4000000)
+            return res.status(400).json({'error': 'image file over 4MB'});
 
         Jimp.read(path, function (err, img) {
             if (err)
@@ -506,7 +503,7 @@ router.post('/picture', function(req, res){
             var img_tiny = img.clone();
 
             img.background(0xFFFFFFFF)
-                .contain(500, 500)
+                .cover(500, 500)
                 .quality(70)
                 .getBuffer(Jimp.MIME_JPEG, function (err, data) {
                     if (err)

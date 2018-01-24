@@ -270,26 +270,34 @@
 				</div> -->
 
 
+
+				
+				</div>
 				<!--This is the statistics lists tab.-->
 				<div id="statistics" class="grouptab text-center">
 					<hr width="90%">
 					<!--Here the is the space for the statistics.-->
 					<canvas id="stat0" class="chart"></canvas>
 				</div>
-				
+
 				<!--This is the leave group tab.-->
-				<div id="leave" class="grouptab text-center">
-					<hr width="90%">
-					<div>
+				<div id="leave" class="grouptab">
+
+					<div style="height:200px">
 						<!--This is the button move it if needed.-->
 						<button type="button" class="btn btn-primary" onclick="leaveGroup()">
 							<p class="langtext" id="desc_button0"></p>
 						</button>
+						<br>
+						<div id="upload-button">
+							<i class="fa fa-picture-o" aria-hidden="true"> <text id="p-changephoto"> </text></i>
+						</div>
+						<form id="uploadPic" action="" enctype="multipart/form-data" method="post" style="visibility:hidden">
+							<input type="file" name="File" id="file-upload"><br>
+						</form>
 					</div>
 				</div>
-				
 			</div>
-		</div>
 		</div>
 	</body>
 </html>

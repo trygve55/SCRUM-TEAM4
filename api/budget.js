@@ -244,7 +244,7 @@ function addPersonBudgetEntry(req, res, connection, result) {
             function (err, result2) {
 
             if (err) {
-                connection.rollback(function () {
+                return connection.rollback(function () {
                     connection.release();
                     res.status(500).json({'Error': err, err: 6});
                 });
@@ -254,7 +254,7 @@ function addPersonBudgetEntry(req, res, connection, result) {
                 [req.session.person_id, result.insertId],
                 function(err, result3) {
                 if (err) {
-                    connection.rollback(function () {
+                    return connection.rollback(function () {
                         connection.release();
                         res.status(500).json({'Error': err, err: 5});
                     });
