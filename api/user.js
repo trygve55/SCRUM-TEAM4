@@ -6,7 +6,8 @@ var router = require('express').Router(),
     fs = require('fs'),
     path = require('path'),
     nodemailer = require('nodemailer'),
-    jwt = require('jsonwebtoken');
+    jwt = require('jsonwebtoken'),
+    bcrypt = require('bcrypt');
 
 module.exports = router;
 
@@ -52,6 +53,57 @@ router.get('/all', function(req, res){
 });
 
 /**
+ * Check password
+ *
+ * URL: /api/user/checkPassword
+ * method: POST
+ * data: {
+ *      password
+ * }
+ */
+
+
+router.post('/checkPassword', function (req, res) {
+   if (req.session.person_id == null) {
+       return res.status(403).send("Invalid request, you must log in");
+   }
+
+   var user = req.body;
+
+   if (!user.password) {
+       return res.status(400).send("No data");
+   }
+
+   pool.query('SELECT facebook_api_id FROM person WHERE person_id = ?', [req.session.person_id], function (err, result) {
+        if(err) {
+            return res.status(500).send("DB_ERROR");
+        } else {
+            if (result[0].facebook_api_id)
+                return res.status(200).send("ERROR");
+            else {
+                pool.query(
+                    'SELECT password_hash FROM person WHERE person_id = ?;',
+                    [req.session.person_id],
+                    function (err, result) {
+                        if (err)
+                            return res.status(500).send("ERROR: executing query");
+                        if (result.length == 0){
+                            console.log(result.length);
+                            return res.status(400).json({password: false});
+                        }
+                        else bcrypt.compare(user.password, result[0].password_hash, function(err, hash_res){
+                            if(hash_res)
+                                return res.status(200).json({password: true});
+                            else
+                                return res.status(400).json({password: false});
+                    });
+                });
+            }
+        }
+   });
+});
+
+/**
  * Change password for the currently logged in user
  *
  * URL: /api/user/password
@@ -60,6 +112,7 @@ router.get('/all', function(req, res){
  *      password
  * }
  */
+
 
 router.put('/password', function (req, res) {
     if(req.session.person_id == null) {
@@ -84,7 +137,7 @@ router.put('/password', function (req, res) {
                 auth.hashPassword(user, function(user) {
                     pool.query(
                         'UPDATE person SET password_hash = ? WHERE person_id = ?;',
-                        [user.password_hash, req.params.person_id],
+                        [user.password_hash, req.session.person_id],
                         function (err) {
                             if (err)
                                 return res.status(500).send("ERROR: executing query");
