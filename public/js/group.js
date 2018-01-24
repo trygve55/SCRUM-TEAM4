@@ -3,7 +3,10 @@ var person = "Person";
 
 
 var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore;
-var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
+var stTransparent = "0.5",
+	statColours = [["(0, 30, 170, " + stTransparent + ")", "(0, 0, 132, 1)"], ["(170, 30, 0, " + stTransparent + ")", "(132, 0, 0, 1)"]],
+	statLabels = ["Income", "Expenses"];
+const MILLIS_DAY = 86400000;
 
 socket.on('group post', function(data){
     for(var i = 0; i < data.length; i++) {
@@ -734,9 +737,8 @@ function drawChart() {
 					if (element.entry_datetime != null) {
 						var entryTime = new Date(element.entry_datetime);
 						var entryMonth = mod(entryTime.getMonth() - monthNow - 1, 12);	// Perferably test the mod more.
-						if (entryTime > minLimit) {
-							if (element.amount > 0) {months[0][entryMonth] += element.amount;}
-							else {months[1][entryMonth] += element.amount;}
+						if (entryTime > minLimit && element.amount != 0) {
+							months[(element.amount > 0) ? 0 : 1][entryMonth] += element.amount;
 						}
 					}
 				}
@@ -745,10 +747,82 @@ function drawChart() {
 				var labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], rotate = monthNow + 1;
 				while (rotate-- > 0) {labels.push(labels.shift());}
 				
-				drawBarChart(months, labels);
+				drawBarChart(months, labels, statLabels, statColours, "stat0");
 			}
 		}
 	});
+}
+
+/**
+ * Statistics for the statistics tab. Can draw in years, months or days.
+ * IntervalTypes : 0 = years, 1 = months, 2 = days.
+ */
+function drawLabelChart(start, end, typeName, intervalType) {
+	var min = new Date(start), max = new Date(end);
+
+	// AJAX get all the budget data for the chart.
+	$.ajax({
+		type: "GET",
+		url: "/api/shoppingList/statistic/"+ typeName +"?group_id="+ currentGroup.group_id +"&start="+ min +"&end="+ max,
+		contentType: "application/json",
+		dataType: "json",
+		success: function(result) {
+			if (!result) {return;}
+			
+			// Insert the values for every interval.
+			var dataPoints = [[], []];
+			var labels = [];
+			console.log(result);
+			for (var i = 0; i < result.length; i++) {
+				var element = result[i], time = element.time;
+
+				// See if the time is acceptable.
+				if (!time || element.amount == 0) {continue;}
+				if (time < min || time > max) {continue;}
+
+				var label = "" + time.getYear();
+				if (intervalType > 0) {label = time.getMonth() + "/" + label;}
+				if (intervalType > 1) {label = time.getDay() + "/" + label;}
+
+				// Add to array if it doesn't already exist, otherwise addition.
+				var index = (element.amount > 0) ? 0 : 1:
+				if (function(label, labels) {
+					for (var i = 0; i < labels.length; i++) {if (labels[i] == label) {return true;}}
+					return false;
+				}) {
+					labels.push(label);
+					dataPoints[index].push(element.amount);
+				}
+				else {dataPoints[index] += element.amount;}
+			}
+			var rgb = addInvertedColour(result[0].colour);
+			drawBarChart(dataPoints, labels, statLabels, ((rgb) ? rgb : statColours), "stat1");
+		}
+	});
+}
+
+/**
+* Create an array with both the inverted and the original in a rgba(r, g, b, a) format.
+* This is for the graphs.
+*/
+function addInvertedColour(colour) {
+	var rgb = [];
+	if (colour) {
+		rgb = [["(", "("], ["(", "("]];
+		for (var i = 0; i < 6; i += 2) {
+			var colourPart = parseInt(colour.toString(16).slice(i, i + 2), 10);
+			var rColourPart = (255 - colourPart) + ", ";
+			rgb[0][0] += colourPart + ", ";
+			rgb[0][1] += colourPart + ", ";
+			rgb[1][0] += rColourPart;
+			rgb[1][1] += rColourPart;
+		}
+		rgb[0][0] += stTransparent + ")";
+		rgb[0][1] += "1.0)";
+		rgb[1][0] += stTransparent + ")";
+		rgb[1][1] += "1.0)";
+	}
+	return rgb;
 }
 
 /**
@@ -897,15 +971,15 @@ function setupTaskClicks(){
 /**
  * Draw a "bar" style chart with these labels and the specified data.
  */
-function drawBarChart(data, labels) {
-    // Build the datasets. The colours are defined at the very top of this file.
+function drawBarChart(data, labels, mainLabels, colours, element) {
+    // Build the datasets. The default colours are defined at the very top of this file.
     var datasets = [];
     for (var i = 0; i < data.length; i++) {
-        datasets.push({"label": statLabels[i], "backgroundColor": 'rgba' + statColours[i][0], "borderColor": 'rgba' + statColours[i][1], "data":data[i]});
+        datasets.push({"label": mainLabels[i], "backgroundColor": 'rgba' + colours[i][0], "borderColor": 'rgba' + colours[i][1], "data":data[i]});
     }
 
     // The Charts.js part.
-    var chart = new Chart(document.getElementById("stat0").getContext("2d"), {
+    var chart = new Chart(document.getElementById(element).getContext("2d"), {
         type: 'bar',
         data: {"labels":labels, "datasets":datasets},
         options: {"barPercentage":0.95, scales: {xAxes: [{stacked: true}], yAxes: [{stacked: true}]}}

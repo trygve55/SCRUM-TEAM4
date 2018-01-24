@@ -299,12 +299,12 @@ router.get('/:shopping_list_id', function(req, res) {
 /**
  * Get all entries with a label in a time interval for a group.
  *
- * URL: /api/shoppingList/statistic/{budget_entry_type_id}
+ * URL: /api/shoppingList/statistic/{entry_type_name}
  * method: GET
  * data: group_id, start, end
  * }
  */
-router.get('/statistic/:budget_entry_type_id', function(req, res) {
+router.get('/statistic/:entry_type_name', function(req, res) {
 	var data = req.query;
 	var group = data.group_id, start = new Date(data.start), end = new Date(data.end), person = req.session.person_id;
 
@@ -316,12 +316,12 @@ router.get('/statistic/:budget_entry_type_id', function(req, res) {
 		if (err) {return res.status(500).send("Database error:" + err);}
 		if (result.length < 1) {return res.status(403).send("Invalid request: User not in group");}
 		
-		pool.query(	// Test this at 24/01/2018.
-			'SELECT entry_type_name AS name, entry_type_color as colour, amount, entry_datetime AS time FROM ' +
+		pool.query(
+			'SELECT entry_type_color AS colour, amount, entry_datetime AS time FROM ' +
 			'budget_entry LEFT JOIN budget_entry_type USING(budget_entry_type_id) WHERE ' +
-			'budget_entry_type_id = ? AND (entry_datetime BETWEEN ? AND ?) ' +
+			'entry_type_name = ? AND (time BETWEEN ? AND ?) ' +
 			'AND shopping_list_id IN (SELECT shopping_list_id FROM home_group WHERE group_id = ?);',
-			[checkRange(req.params.budget_entry_type_id, 1, null), start, end, group],
+			[checkRange(req.params.entry_type_name, 1, null), start, end, group],
 			function(err, result) {
 				return (err) ? (res.status(500).json({error: err})) : ((result.length < 1) ? (res.status(400).send("No data found.")) : (res.status(200).json(result)));
 			}
