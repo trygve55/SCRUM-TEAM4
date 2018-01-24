@@ -714,7 +714,7 @@ function setupClicks(){
                          * This method allows a user to search all names or emails in the database by simply
                          * entering a letter, optionally more, when adding more members to a group
                          */
-                        $('#scrollable-dropdown-menu2 .typeahead2').typeahead({
+                        $('#scrollable-dropdown-menu2 .typeahead').typeahead({
                                 highlight: true
                             },
                             {
@@ -738,15 +738,15 @@ function setupClicks(){
                             }
                         );
 
-                        $(".typeahead2").bind('typeahead:select', function(a, data){
+                        $(".typeahead").bind('typeahead:select', function(a, data){
                             if(!check(data))
                                 return;
                             buyers.push(data);
                             updateList2();
                         });
 
-                        $(".typeahead2").bind('typeahead:close', function(){
-                            $(".typeahead2").val("");
+                        $(".typeahead").bind('typeahead:close', function(){
+                            $(".typeahead").val("");
                         });
 
                     }
