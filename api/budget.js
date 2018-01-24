@@ -51,7 +51,7 @@ router.get('/entryType', function(req, res) {
         'LEFT JOIN home_group USING(group_id)  ' +
         'WHERE person.person_id = ? ' +
         'UNION  ' +
-        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?) LIMIT 1',
+        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?)',
         [req.query.shopping_list_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
             if(err) return res.status(500).json({'Error' : err});
             var budget_entry_types = [];
