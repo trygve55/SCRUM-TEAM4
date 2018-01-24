@@ -151,8 +151,10 @@ function changeTab(name) {
         getPost();
     else if(activeTab=='tasks')
         getTasks();
-    else if (activeTab == 'statistics')
+    else if (activeTab == 'statistics') {
         drawChart();
+		drawLabelChart(new Date("1999-10-10"), new Date(), 4, 2);
+	}
 }
 
 /**
@@ -785,7 +787,7 @@ function drawLabelChart(start, end, typeName, intervalType) {
 				if (intervalType > 1) {label = time.getDay() + "/" + label;}
 
 				// Add to array if it doesn't already exist, otherwise addition.
-				var index = (element.amount > 0) ? 0 : 1:
+				var index = (element.amount > 0) ? 0 : 1;
 				if (function(label, labels) {
 					for (var i = 0; i < labels.length; i++) {if (labels[i] == label) {return true;}}
 					return false;
