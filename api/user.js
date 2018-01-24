@@ -448,7 +448,7 @@ router.get('/:person_id/picture', function(req, res){
     pool.query("SELECT profile_pic, has_profile_pic FROM person WHERE person_id = ?;", [req.params.person_id], function (err, results, fields) {
             if(err)
                 return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            if(!results[0].has_profile_pic){
+            if(!results[0] || !results[0].has_profile_pic){
                 var p = path.join(__dirname, '../public/img/profilPicture.png');
                 var stat = fs.statSync(p);
 
