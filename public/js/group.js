@@ -950,6 +950,7 @@ $('#group-logoutNavbar').click(function () {
 
 function getCalendar() {
     $('#calendar').fullCalendar({
+        height: 510,
         header: {
             left: 'prev,next today',
             center: 'title',

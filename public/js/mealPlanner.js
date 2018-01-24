@@ -1,4 +1,62 @@
+var recipeList;
+
 $(function () {
+    /**
+     * This method retrieves all recipes saved on the database, and places them on the
+     * side div.
+     */
+    $.ajax({
+        url: '/template',
+        method: 'GET',
+        data: {
+            files: [
+                'recipeList.html',
+            ]
+        },
+        success: function (data){
+            recipeList = Handlebars.compile(data['recipeList.html']);
+        }
+    });
+
+    /**
+     * This method creates the standard calender.
+     */
+    $('#calendar').fullCalendar({
+        height: 630,
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay,listWeek'
+        },
+        defaultDate: '2017-12-12',
+        navLinks: true, // can click day/week names to navigate views
+        editable: true,
+        eventLimit: true, // allow "more" link when too many events
+        events: [
+            {
+                title: 'All Day Event',
+                start: '2017-12-01',
+            }
+        ]
+    });
+
+    /**
+     * This method retrieves all recipes saved in the database.
+     */
+    $.ajax({
+        url: '/api/meal/',
+        method: 'GET',
+        success: function (data) {
+            $('.recipelist').html("");
+            for(var i = 0; i < data.length; i++){
+                $('.recipelist').append(recipeList({
+                    entry_id: '',
+                    entry_text: ''
+                }));
+            }
+        }
+    })
+
     /**
      * This method calls the language api and sets the standard language as
      * norwegian.
@@ -88,23 +146,11 @@ $(function () {
 
     });
 
-
-    $('#calendar').fullCalendar({
-        height: 630,
-        header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'month,agendaWeek,agendaDay,listWeek'
-        },
-        defaultDate: '2017-12-12',
-        navLinks: true, // can click day/week names to navigate views
-        editable: true,
-        eventLimit: true, // allow "more" link when too many events
-        events: [
-            {
-                title: 'All Day Event',
-                start: '2017-12-01',
-            }
-        ]
-    });
 });
+
+/**
+ * This function
+ */
+function addRecipe() {
+
+}
