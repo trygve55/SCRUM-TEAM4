@@ -301,27 +301,32 @@ router.get('/:shopping_list_id', function(req, res) {
  *
  * URL: /api/shoppingList/statistic/{budget_entry_type_id}
  * method: GET
- * data: {
- *     group_id,
- *     start,
- *     end
+ * data: group_id, start, end
  * }
  */
 router.get('/statistic/:budget_entry_type_id', function(req, res) {
-	var group = req.body.group_id, start = new Date(req.body.start), end = new Date(req.body.end);
+	var data = req.query;
+	var group = data.group_id, start = new Date(data.start), end = new Date(data.end), person = req.session.person_id;
 
 	// Is this request ok?
-	if (!start || !end || !group || !req.session.person_id) {return res.status(400).send();}
+	if (!start || !end || !group || !person) {return res.status(400).send("Input values invalid.");}
 
-	//pool.query("SELECT person_id FROM home_group WHERE group_id = ?;", [group], function(err, result));
-	pool.query(	// Test this at 24/01/2018.
-		'SELECT amount, entry_datetime FROM budget_entry WHERE budget_entry_type_id = ? AND (entry_datetime BETWEEN ? AND ?) ' +
-		'AND shopping_list_id IN (SELECT shopping_list_id FROM home_group WHERE group_id = ?);',
-		[checkRange(req.params.budget_entry_type_id, 1, null), group, start, end],
-		function(err, result) {
-			return (err) ? (res.status(500).json({error: err})) : ((result.length < 1) ? (res.status(403).json({error: "no data"})) : (res.status(200).json(result)));
-		}
-	);
+	// Is the person who sent the query in the group?
+	pool.query("SELECT person_id FROM group_person WHERE group_id = ? AND person_id = ?;", [group, person], function(err, result) {
+		if (err) {return res.status(500).send("Database error:" + err);}
+		if (result.length < 1) {return res.status(403).send("Invalid request: User not in group");}
+		
+		pool.query(	// Test this at 24/01/2018.
+			'SELECT entry_type_name AS name, entry_type_color as colour, amount, entry_datetime AS time FROM ' +
+			'budget_entry LEFT JOIN budget_entry_type USING(budget_entry_type_id) WHERE ' +
+			'budget_entry_type_id = ? AND (entry_datetime BETWEEN ? AND ?) ' +
+			'AND shopping_list_id IN (SELECT shopping_list_id FROM home_group WHERE group_id = ?);',
+			[checkRange(req.params.budget_entry_type_id, 1, null), start, end, group],
+			function(err, result) {
+				return (err) ? (res.status(500).json({error: err})) : ((result.length < 1) ? (res.status(400).send("No data found.")) : (res.status(200).json(result)));
+			}
+		);
+	});
 });
 
 /**

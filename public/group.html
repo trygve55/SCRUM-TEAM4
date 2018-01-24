@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title></title>
+		<title>HHM: Groups</title>
 
-        <!-- favicon stuff -->
         <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png">
@@ -27,10 +26,9 @@
 		<script src="/js/notifications.js"></script>
 		<script src="js/redirect.js"></script>
 
-		<!--These below are needed for this window to appear correctly.-->
 		<script src="/js/group.js"></script>
 		<link rel="stylesheet" href="css/common.css">
-		<link rel="stylesheet" type="text/css" href="/css/group.css"> <!--Own CSS.-->
+		<link rel="stylesheet" type="text/css" href="/css/group.css">
 	</head>
 
 	<body>
@@ -71,18 +69,16 @@
 	</nav>
 
 	<br>
-	<!--Language selection.-->
+
 	<div class="flag" style="background-color: white">
 		<img class="flag" id="group-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
 		<img class="flag" id="group-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
 	</div>
 
-		<!--This is the div that is the entire window. It is a separate div so it can be moved into a different HMTL file.-->
 		<div  id="grouppage" class="row" align="center">
 			<br>
 				<div id="groupselection" class="transparency text-center col-sm-3">
 
-				<!--These are the groups available to the user. The javascript will add entries here.-->
 					<p class="langtext" id="desc_title0"></p>
 
 					<div onclick="addGroup()" style="padding-top: 2px; height: 30px; border-radius: 10px; background-color: white; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class="tablink text-center backvariant" id="addGroup-button">Add Group</div>
@@ -92,7 +88,6 @@
 			<br>
 
 			<div id="groupwindow" class="transparency col-sm-8">
-				<!--These are the tabs available once a group is selected.-->
 				<div id="grouptabs">
 					<div class="container">
 						<ul class="nav nav-tabs">
@@ -115,7 +110,6 @@
 								</li>
 							</ul>
 
-							<!-- Tab panes -->
 							<div class="tab-content">
 								<div role="tabpanel" class="tab-pane fade"></div>
 								<div role="tabpanel" class="tab-pane fade" ></div>
@@ -126,8 +120,6 @@
 						</ul>
 					</div>
 				</div>
-
-				<!--This is the news tab.-->
 
 				<div id="feed" class="row grouptab text-center">
 					<div>
@@ -155,7 +147,6 @@
 					</div>
 				</div>
 
-				<!--This is the tasks tab.-->
 				<div id="tasks" class="grouptab" style="padding-left: 7%; padding-right: 7%">
 					<div class="row">
 						<div class="col-sm listeTask" style="background-color: #{{color_hex}}; width: 90%">
@@ -168,7 +159,6 @@
 								</div>
 								<div class="col-sm-5" style="text-align: right">
 									<h4>
-										<!--Colours.-->
 										<i class="fa fa-circle white-select-tasks" aria-hidden="true" data-color="#FFFFFF" style="color: white; text-shadow: 0px 0px 3px #000;"></i>
 										<i class="fa fa-circle pink-select-tasks" aria-hidden="true" data-color="#FFB6C1" style="color: lightpink; text-shadow: 0px 0px 3px #000;"></i>
 										<i class="fa fa-circle yellow-select-tasks" aria-hidden="true" data-color="#FFEC8E" style="color: #ffec8e; text-shadow: 0px 0px 3px #000;"></i>
@@ -186,9 +176,7 @@
 					</div>
 				</div>
 
-				<!--This is the shopping lists tab.-->
 				<div id="shopping" class="grouptab">
-					<!--Here the Javascript will put the lists.-->
 					<div class="col-sm liste" style="background-color: #{{color_hex}}; width: 90%">
 						<div class="row">
 							<div class="col-sm-7" style="text-align: left">
@@ -215,73 +203,17 @@
 						<i class="fa fa-shopping-cart" aria-hidden="true" style="font-size: 1.8vh" id="buy"></i>
 						<i class="fa fa-money" style="font-size: 1.8vh" aria-hidden="true" id="settle"></i>
 					</div>
-
-					<!--
-					<div data-toggle="modal" data-target="#myModalNorm" style="border-radius: 10px; max-width: 13%" id="group-registerCost" class="registerCost tablink backvariant">
-
-						Register Cost
-					</div>
 				</div>
 
-				<div class="modal fade" id="myModalNorm" tabindex="-1" role="dialog"
-					 aria-labelledby="myModalLabel" aria-hidden="true">
-					<div class="modal-dialog">
-						<div class="modal-content">-->
-							<!-- Modal Header -->
-							<!--<div class="modal-header">
-								<h4 class="modal-title" id="registercost-modalLabel">
-									Register Cost
-								</h4>
-								<button type="button" class="close"
-										data-dismiss="modal">
-									<span aria-hidden="true">&times;</span>
-									<span class="sr-only">Close</span>
-								</button>
-
-							</div> -->
-
-							<!-- Modal Body -->
-							<!--<div class="modal-body">
-
-								<form role="form">
-									<div align="left" class="form-group">
-										<label for="cost">Total cost</label>
-										<input type="email" class="form-control"
-											   id="cost" placeholder="Enter total cost"/>
-									</div>
-
-								</form>
-
-
-							</div>
--->
-							<!-- Modal Footer -->
-							<!--<div class="modal-footer">
-								<button type="button" class="btn btn-default"
-										data-dismiss="modal">
-									Close
-								</button>
-								<button  onclick="registerCost()" id="group-registerCostButton" type="button" class="btn btn-primary">
-									<p class="langtext" id="reg_cost"></p>
-								</button>
-							</div>
-						</div>
-					</div>
-				</div> -->
-
-
-				<!--This is the statistics lists tab.-->
 				<div id="statistics" class="grouptab text-center">
 					<hr width="90%">
-					<!--Here the is the space for the statistics.-->
 					<canvas id="stat0" class="chart"></canvas>
+					<canvas id="stat1" class="chart"></canvas>
 				</div>
-				
-				<!--This is the leave group tab.-->
+
 				<div id="leave" class="grouptab text-center">
 					<hr width="90%">
 					<div>
-						<!--This is the button move it if needed.-->
 						<button type="button" class="btn btn-primary" onclick="leaveGroup()">
 							<p class="langtext" id="desc_button0"></p>
 						</button>
