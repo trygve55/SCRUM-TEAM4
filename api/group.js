@@ -296,7 +296,6 @@ router.post('/:group_id/picture', function(req, res){
         Jimp.read(path, function (err, img) {
             if (err) {
                 console.log(err);
-                console.log("error 0");
                 res.status(500).json({'Error': err});
                 return;
             }
