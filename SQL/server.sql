@@ -434,7 +434,7 @@ INSERT INTO person (email, username, password_hash, forename, middlename, lastna
 	VALUES ('facebook@test.com', 'facebook', NULL, 'test', NULL, 'test', '', CURRENT_DATE, DEFAULT, DEFAULT, NULL, DEFAULT, NULL, 2, DEFAULT, DEFAULT, 123456);
 
 INSERT INTO home_group (group_name, group_desc, group_type, created_datetime, group_pic, default_currency_id, shopping_list_id) 
-	VALUES ('test group', 'lol', DEFAULT, DEFAULT, NULL, DEFAULT, 100, 3);
+	VALUES ('test group', 'lol', DEFAULT, DEFAULT, NULL, 100, 3);
 
 INSERT INTO group_person (person_id, group_id, joined_timestamp, role_id, was_invited) 
 	VALUES (1, 1, DEFAULT, 2, 0);
