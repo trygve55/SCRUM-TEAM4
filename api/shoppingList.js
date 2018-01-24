@@ -1,5 +1,6 @@
 
 var router = require('express').Router();
+var fx = require('money');
 
 module.exports = router;
 /**
@@ -33,7 +34,7 @@ router.post('/', function(req, res) {
                             connection.commit(function (err) {
                                 if (!rollbackC(err, connection, res)) {return;}
 								
-                                connection.release();
+                                //connection.release();
                                 res.status(200).json({success: "true", shopping_list_id: result.insertId});
                             });
                         });
@@ -312,6 +313,7 @@ router.get('/statistic/:budget_entry_type_id', function(req, res) {
 	// Is this request ok?
 	if (!start || !end || !group || !req.session.person_id) {return res.status(400).send();}
 
+	//pool.query("SELECT person_id FROM home_group WHERE group_id = ?;", [group], function(err, result));
 	pool.query(	// Test this at 24/01/2018.
 		'SELECT amount, entry_datetime FROM budget_entry WHERE budget_entry_type_id = ? AND (entry_datetime BETWEEN ? AND ?) ' +
 		'AND shopping_list_id IN (SELECT shopping_list_id FROM home_group WHERE group_id = ?);',
@@ -396,10 +398,19 @@ router.post('/entry', function(req, res) {
  */
 router.put('/:shopping_list_id', function(req, res) {
     var query = putRequestSetup(req.params.shopping_list_id , req, "shopping_list");
-    pool.query(query[0], query[1], function(err, result) {
-            checkResult(err, result, res);
-        }
-    );
+    pool.query('SELECT currency_short FROM shopping_list LEFT JOIN currency USING (currency_id) WHERE shopping_list_id = ?',
+        [req.params.shopping_list_id], function(err, currency){
+            pool.query(query[0], query[1], function(err, result) {
+                checkResult(err, result, res);
+                pool.query('SELECT budget_entry_id, amount, currency_short FROM budget_entry LEFT JOIN shopping_list USING (shopping_list_id) LEFT JOIN currency USING (currency_id) WHERE shopping_list_id = ?',
+                    [req.params.shopping_list_id], function(err, result){
+                        if(err)
+                            return res.status(500).send();
+                        changeAmounts(result, currency[0].currency_short, 0);
+                        res.status(200).send();
+                    });
+            });
+        });
 });
 
 // Help methods:
@@ -407,6 +418,25 @@ router.put('/:shopping_list_id', function(req, res) {
 /**
  * Make the neccesary setup for a put request.
  */
+function changeAmounts(result, currency, i){
+    console.log(result);
+    console.log(currency);
+    console.log(result.length);
+    if(result.length && result.length <= i)
+        return;
+    console.log(i);
+    convert(result[i].amount, currency, result[i].currency_short, function(namt){
+        console.log(i);
+        pool.query("UPDATE budget_entry SET amount = ? WHERE budget_entry_id = ?",
+            [namt, result[i].budget_entry_id], function(err){
+                if(err)
+                    console.error(err);
+                i++;
+                changeAmounts(result, currency, i);
+            });
+    });
+}
+
 function putRequestSetup(id, req, tableName) {
     var parameters = [], request = 'UPDATE ' + tableName + ' SET ', first = true;
     for (var k in req.body) {
