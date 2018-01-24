@@ -495,7 +495,7 @@ INSERT INTO home_group (group_name, group_desc, group_type, created_datetime, gr
 INSERT INTO home_group (group_name, group_desc, group_type, created_datetime, group_pic, default_currency_id, shopping_list_id) VALUES ('Group 2', 'Group 2', DEFAULT, DEFAULT, NULL, 54, 16);
 INSERT INTO home_group (group_name, group_desc, group_type, created_datetime, group_pic, default_currency_id, shopping_list_id) VALUES ('Group 3', 'Group 3', DEFAULT, DEFAULT, NULL, 122, 17);
 INSERT INTO home_group (group_name, group_desc, group_type, created_datetime, group_pic, default_currency_id, shopping_list_id) VALUES ('Group 4', 'Group 4', DEFAULT, DEFAULT, NULL, 132, 18);
-INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (2, 1, 2, True);
+INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (4, 1, 2, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (6, 4, 2, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (7, 2, 1, True);
 INSERT INTO group_person (person_id, group_id, role_id, was_invited) VALUES (8, 4, 2, True);
