@@ -125,6 +125,7 @@ $(document).ready(function () {
             testetest = data[0].person_id;
             console.log(data[0]);
 
+
             var dato = data[0].birth_date;
 
 
@@ -136,7 +137,7 @@ $(document).ready(function () {
             $('#p-usernam').val(data[0].username);
             $('#p-phonenumb').val(data[0].phone);
             var date = data[0].birth_date;
-            var formattedDate = date;//.split("T")[0];
+            var formattedDate = date.split("T")[0];
             $('#datepicker').val(formattedDate);
 
 
@@ -163,10 +164,11 @@ $(document).ready(function () {
         changeYear: true
     });
 
+
     $("#but").click(function () {
         if($('#datepicker').val() == '') {
             $.ajax({
-                url: '/api/user/' + testetest,
+                url: '/api/user/',
                 method: 'PUT',
                 data: {
                     username: $('#p-usernam').val(),
@@ -174,6 +176,7 @@ $(document).ready(function () {
                     middlename: $('#p-middlenam').val(),
                     lastname: $('#p-lastnam').val(),
                     phone: $('#p-phonenumb').val(),
+                    gender: $('#p-gen').valueOf(),
                     birth_date: null
                 },
                 success: function (data) {
@@ -184,7 +187,7 @@ $(document).ready(function () {
         }
         else{
             $.ajax({
-                url: '/api/user/' + testetest,
+                url: '/api/user/',
                 method: 'PUT',
                 data: {
                     username: $('#p-usernam').val(),
@@ -192,6 +195,7 @@ $(document).ready(function () {
                     middlename: $('#p-middlenam').val(),
                     lastname: $('#p-lastnam').val(),
                     phone: $('#p-phonenumb').val(),
+                    gender: $('#p-gen').valueOf(),
                     birth_date: $('#datepicker').val()
                 },
                 success: function (data) {
