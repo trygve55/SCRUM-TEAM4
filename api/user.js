@@ -56,7 +56,7 @@ router.get('/all', function(req, res){
  * Check password
  *
  * URL: /api/user/checkPassword
- * method: PUT
+ * method: POST
  * data: {
  *      password
  * }
