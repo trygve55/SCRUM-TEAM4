@@ -144,7 +144,10 @@ function prep(){
     });
 
 
-    //---------------New list-------------
+    /**
+     * This method makes it possible for the user to create a new list. All the information about
+     * the list is then stored to the database.
+     */
     $('#addlist').click(function () {
         $.ajax({
             url: '/api/shoppingList',
