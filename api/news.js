@@ -36,7 +36,7 @@ router.post('/', function(req, res) {
         function(err, result) {
             if(err)
                 return res.status(500).send();
-            pool.query('SELECT post_id, post_text, attachment_type, posted_datetime, person.forename, person.middlename, person.lastname, home_group.group_name, person.person_id FROM newsfeed_post LEFT JOIN person ON (person.person_id = newsfeed_post.posted_by_id) LEFT JOIN home_group USING (group_id) WHERE post_id = ?;',
+            pool.query('SELECT post_id, post_text, attachment_type, posted_datetime, person.forename, person.middlename, person.lastname, home_group.group_id, home_group.group_name, person.person_id FROM newsfeed_post LEFT JOIN person ON (person.person_id = newsfeed_post.posted_by_id) LEFT JOIN home_group USING (group_id) WHERE post_id = ?;',
                 [result.insertId], function(err, result){
                     checkResult(err, {}, res);
                     socket.group_data('group post', data.group_id, result);

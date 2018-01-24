@@ -481,8 +481,6 @@ router.get('/:person_id/picture_tiny', function(req, res){
         }
 
         res.contentType('jpeg').status(200).end(results[0].profile_pic_tiny, 'binary');
-
-        if (results) res.contentType('jpeg').status(200).end(results[0].profile_pic, 'binary');
     });
 });
 
