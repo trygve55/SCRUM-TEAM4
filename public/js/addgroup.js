@@ -180,7 +180,7 @@ $('document').ready(function(){
      * This method calls the language api and sets the language to norwegian
      * if the user clicks on the norwegian flag.
      */
-    $('#login-norway').click(function () {
+    $('#addgroup-norway').click(function () {
         $.ajax({
             url: '/api/language',
             method: 'GET',
@@ -202,7 +202,7 @@ $('document').ready(function(){
      * This method calls the language api and sets the language to english
      * if the user clicks on the british flag.
      */
-    $('#login-england').click(function () {
+    $('#addgroup-england').click(function () {
         $.ajax({
             url: '/api/language',
             method: 'GET',
