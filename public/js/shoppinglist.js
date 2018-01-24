@@ -9,6 +9,7 @@ var generalLabels;
 var thenewlabel;
 
 $('document').ready(function () {
+
     $('#shop-logout').click(function () {
         $.ajax({
             url: '/api/auth/logout',
@@ -21,6 +22,11 @@ $('document').ready(function () {
         });
     });
     //------------------Setting a variable to the logged in user------------
+
+    /**
+     * This method retrieves information about the user; person_id, forename and lastname.
+     */
+
     $.ajax({
         url: '/api/user/getUser',
         method: 'GET',
@@ -35,7 +41,14 @@ $('document').ready(function () {
             me = data[0];
         }
     });
+
     //------------------Setting a variable to all currencies in the database------------
+
+
+    /**
+     * This method retrieves information the set currency for a shoppinglist.
+     */
+
     $.ajax({
         url: '/api/currency',
         method: 'GET',
@@ -49,6 +62,11 @@ $('document').ready(function () {
     });
 
     //--------------Languages------------
+
+    /**
+     * This method calls the language api and sets the standard language as
+     * norwegian.
+     */
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -73,7 +91,12 @@ $('document').ready(function () {
             thenewlabel = data["newlabel"];
         }
     });
-    $('#login-norway').click(function () {
+
+    /**
+     * This method calls the language api and sets the language to norwegian
+     * if the user clicks on the norwegian flag.
+     */
+    $('#shop-norway').click(function () {
         $.ajax({
             url: '/api/language',
             method: 'POST',
@@ -109,7 +132,12 @@ $('document').ready(function () {
             }
         });
     });
-    $('#login-england').click(function () {
+
+    /**
+     * This method calls the language api and sets the language to english
+     * if the user clicks on the british flag.
+     */
+    $('#shop-england').click(function () {
         $.ajax({
             url: '/api/language',
             method: 'POST',
@@ -146,7 +174,13 @@ $('document').ready(function () {
         });
     });
 
+
     //----------------Importes all html-templates------------
+
+    /**
+     * This method retrieves the templates and lets us use them.
+     */
+
     $.ajax({
         url: '/template',
         method: 'GET',
@@ -179,7 +213,14 @@ $('document').ready(function () {
 });
 
 function prep(){
+
     //-----------------Gets all shoppinglists and shows them in the website------------
+
+    /**
+     * This method retrieves all shopping lists on the database and sets them up when
+     * the user foes into the shoppinglist site.
+     */
+
     $.ajax({
         url: '/api/shoppingList/',
         method: 'GET',
@@ -215,7 +256,16 @@ function prep(){
             setupClicks();
         }
     });
+
     //---------------New list-------------
+
+
+
+    /**
+     * This function makes it possible for a user to add a new shoppinglist. Posts the users
+     * input into the database.
+     */
+
     $('#addlist').click(function () {
         $.ajax({
             url: '/api/shoppingList',
@@ -248,7 +298,14 @@ function prep(){
         });
     });
 }
+
 //-----------------Sets up the buttons so the functionality will work------------
+
+
+/**
+ * This function
+ */
+
 function setupClicks(){
     //-----------------Change currency------------
     $(".currency-input").change(function () {
@@ -615,7 +672,13 @@ function setupClicks(){
         });
     });
 
+
     //--------------Buy items. Opens popup----------------
+
+    /**
+     * This function makes it possible for a user to 
+     */
+
     $(".fa-shopping-cart").unbind("click").click(function(){
         var li = $(this).parent().attr("data-id");
         var mycart = this;
