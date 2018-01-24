@@ -10,13 +10,13 @@ def writeFile(file, data):
 
 lists = 15;
 currencies = 150;
-people = 50;
-groups = 10;
-shoppingItems = 300;
+people = 10;
+groups = 5;
+shoppingItems = 50;
 
 currentLists = 4;
 currentPeople = 2;
-currentGroups = 2;
+currentGroups = 1;
 currentShoppingItems = 0;
 
 names = [];
