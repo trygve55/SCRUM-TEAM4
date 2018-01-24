@@ -9,6 +9,8 @@ var generalLabels;
 var thenewlabel, byersSelect, byersAll;
 var buyers = [];
 
+jQuery.ajaxSettings.traditional = true;
+
 $('document').ready(function () {
 
     $('#shop-logout').click(function () {
@@ -961,6 +963,7 @@ function setupClicks(){
                         $.ajax({
                             url: '/api/budget',
                             method: 'POST',
+                            dataType : "json",
                             data: {
                                 shopping_list_id: id,
                                 shopping_list_entry_ids: e,
@@ -1044,6 +1047,7 @@ function setupClicks(){
                                             $.ajax({
                                                 url: '/api/budget',
                                                 method: 'POST',
+                                                dataType : "json",
                                                 data: {
                                                     shopping_list_id: id,
                                                     shopping_list_entry_ids: e,
@@ -1105,6 +1109,7 @@ function setupClicks(){
                                         $.ajax({
                                             url: '/api/budget',
                                             method: 'POST',
+                                            dataType : "json",
                                             data: {
                                                 shopping_list_id: id,
                                                 shopping_list_entry_ids: e,
@@ -1156,6 +1161,7 @@ function setupClicks(){
                             $.ajax({
                                 url: '/api/budget',
                                 method: 'POST',
+                                dataType : "json",
                                 data: {
                                     shopping_list_id: id,
                                     shopping_list_entry_ids: e,
