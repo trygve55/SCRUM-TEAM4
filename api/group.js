@@ -119,8 +119,6 @@ router.get('/', function(req, res){
  * }
  */
 router.post('/:group_id/members', function(req, res){
-    req.session.person_id = 2;
-    req.session.save();
     if(!req.session.person_id)
         return res.status(500).send("Person_id");
     if(!(req.body.members instanceof Array)){
