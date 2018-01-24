@@ -190,7 +190,7 @@ $(document).ready(function () {
                     middlename: $('#p-middlenam').val(),
                     lastname: $('#p-lastnam').val(),
                     phone: $('#p-phonenumb').val(),
-                    gender: $('#p-gen').valueOf(),
+                    //gender: $('#p-gen').valueOf(),
                     birth_date: null
                 },
                 success: function (data) {
@@ -209,7 +209,7 @@ $(document).ready(function () {
                     middlename: $('#p-middlenam').val(),
                     lastname: $('#p-lastnam').val(),
                     phone: $('#p-phonenumb').val(),
-                    gender: $('#p-gen').valueOf(),
+                    //gender: $('#p-gen').valueOf(),
                     birth_date: $('#datepicker').val()
                 },
                 success: function (data) {
