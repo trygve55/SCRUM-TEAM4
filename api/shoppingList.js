@@ -312,6 +312,7 @@ router.get('/statistic/:budget_entry_type_id', function(req, res) {
 	// Is this request ok?
 	if (!start || !end || !group || !req.session.person_id) {return res.status(400).send();}
 
+	//pool.query("SELECT person_id FROM home_group WHERE group_id = ?;", [group], function(err, result));
 	pool.query(	// Test this at 24/01/2018.
 		'SELECT amount, entry_datetime FROM budget_entry WHERE budget_entry_type_id = ? AND (entry_datetime BETWEEN ? AND ?) ' +
 		'AND shopping_list_id IN (SELECT shopping_list_id FROM home_group WHERE group_id = ?);',

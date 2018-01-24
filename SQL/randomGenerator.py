@@ -21,7 +21,7 @@ currentShoppingItems = 0;
 
 names = [];
 for i in range(0, people):
-	names.append("Human " + str(i));
+	names.append("Human_" + str(i));
 
 for i in range(0, people):
 	query = "INSERT INTO shopping_list (shopping_list_name, currency_id) VALUES ('PList " + str(i) +"', "+ str(randint(1, currencies)) +");";
@@ -29,7 +29,7 @@ for i in range(0, people):
 	writeFile(fileName, query);
 
 for i in range(0, people):
-	query = ("INSERT INTO person(email, username, password_hash, forename, middlename, lastname, phone, birth_date, is_verified, gender, profile_pic, last_active, reset_password_token, shopping_list_id, user_language) " 
+	query = ("INSERT INTO person(email, username, password_hash, forename, middlename, lastname, phone, birth_date, verify_token, gender, profile_pic, last_active, reset_password_token, shopping_list_id, user_language) " 
 	+"VALUES ('Human" + str(i) + "@Earth.com', '"+ names[i] +"', x'243261243130244c6b3943524f466835467471577158506756766c772e586b473269397a653473336d5a667a6a502e545131545162793945676b3647',"
 	+" '"+ names[i] +"', NULL, '"+ names[i] +"', '"+ str(randint(10000000, 99999999)) +"', CURRENT_DATE,"
 	+" "+ str(bool(randint(0, 1))) +", 0, NULL, DEFAULT, NULL, "+ str(currentLists + i) +", DEFAULT);");
