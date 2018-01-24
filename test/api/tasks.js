@@ -13,18 +13,18 @@ describe('Tasks API', function() {
     describe('Testing GET methods',function() {
         it('should return the entire task with the description "test task"', function(done) {
             request.get('/api/tasks/1').expect(200).end(function(err, res) {
-                var variables = ["todo_id", "group_id", "todo_text", "datetime_deadline",
-                    "datetime_added", "datetime_done", "created_by_id",
-                    "done_by_id", "is_deactivated", "color_hex", "people"];
+                var variables = ["todo_id", "datetime_deadline", "datetime_added",
+                    "datetime_done", "forename", "middlename",
+                    "lastname", "todo_text", "is_deactivated", "color_hex"];
                 var hasVariables = true;
                 variables.forEach(function(element) {
-                    if(!res.body.hasOwnProperty(element)) {
+                    if(!res.body[0].hasOwnProperty(element)) {
                         console.log("MISSING VARIABLE: '" + element + "'");
                         hasVariables = false;
                     }
                 });
                 chai.expect(hasVariables).to.be.true;
-                chai.expect(res.body.todo_text).to.equal("test task");
+                chai.expect(res.body[0].todo_text).to.equal("test task");
                 done();
             });
         });
