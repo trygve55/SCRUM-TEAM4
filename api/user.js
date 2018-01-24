@@ -132,7 +132,7 @@ router.put('/password', function (req, res) {
             return res.status(500).send("DB_ERROR");
         } else {
             if (result[0].facebook_api_id)
-                return res.status(200).send("ERROR");
+                return res.status(400).send("ERROR");
             else {
                 auth.hashPassword(user, function(user) {
                     pool.query(

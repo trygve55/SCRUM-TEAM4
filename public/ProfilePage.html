@@ -96,6 +96,23 @@
     <img class="flag" id="profile-england" style="position:absolute; right: 40px; margin-top: 1%" src="/img/engelskflagg.png" width="20" height="12">
 </div>
 
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Modal Header</h4>
+            </div>
+            <div class="modal-body">
+                <p>This is a small modal.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <br>
 <div class="container container1" align="center">
     <br>
@@ -263,25 +280,25 @@
                 <h6 id="p-changepassword"></h6>
                 <div class="row form-group">
                     <div class="col-4" align="left">
-                        <label for="usr" id="p-oldpassword"></label>
+                        <label for="oldpwd" id="p-oldpassword"></label>
                     </div>
                     <div class="col-8">
-                        <input type="password" class="form-control" id="usr">
+                        <input type="password" class="form-control" id="oldpwd">
                     </div>
                 </div>
                 <div class="row form-group">
                     <div class="col-4" align="left">
-                        <label for="pwd" id="p-newpassword"></label>
+                        <label for="newpwd" id="p-newpassword"></label>
                     </div>
                     <div class="col-8">
-                        <input type="password" class="form-control" id="pwd">
+                        <input type="password" class="form-control" id="newpwd">
                     </div>
                 </div>
                 <div class="row form-group">
                     <div class="col-4" align="left">
                     </div>
                     <div class="col-8" align="right">
-                        <button id="but1" type="button" class="btn btn-default buttonstyle" style="align:right">Save password</button>
+                        <button id="pwbut" type="button" class="btn btn-default buttonstyle" style="align:right">Save password</button>
                     </div>
                 </div>
             </div>

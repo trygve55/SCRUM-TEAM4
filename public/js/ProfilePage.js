@@ -7,6 +7,8 @@ var listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingL
 
 $(document).ready(function () {
 
+    $('#myModal').hide();
+
     $('#profpic').attr("src","api/user/" + localStorage.person_id + "/picture");
 
     /**
@@ -122,15 +124,10 @@ $(document).ready(function () {
                 return;
             }
 
-
-
             testetest = data[0].person_id;
+
             console.log(data[0]);
-
-
             var dato = data[0].birth_date;
-
-
 
             $('#profile-name').text(data[0].forename + '  ' + data[0].lastname);
             $('#p-forenam').val(data[0].forename);
@@ -230,7 +227,33 @@ $(document).ready(function () {
         }
     });
 
+    $("#pwbut").click(function () {
+        // check password
+        $.ajax({
+            url: '/api/user/checkPassword',
+            method: 'POST',
+            data: {
+                password: $('#oldpwd').val()
+            },
+            success: function (data) {
 
+                // change password if check password is succsesfullll
+                $.ajax({
+                    url: '/api/user/password',
+                    method: 'PUT',
+                    data: {
+                        password: $('#newpwd').val()
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        $('#myModal').hide();
+                    },
+                    error: console.error
+                });
+            },
+            error: console.error
+        });
+    });
 
     /**
      * Hides buttons, input
@@ -257,7 +280,4 @@ $(document).ready(function () {
             }
         });
     });
-
-
 });
-
