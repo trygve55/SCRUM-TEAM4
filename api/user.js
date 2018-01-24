@@ -18,7 +18,6 @@ module.exports = router;
  * method: GET
  *
  */
-
 router.get('/all', function(req, res){
    if(!req.session.person_id)
         return res.status(403).send();

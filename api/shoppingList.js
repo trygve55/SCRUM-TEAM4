@@ -230,6 +230,36 @@ router.get('/', function(req, res) {
 });
 
 /**
+ * Get person-info
+ *
+ * URL: /api/user/all
+ * method: GET
+ *
+ */
+router.get('/:shopping_list_id/users', function(req, res){
+    if(!req.session.person_id)
+        return res.status(403).send();
+    pool.query("SELECT DISTINCT person_id, email, forename, middlename, lastname, username FROM person LEFT JOIN shopping_list_person USING (person_id) WHERE shopping_list_person.shopping_list_id = ?;",
+        [req.params.shopping_list_id], function(err, result){
+        if(err)
+            res.status(500).send(err.code);
+        else {
+            var r = [];
+            for(var i = 0; i < result.length; i++){
+                if(result[i].person_id == req.session.person_id)
+                    continue;
+                r.push({
+                    name: result[i].forename + " " + (result[i].middlename ? result[i].middlename + " " : "") + result[i].lastname,
+                    email: result[i].email,
+                    id: result[i].person_id
+                });
+            }
+            res.status(200).json(r);
+        }
+    });
+});
+
+/**
  * Get all info about one shoppinglist
  *
  * URL: /api/shoppingList/{shopping_list_id}
