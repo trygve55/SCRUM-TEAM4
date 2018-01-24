@@ -52,6 +52,21 @@ router.get('/all', function(req, res){
     });
 });
 
+router.get('/checkFacebook', function(req, res){
+    if(!req.session.person_id)
+        return res.status(403).send();
+    pool.query('SELECT facebook_api_id FROM person WHERE person_id = ?', [req.session.person_id], function (err, result) {
+        if(err) {
+            return res.status(500).json({error: err});
+        } else {
+            if (!result[0].length)
+                return res.status(400).json({facebook: false});
+            else
+                return res.status(200).json({facebook: true});
+        }
+    });
+});
+
 /**
  * Check password
  *
@@ -79,7 +94,7 @@ router.post('/checkPassword', function (req, res) {
             return res.status(500).send("DB_ERROR");
         } else {
             if (result[0].facebook_api_id)
-                return res.status(200).send("ERROR");
+                return res.status(400).send("ERROR");
             else {
                 pool.query(
                     'SELECT password_hash FROM person WHERE person_id = ?;',
@@ -87,8 +102,7 @@ router.post('/checkPassword', function (req, res) {
                     function (err, result) {
                         if (err)
                             return res.status(500).send("ERROR: executing query");
-                        if (result.length == 0){
-                            console.log(result.length);
+                        if (result.length == 0) {
                             return res.status(400).json({password: false});
                         }
                         else bcrypt.compare(user.password, result[0].password_hash, function(err, hash_res){
@@ -132,7 +146,7 @@ router.put('/password', function (req, res) {
             return res.status(500).send("DB_ERROR");
         } else {
             if (result[0].facebook_api_id)
-                return res.status(200).send("ERROR");
+                return res.status(400).send("ERROR");
             else {
                 auth.hashPassword(user, function(user) {
                     pool.query(
