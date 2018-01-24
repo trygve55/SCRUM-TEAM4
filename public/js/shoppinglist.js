@@ -529,7 +529,10 @@ function setupClicks(){
         });
     });
 
-    //----------------Opens settlement box when money-button is clicked----------
+
+    /**
+     * This method opens settlement box when money-button is clicked.
+     */
     $(".fa-money").unbind("click").click(function(){
         var id = $(this).closest("div[data-id]").data("id");
         var sign = "";
@@ -546,7 +549,9 @@ function setupClicks(){
                 curBudget = data;
                 var entries = "";
 
-                //Adds all budget-entries to the list
+                /**
+                 * This method adds all budget-entries to the list
+                 */
                 for(var i = data.budget_entries.length-1; i >= 0 ; i--){
                     entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].text_note +"</td><td>" + data.budget_entries[i].amount/100 + " "+sign+"</td>";
                 }
@@ -558,7 +563,9 @@ function setupClicks(){
                     budget_entries: entries
                 }));
 
-                //Opens popup when a budget-entry is clicked
+                /**
+                 * This method opens a popup when a budget-entry is clicked.
+                 */
                 $('tr[data-id]').click(function(){
                     var id = $(this).closest("tr[data-id]").data("id");
                     var entry = null;
@@ -658,7 +665,9 @@ function setupClicks(){
         });
     });
 
-    //-------------Deletes list-----------------
+    /**
+     * This method deletes a list.
+     */
     $(".fa-trash").unbind("click").click(function () {
         var listid = $(this).parent().attr("data-id");
         $(this).closest("div[data-id]").remove();
@@ -673,18 +682,19 @@ function setupClicks(){
     });
 
 
-    //--------------Buy items. Opens popup----------------
-
     /**
-     * This function makes it possible for a user to 
+     * This function makes it possible for a user to buy items. Opens a popup to fill in information
+     * about the purchase.
      */
-
     $(".fa-shopping-cart").unbind("click").click(function(){
         var li = $(this).parent().attr("data-id");
         var mycart = this;
         var h = "";
         var labelz = [];
-        //-----------------Open popup with bought items--------------
+
+        /**
+         * This methos opens a popup with previous bought items.
+         */
         $.ajax({
             url: '/api/budget/entryType',
             method: 'GET',
@@ -720,7 +730,10 @@ function setupClicks(){
                 var itemsstring = []; //a table with items in stringformat
                 itemsstring[0] = $(items[0]).text().trim();
 
-                //adds bought items to the list in the popup
+
+                /**
+                 * This method adds bought items to the list in the popup.
+                 */
                 for (var i = 1; i < items.length; i++) {
                     number++;
                     entries += "," + $(items[i]).data("id");
@@ -728,7 +741,10 @@ function setupClicks(){
                     itemsstring[i] = $(items[i]).text().trim();
                 }
 
-                //adds currency value at cost-label
+                /**
+                 * This method adds currency value at a cost-label.
+                 * @type {string}
+                 */
                 var curr = "*";
                 for (var i = 0; i < lists.length; i++) {
                     if (lists[i].shopping_list_id == li) {
@@ -736,7 +752,9 @@ function setupClicks(){
                     }
                 }
 
-                //Append popup
+                /**
+                 * Append popup
+                 */
                 $("body").append(popupTextList({
                     title: lang["shop-buy-title"],
                     list: list,
@@ -751,39 +769,60 @@ function setupClicks(){
                     data: "data-id='" + $(mycart).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
                 }));
 
-                //if labelscrolldown changes value
+
+                /**
+                 * Incase labelscrolldown changes value
+                 */
                 $("#labelid").change(function () {
-                    //if new label is selected
+
+                    /**
+                     * If new label is selected
+                     */
                     if ($("#labelid").find('option:selected').html() == thenewlabel) {
                         $('.newlabel').append('<input class="form-control" id="newlabelinput" placeholder="">');
                         $('#newlabelinput').focus();
                     } else {
-                        //if others are selected and newlabelinput is showing
+
+                        /**
+                         * If others are selected an newlabelinput is showing
+                         */
                         if ($('#newlabelinput').length) {
                             $('#newlabelinput').remove();
                         }
                     }
 
-                    //if focus goes out from newlabelinput, make red
+                    /**
+                     * If focus goes out from newlabelinput, it turnes red.
+                     */
                     $('#newlabelinput').focusout(function () {
                         if ($('#newlabelinput').val() == "") {
                             $('#newlabelinput').addClass("is-invalid");
                         }
                     });
 
-                    //if focus goes in to newlabelinput, remove red
+                    /**
+                     * If focus foes in to newlabelinput, it removes red.
+                     */
                     $('#newlabelinput').focusin(function () {
                         $('#newlabelinput').removeClass("is-invalid");
                     });
                 });
-                //if cancel is pressed
+
+                /**
+                 * If cancel is pressed.
+                 */
                 $("#popup-cancel").click(function () {
                     $(this).closest(".pop").remove();
                 });
 
-                //if OK is pressed
+                /**
+                 * If OK is pressed.
+                 */
                 $("#popup-complete").click(function () {
-                    //if no value is given to the cost input, do nothing
+
+                    /**
+                     * If no value is given to the cost input, it does nothing.
+                     */
                     if (isNaN(Number($(this).closest('.pop').find('input').val())))
                         return;
 
@@ -795,7 +834,9 @@ function setupClicks(){
                     var textnote;
                     var theis = this;
 
-                    //if no comment is given, text_note is set to a string of all items bought
+                    /**
+                     * If no comment is given, text_note is set to a string of all items bought.
+                     */
                     if (comment == "") {
                         textnote = theitemss;
                     } else {
@@ -806,10 +847,12 @@ function setupClicks(){
                     else
                         e = [e];
 
-                    //Id of label chosen
                     var labelid;
                     if ($(this).closest('.pop').find('.label-input').val() == -1) { //If "none" is selected
-                        //Add new shoplist-entry w/o label
+
+                        /**
+                         * Adds new shoppinglist-entry w/o label.
+                         */
                         $.ajax({
                             url: '/api/budget',
                             method: 'POST',
@@ -820,7 +863,10 @@ function setupClicks(){
                                 text_note: textnote
                             },
                             success: function (data) {
-                                //Set all entries to bought
+
+                                /**
+                                 * Sets all entries to bought
+                                 */
                                 for (var i = 0; i < e.length; i++) {
                                     $.ajax({
                                         url: '/api/shoppingList/entry/' + e[i],
@@ -845,7 +891,10 @@ function setupClicks(){
                                 if (l == "") {
                                     $('#newlabelinput').addClass("is-invalid");
                                 } else {
-                                    //Add new label to DB
+
+                                    /**
+                                     * This method adds a new label to the database.
+                                     */
                                     $.ajax({
                                         url: '/api/budget/entryType',
                                         method: 'POST',
@@ -968,7 +1017,9 @@ function setupClicks(){
                     for (var i = 0; i < e.length; i++) {
                         $("div[data-id=" + id + "]").find('li[data-id=' + e[i] + ']').remove();
                     }
-                    //Closes popup
+                    /**
+                     * Closes popup.
+                     */
                     $(this).closest(".pop").remove();
                 });
             }
@@ -1055,7 +1106,11 @@ function addmember(ide){
 var hexDigits = new Array
 ("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f");
 
-//Function to convert rgb color to hex format
+/**
+ * This function converts rgb color to hex format.
+ * @param rgb
+ * @returns {string}
+ */
 function rgb2hex(rgb) {
     rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
     return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
