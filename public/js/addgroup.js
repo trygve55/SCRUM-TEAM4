@@ -79,7 +79,7 @@ $('document').ready(function(){
                         method: 'POST',
                         data: {
                             group_name: groupname,
-                            currency: Number($("#currency-input").val())
+                            currency: Number($("#currency-input").val()),
                         },
                         success: function (data) {
                             console.log(data);
@@ -180,7 +180,7 @@ $('document').ready(function(){
      * This method calls the language api and sets the language to norwegian
      * if the user clicks on the norwegian flag.
      */
-    $('#login-norway').click(function () {
+    $('#addgroup-norway').click(function () {
         $.ajax({
             url: '/api/language',
             method: 'GET',
@@ -202,7 +202,7 @@ $('document').ready(function(){
      * This method calls the language api and sets the language to english
      * if the user clicks on the british flag.
      */
-    $('#login-england').click(function () {
+    $('#addgroup-england').click(function () {
         $.ajax({
             url: '/api/language',
             method: 'GET',
@@ -250,6 +250,28 @@ $('document').ready(function(){
                     });
             },
             error: console.error
+        });
+    });
+
+    $("#p-changephoto").click(function () {
+        $("#file-upload").trigger("click");
+    });
+
+    $("#file-upload").change(function () {
+
+
+        var formData = new FormData();
+        formData.append('File', $("#file-upload")[0].files[0]);
+
+        $.ajax({
+            url : 'api/group/picture',
+            type : 'POST',
+            data : formData,
+            processData: false,  // tell jQuery not to process the data
+            contentType: false,  // tell jQuery not to set contentType
+            success : function(data) {
+                console.log(data);
+            }
         });
     });
 });

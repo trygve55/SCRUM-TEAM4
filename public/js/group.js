@@ -6,6 +6,7 @@ var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceIte
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
 
 socket.on('group post', function(data){
+    console.log(data);
     for(var i = 0; i < data.length; i++) {
         if(data[i].group_id != currentGroup.group_id)
             continue;
@@ -21,10 +22,10 @@ socket.on('group post', function(data){
         }
         $("#posts").prepend(feedPost({
             name: data[i].forename + (data[i].middlename ? ' ' + data[i].middlename : '') + ' ' + data[i].lastname,
-            payload: '',
+            payload: ((data[i].attachment_type === 1) ? '/api/news/data/' + data[i].post_id : ''),
             text: short,
             rest_text: rest,
-            image_url: (data[i].attachment_type == 0 ? '/img/profilPicture.png' : ''),
+            image_url: '/api/user/' + data[i].person_id + '/picture_tiny',
             data: 'data-id="' + data[i].post_id + '"',
             datetime: testy,
             lang_read_more: "Read more..."
@@ -44,7 +45,7 @@ socket.on('group post', function(data){
 /**
  * When the page loads, the page must find the groups available to the user so they can be selected.
  */
-$(document).ready(function() {
+$(function() {
     $.ajax({
         url: '/template',
         method: 'GET',
@@ -77,6 +78,7 @@ $(document).ready(function() {
 		method:'GET',
 		success: function (data) {
 			var grouplist = data;
+			console.log(data);
 
 			currentGroup = data[0];
 			for(var i = 0; i < data.length; i++){
@@ -100,6 +102,12 @@ $(document).ready(function() {
 		},
 		error: console.error()
 	});
+
+    $("#group-picturePost").click(function () {
+        console.log("test0");
+        $("#file-attachment").trigger("click");
+    });
+
 	loadLanguageText();
 });
 
@@ -548,18 +556,25 @@ $(function () {
      */
     $('#group-postButton').click(function() {
 
+        console.log("test1");
+
+        var formData = new FormData();
+        formData.append('File', $("#file-attachment")[0].files[0]);
+        formData.append('post_text', $('#group-newsfeedPost').val());
+        formData.append('group_id', currentGroup.group_id);
+        formData.append('attachment_type', 1);
+
         $.ajax({
-            url: '/api/news',
-            method: 'POST',
-            data: {
-                post_text: $('#group-newsfeedPost').val(),
-                group_id: currentGroup.group_id
-            },
-            success: function (data123) {
+            url : '/api/news',
+            type : 'POST',
+            data : formData,
+            processData: false,
+            contentType: false,
+            success : function(data) {
+                console.log(data);
                 ClearFields();
             }
-        })
-
+        });
     });
 
     /**
@@ -660,6 +675,7 @@ function getPost(){
         method: 'GET',
 
         success: function (dataFeed) {
+            console.log(dataFeed);
             $("#posts").html("");
             for(var i = 0; i < dataFeed.length; i++) {
 
@@ -677,10 +693,10 @@ function getPost(){
                 testy = a.toDateString();
                 $("#posts").append(feedPost({
                     name: dataFeed[i].posted_by.forename + (dataFeed[i].posted_by.middlename ? ' ' + dataFeed[i].posted_by.middlename : '') + ' ' + dataFeed[i].posted_by.lastname,
-                    payload: '',
+                    payload: ((dataFeed[i].attachment_type === 1) ? '/api/news/data/' + dataFeed[i].post_id : ''),
                     text: short,
                     rest_text: rest,
-                    image_url: (dataFeed[i].attachment_type == 0 ? '/img/profilPicture.png' : ''),
+                    image_url: '/api/user/' + dataFeed[i].posted_by.person_id + '/picture_tiny',
                     data: 'data-id="' + dataFeed[i].post_id + '"',
                     datetime: testy,
                     lang_read_more: "Read more..."
@@ -763,9 +779,11 @@ function getTasks() {
             console.log(dataTask);
             $('.itemlist-task').html("");
             for(var i = 0; i < dataTask.length; i++){
+                if(dataTask[i].datetime_done)
+                    continue;
                 $('.itemlist-task').append(listItem({
                     entry_id: dataTask[i].todo_id,
-                    entry_text:dataTask[i].todo_text
+                    entry_text: dataTask[i].todo_text
                 }));
             }
             setupClicksTask();
@@ -779,23 +797,28 @@ function getTasks() {
 function setupClicksTask(){
     $(".add-task").unbind("click").click(function(){
         $(this).closest("div").children(".itemlist-task").append(newListItem());
-
         $("#new-list-item").keypress(function(e){
-            if(e.keyCode != 13 && e.which != 13)
+            if(e.keyCode != 13 && e.which != 13) {
+                console.log("error");
                 return;
+            }
+            console.log(e);
             var ul = $(this).closest("ul");
             var text = $(this).val();
             if(text != "") {
+                console.log("full remove");
                 var t = this;
                 saveTaskToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
                     $(t).closest("li").remove();
+                    console.log("full remove cb");
                     addNewTask(ul);
                     setupTaskClicks();
                 });
             }
             else {
-                setupTaskClicks();
+                console.log("empty remove");
                 $(this).closest("li").remove();
+                setupTaskClicks();
             }
         }).focusout(function(){
             var ul = $(this).closest("ul");
@@ -808,7 +831,7 @@ function setupClicksTask(){
             $(this).closest("li").remove();
         }).focus();
     });
-
+    setupTaskClicks();
 }
 
 /**
@@ -848,7 +871,7 @@ function addNewTask(ul){
 }
 
 /**
- *This function saves the new tasks to the database.
+ * This function saves the new tasks to the database.
  * @param id
  * @param item
  * @param ul
@@ -877,7 +900,7 @@ function setupTaskClicks(){
     $(".fa-times").unbind("click").click(function(){
         var entry_id = $(this).closest("li[data-id]").data("id");
         $.ajax({
-            url: '/api/shoppingList/entry/' + entry_id,
+            url: '/api/tasks/' + entry_id + '/done',
             method: 'PUT',
             error: console.error
         });
@@ -917,7 +940,7 @@ function drawBarChart(data, labels) {
  */
 function mod(n, m) {
     return ((n % m) + m) % m;
-};
+}
 
 /**
  * This function makes it possible for a user to logout when on the groups page.

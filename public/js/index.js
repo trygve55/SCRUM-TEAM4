@@ -41,6 +41,11 @@ socket.on('group post', function(data){
 });
 
 $(function () {
+
+    $('#profpic').attr("src","api/user/" + localStorage.person_id + "/picture");
+
+    console.log(localStorage.person_id);
+
     $.ajax({
         url: '/template',
         method: 'GET',
@@ -198,7 +203,7 @@ function prep() {
                 testy = a.toDateString();
                 $('#newsfeedPost').append(homeFeedPost({
                     name: feed[i].forename + (feed[i].middlename ? ' ' + feed[i].middlename : '') + ' ' + feed[i].lastname,
-                    payload: '',
+                    payload: ((feed[i].attachment_type === 1) ? '/api/news/data/' + feed[i].post_id : ''),
                     groupname: feed[i].group_name,
                     text: short,
                     rest_text: rest,

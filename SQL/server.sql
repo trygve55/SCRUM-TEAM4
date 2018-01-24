@@ -200,7 +200,7 @@ CREATE TABLE private_todo_list (
     is_deactivated BIT NOT NULL DEFAULT 0,
     color_hex INTEGER,
     CONSTRAINT private_todo_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
-    CONSTRAINT priavte_todo_list_pk PRIMARY KEY(private_todo_list_id)
+    CONSTRAINT private_todo_list_pk PRIMARY KEY(private_todo_list_id)
 );
 
 CREATE TABLE private_todo_entry (
@@ -247,6 +247,35 @@ CREATE TABLE person_budget_entry (
     CONSTRAINT person_budget_entry_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
     CONSTRAINT budget_entry_fk FOREIGN KEY(budget_entry_id) REFERENCES budget_entry(budget_entry_id),
     CONSTRAINT shopping_list_budget_entry_pk PRIMARY KEY(person_id, budget_entry_id)
+);
+
+CREATE TABLE recipe (
+	recipe_id INTEGER NOT NULL AUTO_INCREMENT,
+	recipe_name NVARCHAR(255),
+	recipe_directions NVARCHAR(10000),
+	recipe_servings INTEGER,
+	recipe_time INTEGER,
+	person_id INTEGER NOT NULL,
+	CONSTRAINT recipe_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
+	CONSTRAINT pecipe_pk PRIMARY KEY(recipe_id)
+);
+
+CREATE TABLE recipe_ingredient (
+	ingredient_id INTEGER NOT NULL AUTO_INCREMENT,
+	ingredient_amount FLOAT,
+	ingredient_unit NVARCHAR(20),
+	ingredient_optional BIT NOT NULL,
+	recipe_id INTEGER NOT NULL,
+	CONSTRAINT recipe_ingredient_fk FOREIGN KEY(recipe_id) REFERENCES recipe(recipe_id),
+	CONSTRAINT recipe_ingredient_pk PRIMARY KEY(ingredient_id)
+);
+
+CREATE TABLE group_recipe (
+	recipe_id INTEGER NOT NULL,
+	group_id INTEGER NOT NULL,
+	CONSTRAINT group_recipe_fk FOREIGN KEY(recipe_id) REFERENCES recipe(recipe_id),
+	CONSTRAINT home_group_recipe_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
+	CONSTRAINT group_recipe_pk PRIMARY KEY(recipe_id, group_id)
 );
 
 INSERT INTO home_role(role_id, role_name) VALUES (1, 'Member');
