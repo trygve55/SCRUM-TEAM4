@@ -161,7 +161,7 @@ function changeTab(name) {
         getTasks();
     else if (activeTab == 'statistics') {
         drawChart();
-		drawLabelChart(new Date("1999-10-10"), new Date(), 4, 2);
+		drawLabelChart(new Date("1999-10-10"), new Date(), "Food and similar", 2);
 	}
 }
 
@@ -748,7 +748,7 @@ function drawChart() {
 				
 				// Insert the values for every month.
 				var months = Array(2).fill().map(function(){
-				    return Array(12).fill(0)
+				    return Array(12).fill(0);
 				});
 				for (var i = 0; i < result.budget_entries.length; i++) {
 					var element = result.budget_entries[i];
@@ -781,7 +781,7 @@ function drawLabelChart(start, end, typeName, intervalType) {
 	// AJAX get all the budget data for the chart.
 	$.ajax({
 		type: "GET",
-		url: "/api/shoppingList/statistic/"+ typeName +"?group_id="+ currentGroup.group_id +"&start="+ min +"&end="+ max,
+		url: "/api/shoppingList/statistic/"+ typeName +"?group_id="+ currentGroup.group_id +"&start="+ encodeURIComponent(min) +"&end="+ encodeURIComponent(max),
 		contentType: "application/json",
 		dataType: "json",
 		success: function(result) {
@@ -790,16 +790,15 @@ function drawLabelChart(start, end, typeName, intervalType) {
 			// Insert the values for every interval.
 			var dataPoints = [[], []];
 			var labels = [];
-			console.log(result);
 			for (var i = 0; i < result.length; i++) {
-				var element = result[i], time = element.time;
+				var element = result[i], time = new Date(element.t);
 
 				// See if the time is acceptable.
 				if (!time || element.amount == 0) {continue;}
 				if (time < min || time > max) {continue;}
 
-				var label = "" + time.getYear();
-				if (intervalType > 0) {label = time.getMonth() + "/" + label;}
+				var label = "" + time.getFullYear();
+				if (intervalType > 0) {label = (time.getMonth() + 1) + "/" + label;}
 				if (intervalType > 1) {label = time.getDay() + "/" + label;}
 
 				// Add to array if it doesn't already exist, otherwise addition.
@@ -813,10 +812,34 @@ function drawLabelChart(start, end, typeName, intervalType) {
 				}
 				else {dataPoints[index] += element.amount;}
 			}
-			var rgb = addInvertedColour(result[0].colour);
+			var rgb = ((result[0].colour) ? addInvertedColour(result[0].colour) : statColours);
+
 			drawBarChart(dataPoints, labels, statLabels, ((rgb) ? rgb : statColours), "stat1");
 		}
 	});
+}
+
+/**
+ * Draw a "bar" style chart with these labels and the specified data.
+ */
+function drawBarChart(data, labels, mainLabels, colours, element) {
+    // Build the datasets. The default colours are defined at the very top of this file.
+    var datasets = [];
+    for (var i = 0; i < data.length; i++) {
+        datasets.push({
+			"label": mainLabels[i],
+			"backgroundColor": 'rgba' + colours[i][0],
+			"borderColor": 'rgba' + colours[i][1],
+			"data":data[i]
+		});
+    }
+
+    // The Charts.js part.
+    var chart = new Chart(document.getElementById(element).getContext("2d"), {
+        type: 'bar',
+        data: {"labels":labels, "datasets":datasets},
+        options: {"barPercentage":0.95, scales: {xAxes: [{stacked: true}], yAxes: [{stacked: true}]}}
+    });
 }
 
 /**
@@ -990,24 +1013,6 @@ function setupTaskClicks(){
             e.preventDefault();
             $(this).find("input[type=checkbox]").prop('checked', $(this).find("input:checked").length == 0);
         }
-    });
-}
-
-/**
- * Draw a "bar" style chart with these labels and the specified data.
- */
-function drawBarChart(data, labels, mainLabels, colours, element) {
-    // Build the datasets. The default colours are defined at the very top of this file.
-    var datasets = [];
-    for (var i = 0; i < data.length; i++) {
-        datasets.push({"label": mainLabels[i], "backgroundColor": 'rgba' + colours[i][0], "borderColor": 'rgba' + colours[i][1], "data":data[i]});
-    }
-
-    // The Charts.js part.
-    var chart = new Chart(document.getElementById(element).getContext("2d"), {
-        type: 'bar',
-        data: {"labels":labels, "datasets":datasets},
-        options: {"barPercentage":0.95, scales: {xAxes: [{stacked: true}], yAxes: [{stacked: true}]}}
     });
 }
 
