@@ -48,6 +48,9 @@
   "lang_owe": "Balance",
   "memb_cancel": "Cancel",
   "memb_complete": "Done!",
-  "bal-ok": "Back"
-
+  "bal-ok": "Back",
+  "settle-yes": "Yes",
+  "settle-no": "Cancel",
+  "settle-text-one": "Are you sure you want to settle balance with ",
+  "settle-text-two": " at cost "
 }

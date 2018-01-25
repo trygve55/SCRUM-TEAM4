@@ -582,23 +582,30 @@ router.put('/pay', function(req, res) {
         queryValues.push(bis[i].person_id);
     }
 
-    if(req.body.is_paid) pool.query('UPDATE person_budget_entry SET datetime_paid = CURRENT_TIMESTAMP WHERE budget_entry_id = ? AND person_id = ?;',
-        [req.params.budget_entry_id, req.body.person_id], function(err, result) {
-            if(err)
-                return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            else if (result.affectedRows === 0)
-                res.status(403).json({success: "false", error: "no access"});
-            else
-                res.status(200).json({success: "true"});
-        }); else pool.query('UPDATE person_budget_entry SET datetime_paid = NULL WHERE budget_entry_id = ? AND person_id = ?;',
-        [req.params.budget_entry_id, req.body.person_id], function(err, result) {
-            if(err)
-                return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            else if (result.affectedRows === 0)
-                res.status(403).json({success: "false", error: "no access"});
-            else
-                res.status(200).send();
-        });
+    if(req.body.is_paid) {
+        console.log("1");
+        pool.query('UPDATE person_budget_entry SET datetime_paid = CURRENT_TIMESTAMP WHERE budget_entry_id = ? AND person_id = ?;',
+            [req.params.budget_entry_id, req.body.person_id], function (err, result) {
+                if (err)
+                    return res.status(500).json({'Error': 'connecting to database: '} + err);
+                else if (result.affectedRows === 0)
+                    res.status(403).json({success: "false", error: "no access"});
+                else
+                    res.status(200).json({success: "true"});
+            });
+    }
+    else {
+        console.log("2");
+        pool.query('UPDATE person_budget_entry SET datetime_paid = NULL WHERE budget_entry_id = ? AND person_id = ?;',
+            [req.params.budget_entry_id, req.body.person_id], function (err, result) {
+                if (err)
+                    return res.status(500).json({'Error': 'connecting to database: '} + err);
+                else if (result.affectedRows === 0)
+                    res.status(403).json({success: "false", error: "no access"});
+                else
+                    res.status(200).send();
+            });
+    }
 });
 
 /**

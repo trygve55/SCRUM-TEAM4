@@ -3,7 +3,7 @@ var users = [];
 var lists = [];
 var newmembers = [];
 var curBudget, currencies;
-var list, balance, listItem, newListItem, popupTextList, popupList, balanceItem, listReplace, popupMembers, newlabel;
+var list, balance, listItem, newListItem, popupTextList, popupList, balanceItem, listReplace, popupMembers, newlabel, popupSettle;
 var me;
 var generalLabels;
 var thenewlabel, byersSelect, byersAll;
@@ -207,7 +207,8 @@ $('document').ready(function () {
                 "popupTextfieldList.html",
                 "listReplace.html",
                 "popupMembers.html",
-                "newlabel.html"
+                "newlabel.html",
+                "popupSettle.html"
             ]
         },
         success: function(data){
@@ -221,6 +222,7 @@ $('document').ready(function () {
             listReplace = Handlebars.compile(data["listReplace.html"]);
             popupMembers = Handlebars.compile(data["popupMembers.html"]);
             newlabel = Handlebars.compile(data["newlabel.html"]);
+            popupSettle = Handlebars.compile(data["popupSettle.html"]);
             prep();
         }
     });
@@ -579,12 +581,20 @@ function setupClicks(){
                 }
 
                 var oe = '';
+                var oeM = '';
+                var oeB = '';
                 var balancelist = curBudget.to_pay;
 
                 for(var i=0; i<balancelist.length; i++){
                     var name = balancelist[i].person.forename + " " + balancelist[i].person.lastname;
-                    oe += "<tr class='balancelist'><td>" + name +"</td><td>" + -(balancelist[i].amount_to_pay/100).toFixed(2) + " "+sign+"</td>";
+                    var numb = -(balancelist[i].amount_to_pay/100).toFixed(2);
+                    if(numb < 0){
+                        oeM += "<tr style='background-color: lightcoral' class='balancelist'><td>" + name +"</td><td>" + numb + " "+sign+"</td>";
+                    }else{
+                        oeB += "<tr style='background-color: lightgreen; color: grey' class='balancelist'><td>" + name +"</td><td>" + numb + " "+sign+"</td>";
+                    }
                 }
+                oe = oeM + oeB;
 
                 $(mbutton).closest("div[data-id]").html(balance({
                     title: lang["shop-balance"],
@@ -601,7 +611,40 @@ function setupClicks(){
 
                 $('.balancelist').unbind("click").click(function () {
                     var name = this.innerHTML.split('>')[1].split('<')[0];
-                    
+                    for(var j=0; j<balancelist.length; j++){
+                        var thefullname = balancelist[j].person.forename + " " + balancelist[j].person.lastname;
+                        if(thefullname == name){
+                            if(balancelist[j].amount_to_pay <= 0) {
+                                break;
+                            }
+                            var thelist = balancelist[j];
+                            console.log(thelist);
+                            st = lang["settle-text-one"] + thefullname + lang["settle-text-two"] + this.innerHTML.split(">")[3].split("<")[0];
+                            $('body').append(popupSettle({
+                                settle_text: st,
+                                settle_yes: lang["settle-yes"],
+                                settle_no: lang["settle-no"]
+                            }));
+                            $('.btn-success').unbind("click").click(function () {
+                                $.ajax({
+                                    url: 'api/budget/pay',
+                                    method: 'PUT',
+                                    contentType: 'application/json',
+                                    data: JSON.stringify({
+                                        budget_entry_ids: thelist.budget_entry_ids,
+                                        is_paid: true
+                                    }),
+                                    error: console.error,
+                                    success: function (data) {
+                                        $(this).closest('.pop').remove();
+                                    }
+                                    })
+                            });
+                            $('.btn-danger').unbind("click").click(function () {
+                                $(this).closest('.pop').remove();
+                            });
+                        }
+                    }
 
                 });
 

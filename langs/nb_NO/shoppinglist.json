@@ -48,5 +48,9 @@
   "lang-owe": "Balanse",
   "memb_cancel": "Avbryt",
   "memb_complete": "Ferdig!",
-  "bal-ok": "Tilbake"
+  "bal-ok": "Tilbake",
+  "settle-yes": "Ja",
+  "settle-no": "Avbryt",
+  "settle-text-one": "Er du sikker på at du vil gjøre opp med ",
+  "settle-text-two": " til kostnaden "
 }
