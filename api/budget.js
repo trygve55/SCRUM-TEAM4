@@ -480,6 +480,8 @@ router.get('/:shopping_list_id', function(req, res) {
                         budget_entries: budget_entries,
                         persons_to_get_paid: persons_to_get_paid
                     });
+
+					console.error(budget_entries.length);
                 }
             });
     });
