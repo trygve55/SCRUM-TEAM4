@@ -423,13 +423,13 @@ router.get('/:shopping_list_id', function(req, res) {
                                         persons_to_get_paid[paid_to_person_index].persons_to_pay[pay_from_person_index].amount_to_pay += budget_entries[i].persons_to_pay[j].amount_to_pay;
                                         persons_to_get_paid[paid_to_person_index].persons_to_pay[pay_from_person_index].budget_entry_ids.push({
                                             "budget_entry_id": budget_entries[i].budget_entry_id,
-                                            //"person_id": budget_entries[i].persons_to_pay[j].person_id
-                                            "person": {
+                                            "person_id": budget_entries[i].persons_to_pay[j].person_id
+                                            /*"person": {
                                                 "person_id": budget_entries[i].persons_to_pay[j].person_id,
                                                 "forename": budget_entries[i].persons_to_pay[j].forename,
                                                 "middlename": budget_entries[i].persons_to_pay[j].middlename,
                                                 "lastname": budget_entries[i].persons_to_pay[j].lastname
-                                            }
+                                            }*/
                                         });
                                     }
                                 }
@@ -478,7 +478,8 @@ router.get('/:shopping_list_id', function(req, res) {
                                 if (index === -1) {
                                     to_pay.push({
                                         person: persons_to_get_paid[i].persons_to_pay[j].person,
-                                        amount_to_pay: -persons_to_get_paid[i].persons_to_pay[j].amount_to_pay
+                                        amount_to_pay: -persons_to_get_paid[i].persons_to_pay[j].amount_to_pay,
+                                        budget_entry_ids: persons_to_get_paid[i].persons_to_pay[j].budget_entry_ids
                                     });
                                 } else {
                                     to_pay[index].amount_to_pay - persons_to_get_paid[i].persons_to_pay[j].amount_to_pay;
@@ -490,7 +491,8 @@ router.get('/:shopping_list_id', function(req, res) {
                                 if (index === -1) {
                                     to_pay.push({
                                         person: persons_to_get_paid[i].person,
-                                        amount_to_pay: persons_to_get_paid[i].persons_to_pay[j].amount_to_pay
+                                        amount_to_pay: persons_to_get_paid[i].persons_to_pay[j].amount_to_pay,
+                                        budget_entry_ids: persons_to_get_paid[i].persons_to_pay[j].budget_entry_ids
                                     });
                                 } else {
 					                to_pay[index].amount_to_pay + persons_to_get_paid[i].persons_to_pay[j].amount_to_pay;
