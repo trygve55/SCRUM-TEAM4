@@ -186,7 +186,7 @@ router.get('/', function(req, res) {
                         "shopping_list_id":result[i].shopping_list_id,
                         "shopping_list_name":result[i].shopping_list_name,
                         "color_hex":result[i].color_hex,
-                        "is_hidden":result[i].is_hidden,
+                        "is_hidden": null,
                         "currency_id":result[i].currency_id,
                         "currency_short":result[i].currency_short,
                         "currency_long":result[i].currency_long,
@@ -210,6 +210,10 @@ router.get('/', function(req, res) {
                 });
 
                 if (result[i].person_id) {
+                    if (req.session.person_id === result[i].person_id) {
+                        shopping_lists[current_shopping_list_id].is_hidden =result[i].is_hidden;
+                    }
+
                     shopping_lists[current_shopping_list_id].persons.push({
                         "person_id": result[i].person_id,
                         "forename": result[i].forename,
@@ -375,6 +379,9 @@ router.get('/statistic/:entry_type_name', function(req, res) {
  */
 router.post('/entry', function(req, res) {
     var data = req.body, p_id = req.session.person_id;
+
+    if (!req.body.text_note || req.body.text_note.length === 0)
+        return res.status(400).json({"error": "no text note"});
 
     /*connection.query(
         'INSERT INTO shopping_list_entry(  ' +
