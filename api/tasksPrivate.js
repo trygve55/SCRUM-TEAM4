@@ -7,7 +7,6 @@ module.exports = router;
  *
  * URL: /api/tasks/private/
  * method: POST
- *
  */
 
 router.post('/', function (req, res) {
@@ -19,12 +18,19 @@ router.post('/', function (req, res) {
     pool.query('INSERT INTO private_todo_list (person_id) VALUES(?)', [p_id], function(err, result) {
         if (err)
             return res.status(400).json({error: "SQL-query failing"});
-        return res.status(200).json({success: true});
+        return res.status(200).json({success: result});
     });
 });
 
 /**
  * Registers a new shopping list entry
+ *
+ * URL: /api/tasks/private/
+ * method:
+ * data: {
+ *      private_todo_list_id
+ *      todo_text
+ * }
  */
 
 router.post('/entry', function (req, res) {
@@ -46,6 +52,9 @@ router.post('/entry', function (req, res) {
 
 /**
  *  Gets all shopping lists and entries based on current person_id
+ *
+ *  URL: /api/tasks/private/
+ *  method: GET
  */
 
 router.get('/', function(req, res) {
@@ -99,10 +108,11 @@ router.get('/', function(req, res) {
  *
  */
 
-router.put('/entry/:private_todo_entries', function(req, res) {
-    if(!req.params.private_todo_entries)
+router.put('/entry/:private_todo_entry', function(req, res) {
+    if(!req.params.private_todo_entry)
         return res.status(400).send();
-    var query = putRequestSetup(req.params.private_todo_entries, req, "private_todo_entries");
+    var query = putRequestSetup(req.params.private_todo_entry, req, "private_todo_entry");
+    console.log(query[0], query[1]);
     pool.query(query[0], query[1], function(err, result) {
         if (err) return res.status(500).json({error: err});
         checkResult(err, result, res);
@@ -113,23 +123,24 @@ router.put('/entry/:private_todo_entries', function(req, res) {
 /**
  * Delete shopping list
  *
+ * URL: /api/tasks/private/entry/{private_todo_entry_id}
+ * method: DELETE
  */
 
-/*
 router.delete('/entry/:private_todo_entry_id', function(req, res) {
-    if(req.session.person_id == null)
+    var p_id = req.session.person_id;
+    if(p_id == null)
         return res.status(403).send("Invalid login");
-        //TODO: FIX THIS
-    pool.query('DELETE private_todo_list.* FROM private_todo_list\n' +
-        'LEFT JOIN private_todo_entry\n' +
-        'ON\n' +
-        'private_todo_entry.private_todo_list_id = private_todo_list.private_todo_list_id\n' +
-        'WHERE private_todo_entry_id = 6;',
-        [], function(err, result) {
+    pool.query('DELETE FROM `private_todo_entry`' +
+        'WHERE `private_todo_entry_id` = ? ' +
+        'AND `private_todo_list_id` IN ' +
+        '(SELECT `private_todo_list_id` ' +
+        'FROM `private_todo_list` ' +
+        'WHERE `person_id` = ?) LIMIT 1;',
+        [req.params.private_todo_entry_id, p_id], function(err, result) {
             checkResult(err, result, res);
         });
 });
-*/
 
 /**
  * Make sure the array only contains unique elements.
@@ -167,28 +178,17 @@ function putRequestSetup(id, req, tableName) {
             parameters.push(req.body[k]);
         }
     }
-    request += ' WHERE ' + tableName + '_id = ? ';/* +
-        ' AND shopping_list_id IN  ' +
-        '(SELECT t.shopping_list_id FROM (SELECT shopping_list_id, person_id FROM person) t WHERE person_id = ?  ' +
-        'UNION  ' +
-        'SELECT n.shopping_list_id FROM (SELECT home_group.shopping_list_id, person_id FROM person  ' +
-        'LEFT JOIN group_person USING(person_id) ' +
-        'LEFT JOIN home_group USING(group_id)) n ' +
-        'WHERE person_id = ? ' +
-        'UNION ' +
-        'SELECT k.shopping_list_id FROM (SELECT shopping_list_id, person_id, invite_accepted FROM shopping_list_person) k WHERE person_id = ? AND invite_accepted = 1) LIMIT 1';*/
+    request += ' WHERE ' + tableName + '_id = ? ' +
+        'AND private_todo_list_id IN (SELECT private_todo_list_id FROM private_todo_list WHERE person_id = ?);';
     parameters.push(id);
-    parameters.push(req.session.person_id);
-    parameters.push(req.session.person_id);
     parameters.push(req.session.person_id);
     return [request, parameters];
 }
 
-
-
 /**
  * Find the index of this in this JSON array, if it exists. -1 otherwise.
  */
+
 function existsInArray(private_todo_list_id, array) {
     for (var i = 0; i < array.length; i++) {
         if (array[i].private_todo_list_id == private_todo_list_id) return i;

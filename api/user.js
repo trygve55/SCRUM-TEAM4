@@ -59,7 +59,7 @@ router.get('/checkFacebook', function(req, res){
             return res.status(500).json({error: err});
         } else {
             if (result[0].facebook_api_id == null)
-                return res.status(200).json({facebook: false});
+                return res.status(400).json({facebook: false});
             else
                 return res.status(200).json({facebook: true});
         }
@@ -92,7 +92,7 @@ router.post('/checkPassword', function (req, res) {
         if(err) {
             return res.status(500).send("DB_ERROR");
         } else {
-            if (result.length === 1)
+            if (result[0].facebook_api_id != null)
                 return res.status(400).send("ERROR");
             else {
                 pool.query(
@@ -101,14 +101,11 @@ router.post('/checkPassword', function (req, res) {
                     function (err, result) {
                         if (err)
                             return res.status(500).send("ERROR: executing query");
-                        if (result.length == 0) {
-                            return res.status(400).json({password: false});
-                        }
                         else bcrypt.compare(user.password, result[0].password_hash, function(err, hash_res){
                             if(hash_res)
-                                return res.status(200).json({password: true});
+                                return res.status(200).json({password: true, message: "password do match"});
                             else
-                                return res.status(400).json({password: false});
+                                return res.status(400).json({password: false, message: "password does not match"});
                     });
                 });
             }
@@ -144,8 +141,8 @@ router.put('/password', function (req, res) {
         if(err) {
             return res.status(500).send("DB_ERROR");
         } else {
-            if (result.length === 1)
-                return res.status(400).send("ERROR");
+            if (result[0].facebook_api_id != null)
+                return res.status(400).send("ERROR: login without facebook to change password");
             else {
                 auth.hashPassword(user, function(user) {
                     pool.query(
@@ -156,7 +153,7 @@ router.put('/password', function (req, res) {
                                 return res.status(500).send("ERROR: executing query");
                             else
                                 return res.status(200).send("SUCCESS: password changed");
-                        });
+                    });
                 });
             }
         }
