@@ -36,5 +36,10 @@
   "label3": "Renhold",
   "label4": "Reparasjoner",
   "newlabel": "Ny type",
-  "settle": "Gjør opp"
+  "settle": "Gjør opp",
+  "new-label-name": "Kategorinavn",
+  "new-label-color": "Farge",
+  "byers-label": "Betalere",
+  "byers-all": "Alle",
+  "byers-select": "Velg brukere"
 }

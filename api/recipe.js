@@ -46,7 +46,7 @@ router.get('/:group_id', function(req, res){
  * method: GET
  */
 router.get('/', function(req, res){
-    pool.query('SELECT recipe_id, recipe_directions, recipe_servings, recipe_time, forename, middlename, lastname ' +
+    pool.query('SELECT recipe_name, recipe_id, recipe_directions, recipe_servings, recipe_time, forename, middlename, lastname ' +
         'FROM recipe ' +
         'LEFT JOIN person ON (recipe.person_id = person.person_id)',
         [], function(err, result){
