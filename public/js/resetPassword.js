@@ -8,6 +8,7 @@ $('document').ready(function () {
     //$("#success-alert").hide();
     //$("#warning-alert").hide();
     $('#rp-error').hide();
+    $('#rp-success').hide();
 
 
 
@@ -182,32 +183,30 @@ $('document').ready(function () {
                     token: window.location.search.split("=")[1].split("&")[0]
                 },
                 success: function (data) {
+                    $('#rp-error').hide();
+                    $('#rp-success').show();
                     console.log(data);
                 },
                 error: function () {
-                    $('#rp-error').show();
-                    console.error
+                    $('#rp-error').hide();
+                    $('#rp-success').show();
+                    $('#rp-new').hide();
+                    $('#rp-repeat').hide();
+                    $('#rp-save').hide();
+                    setTimeout(function(){location.href="login.html"} , 3000);
+                    window.location.href="login.html";
                 }
             });
-        }
-/*
-            window.location.href = "login.html";
-            $("#success-alert").show();
-
         }else{
-            $("#warning-alert").show();
-            setTimeout(function () {
-                $("#warning-alert").alert('close');
-            }, 2000);
+            $('#rp-error').show();
         }
-        */
     });
 
     $('#rp-repeat').keypress(function (e) {
         if(e.keyCode!=13||e.which!=13 && $('#rp-repeat').val() != $("#rp-new").val()) {
             return;
         }else{
-            if($('#rp-repeat').val() == $("#rp-new").val())
+            if($('#rp-repeat').val() == $("#rp-new").val()) {
                 $.ajax({
                     url: '/api/user/forgottenPasswordReset',
                     method: 'POST',
@@ -216,16 +215,21 @@ $('document').ready(function () {
                         token: window.location.search.split("=")[1].split("&")[0]
                     },
                     success: function (data) {
+                        $('#rp-error').hide();
+                        $('#rp-success').show();
+                        $('#rp-new').hide();
+                        $('#rp-repeat').hide();
+                        $('#rp-save').hide();
+                        setTimeout(function(){location.href="login.html"} , 3000);
                         console.log(data);
-                        $('')
                     },
-                    error: console.error
+                    error: function () {
+                        console.error
+                    }
                 });
+            } else{
+            $('#rp-error').show();
+            }
         }
     });
-
-
-
-
-
 });
