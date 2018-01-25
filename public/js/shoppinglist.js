@@ -474,8 +474,8 @@ function setupClicks(){
         //Opens popup
         $("body").append(popupMembers({
             members: lang["shop-add-members"],
-            cancel: lang["shop-cancel"],
-            complete: lang["shop-ok"],
+            memb_cancel: lang["memb_cancel"],
+            memb_complete: lang["memb_complete"],
             textfield: lang["shop-input-members"],
             memberlist: h,
             data: "data-id='"+li+"'"
@@ -608,7 +608,7 @@ function setupClicks(){
 
                 $(mbutton).closest("div[data-id]").html(balance({
                     title: lang["shop-balance"],
-                    complete: lang["shop-ok"],
+                    bal_complete: lang["shop-ok"],
                     lang_trip: lang["shop-trip"],
                     lang_price: lang["shop-price"],
                     lang_name: lang["lang-name"],
@@ -682,12 +682,7 @@ function setupClicks(){
                     });
                 });
                 
-                $(mbutton).closest("div[data-id]").find('.bal-settle').click(function () {
-                    console.log("settleall");
-
-                });
-
-                $(this).find('.bal-complete').unbind("click").click(function(){
+                $('.bal-complete').unbind("click").click(function(){
                     var entries = "";
                     for(var j = 0; j < lists.length; j++) {
                         if(lists[j].shopping_list_id != id)

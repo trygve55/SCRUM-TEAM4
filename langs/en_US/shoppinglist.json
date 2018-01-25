@@ -45,6 +45,8 @@
   "byers-all": "All",
   "byers-select": "Select individuals",
   "lang_name": "Name",
-  "lang_owe": "Balance"
+  "lang_owe": "Balance",
+  "memb_cancel": "Cancel",
+  "memb_complete": "Done!"
 
 }

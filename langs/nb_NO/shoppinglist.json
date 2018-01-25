@@ -18,7 +18,7 @@
   "shop-list-name-input": "Ny liste",
   "shop-buy-title": "Registrer utgift",
   "shop-buy-text": "Pris",
-  "shop-ok": "Gå tilbake",
+  "shop-ok": "Tilbake",
   "shop-trip": "Handletur",
   "shop-price": "Pris",
   "shop-input-members": "Skriv inn nytt medlem her",
@@ -45,5 +45,7 @@
   "byers-all": "Alle",
   "byers-select": "Velg brukere",
   "lang-name": "Navn",
-  "lang-owe": "Balanse"
+  "lang-owe": "Balanse",
+  "memb_cancel": "Avbryt",
+  "memb_complete": "Ferdig!"
 }
