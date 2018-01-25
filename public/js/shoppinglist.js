@@ -577,11 +577,14 @@ function setupClicks(){
                 for(var i = data.budget_entries.length-1; i >= 0 ; i--){
                     entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].text_note +"</td><td>" + data.budget_entries[i].amount/100 + " "+sign+"</td>";
                 }
-                var oe = '';
-                var members = lists[place].persons;
-                var balanceArr = [];
-                console.log(members);
 
+                var oe = '';
+                var balancelist = curBudget.to_pay;
+
+                for(var i=0; i<balancelist.length; i++){
+                    var name = balancelist[i].person.forename + " " + balancelist[i].person.lastname;
+                    oe += "<tr class='balancelist'><td>" + name +"</td><td>" + -(balancelist[i].amount_to_pay/100).toFixed(2) + " "+sign+"</td>";
+                }
 
                 $(mbutton).closest("div[data-id]").html(balance({
                     title: lang["shop-balance"],
@@ -594,6 +597,13 @@ function setupClicks(){
                     lang_settle: lang["lang-settle"],
                     budget_entries: entries
                 }));
+
+
+                $('.balancelist').unbind("click").click(function () {
+                    var name = this.innerHTML.split('>')[1].split('<')[0];
+                    
+
+                });
 
                 /**
                  * This method opens a popup when a budget-entry is clicked.
