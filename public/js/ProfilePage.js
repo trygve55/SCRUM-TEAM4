@@ -2,6 +2,7 @@ var lang;
 var user;
 var curBudget;
 var testetest;
+var shopid;
 var listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList;
 
 
@@ -146,6 +147,7 @@ $(document).ready(function () {
             }
 
             testetest = data[0].person_id;
+            shopid = data[0].shopping_list_id;
 
             console.log(data[0]);
             var dato = data[0].birth_date;
@@ -156,6 +158,7 @@ $(document).ready(function () {
             $('#p-lastnam').val(data[0].lastname);
             $('#p-usernam').val(data[0].username);
             $('#p-phonenumb').val(data[0].phone);
+
 
             if (data[0].birth_date) {
                 var date = data[0].birth_date;
@@ -253,9 +256,7 @@ $(document).ready(function () {
             });
         }
     });
-
-
-
+    
     /**
      * Method that first checks if the old password that the user has
      * written is correct, if so it changes password.
@@ -279,17 +280,37 @@ $(document).ready(function () {
                     },
                     success: function (data) {
                         console.log(data);
-                        $('#myModal').hide();
+                        $('#old-password-error').hide();
+
+                        $('#save-password-success').show();
+
                     },
-                    error: console.error
+                    error: function () {
+                        console.error
+                        $('#old-password-error').hide();
+                        $('#change-password-error').show();
+                    }
                 });
             },
-            error: console.error
+            error: function () {
+                console.error
+                $('#old-password-error').show();
+
+            }
         });
     });
 
+    /**
+     *
+     */
+    $.ajax({
+        url: '/api/budget',
+        method: 'GET',
+        data: {
 
+        },
 
+    });
 
     /*
     $('#media').carousel({
