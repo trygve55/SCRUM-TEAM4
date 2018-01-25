@@ -95,8 +95,7 @@ router.post('/:group_id', function(req, res){
     req.body.meal_datetime.setHours(1);
     req.body.meal_datetime.setMinutes(0);
     req.body.meal_datetime.setSeconds(0);
-    req.body.meal_datetime = req.body.meal_datetime.toISOString().split('T').join(' ');
-    req.body.meal_datetime = req.body.meal_datetime.split('Z')[0];
+    req.body.meal_datetime = req.body.meal_datetime.toISOString().split('T')[0];
     pool.query('INSERT INTO group_recipe (recipe_id, group_id, meal_datetime) VALUES (?, ?, ?)',
         [req.body.recipe_id, req.params.group_id, req.body.meal_datetime], function(err, result){
             if(err)
