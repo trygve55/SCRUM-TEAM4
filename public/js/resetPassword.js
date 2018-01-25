@@ -7,6 +7,7 @@ var lang;
 $('document').ready(function () {
     //$("#success-alert").hide();
     //$("#warning-alert").hide();
+    $('#rp-error').hide();
 
 
 
@@ -94,6 +95,8 @@ $('document').ready(function () {
         });
     });
 
+    /*
+
     $("#rp-new").focusout(function (){
         if($(this).val() === "") {
             $("#rp-error").hide();
@@ -167,6 +170,8 @@ $('document').ready(function () {
         }
     });
 
+    */
+
     $('#rp-save').click(function () {
         if($('#rp-repeat').val() == $("#rp-new").val()) {
             $.ajax({
@@ -179,7 +184,10 @@ $('document').ready(function () {
                 success: function (data) {
                     console.log(data);
                 },
-                error: console.error
+                error: function () {
+                    $('#rp-error').show();
+                    console.error
+                }
             });
         }
 /*
@@ -209,6 +217,7 @@ $('document').ready(function () {
                     },
                     success: function (data) {
                         console.log(data);
+                        $('')
                     },
                     error: console.error
                 });
