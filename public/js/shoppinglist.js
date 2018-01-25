@@ -550,9 +550,11 @@ function setupClicks(){
     $(".fa-money").unbind("click").click(function(){
         var id = $(this).closest("div[data-id]").data("id");
         var sign = "";
+        var place = -1;
         for(var j=0; j<lists.length; j++){
             if(lists[j].shopping_list_id==id){
                 sign = lists[j].currency_sign;
+                place=j;
             }
         }
         var mbutton = this;
@@ -570,41 +572,10 @@ function setupClicks(){
                     entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].text_note +"</td><td>" + data.budget_entries[i].amount/100 + " "+sign+"</td>";
                 }
                 var oe = '';
-                var personsToPayed = curBudget.persons_to_get_paid;
-                for(var s=0; s<personsToPayed.length; s++){
-                    console.log(personsToPayed[s].person.person_id + " - " + me.person_id);
-                    if(personsToPayed[s].person.person_id==me.person_id){
-                        var personsYouPay = personsToPayed[s].persons_to_pay;
-                        console.log(personsYouPay);
-                        for(var j=0; j<personsYouPay.length; j++){
-                            var name = personsYouPay[j].person.forename + " " + personsYouPay[j].person.lastname;
-                            var amount = personsYouPay[j].amount_to_pay;
-                            var realAmount = amount;
-                            console.log(name + " " + amount);
-                            if(amount <= 0){
-                                console.log("amount smaller 0");
-                                var revAmount = 0;
-                                for(var k=0; k<personsToPayed[k].length; k++){
-                                    if(personsToPayed[k].person_id == personsYouPay[j]){
-                                        var personsT = personsToPayed[k].persons_to_pay;
-                                        for(var r=0; r<personsT.length; r++){
-                                            if(personsT[r].person_id==me.person_id){
-                                                revAmount = personsT[r].amount_to_pay;
-                                                realAmount = revAmount - (revAmount*2);
-                                                oe += '<tr><td>' + name +'</td><td> - '+ realAmount/100+' '+sign+'</td></tr>';
-                                                break;
-                                            }
-                                        }
-                                        break;
-                                    }
-                                }
-                            }else{
-                                oe += '<tr><td>' + name +'</td><td> + '+ realAmount/100+' '+sign+'</td></tr>';
-                            }
-                        }
-                    }
-                }
-                console.log(lang["lang_owe"]);
+                var members = lists[place].persons;
+                var balanceArr = [];
+                console.log(members);
+
 
                 $(mbutton).closest("div[data-id]").html(balance({
                     title: lang["shop-balance"],
