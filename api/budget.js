@@ -203,6 +203,7 @@ function answerPost(req, res, connection, result) {
 
 function addPersonBudgetEntry(req, res, connection, result) {
 
+    console.error(req.body.person_ids);
     var person_ids = req.body.person_ids.split(",");
 
     var queryValues = [], query = "", adderIncluded = false, first = true;
