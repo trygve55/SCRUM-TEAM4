@@ -10,6 +10,8 @@ $(document).ready(function () {
 
     //$('#passwordarea').hide();
     $('#save-success').hide();
+    $('#old-password-error').hide();
+    $('#change-password-error').hide();
 
 
     $('#profpic').attr("src","api/user/" + localStorage.person_id + "/picture");
@@ -285,13 +287,20 @@ $(document).ready(function () {
                         password: $('#newpwd').val()
                     },
                     success: function (data) {
+                        $('#old-password-error').hide();
+                        $('#save-password-success').show();
                         console.log(data);
-                        $('#myModal').hide();
                     },
-                    error: console.error
+                    error: function () {
+                        $('#old-password-error').hide();
+                        $('#change-password-error').show();
+                        console.error
+                    }
                 });
             },
-            error: console.error
+            error: function () {
+                $('#old-password-error').show();
+            }
         });
     });
 
