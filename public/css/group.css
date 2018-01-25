@@ -304,8 +304,7 @@ div.grouptablink.backvariant{
 .datepicker {
 	width: 10vh;
 	border:none;
-	background-color: darkgrey;
-	color:white;
+	background-color: white;
 	border-radius: 5px;
 	text-align: center;
 	font-size: 15px

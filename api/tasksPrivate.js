@@ -3,7 +3,7 @@ var router = require('express').Router();
 module.exports = router;
 
 /**
- * Registers a new
+ * Registers a new shopping list
  *
  * URL: /api/tasks/private/
  * method: POST
@@ -23,6 +23,10 @@ router.post('/', function (req, res) {
     });
 });
 
+/**
+ * Registers a new shopping list entry
+ */
+
 router.post('/entry', function (req, res) {
     var p_id = req.session.person_id, data = req.body;
 
@@ -40,9 +44,10 @@ router.post('/entry', function (req, res) {
     });
 });
 
+/**
+ *  Gets all shopping lists and entries based on current person_id
+ */
 
-//unfinished
-/*
 router.get('/', function(req, res) {
     var p_id = req.session.person_id;
 
@@ -61,49 +66,75 @@ router.get('/', function(req, res) {
         var private_todo_lists = [];
 
         for (var i = 0; i < result.length; i++) {
-            var current_private_todo_list = existsInArray(result[i].private_todo_list_id, private_todo_entries);
-            if (current_private_todo_list === -1) {
+            var current_private_todo_list = existsInArray(result[i].private_todo_list_id, private_todo_lists);
+            if (current_private_todo_list == -1) {
                 private_todo_lists.push({
-                    "private_todo_list_id":result[i].private_todo_list_id,
-                    "private_todo_list_name":result[i].private_todo_list_name,
-                    "is_deactivated":result[i].is_deactivated,
-                    "color_hex":result[i].color_hex,
-                    private_todo_entries:[]
+                    "private_todo_list_id": result[i].private_todo_list_id,
+                    "private_todo_list_name": result[i].private_todo_list_name,
+                    "is_deactivated": result[i].is_deactivated,
+                    "color_hex": result[i].color_hex,
+                    "private_todo_entries": []
                 });
                 current_private_todo_list = private_todo_lists.length - 1;
-                if(result[i].private_todo_entry_id) private_todo_lists[current_private_todo_list].private_todo_entries.push({
-                    "private_todo_entry_id":result[i].private_todo_entry_id,
-                    "todo_text":result[i].todo_text,
-                    "datetime_deadline":result[i].datetime_deadline,
-                    "datetime_added":result[i].datetime_added,
-                    "datetime_done":result[i].datetime_done
-                });
-
             }
-
-
+            if(result[i].private_todo_entry_id) private_todo_lists[current_private_todo_list].private_todo_entries.push({
+                "private_todo_entry_id":result[i].private_todo_entry_id,
+                "todo_text":result[i].todo_text,
+                "datetime_deadline":result[i].datetime_deadline,
+                "datetime_added":result[i].datetime_added,
+                "datetime_done":result[i].datetime_done
+            });
         }
-
         for (i = 0; i < private_todo_lists.length; i++) {
-            private_todo_lists[i].priva = removeDuplicates(shopping_lists[i].shopping_list_entries);
+            private_todo_lists[i].private_todo_entries = removeDuplicates(private_todo_lists[i].private_todo_entries);
         }
-
-
-
-
-
-
-
         return res.status(200).json(private_todo_lists);
     });
 });
 
-*/
 
+/**
+ *
+ * Update shopping list
+ *
+ */
+
+router.put('/entry/:private_todo_entries', function(req, res) {
+    if(!req.params.private_todo_entries)
+        return res.status(400).send();
+    var query = putRequestSetup(req.params.private_todo_entries, req, "private_todo_entries");
+    pool.query(query[0], query[1], function(err, result) {
+        if (err) return res.status(500).json({error: err});
+        checkResult(err, result, res);
+    });
+});
+
+
+/**
+ * Delete shopping list
+ *
+ */
+
+/*
+router.delete('/entry/:private_todo_entry_id', function(req, res) {
+    if(req.session.person_id == null)
+        return res.status(403).send("Invalid login");
+        //TODO: FIX THIS
+    pool.query('DELETE private_todo_list.* FROM private_todo_list\n' +
+        'LEFT JOIN private_todo_entry\n' +
+        'ON\n' +
+        'private_todo_entry.private_todo_list_id = private_todo_list.private_todo_list_id\n' +
+        'WHERE private_todo_entry_id = 6;',
+        [], function(err, result) {
+            checkResult(err, result, res);
+        });
+});
+*/
 
 /**
  * Make sure the array only contains unique elements.
  */
+
 function removeDuplicates(arr) {
     var added_ids = [], unique_array = arr.filter(function(elem, index, self) {
         if (elem.person_id) {
@@ -127,13 +158,53 @@ function removeDuplicates(arr) {
     return unique_array;
 }
 
+function putRequestSetup(id, req, tableName) {
+    var parameters = [], request = 'UPDATE ' + tableName + ' SET ', first = true;
+    for (var k in req.body) {
+        if (k !== req.body.shopping_list_id && k !== req.body.shopping_list_entry_id) {
+            (!first) ? request += ', ' :  first = false;
+            request += k + ' = ?';
+            parameters.push(req.body[k]);
+        }
+    }
+    request += ' WHERE ' + tableName + '_id = ? ';/* +
+        ' AND shopping_list_id IN  ' +
+        '(SELECT t.shopping_list_id FROM (SELECT shopping_list_id, person_id FROM person) t WHERE person_id = ?  ' +
+        'UNION  ' +
+        'SELECT n.shopping_list_id FROM (SELECT home_group.shopping_list_id, person_id FROM person  ' +
+        'LEFT JOIN group_person USING(person_id) ' +
+        'LEFT JOIN home_group USING(group_id)) n ' +
+        'WHERE person_id = ? ' +
+        'UNION ' +
+        'SELECT k.shopping_list_id FROM (SELECT shopping_list_id, person_id, invite_accepted FROM shopping_list_person) k WHERE person_id = ? AND invite_accepted = 1) LIMIT 1';*/
+    parameters.push(id);
+    parameters.push(req.session.person_id);
+    parameters.push(req.session.person_id);
+    parameters.push(req.session.person_id);
+    return [request, parameters];
+}
+
+
 
 /**
  * Find the index of this in this JSON array, if it exists. -1 otherwise.
  */
-function existsInArray(shopping_list_id, array) {
+function existsInArray(private_todo_list_id, array) {
     for (var i = 0; i < array.length; i++) {
-        if (array[i].shopping_list_id == shopping_list_id) return i;
+        if (array[i].private_todo_list_id == private_todo_list_id) return i;
     }
     return -1;
+}
+
+/**
+ * Check the result, release connection and return.
+ */
+function checkResult(err, result, res) {
+    if (err) {
+        res.status(500).json({error: err});
+    } else if (result.affectedRows == 0) {
+        res.status(403).json({error: "No access or does not exists"})
+    } else {
+        res.status(200).json({success: "Success"});
+    }
 }
