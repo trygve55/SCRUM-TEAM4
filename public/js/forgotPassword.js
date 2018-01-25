@@ -2,9 +2,11 @@
  * Created by Eline on 15.01.2018.
  */
 $('document').ready(function () {
+
+    $('#forgot-email-error').hide();
+    $('#forgot-email-success').hide();
+
     /* Language */
-
-
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -91,9 +93,14 @@ $('document').ready(function () {
                 email: $('#emailadr').val()
             },
             success: function (data){
+                $('#forgot-email-error').hide();
+                $('#forgot-email-success').show();
                 console.log(data)
             },
-            error: console.error
+            error: function () {
+                $('#forgot-email-error').show();
+                console.error
+            }
         });
     });
 
@@ -107,9 +114,14 @@ $('document').ready(function () {
                 email: $('#emailadr').val()
             },
             success: function (data){
+                $('#forgot-email-error').hide();
+                $('#forgot-email-success').show();
                 console.log(data)
             },
-            error: console.error
+            error: function () {
+                $('#forgot-email-error').show();
+                console.error
+            }
         });
     });
 });
