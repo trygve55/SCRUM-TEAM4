@@ -219,6 +219,7 @@ function addPersonBudgetEntry(req, res, connection, result) {
     }
 
     console.error(person_ids);
+    console.error(adderIncluded);
 
     if (query.length > 0) connection.query(
         'INSERT INTO person_budget_entry (person_id, budget_entry_id) VALUES ' + query +';',

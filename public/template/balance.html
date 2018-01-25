@@ -1,7 +1,7 @@
 <div {{{data}}} class="settlement" >
-    <h4>{{title}}</h4>
-    <div style="max-height: 65vh; overflow-y: scroll ">
-        <table class="table table-hover table-bordered" >
+    <h4 style="margin-bottom: 2vh">{{title}}</h4>
+    <div style="max-height: 30vh; overflow-y: scroll; margin-bottom: 2vh">
+        <table class="table table-hover table-bordered" style="background-color: white;" >
             <thead>
             <tr>
                 <th>{{lang_trip}}</th>
@@ -11,7 +11,19 @@
             <tbody>{{{budget_entries}}}</tbody>
         </table>
     </div>
-    <div align="center" style="margin-top: 5%">
-        <button align="right" id="popup-complete" type="button" class="btn" style="background-color: lightgrey">{{complete}}</button>
+    <div style="max-height: 29vh; overflow-y:scroll;">
+        <table class="table table-hover table-bordered" style="background-color: white;" >
+            <thead>
+            <tr>
+                <th>{{lang_name}}</th>
+                <th>{{lang_owe}}</th>
+            </tr>
+            </thead>
+            <tbody>{{{owe_entries}}}</tbody>
+        </table>
+    </div>
+    <div align="center" style="margin: 2vh">
+        <button id="settlement-complete" type="button" class="btn" style="background-color: lightgrey">{{complete}}</button>
+        <button id="settlement-settleall" type="button" class="btn" style="background-color: lightgrey">{{lang_settle}}</button>
     </div>
 </div>

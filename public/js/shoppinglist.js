@@ -569,11 +569,52 @@ function setupClicks(){
                 for(var i = data.budget_entries.length-1; i >= 0 ; i--){
                     entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].text_note +"</td><td>" + data.budget_entries[i].amount/100 + " "+sign+"</td>";
                 }
+                var oe = '';
+                var personsToPayed = curBudget.persons_to_get_paid;
+                for(var s=0; s<personsToPayed.length; s++){
+                    console.log(personsToPayed[s].person.person_id + " - " + me.person_id);
+                    if(personsToPayed[s].person.person_id==me.person_id){
+                        var personsYouPay = personsToPayed[s].persons_to_pay;
+                        console.log(personsYouPay);
+                        for(var j=0; j<personsYouPay.length; j++){
+                            var name = personsYouPay[j].person.forename + " " + personsYouPay[j].person.lastname;
+                            var amount = personsYouPay[j].amount_to_pay;
+                            var realAmount = amount;
+                            console.log(name + " " + amount);
+                            if(amount <= 0){
+                                console.log("amount smaller 0");
+                                var revAmount = 0;
+                                for(var k=0; k<personsToPayed[k].length; k++){
+                                    if(personsToPayed[k].person_id == personsYouPay[j]){
+                                        var personsT = personsToPayed[k].persons_to_pay;
+                                        for(var r=0; r<personsT.length; r++){
+                                            if(personsT[r].person_id==me.person_id){
+                                                revAmount = personsT[r].amount_to_pay;
+                                                realAmount = revAmount - (revAmount*2);
+                                                oe += '<tr><td>' + name +'</td><td> - '+ realAmount+' '+sign+'</td></tr>';
+                                                break;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                            }else{
+                                oe += '<tr><td>' + name +'</td><td> + '+ realAmount+' '+sign+'</td></tr>';
+                            }
+                        }
+                    }
+                }
+                console.log(lang["lang_owe"]);
+
                 $(mbutton).closest("div[data-id]").html(balance({
                     title: lang["shop-balance"],
                     complete: lang["shop-ok"],
                     lang_trip: lang["shop-trip"],
                     lang_price: lang["shop-price"],
+                    lang_name: lang["lang-name"],
+                    lang_owe: lang["lang-owe"],
+                    owe_entries: oe,
+                    lang_settle: lang["lang-settle"],
                     budget_entries: entries
                 }));
 
@@ -598,14 +639,14 @@ function setupClicks(){
                     var p = "";
                     var payerlist = entry.persons_to_pay;
                     for(var k=0; k<payerlist.length; k++){
+                        var temp = '';
+                        if(payerlist[k].datetime_paid!=null){
+                            temp = '<i class="fa fa-check" aria-hidden="true"></i>';
+                        }
                         if(payerlist[k].person_id == me.person_id){
-                            if(me.person_id == entry.added_by.person_id){
-                                p += "<li class='list-group-item'>"+lang["me"]+"</li>";
-                            }else{
-                                p += "<li class='list-group-item'><div class='row'><div class='col-sm'>"+lang["me"]+"</div><div class='col-sm' style='text-align: right'><button type='button' class='btn' style='background-color: lightgrey'>"+lang["settle"]+"</button></div></div></li>";
-                            }
+                            p += "<tr><td>"+lang["me"]+"</td><td style='text-align: center'>"+temp+"</td></tr>";
                         }else{
-                            p += "<li class='list-group-item'>"+payerlist[k].forename+" "+payerlist[k].lastname+"</li>";
+                            p += "<tr><td>"+payerlist[k].forename+" "+payerlist[k].lastname+"</td><td>"+temp+"</td></tr>";
                         }
                     }
                     $(this).closest(".pop").hide();
@@ -627,7 +668,8 @@ function setupClicks(){
                         cost_label: lang["cost-label"],
                         payers: p,
                         labelhtml: lh,
-                        payers_label: lang["payers-label"],
+                        lang_payers: lang["lang-payers"],
+                        lang_payed: lang["lang-payed"],
                         goods: g,
                         goods_label: lang["goods-label"],
                         time: formattedDateTime,
