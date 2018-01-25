@@ -11,10 +11,6 @@ module.exports = router;
 
 router.post('/', function (req, res) {
     var p_id = req.session.person_id;
-
-    if(p_id == null)
-        return res.status(403).send("Invalid request, you must log in");
-
     pool.query('INSERT INTO private_todo_list (person_id) VALUES(?)', [p_id], function(err, result) {
         if (err)
             return res.status(400).json({error: "SQL-query failing"});
@@ -34,13 +30,8 @@ router.post('/', function (req, res) {
  */
 
 router.post('/entry', function (req, res) {
-    var p_id = req.session.person_id, data = req.body;
-
     if (!data.private_todo_list_id || !data.todo_text)
         return res.status(400).send("body error");
-
-    if(p_id == null)
-        return res.status(403).send("Invalid request, you must log in");
 
     pool.query('INSERT INTO private_todo_entry (private_todo_list_id, todo_text) VALUES(?,?)',
         [data.private_todo_list_id, data.todo_text], function (err, result) {
@@ -51,17 +42,15 @@ router.post('/entry', function (req, res) {
 });
 
 /**
- *  Gets all shopping lists and entries based on current person_id
+ *  Gets all shopping lists and entries based on current user
  *
  *  URL: /api/tasks/private/
  *  method: GET
+ *
  */
 
 router.get('/', function(req, res) {
     var p_id = req.session.person_id;
-
-    if (p_id == null)
-        return res.status(403).send('Invalid request, you must login');
 
     pool.query('SELECT * FROM private_todo_list ' +
         'LEFT JOIN private_todo_entry ' +
@@ -101,18 +90,56 @@ router.get('/', function(req, res) {
     });
 });
 
-
 /**
- *
  * Update shopping list
  *
+ * URL: /api/tasks/private/entry/{private_todo_entry}
+ * method: PUT
+ * data {
+ *  [private_list_name]
+ *  [is_deactivated]
+ *  [color_hex]
+ * }
  */
+
+
+router.put('/list/:private_todo_list_id', function(req, res){
+    if(!req.params.private_todo_list_id)
+        return res.status(400).json({error: "no todo_list_id"});
+
+    var data = req.body;
+
+    if (data.private_todo_list_id || data.person_id)
+        return res.status(400).json({error: "can not change data"});
+
+    if (data.is_deactivated === "true") data.is_deactivated = true;
+    if (data.is_deactivated === "false") data.is_deactivated = false;
+
+    var request = putRequestSetup(req.params.private_todo_list_id, req.body, "private_todo_list");
+    pool.query(request[0], request[1], function(err, result) {
+        if (err) return res.status(500).json({error: err});
+        res.status(200).json({request: request,result: result});
+    });
+});
+
+
+/**
+ * Update shopping list entry
+ *
+ * URL: /api/tasks/private/entry/{private_todo_entry}
+ * method: PUT
+ * data {
+ *  [todo_text]
+ *  [datetime_deadline]
+ *  [datetime_done]
+ * }
+ */
+
 
 router.put('/entry/:private_todo_entry', function(req, res) {
     if(!req.params.private_todo_entry)
         return res.status(400).send();
-    var query = putRequestSetup(req.params.private_todo_entry, req, "private_todo_entry");
-    console.log(query[0], query[1]);
+    var query = putRequestEntry(req.params.private_todo_entry, req, "private_todo_entry");
     pool.query(query[0], query[1], function(err, result) {
         if (err) return res.status(500).json({error: err});
         checkResult(err, result, res);
@@ -129,8 +156,6 @@ router.put('/entry/:private_todo_entry', function(req, res) {
 
 router.delete('/entry/:private_todo_entry_id', function(req, res) {
     var p_id = req.session.person_id;
-    if(p_id == null)
-        return res.status(403).send("Invalid login");
     pool.query('DELETE FROM `private_todo_entry`' +
         'WHERE `private_todo_entry_id` = ? ' +
         'AND `private_todo_list_id` IN ' +
@@ -169,10 +194,10 @@ function removeDuplicates(arr) {
     return unique_array;
 }
 
-function putRequestSetup(id, req, tableName) {
+function putRequestEntry(id, req, tableName) {
     var parameters = [], request = 'UPDATE ' + tableName + ' SET ', first = true;
     for (var k in req.body) {
-        if (k !== req.body.shopping_list_id && k !== req.body.shopping_list_entry_id) {
+        if (k !== req.body.private_todo_list_id && k !== req.body.private_todo_entry_id) {
             (!first) ? request += ', ' :  first = false;
             request += k + ' = ?';
             parameters.push(req.body[k]);
@@ -182,6 +207,21 @@ function putRequestSetup(id, req, tableName) {
         'AND private_todo_list_id IN (SELECT private_todo_list_id FROM private_todo_list WHERE person_id = ?);';
     parameters.push(id);
     parameters.push(req.session.person_id);
+    return [request, parameters];
+}
+
+function putRequestSetup(iD, data, tableName) {
+    if(!iD) {
+        return res.status(400).json({'Error' : (tableName + '_id not specified: ') } + err);
+    }
+    var parameters = [], request = 'UPDATE ' + tableName + ' SET ';
+    var first = true;
+    for (var k in data) {
+        (!first) ? (request += ', ') : (first = false);
+        request += k + ' = ?';
+        parameters.push(data[k]);
+    }
+    request += ' WHERE ' + tableName + '_id = ' + iD;
     return [request, parameters];
 }
 
