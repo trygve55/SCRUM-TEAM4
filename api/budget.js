@@ -203,6 +203,7 @@ function answerPost(req, res, connection, result) {
 
 function addPersonBudgetEntry(req, res, connection, result) {
 
+    console.error(req.body.person_ids);
     var person_ids = req.body.person_ids.split(",");
 
     var queryValues = [], query = "", adderIncluded = false, first = true;
@@ -212,6 +213,7 @@ function addPersonBudgetEntry(req, res, connection, result) {
             if (!first) {
                 query += ",";
             } else first = false;
+
             queryValues.push(person_ids[i]);
             queryValues.push(result.insertId);
             query += "(?,?)";
@@ -466,6 +468,37 @@ router.get('/:shopping_list_id', function(req, res) {
                         }
                     }
 
+                    var to_pay = [];
+					for (var i = 0; i < persons_to_get_paid.length;i++) {
+
+					    for (var j = 0; j < persons_to_get_paid[i].persons_to_pay.length; j ++) {
+					        if (persons_to_get_paid[i].person.person_id == req.session.person_id) {
+                                var index = paidPersonExistsInArray(persons_to_get_paid[i].persons_to_pay[j].person.person_id , to_pay);
+
+                                if (index === -1) {
+                                    to_pay.push({
+                                        person: persons_to_get_paid[i].persons_to_pay[j].person,
+                                        amount_to_pay: -persons_to_get_paid[i].persons_to_pay[j].amount_to_pay
+                                    });
+                                } else {
+                                    to_pay[index].amount_to_pay - persons_to_get_paid[i].persons_to_pay[j].amount_to_pay;
+                                }
+
+                            } else if (persons_to_get_paid[i].persons_to_pay[j].person.person_id == req.session.person_id) {
+                                var index = paidPersonExistsInArray(persons_to_get_paid[i].person.person_id , to_pay);
+
+                                if (index === -1) {
+                                    to_pay.push({
+                                        person: persons_to_get_paid[i].person,
+                                        amount_to_pay: persons_to_get_paid[i].persons_to_pay[j].amount_to_pay
+                                    });
+                                } else {
+					                to_pay[index].amount_to_pay + persons_to_get_paid[i].persons_to_pay[j].amount_to_pay;
+                                }
+                            }
+                        }
+                    }
+
                     res.status(200).json({
                         shopping_list_id: req.params.shopping_list_id,
                         shopping_list_name:  result[0].shopping_list_name,
@@ -477,7 +510,8 @@ router.get('/:shopping_list_id', function(req, res) {
                             currency_sign: result[0].currency_sign
                         },
                         budget_entries: budget_entries,
-                        persons_to_get_paid: persons_to_get_paid
+                        persons_to_get_paid: persons_to_get_paid,
+                        to_pay: to_pay
                     });
 
 					console.error(budget_entries.length);

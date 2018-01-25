@@ -264,6 +264,12 @@ function prep(){
                         lang_settlement: lang["shop-balance"],
                         color_hex: (d.color_hex ? d.color_hex.toString(16) : "FFFFFF")
                     }));
+                    if (d.is_hidden == null) {
+                        console.log("removing");
+                        $('div[data-id=' + d.shopping_list_id + ']').find(".fa-users").remove();
+                        $('div[data-id=' + d.shopping_list_id + ']').find(".fa-trash").remove();
+                        $('div[data-id=' + d.shopping_list_id + ']').find(".fa-money").remove();
+                    }
                     $('div[data-id=' + d.shopping_list_id + ']').find("select").val(d.currency_id);
                 }
             }
