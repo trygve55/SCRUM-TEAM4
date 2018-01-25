@@ -340,7 +340,7 @@ function multipleRequestSetup(iD, data, query, repetitiveElement, iDFirstOnly) {
 */
 function checkResult(err, result, res) {
 	if (err)
-		return res.status(500).send()
+		return res.status(500).send();
 	if (result)
 		res.status(200).send();
 }

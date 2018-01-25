@@ -18,7 +18,7 @@
   "shop-list-name-input": "Ny liste",
   "shop-buy-title": "Registrer utgift",
   "shop-buy-text": "Pris",
-  "shop-ok": "OK",
+  "shop-ok": "Gå tilbake",
   "shop-trip": "Handletur",
   "shop-price": "Pris",
   "shop-input-members": "Skriv inn nytt medlem her",
@@ -36,5 +36,14 @@
   "label3": "Renhold",
   "label4": "Reparasjoner",
   "newlabel": "Ny type",
-  "settle": "Gjør opp"
+  "settle": "Gjør opp",
+  "new-label-name": "Kategorinavn",
+  "new-label-color": "Farge",
+  "lang-payers": "Betalere",
+  "lang-payed": "Gjort opp",
+  "lang-settle": "Betal alle",
+  "byers-all": "Alle",
+  "byers-select": "Velg brukere",
+  "lang-name": "Navn",
+  "lang-owe": "Balanse"
 }

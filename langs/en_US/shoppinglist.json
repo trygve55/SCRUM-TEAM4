@@ -17,7 +17,7 @@
   "shop-list-name-input": "Untitled list",
   "shop-buy-title": "Register",
   "shop-buy-text": "Price",
-  "shop-ok": "OK",
+  "shop-ok": "Go back",
   "shop-trip": "Budget entry",
   "shop-price": "Price",
   "shop-input-members": "Enter new member here",
@@ -36,5 +36,15 @@
   "label4": "Repairs",
   "newlabel": "New label",
   "me": "Me",
-  "settle": "Settle"
+  "settle": "Settle",
+  "new-label-name": "New label",
+  "new-label-color": "Label color",
+  "lang-payers": "Payers",
+  "lang-payed": "Settled",
+  "lang-settle": "Pay all",
+  "byers-all": "All",
+  "byers-select": "Select individuals",
+  "lang_name": "Name",
+  "lang_owe": "Balance"
+
 }

@@ -12,7 +12,17 @@
                 <div style="border: outset 2px; background-color: lightsteelblue; padding: 1vh; border-radius: 15px;"><div style="max-height: 20vh; overflow-y:scroll;">{{goods_label}}:<ul class="list-group">{{{goods}}}</ul></div></div>
             </div>
             <div class="col-sm">
-                <div style="height:39vh; overflow: scroll; border: outset 2px; padding: 1vh; border-radius: 15px;">{{payers_label}}: <ul class="list-group">{{{payers}}}</ul></div>
+                <div style="max-height: 40vh; overflow-y: scroll ">
+                    <table class="table table-hover table-bordered" >
+                        <thead>
+                        <tr>
+                            <th>{{lang_payers}}</th>
+                            <th>{{lang_payed}}</th>
+                        </tr>
+                        </thead>
+                        <tbody>{{{payers}}}</tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div align="center" style="margin-top: 5%">
