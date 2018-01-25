@@ -300,9 +300,10 @@ $(document).ready(function () {
         });
     });
 
-    /**
-     *
-     */
+
+
+
+     /*
     $.ajax({
         url: '/api/budget',
         method: 'GET',
@@ -311,6 +312,7 @@ $(document).ready(function () {
         },
 
     });
+     */
 
     /*
     $('#media').carousel({
