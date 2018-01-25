@@ -306,16 +306,6 @@ $(document).ready(function () {
 
 
 
-     /*
-    $.ajax({
-        url: '/api/budget',
-        method: 'GET',
-        data: {
-
-        },
-
-    });
-    */
 
     /*
     $('#media').carousel({
