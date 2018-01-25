@@ -127,7 +127,7 @@ CREATE TABLE budget_entry (
     shopping_list_id INTEGER NOT NULL,
     added_by_id INTEGER NOT NULL,
     amount INTEGER NOT NULL,
-    text_note NVARCHAR(30),
+    text_note NVARCHAR(255),
     entry_datetime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     receipt_pic MEDIUMBLOB,
     CONSTRAINT budget_entry_type_fk FOREIGN KEY(budget_entry_type_id) REFERENCES budget_entry_type(budget_entry_type_id),
@@ -169,7 +169,7 @@ CREATE TABLE newsfeed_post (
     posted_by_id INTEGER NOT NULL,
     post_text NVARCHAR(4000) NOT NULL,
     attachment_type INTEGER NOT NULL DEFAULT 0,
-    attachment_data BLOB,
+    attachment_data MEDIUMBLOB,
     posted_datetime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT newsfeed_posted_by_fk FOREIGN KEY(posted_by_id) REFERENCES person(person_id),
     CONSTRAINT newsfeed_group_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
@@ -264,6 +264,7 @@ CREATE TABLE recipe_ingredient (
 	ingredient_id INTEGER NOT NULL AUTO_INCREMENT,
 	ingredient_amount FLOAT,
 	ingredient_unit NVARCHAR(20),
+	ingredient_name NVARCHAR(255),
 	ingredient_optional BIT NOT NULL,
 	recipe_id INTEGER NOT NULL,
 	CONSTRAINT recipe_ingredient_fk FOREIGN KEY(recipe_id) REFERENCES recipe(recipe_id),
@@ -273,9 +274,10 @@ CREATE TABLE recipe_ingredient (
 CREATE TABLE group_recipe (
 	recipe_id INTEGER NOT NULL,
 	group_id INTEGER NOT NULL,
+	meal_datetime DATE NOT NULL,
 	CONSTRAINT group_recipe_fk FOREIGN KEY(recipe_id) REFERENCES recipe(recipe_id),
 	CONSTRAINT home_group_recipe_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
-	CONSTRAINT group_recipe_pk PRIMARY KEY(recipe_id, group_id)
+	CONSTRAINT group_recipe_pk PRIMARY KEY(recipe_id, group_id, meal_datetime)
 );
 
 INSERT INTO home_role(role_id, role_name) VALUES (1, 'Member');

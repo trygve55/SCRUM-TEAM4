@@ -202,13 +202,21 @@ label {
 }
 
 #group-newsfeed {
-	margin: 5px;
-	min-width: 130px;
-	min-height: 50px;
-	border-radius: 5px;
-    -moz-box-shadow:    inset 0 0 3px grey;
-    -webkit-box-shadow: inset 0 0 3px grey;
-    box-shadow:         inset 0 0 3px grey;
+	padding:2%;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	min-height:175px;
+	min-width:175px;
+	width: 85%;
+	max-width: 85%;
+	max-height: 85vh;
+	-moz-box-shadow: 0 0 1px grey;
+	-webkit-box-shadow: 0 0 1px grey;
+	box-shadow:  0 0 1px grey;
+	border-radius: 10px;
+	overflow-y: auto;
+	background-color: white;
+	border-radius: 10px;
 }
 
 #grouppage{
@@ -275,11 +283,13 @@ div.grouptablink.backvariant{
     margin-bottom: 20px;
     min-height:175px;
     max-width: 85%;
+	width: 85%;
+	max-width: 85%;
+	max-height: 85vh;
     -moz-box-shadow: 0 0 1px grey;
     -webkit-box-shadow: 0 0 1px grey;
     box-shadow:  0 0 1px grey;
     border-radius: 10px;
-	max-height: 350px;
 	overflow-y: auto;
 }
 
@@ -290,3 +300,34 @@ div.grouptablink.backvariant{
     image-rendering: crisp-edges;
 }
 
+
+.datepicker {
+	width: 10vh;
+	border:none;
+	background-color: white;
+	border-radius: 5px;
+	text-align: center;
+	font-size: 15px
+}
+.fa-check-circle-o, .fa-circle-o{
+	margin: 2px;
+}
+
+.fa-calendar:hover, .inputdate:hover{
+	color:cornflowerblue;
+}
+.fa-times:hover{
+	color: indianred;
+}
+.fa-calendar, .fa-times, .fa-list-ul, .fa-bars, .fa-arrow-circle-o-left{
+	color: darkgrey;
+}
+.greyhover:hover{
+	background-color: darkgrey;
+}
+.marked:hover{
+	background-color: #e0f4f9;
+}
+.fa-list-ul:hover, .fa-bars:hover, .fa-arrow-circle-o-left:hover{
+	color: mediumseagreen;
+}

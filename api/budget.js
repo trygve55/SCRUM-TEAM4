@@ -203,60 +203,41 @@ function answerPost(req, res, connection, result) {
 
 function addPersonBudgetEntry(req, res, connection, result) {
 
-    //if (req.person_ids && req.person_ids.length > 0);
-    console.log("test0");
-    connection.query(
-        'SELECT person_id FROM shopping_list_person WHERE shopping_list_id = ? ' +
-        'UNION ' +
-        'SELECT DISTINCT person_id FROM home_group LEFT JOIN shopping_list USING(shopping_list_id) LEFT JOIN group_person  USING(group_id) LEFT JOIN person USING(person_id) WHERE shopping_list.shopping_list_id = ?',
-        [req.body.shopping_list_id, req.body.shopping_list_id], function (err, result2) {
+    var person_ids = req.body.person_ids;
+
+    var queryValues = [], query = "", adderIncluded = false;
+
+    for (var i = 0; i < person_ids.length;i++) {
+        if (req.session.person_id !== person_ids[i]) {
+            if (i != 0) query += ",";
+            queryValues.push(person_ids[i]);
+            queryValues.push(result.insertId);
+            query += "(?,?)";
+        } else {
+            adderIncluded = true;
+        }
+    }
+
+    console.error(person_ids);
+
+    if (query.length > 0) connection.query(
+        'INSERT INTO person_budget_entry (person_id, budget_entry_id) VALUES ' + query +';',
+        queryValues,
+        function (err, result2) {
+
         if (err) {
-            connection.rollback(function () {
+            return connection.rollback(function () {
                 connection.release();
-                return res.status(500).json({error: err, err: 0});
+                res.status(500).json({'Error': err, err: 6});
             });
-            return res.status(500).json({error: err, err: 1});
         }
 
-        person_ids = [];
-        for (var i = 0; i < result2.length; i++) person_ids.push(result2[i].person_id);
-
-        if (req.body.person_ids && req.body.person_ids.length > 0) person_ids = req.body.person_ids;
-
-        var queryValues = [], query = "", adderIncluded = false;
-
-        for (var i = 0; i < person_ids.length;i++) {
-            if (req.session.person_id !== person_ids[i]) {
-                if (i != 0) query += ",";
-                queryValues.push(person_ids[i]);
-                queryValues.push(result.insertId);
-                query += "(?,?)";
-            } else {
-                adderIncluded = true;
-            }
-        }
-
-        console.error(person_ids);
-
-        if (query.length > 0) connection.query(
-            'INSERT INTO person_budget_entry (person_id, budget_entry_id) VALUES ' + query +';',
-            queryValues,
-            function (err, result2) {
-
-            if (err) {
-                return connection.rollback(function () {
-                    connection.release();
-                    res.status(500).json({'Error': err, err: 6});
-                });
-            }
-
-            if (adderIncluded) insertAdderPersonEntryToShoppingList(req, res, connection, result);
-            else answerPost(req, res, connection, result);
-        });
-        else if (adderIncluded) insertAdderPersonEntryToShoppingList(req, res, connection, result);
+        if (adderIncluded) insertAdderPersonEntryToShoppingList(req, res, connection, result);
         else answerPost(req, res, connection, result);
-
     });
+    else if (adderIncluded) insertAdderPersonEntryToShoppingList(req, res, connection, result);
+    else answerPost(req, res, connection, result);
+
 }
 
 function insertAdderPersonEntryToShoppingList(req, res, connection, result) {
