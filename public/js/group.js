@@ -794,7 +794,6 @@ function drawLabelChart(start, end, typeName, intervalType) {
 			return;
 		},
 		success: function(result) {
-			console.log(result);
 			if (!result) {return;}
 			if (!result.length) {return;}
 			
