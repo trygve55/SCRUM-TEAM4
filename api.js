@@ -1,5 +1,21 @@
 var router = require('express').Router();
 
+/*
+router.use('*', function (req, res, next) {
+    console.error(req.method);
+    if ((req.method === "POST" || req.method === "PUT")) {
+        console.error("ran");
+        console.log(req.body);
+        for (var i = 0; i < req.body.length; i++) {
+            req.body[i] = req.sanitize(req.body[i]);
+
+        }
+        console.log(req.body);
+    }
+
+    next();
+});
+*/
 router.use('/language', require('./api/language'));
 router.use('/auth', require('./api/auth'));
 
@@ -16,7 +32,10 @@ router.use('*', function(req, res, next){
         req.session.person_id = 105;
         req.session.save();
     }
-        //return res.status(403).send();
+
+    if ((req.method === "POST" || req.method === "PUT"))
+        for (var p in req.body) if (p !== "password")req.body[p] = req.sanitize(req.body[p]);
+
     next();
 });
 
