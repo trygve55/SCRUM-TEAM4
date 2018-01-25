@@ -59,7 +59,7 @@ router.get('/checkFacebook', function(req, res){
             return res.status(500).json({error: err});
         } else {
             if (result[0].facebook_api_id == null)
-                return res.status(400).json({facebook: false});
+                return res.status(200).json({facebook: false});
             else
                 return res.status(200).json({facebook: true});
         }
