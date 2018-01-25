@@ -264,6 +264,12 @@ function prep(){
                         lang_settlement: lang["shop-balance"],
                         color_hex: (d.color_hex ? d.color_hex.toString(16) : "FFFFFF")
                     }));
+                    if (d.is_hidden == null) {
+                        console.log("removing");
+                        $('div[data-id=' + d.shopping_list_id + ']').find(".fa-users").remove();
+                        $('div[data-id=' + d.shopping_list_id + ']').find(".fa-trash").remove();
+                        $('div[data-id=' + d.shopping_list_id + ']').find(".fa-money").remove();
+                    }
                     $('div[data-id=' + d.shopping_list_id + ']').find("select").val(d.currency_id);
                 }
             }
@@ -474,8 +480,8 @@ function setupClicks(){
         //Opens popup
         $("body").append(popupMembers({
             members: lang["shop-add-members"],
-            cancel: lang["shop-cancel"],
-            complete: lang["shop-ok"],
+            memb_cancel: lang["memb_cancel"],
+            memb_complete: lang["memb_complete"],
             textfield: lang["shop-input-members"],
             memberlist: h,
             data: "data-id='"+li+"'"
@@ -550,9 +556,11 @@ function setupClicks(){
     $(".fa-money").unbind("click").click(function(){
         var id = $(this).closest("div[data-id]").data("id");
         var sign = "";
+        var place = -1;
         for(var j=0; j<lists.length; j++){
             if(lists[j].shopping_list_id==id){
                 sign = lists[j].currency_sign;
+                place=j;
             }
         }
         var mbutton = this;
@@ -569,46 +577,18 @@ function setupClicks(){
                 for(var i = data.budget_entries.length-1; i >= 0 ; i--){
                     entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].text_note +"</td><td>" + data.budget_entries[i].amount/100 + " "+sign+"</td>";
                 }
+
                 var oe = '';
-                var personsToPayed = curBudget.persons_to_get_paid;
-                for(var s=0; s<personsToPayed.length; s++){
-                    console.log(personsToPayed[s].person.person_id + " - " + me.person_id);
-                    if(personsToPayed[s].person.person_id==me.person_id){
-                        var personsYouPay = personsToPayed[s].persons_to_pay;
-                        console.log(personsYouPay);
-                        for(var j=0; j<personsYouPay.length; j++){
-                            var name = personsYouPay[j].person.forename + " " + personsYouPay[j].person.lastname;
-                            var amount = personsYouPay[j].amount_to_pay;
-                            var realAmount = amount;
-                            console.log(name + " " + amount);
-                            if(amount <= 0){
-                                console.log("amount smaller 0");
-                                var revAmount = 0;
-                                for(var k=0; k<personsToPayed[k].length; k++){
-                                    if(personsToPayed[k].person_id == personsYouPay[j]){
-                                        var personsT = personsToPayed[k].persons_to_pay;
-                                        for(var r=0; r<personsT.length; r++){
-                                            if(personsT[r].person_id==me.person_id){
-                                                revAmount = personsT[r].amount_to_pay;
-                                                realAmount = revAmount - (revAmount*2);
-                                                oe += '<tr><td>' + name +'</td><td> - '+ realAmount/100+' '+sign+'</td></tr>';
-                                                break;
-                                            }
-                                        }
-                                        break;
-                                    }
-                                }
-                            }else{
-                                oe += '<tr><td>' + name +'</td><td> + '+ realAmount/100+' '+sign+'</td></tr>';
-                            }
-                        }
-                    }
+                var balancelist = curBudget.to_pay;
+
+                for(var i=0; i<balancelist.length; i++){
+                    var name = balancelist[i].person.forename + " " + balancelist[i].person.lastname;
+                    oe += "<tr class='balancelist'><td>" + name +"</td><td>" + -(balancelist[i].amount_to_pay/100).toFixed(2) + " "+sign+"</td>";
                 }
-                console.log(lang["lang_owe"]);
 
                 $(mbutton).closest("div[data-id]").html(balance({
                     title: lang["shop-balance"],
-                    complete: lang["shop-ok"],
+                    bal_complete: lang["bal-ok"],
                     lang_trip: lang["shop-trip"],
                     lang_price: lang["shop-price"],
                     lang_name: lang["lang-name"],
@@ -617,6 +597,13 @@ function setupClicks(){
                     lang_settle: lang["lang-settle"],
                     budget_entries: entries
                 }));
+
+
+                $('.balancelist').unbind("click").click(function () {
+                    var name = this.innerHTML.split('>')[1].split('<')[0];
+                    
+
+                });
 
                 /**
                  * This method opens a popup when a budget-entry is clicked.
@@ -682,12 +669,7 @@ function setupClicks(){
                     });
                 });
                 
-                $(mbutton).closest("div[data-id]").find('.bal-settle').click(function () {
-                    console.log("settleall");
-
-                });
-
-                $(this).find('.bal-complete').unbind("click").click(function(){
+                $('.bal-complete').unbind("click").click(function(){
                     var entries = "";
                     for(var j = 0; j < lists.length; j++) {
                         if(lists[j].shopping_list_id != id)
@@ -826,7 +808,7 @@ function setupClicks(){
                     textfield_label: lang["shop-entry-label"],
                     currency: curr,
                     advanced: lang["advanced"],
-                    byers_label: lang["byers-label"],
+                    byers_label: lang["byers-select"],
                     byers: bye,
                     label: h,
                     cancel: lang["shop-cancel"],
@@ -940,20 +922,22 @@ function setupClicks(){
                 /**
                  * If cancel is pressed.
                  */
-                $("#popup-cancel").click(function () {
+                $("#t-popup-cancel").click(function () {
                     $(this).closest(".pop").remove();
                 });
 
                 /**
                  * If OK is pressed.
                  */
-                $("#popup-complete").click(function () {
+                $("#t-popup-complete").click(function () {
 
                     /**
                      * If no value is given to the cost input, it does nothing.
                      */
-                    if (isNaN(Number($(this).closest('.pop').find('input').val())))
+                    if (isNaN(Number($(this).closest('.pop').find('input').val()))){
+                        console.log("non");
                         return;
+                    }
 
                     var id = $(this).closest("div[data-id]").data("id"); //listid
                     var e = $(this).closest("div[data-entries]").data("entries"); //entries in numbervalue
@@ -1013,7 +997,7 @@ function setupClicks(){
                             data: {
                                 shopping_list_id: id,
                                 shopping_list_entry_ids: e,
-                                amount: Number($(this).closest('.pop').find('input').val())*100,
+                                amount: Number($(theis).closest('.pop').find('input').val())*100,
                                 text_note: textnote,
                                 person_ids: therealbuyersids
                             },
@@ -1380,7 +1364,7 @@ function updateList2(){
         var persId = $(this).attr("id");
         for(var i = 0; i < buyers.length; i++){
             if(buyers[i].id == persId){
-                if(persId!==me.person_id) {
+                if(persId!=me.person_id) {
                     buyers.splice(i, 1);
                     $("#" + persId).remove();
                     break;

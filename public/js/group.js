@@ -160,13 +160,13 @@ function changeTab(name) {
         getPost();
     else if(activeTab=='tasks')
         getTasks();
-    else if (activeTab == 'statistics')
+    else if (activeTab == 'statistics') {
+		createLabelOptions();
         drawChart();
+    }
+
     else if(activeTab == 'food')
         getCalendar();
-
-
-    drawLabelChart(new Date("1999-10-10"), new Date(), "Food and similar", 2);
 }
 
 /**
@@ -684,7 +684,6 @@ function getPost(){
         method: 'GET',
 
         success: function (dataFeed) {
-            console.log(dataFeed);
             $("#posts").html("");
             for(var i = 0; i < dataFeed.length; i++) {
 
@@ -744,34 +743,51 @@ function drawChart() {
 		url:"/api/budget/" + currentGroup.shopping_list_id,
 		contentType:"application/json",
 		dataType:"json",
-		error: function(jqXHR, text, error) {return;},
+		error: function(jqXHR, text, error) {
+			hideFirstStat();
+			return;
+		},
 		success:function(result) {
-			if (result) {
-				var minLimit = new Date();
-				var monthNow = minLimit.getMonth();
-				minLimit = minLimit.setFullYear(minLimit.getFullYear() - 1);
-				
-				// Insert the values for every month.
-				var months = Array(2).fill().map(function(){
-				    return Array(12).fill(0);
-				});
-				for (var i = 0; i < result.budget_entries.length; i++) {
-					var element = result.budget_entries[i];
-					if (element.entry_datetime != null) {
-						var entryTime = new Date(element.entry_datetime);
-						var entryMonth = mod(entryTime.getMonth() - monthNow - 1, 12);	// Perferably test the mod more.
-						if (entryTime > minLimit && element.amount != 0) {
-							months[(element.amount > 0) ? 0 : 1][entryMonth] += element.amount;
-						}
+			if (!result) {
+				hideFirstStat();
+				return;
+			}
+			if (result.length < 1) {
+				hideFirstStat();
+				return;
+			}
+			if (result.budget_entries.length < 0) {
+				hideFirstStat();
+				return;
+			}
+			var minLimit = new Date();
+			var monthNow = minLimit.getMonth();
+			minLimit = minLimit.setFullYear(minLimit.getFullYear() - 1);
+
+			// Insert the values for every month.
+			var months = Array(2).fill().map(function(){
+				return Array(12).fill(0);
+			});
+			for (var i = 0; i < result.budget_entries.length; i++) {
+				var element = result.budget_entries[i];
+				if (element.entry_datetime != null) {
+					var entryTime = new Date(element.entry_datetime);
+					var entryMonth = mod(entryTime.getMonth() - monthNow - 1, 12);	// Perferably test the mod more.
+					if (entryTime > minLimit && element.amount != 0) {
+						months[(element.amount > 0) ? 0 : 1][entryMonth] += element.amount;
 					}
 				}
-				
-				// Adjust the labels.
-				var labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], rotate = monthNow + 1;
-				while (rotate-- > 0) {labels.push(labels.shift());}
-				
-				drawBarChart(months, labels, statLabels, statColours, "stat0");
 			}
+			if (months[0].length < 0 && months[1].length < 0) {
+				hideFirstStat();
+				return;
+			}
+
+			// Adjust the labels.
+			var labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], rotate = monthNow + 1;
+			while (rotate-- > 0) {labels.push(labels.shift());}
+
+			drawBarChart(months, labels, statLabels, statColours, "stat0");
 		}
 	});
 }
@@ -790,11 +806,10 @@ function drawLabelChart(start, end, typeName, intervalType) {
 		contentType: "application/json",
 		dataType: "json",
 		error: function(jqXHR, text, error) {
-			if (error == "Bad Request" && jqXHR.responseText == "No data found.") {alert(jqXHR.responseText);}
+			if (error == "Bad Request" && jqXHR.responseText == "No data found.") {hideSecondStat();}
 			return;
 		},
 		success: function(result) {
-			console.log(result);
 			if (!result) {return;}
 			if (!result.length) {return;}
 			
@@ -857,6 +872,7 @@ function drawBarChart(data, labels, mainLabels, colours, element) {
         data: {"labels":labels, "datasets":datasets},
         options: {"barPercentage":0.95, scales: {xAxes: [{stacked: true}], yAxes: [{stacked: true}]}}
     });
+	$(element).css('display', 'block');
 }
 
 /**
@@ -1099,7 +1115,7 @@ function getCalendar() {
         defaultDate: '2017-12-12',
         navLinks: true, // can click day/week names to navigate views
         editable: true,
-        eventLimit: true, // allow "more" link when too many events
+        eventLimit: true, // allow "more" links when too many events
         events: [
             {
                 title: 'All Day Event',
@@ -1107,4 +1123,63 @@ function getCalendar() {
             }
         ]
     });
+}
+
+/**
+* Create the options in the drop down with the entry types.
+*/
+function createLabelOptions() {
+	// AJAX get all the budget entry names available.
+	$.ajax({
+		type:"GET",
+		url:"/api/budget/entryType?shopping_list_id=" + currentGroup.shopping_list_id,
+		contentType:"application/json",
+		dataType:"json",
+		error: function(jqXHR, text, error) {return;},
+		success:function(result) {
+			if (!result) {return;}
+			var types = result.budget_entry_types;
+			if (types.length < 1) {hideSecondStat();}
+			else {
+				for (var i = 0; i < types.length; i++) {
+					var found = false, current = types[i].entry_type_name;
+					$("#entry_types option").each(function() {if ($(this).html() == current) {found = true;}});
+					if (!found) {$("#entry_types").append('<option>' + current + '</option>');}
+				}
+				showSecondStat();
+			}
+		}
+	});
+}
+
+
+function hideFirstStat() {
+	$("#stat0").css('display', 'none');
+	$("#stat_header").css('display', 'none');
+}
+
+function showFirstStat() {
+	$("#stat0").css('display', 'block');
+	$("#stat_header").css('display', 'block');
+}
+
+function hideSecondStat() {
+	$("#showStat").hide();
+	$("#entry_types").hide();
+	$("#stat1").css('display', 'none');
+	$("#date_start").hide();
+	$("#date_end").hide();
+}
+
+function showSecondStat() {
+	$("#showStat").show();
+	$("#entry_types").show();
+	$("#stat1").css('display', 'block');
+	$("#date_start").show();
+	$("#date_end").show();
+}
+
+function drawStats() {
+	drawLabelChart(new Date("1999-10-10"), new Date(), $("#entry_types").val(), 2);
+	hideFirstStat();
 }

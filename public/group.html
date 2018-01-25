@@ -222,13 +222,39 @@
 				</div>
 				<div id="statistics" class="grouptab text-center">
 					<hr width="90%">
-					<p id="stat_header">Last 12 months:</p>
-					<br>
+					<div class='col-sm-3'>
+						<div class="form-group">
+							<select id="entry_types" class="selectpicker" data-live-search="true">
+								
+							</select>
+							<div class='input-group date' id='date_start'>
+								<p class="form-control">Start date:</p>
+								<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+								</span>
+							</div>
+							<div class='input-group date' id='date_end'>
+								<p class="form-control">End date:</p>
+								<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+								</span>
+							</div>
+							<button id="showStat" type="button" class="btn btn-primary" onclick="drawStats()">
+								<p class="langtext" id="desc_button1"></p>
+							</button>
+						</div>
+					</div>
+					<p id="stat_header"></p>
 					<canvas id="stat0" class="chart"></canvas>
 					<canvas id="stat1" class="chart"></canvas>
 				</div>
 				<div id="leave" class="grouptab text-center">
 					<br>
+					<h4>{{members}}</h4>
+					<ul class="list-group memberlist" style="margin-top: 1vh; margin-bottom: 1vh">{{{memberlist}}}</ul>
+					<div class="row" >
+						<div class="col-md-8" id="scrollable-dropdown-menu">
+							<input class="typeahead form-control" id="shop-member" placeholder="{{textfield}}">
+						</div>
+					</div>
 					<div>
 						<button type="button" class="btn btn-primary" onclick="leaveGroup()">
 							<p class="langtext" id="desc_button0"></p>
