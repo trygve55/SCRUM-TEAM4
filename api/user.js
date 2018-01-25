@@ -88,7 +88,7 @@ router.post('/checkPassword', function (req, res) {
        return res.status(400).send("No data");
    }
 
-   pool.query('', [req.session.person_id], function (err, result) {
+   pool.query('SELECT facebook_api_id FROM person WHERE person_id = ?', [req.session.person_id], function (err, result) {
         if(err) {
             return res.status(500).send("DB_ERROR");
         } else {
