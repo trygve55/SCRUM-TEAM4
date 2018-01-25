@@ -380,7 +380,7 @@ router.get('/statistic/:entry_type_name', function(req, res) {
 router.post('/entry', function(req, res) {
     var data = req.body, p_id = req.session.person_id;
 
-    if (!req.body.text_note || req.body.text_note.length === 0)
+    if (!req.body.entry_text || req.body.entry_text.length === 0)
         return res.status(400).json({"error": "no text note"});
 
     /*connection.query(

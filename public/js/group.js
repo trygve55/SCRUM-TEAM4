@@ -160,13 +160,13 @@ function changeTab(name) {
         getPost();
     else if(activeTab=='tasks')
         getTasks();
-    else if (activeTab == 'statistics')
+    else if (activeTab == 'statistics') {
         drawChart();
+        drawLabelChart(new Date("1999-10-10"), new Date(), "Food and similar", 2);
+    }
+
     else if(activeTab == 'food')
         getCalendar();
-
-
-    drawLabelChart(new Date("1999-10-10"), new Date(), "Food and similar", 2);
 }
 
 /**
