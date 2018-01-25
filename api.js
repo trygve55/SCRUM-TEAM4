@@ -12,11 +12,8 @@ router.use('*', function(req, res, next){
         'mail',
         'user'
     ];
-    if(!req.session.person_id && excludes.indexOf(req.url) > -1 && req.originalUrl.indexOf('/api/user') > -1){
-        req.session.person_id = 105;
-        req.session.save();
-    }
-        //return res.status(403).send();
+    if(!req.session.person_id && excludes.indexOf(req.url) > -1 && req.originalUrl.indexOf('/api/user') > -1)
+        return res.status(403).send();
     next();
 });
 
