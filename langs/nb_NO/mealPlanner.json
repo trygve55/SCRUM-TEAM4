@@ -7,5 +7,16 @@
   "meal-logout":"Logg ut",
   "meal-header":"Oppskrifter",
   "meal-addRecipe":"Legg til oppskrift",
-  "meal-filter":"Hva ser du etter?"
+  "meal-filter":"Hva ser du etter?",
+  "add-recipe": "Legg til oppskrift",
+  "recipe-title":"Oppskrifts navn",
+  "recipe-ingredient": "Ingrediens",
+  "recipe-quantity": "Mengde",
+  "recipe-unit": "Målenhet",
+  "recipe-name":"Ingrediens",
+  "recipe-ingredientButton":"Legg til ingrediens",
+  "recipe-description": "Beskrivelse...",
+  "recipe-servings": "Serveringer (Valgfri)",
+  "recipe-cancel": "Avbryt",
+  "recipe-complete": "Fullfør"
 }

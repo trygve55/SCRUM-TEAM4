@@ -32,3 +32,41 @@ body{
     border-radius: 5px;
     padding:2%;
 }
+
+.messagepop {
+    display:none;
+    width:60vh;
+    z-index:50;
+    padding: 25px 25px 20px;
+    border-radius: 25px;
+    box-shadow: 5px 5px grey;
+}
+.pop {
+    text-align:left;
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.2);
+}
+
+.pop-content {
+    background-color: #FFFFFF;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+    border-radius: 25px;
+    box-shadow: 5px 5px grey;
+}
+
+.messagepop p, .messagepop.div {
+    border-bottom: 1px solid #EFEFEF;
+    margin: 8px 0;
+    padding-bottom: 8px;
+}
