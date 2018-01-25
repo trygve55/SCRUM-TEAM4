@@ -347,14 +347,14 @@ router.get('/statistic/:entry_type_name', function(req, res) {
 	// Is the person who sent the query in the group?
 	pool.query("SELECT person_id FROM group_person WHERE group_id = ? AND person_id = ?;", [group, person], function(err, result) {
 		if (err) {return res.status(500).send("Database error:" + err);}
-		if (result.length < 1) {return res.status(403).send("Invalid request: User not in group");}
+		if (result.length < 1) {return res.status(403).send("Invalid request: User not in group.");}
 		
 		pool.query(
 			'SELECT entry_type_color AS colour, amount, entry_datetime AS t FROM ' +
 			'budget_entry LEFT JOIN budget_entry_type USING(budget_entry_type_id) WHERE ' +
 			'entry_type_name = ? AND (entry_datetime BETWEEN ? AND ?) ' +
-			'AND budget_entry.shopping_list_id IN (SELECT shopping_list_id FROM home_group WHERE group_id = ?);',
-			[checkRange(req.params.entry_type_name, 1, null), start, end, group],
+			'AND budget_entry.shopping_list_id IN (SELECT shopping_list_id FROM home_group WHERE group_id = ?) ORDER BY t ASC;',
+			[decodeURIComponent(req.params.entry_type_name), start, end, group],
 			function(err, result) {
 				return (err) ? (res.status(500).json({error: err})) : ((result.length < 1) ? (res.status(400).send("No data found.")) : (res.status(200).json(result)));
 			}

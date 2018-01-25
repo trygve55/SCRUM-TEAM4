@@ -740,6 +740,7 @@ function drawChart() {
 		url:"/api/budget/" + currentGroup.shopping_list_id,
 		contentType:"application/json",
 		dataType:"json",
+		error: function(jqXHR, text, error) {return;},
 		success:function(result) {
 			if (result) {
 				var minLimit = new Date();
@@ -781,11 +782,17 @@ function drawLabelChart(start, end, typeName, intervalType) {
 	// AJAX get all the budget data for the chart.
 	$.ajax({
 		type: "GET",
-		url: "/api/shoppingList/statistic/"+ typeName +"?group_id="+ currentGroup.group_id +"&start="+ encodeURIComponent(min) +"&end="+ encodeURIComponent(max),
+		url: "/api/shoppingList/statistic/"+ encodeURIComponent(typeName) +"?group_id="+ currentGroup.group_id +"&start="+ encodeURIComponent(min) +"&end="+ encodeURIComponent(max),
 		contentType: "application/json",
 		dataType: "json",
+		error: function(jqXHR, text, error) {
+			if (error == "Bad Request" && jqXHR.responseText == "No data found.") {alert(jqXHR.responseText);}
+			return;
+		},
 		success: function(result) {
+			console.log(result);
 			if (!result) {return;}
+			if (!result.length) {return;}
 			
 			// Insert the values for every interval.
 			var dataPoints = [[], []];
@@ -798,19 +805,17 @@ function drawLabelChart(start, end, typeName, intervalType) {
 				if (time < min || time > max) {continue;}
 
 				var label = "" + time.getFullYear();
-				if (intervalType > 0) {label = (time.getMonth() + 1) + "/" + label;}
-				if (intervalType > 1) {label = time.getDay() + "/" + label;}
+				if (intervalType > 0) {label = ((time.getMonth() + 1) + "/") + label;}
+				if (intervalType > 1) {label = (time.getDate() + "/") + label;}
 
 				// Add to array if it doesn't already exist, otherwise addition.
-				var index = (element.amount > 0) ? 0 : 1;
-				if (function(label, labels) {
-					for (var i = 0; i < labels.length; i++) {if (labels[i] == label) {return true;}}
-					return false;
-				}) {
+				var index = (element.amount > 0) ? 0 : 1, j = checkIfExist(label, labels);
+				if (j == -1) {
 					labels.push(label);
 					dataPoints[index].push(element.amount);
+					dataPoints[(index == 0) ? 1 : 0].push(0);
 				}
-				else {dataPoints[index] += element.amount;}
+				else {dataPoints[index][j] += element.amount;}
 			}
 			var rgb = ((result[0].colour) ? addInvertedColour(result[0].colour) : statColours);
 
@@ -818,6 +823,14 @@ function drawLabelChart(start, end, typeName, intervalType) {
 		}
 	});
 }
+
+/**
+* Find if the the element is already added.
+*/
+function checkIfExist(l, ls) {
+	for (var i = 0; i < ls.length; i++) {if (ls[i] == l) {return i;}}
+	return -1;
+};
 
 /**
  * Draw a "bar" style chart with these labels and the specified data.
