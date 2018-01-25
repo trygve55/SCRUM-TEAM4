@@ -36,5 +36,11 @@
   "label4": "Repairs",
   "newlabel": "New label",
   "me": "Me",
-  "settle": "Settle"
+  "settle": "Settle",
+  "new-label-name": "New label",
+  "new-label-color": "Label color",
+  "byers-label": "Buyers",
+  "byers-all": "All",
+  "byers-select": "Select individuals"
+
 }
