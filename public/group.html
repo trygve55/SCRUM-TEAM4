@@ -222,14 +222,11 @@
 				</div>
 				<div id="statistics" class="grouptab text-center">
 					<hr width="90%">
-					<p id="stat_header">Last 12 months:</p>
 					<br>
-					<canvas id="stat0" class="chart"></canvas>
 					<div class='col-sm-3'>
 						<div class="form-group">
-							<select class="selectpicker" data-live-search="true">
-								<option>Something</option>
-								<option>Something Else</option>
+							<select id="entry_types" class="selectpicker" data-live-search="true">
+								
 							</select>
 							<div class='input-group date' id='date_start'>
 								<p class="form-control">Start date:</p>
@@ -241,8 +238,13 @@
 								<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
 								</span>
 							</div>
+							<button id="showStat" type="button" class="btn btn-primary" onclick="drawStats()">
+								<p class="langtext" id="desc_button1"></p>
+							</button>
 						</div>
 					</div>
+					<p id="stat_header"></p>
+					<canvas id="stat0" class="chart"></canvas>
 					<canvas id="stat1" class="chart"></canvas>
 				</div>
 				<div id="leave" class="grouptab text-center">
