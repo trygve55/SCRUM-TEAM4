@@ -1,0 +1,34 @@
+#meal-recipes{
+    background-color: white;
+    border-radius: 10px;
+    height: 670px;
+    margin-left: 40px;
+    margin-right: 20px;
+    margin-top: 20px;
+}
+#meal-calendar{
+    background-color: white;
+    border-radius: 10px;
+    height: 670px;
+    margin-left: 20px;
+    margin-top: 20px;
+    overflow-y: auto;
+}
+
+body{
+    overflow-x: hidden;
+    font-family: "Trebuchet MS";
+    font-style: inherit;
+}
+
+#meal-header{
+    font-size: x-large;
+}
+
+#meal-addRecipe{
+    -moz-box-shadow: 0 0 1px grey;
+    -webkit-box-shadow: 0 0 1px grey;
+    box-shadow:  0 0 1px grey;
+    border-radius: 5px;
+    padding:2%;
+}

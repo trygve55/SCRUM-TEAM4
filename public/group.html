@@ -9,6 +9,7 @@
         <link rel="manifest" href="img/favicons/manifest.json">
         <link rel="mask-icon" href="img/favicons/safari-pinned-tab.svg" color="#5bbad5">
         <meta name="theme-color" content="#ffffff">
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +19,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
 		<script src="https://use.fontawesome.com/dea62227f7.js"></script>
 		<script src="/js/handlebars.js"></script>
@@ -26,6 +28,12 @@
 		<script src="/js/notifications.js"></script>
 		<script src="js/redirect.js"></script>
 
+		<link rel="stylesheet"  href="/css/fullcalendar.min.css">
+
+		<script src='/js/lib/moment.min.js'></script>
+		<script src='/js/lib/jquery-ui.min.js'></script>
+		<script src='/js/lib/fullcalendar.min.js'></script>
+
 		<script src="/js/group.js"></script>
 		<link rel="stylesheet" href="css/common.css">
 		<link rel="stylesheet" type="text/css" href="/css/group.css">
@@ -33,7 +41,7 @@
 
 	<body>
 
-	<nav style="width: 100%" class="navbar navbar-expand-lg navbar-light bg-light">
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 		<a class="navbar-brand" href="index.html" style="color: dimgray">
 			<img src="img/logo.svg" width="30" height="30" alt="">
 			Household Manager
@@ -87,7 +95,7 @@
 
 			<br>
 
-			<div id="groupwindow" class="transparency col-sm-8">
+			<div id="groupwindow" class="transparency col-sm-8" style="height: 85vh">
 				<div id="grouptabs">
 					<div class="container">
 						<ul class="nav nav-tabs">
@@ -108,10 +116,14 @@
 								<li class="nav-item">
 									<a style="color: black" class="nav-link"  onclick="changeTab('leave')"  role="tab" data-toggle="tab" id="desc_title7"></a>
 								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link"  onclick="changeTab('food')"  role="tab" data-toggle="tab" id="desc_title8"></a>
+								</li>
 							</ul>
 
 							<div class="tab-content">
 								<div role="tabpanel" class="tab-pane fade"></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
 								<div role="tabpanel" class="tab-pane fade" ></div>
 								<div role="tabpanel" class="tab-pane fade" ></div>
 								<div role="tabpanel" class="tab-pane fade" ></div>
@@ -211,11 +223,12 @@
 				<div id="statistics" class="grouptab text-center">
 					<hr width="90%">
 					<p id="stat_header">Last 12 months:</p>
+					<br>
 					<canvas id="stat0" class="chart"></canvas>
 					<canvas id="stat1" class="chart"></canvas>
 				</div>
 				<div id="leave" class="grouptab text-center">
-					<hr width="90%">
+					<br>
 					<div>
 						<button type="button" class="btn btn-primary" onclick="leaveGroup()">
 							<p class="langtext" id="desc_button0"></p>
@@ -229,6 +242,15 @@
 						</form>
 					</div>
 				</div>
+
+
+				<div id="food" class="grouptab">
+					<br>
+						<div id='calendar'></div>
+					<br>
+						<button onclick="window.location='/mealPlanner.html'" id="food-button" style="-moz-box-shadow: 0 0 1px grey; -webkit-box-shadow: 0 0 1px grey; box-shadow:  0 0 1px grey; border-radius: 10px;"></button>
+				</div>
+
 			</div>
 		</div>
 	</body>

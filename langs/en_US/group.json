@@ -7,6 +7,7 @@
 	"desc_title5": "Your Tasks",
 	"desc_title6": "Group Tasks",
 	"desc_title7": "Administrate",
+	"desc_title8": "Food planer",
 	"group-homepageNavbar": "Home",
 	"group-groupsNavbar": "Groups",
 	"group-tasksNavbar": "Tasks",
@@ -29,5 +30,6 @@
 	"reg_cost": "Register Expense",
 	"desc_button0": "Administrate",
 	"list-name-task": "Tasks",
-	"add-task": "Add task"
+	"add-task": "Add task",
+	"food-button": "Edit meal planner"
 }

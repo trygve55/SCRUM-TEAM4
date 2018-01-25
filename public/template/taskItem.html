@@ -1,10 +1,12 @@
-<li class="list-group-item marked" data-id="{{done_item_id}}" style='padding: -2px; margin: -3px; font-size: 15px;'>
+<li class="list-group-item marked" data-id="{{todo_id}}">
     <div class='row'>
-        <div class="col-sm-5"><i class="fa fa-check-circle-o" aria-hidden="true" id='checked' style='font-size: 15px;'></i>
-            <i class="fa fa-circle-o" aria-hidden="true" id='unchecked' style='font-size: 15px;'></i>{{item_text}}
+        <div class="col-sm-5">
+            <i class="fa fa-check-circle-o" aria-hidden="true" id='checked' style='font-size: 15px;'></i>
+            <i class="fa fa-circle-o" aria-hidden="true" id='unchecked' style='font-size: 15px;'></i>
+            {{todo_text}}
         </div>
         <div class='col-sm-7' style='text-align: right'>
-            <label><input class='inputdate' type="text"></label>
+            <input class='datepicker' type="text">
             <i class="fa fa-calendar" aria-hidden="true" style='font-size: 20px;'></i>
             <i class="fa fa-times" aria-hidden="true" style='font-size: 20px;'></i>
         </div>

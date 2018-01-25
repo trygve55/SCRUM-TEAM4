@@ -54,7 +54,6 @@ router.post('/', function(req, res) {
  * }
  */
 router.post('/invite', function(req, res) {
-    console.log(req.body);
     if(!req.body.shopping_list_id || !req.body.person_id)
         return res.status(400).send();
     pool.query('INSERT INTO shopping_list_person(shopping_list_id, person_id) SELECT ?,? FROM shopping_list_person ' +
@@ -179,7 +178,6 @@ router.get('/', function(req, res) {
             } else if (!result.length) {
                 return res.status(403).json({error: "no access/does not exist", success: false});
             }
-            console.log(result);
             var shopping_lists = [];
             for (var i = 0; i < result.length;i++) {
                 var current_shopping_list_id = existsInArray(result[i].shopping_list_id, shopping_lists);
@@ -440,12 +438,12 @@ router.put('/:shopping_list_id', function(req, res) {
         [req.params.shopping_list_id], function(err, currency){
             pool.query(query[0], query[1], function(err, result) {
                 checkResult(err, result, res);
+                if (!req.body.currency_id) return;
                 pool.query('SELECT budget_entry_id, amount, currency_short FROM budget_entry LEFT JOIN shopping_list USING (shopping_list_id) LEFT JOIN currency USING (currency_id) WHERE shopping_list_id = ?',
                     [req.params.shopping_list_id], function(err, result){
                         if(err)
                             return res.status(500).send();
-                        changeAmounts(result, currency[0].currency_short, 0);
-                        res.status(200).send();
+                        if (result.length !== 0) changeAmounts(result, currency[0].currency_short, 0);
                     });
             });
         });
@@ -457,14 +455,9 @@ router.put('/:shopping_list_id', function(req, res) {
  * Make the neccesary setup for a put request.
  */
 function changeAmounts(result, currency, i){
-    console.log(result);
-    console.log(currency);
-    console.log(result.length);
     if(result.length && result.length <= i)
         return;
-    console.log(i);
     convert(result[i].amount, currency, result[i].currency_short, function(namt){
-        console.log(i);
         pool.query("UPDATE budget_entry SET amount = ? WHERE budget_entry_id = ?",
             [namt, result[i].budget_entry_id], function(err){
                 if(err)

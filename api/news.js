@@ -20,12 +20,15 @@ module.exports = router;
 */
 router.post('/', function(req, res) {
 
+	console.error("POST");
     var form = new formidable.IncomingForm();
     return form.parse(req, function(err, fields, files) {
     	if (err)
             return res.status(400).send(err);
 
         var data = fields;
+
+        data.post_text = req.sanitize(data.post_text);
 
         // Check if this request is ok.
         if(!data.group_id || !data.post_text)

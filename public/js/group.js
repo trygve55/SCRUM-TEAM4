@@ -1,12 +1,12 @@
 // ***** Temporary test variables - delete this section when no longer needed *****
 var person = "Person";
 
-
-var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore;
 var stTransparent = "0.5",
 	statColours = [["(0, 30, 170, " + stTransparent + ")", "(0, 0, 132, 1)"], ["(170, 30, 0, " + stTransparent + ")", "(132, 0, 0, 1)"]],
 	statLabels = ["Income", "Expenses"];
 const MILLIS_DAY = 86400000;
+var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem;
+var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
 
 socket.on('group post', function(data){
     console.log(data);
@@ -45,6 +45,7 @@ socket.on('group post', function(data){
     }
 });
 
+
 /**
  * When the page loads, the page must find the groups available to the user so they can be selected.
  */
@@ -59,7 +60,8 @@ $(function() {
                 'balance.html',
                 'balanceItem.html',
                 'popupTextfieldList.html',
-                'newsfeedPost.html'
+                'newsfeedPost.html',
+                'taskItem.html'
             ]
         },
         success: function (data){
@@ -69,6 +71,7 @@ $(function() {
             balanceItem = Handlebars.compile(data['balanceItem.html']);
             popupTextList = Handlebars.compile(data['popupTextfieldList.html']);
             feedPost = Handlebars.compile(data['newsfeedPost.html']);
+            taskItem = Handlebars.compile(data['taskItem.html']);
         }
     });
 
@@ -100,8 +103,6 @@ $(function() {
 
 				changeTab();
 			});
-            $('#groupwindow').show();
-			changeTab("tasks");
 		},
 		error: console.error()
 	});
@@ -159,10 +160,13 @@ function changeTab(name) {
         getPost();
     else if(activeTab=='tasks')
         getTasks();
-    else if (activeTab == 'statistics') {
+    else if (activeTab == 'statistics')
         drawChart();
-		drawLabelChart(new Date("1999-10-10"), new Date(), "Food and similar", 2);
-	}
+    else if(activeTab == 'food')
+        getCalendar();
+
+
+    drawLabelChart(new Date("1999-10-10"), new Date(), "Food and similar", 2);
 }
 
 /**
@@ -893,11 +897,12 @@ function getTasks() {
             for(var i = 0; i < dataTask.length; i++){
                 if(dataTask[i].datetime_done)
                     continue;
-                $('.itemlist-task').append(listItem({
-                    entry_id: dataTask[i].todo_id,
-                    entry_text: dataTask[i].todo_text
+                $('.itemlist-task').append(taskItem({
+                    todo_id: dataTask[i].todo_id,
+                    todo_text: dataTask[i].todo_text
                 }));
             }
+            $('.itemlist-task li .fa-check-circle-o').hide()
             setupClicksTask();
         }
     });
@@ -998,7 +1003,8 @@ function saveTaskToDB(id, item, ul, cb){
             todo_text: item
         },
         success: function(data){
-            $(ul).append(listItem({entry_text: item, entry_id: data.shopping_cart_entry_id}));
+            $(ul).append(taskItem({entry_text: item, entry_id: data.shopping_cart_entry_id}));
+            $('.itemlist-task li .fa-check-circle-o').hide()
             if(cb)
                 cb();
         }
@@ -1027,6 +1033,37 @@ function setupTaskClicks(){
             $(this).find("input[type=checkbox]").prop('checked', $(this).find("input:checked").length == 0);
         }
     });
+
+    $(".datepicker").unbind("focusout").focusout(function(){
+        if($(this).val() == "") {
+            console.log(this);
+            $(this).hide();
+        }
+    }).datepicker({
+        //dateFormat: 'DD, mm-y'
+        dateFormat: 'dd/mm/y',
+        onSelect: function() {
+
+        }
+    });
+    //Hides elements yet to be shown
+    $(".datepicker").hide();
+    $('.checked').hide();
+
+    $('.fa-calendar').unbind('click').click(function () {
+        var datepicker = $(this).parent().find(".datepicker");
+        $(datepicker).css('background-color: white');
+        if(datepicker.is(":visible")){
+            if($(datepicker).val() == "")
+                datepicker.hide();
+            else
+                datepicker.blur();
+        }
+        else{
+            datepicker.show();
+            datepicker.focus();
+        }
+    });
 }
 
 /**
@@ -1050,3 +1087,24 @@ $('#group-logoutNavbar').click(function () {
         }
     });
 });
+
+function getCalendar() {
+    $('#calendar').fullCalendar({
+        height: 510,
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay,listWeek'
+        },
+        defaultDate: '2017-12-12',
+        navLinks: true, // can click day/week names to navigate views
+        editable: true,
+        eventLimit: true, // allow "more" link when too many events
+        events: [
+            {
+                title: 'All Day Event',
+                start: '2017-12-01',
+            }
+        ]
+    });
+}
