@@ -591,7 +591,7 @@ function setupClicks(){
                                             if(personsT[r].person_id==me.person_id){
                                                 revAmount = personsT[r].amount_to_pay;
                                                 realAmount = revAmount - (revAmount*2);
-                                                oe += '<tr><td>' + name +'</td><td> - '+ realAmount+' '+sign+'</td></tr>';
+                                                oe += '<tr><td>' + name +'</td><td> - '+ realAmount/100+' '+sign+'</td></tr>';
                                                 break;
                                             }
                                         }
@@ -599,7 +599,7 @@ function setupClicks(){
                                     }
                                 }
                             }else{
-                                oe += '<tr><td>' + name +'</td><td> + '+ realAmount+' '+sign+'</td></tr>';
+                                oe += '<tr><td>' + name +'</td><td> + '+ realAmount/100+' '+sign+'</td></tr>';
                             }
                         }
                     }
@@ -681,9 +681,13 @@ function setupClicks(){
                         $(".pop").show();
                     });
                 });
+                
+                $(mbutton).closest("div[data-id]").find('.bal-settle').click(function () {
+                    console.log("settleall");
 
+                });
 
-                $('#popup-complete').click(function(){
+                $(this).find('.bal-complete').unbind("click").click(function(){
                     var entries = "";
                     for(var j = 0; j < lists.length; j++) {
                         if(lists[j].shopping_list_id != id)
