@@ -203,22 +203,27 @@ function answerPost(req, res, connection, result) {
 
 function addPersonBudgetEntry(req, res, connection, result) {
 
-    var person_ids = req.body.person_ids;
+    var person_ids = req.body.person_ids.split(",");
 
-    var queryValues = [], query = "", adderIncluded = false;
+    var queryValues = [], query = "", adderIncluded = false, first = true;
 
     for (var i = 0; i < person_ids.length;i++) {
-        if (req.session.person_id !== person_ids[i]) {
-            if (i != 0) query += ",";
+        if (req.session.person_id != person_ids[i]) {
+            if (!first) {
+                query += ",";
+                first = false;
+            }
             queryValues.push(person_ids[i]);
             queryValues.push(result.insertId);
             query += "(?,?)";
         } else {
+            console.error("added");
             adderIncluded = true;
         }
     }
 
     console.error(person_ids);
+    console.error(adderIncluded);
 
     if (query.length > 0) connection.query(
         'INSERT INTO person_budget_entry (person_id, budget_entry_id) VALUES ' + query +';',
