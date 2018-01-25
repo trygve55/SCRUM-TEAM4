@@ -7,6 +7,8 @@ body{
 
 }
 
+
+
 .inpt{
     width: 10px;
 }
@@ -72,6 +74,12 @@ div.textarea{
     .colu2{
         min-width: 500px;
     }
+
+
+}
+
+.txt{
+    margin-left: 20px;
 }
 
 /*
@@ -143,14 +151,6 @@ div.textarea{
     padding-top: 6%;
 }
 
-div.debtborder{
-    padding: 2%;
-    margin-bottom: 5%;
-    margin-top: 8%;
-}
-
-
-
 .b{
     position: absolute;
     bottom: 0;
@@ -166,13 +166,17 @@ h6{
 }
 
 
-/* End carousel */
+div.debtborder{
+    padding: 2%;
+    margin-bottom: 5%;
+    margin-top: 2%;
+}
 
 div.shadow{
-    width: 90%;
+    width: 70%;
     min-width: 50%;
     height: 200px;
-   border-radius: 10px;
+    border-radius: 10px;
     /*
     -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.1) inset;
     -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.1) inset;
@@ -180,5 +184,40 @@ div.shadow{
     */
     margin-bottom: 1%;
     padding: 2%;
-    background-color: lightgrey;
+    background-color: paleturquoise;
 }
+
+
+/* Changes the color and size of carousel arrows */
+.fa-chevron-left, .fa-chevron-right{
+    font-size: 20px;
+    color: black;
+}
+
+.fa-chevron-left{
+    padding-left: 10px
+
+}
+
+.fa-chevron-right{
+    padding-right: 10px;
+}
+
+
+
+/* Changes the position of the indicators */
+.media-carousel .carousel-indicators
+{
+    top: auto;
+}
+
+/* Changes the color carousel indicators */
+.media-carousel .carousel-indicators li
+{
+    background: #828282;
+}
+.media-carousel .carousel-indicators .active
+{
+    background: black;
+}
+

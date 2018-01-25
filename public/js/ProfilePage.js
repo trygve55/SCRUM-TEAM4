@@ -9,6 +9,8 @@ var listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingL
 $(document).ready(function () {
 
     //$('#passwordarea').hide();
+    $('#save-success').hide();
+
 
     $('#profpic').attr("src","api/user/" + localStorage.person_id + "/picture");
 
@@ -231,7 +233,8 @@ $(document).ready(function () {
                     birth_date: null
                 },
                 success: function (data) {
-                    console.log(data)
+                    $('#save-success').show();
+                    console.log(data);
                 },
                 error: console.error
             });
@@ -250,6 +253,7 @@ $(document).ready(function () {
                     birth_date: $('#datepicker').val()
                 },
                 success: function (data) {
+                    $('#save-success').show();
                     console.log(data)
                 },
                 error: console.error
