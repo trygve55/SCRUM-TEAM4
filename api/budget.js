@@ -211,8 +211,7 @@ function addPersonBudgetEntry(req, res, connection, result) {
         if (req.session.person_id != person_ids[i]) {
             if (!first) {
                 query += ",";
-                first = false;
-            }
+            } else first = false;
             queryValues.push(person_ids[i]);
             queryValues.push(result.insertId);
             query += "(?,?)";

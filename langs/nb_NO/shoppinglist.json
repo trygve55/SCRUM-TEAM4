@@ -18,7 +18,7 @@
   "shop-list-name-input": "Ny liste",
   "shop-buy-title": "Registrer utgift",
   "shop-buy-text": "Pris",
-  "shop-ok": "Tilbake",
+  "shop-ok": "Kjøp!",
   "shop-trip": "Handletur",
   "shop-price": "Pris",
   "shop-input-members": "Skriv inn nytt medlem her",
@@ -47,5 +47,6 @@
   "lang-name": "Navn",
   "lang-owe": "Balanse",
   "memb_cancel": "Avbryt",
-  "memb_complete": "Ferdig!"
+  "memb_complete": "Ferdig!",
+  "bal-ok": "Tilbake"
 }

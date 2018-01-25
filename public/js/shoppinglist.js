@@ -579,7 +579,7 @@ function setupClicks(){
 
                 $(mbutton).closest("div[data-id]").html(balance({
                     title: lang["shop-balance"],
-                    bal_complete: lang["shop-ok"],
+                    bal_complete: lang["bal-ok"],
                     lang_trip: lang["shop-trip"],
                     lang_price: lang["shop-price"],
                     lang_name: lang["lang-name"],
@@ -792,7 +792,7 @@ function setupClicks(){
                     textfield_label: lang["shop-entry-label"],
                     currency: curr,
                     advanced: lang["advanced"],
-                    byers_label: lang["byers-label"],
+                    byers_label: lang["byers-select"],
                     byers: bye,
                     label: h,
                     cancel: lang["shop-cancel"],
@@ -906,20 +906,22 @@ function setupClicks(){
                 /**
                  * If cancel is pressed.
                  */
-                $("#popup-cancel").click(function () {
+                $("#t-popup-cancel").click(function () {
                     $(this).closest(".pop").remove();
                 });
 
                 /**
                  * If OK is pressed.
                  */
-                $("#popup-complete").click(function () {
+                $("#t-popup-complete").click(function () {
 
                     /**
                      * If no value is given to the cost input, it does nothing.
                      */
-                    if (isNaN(Number($(this).closest('.pop').find('input').val())))
+                    if (isNaN(Number($(this).closest('.pop').find('input').val()))){
+                        console.log("non");
                         return;
+                    }
 
                     var id = $(this).closest("div[data-id]").data("id"); //listid
                     var e = $(this).closest("div[data-entries]").data("entries"); //entries in numbervalue
@@ -979,7 +981,7 @@ function setupClicks(){
                             data: {
                                 shopping_list_id: id,
                                 shopping_list_entry_ids: e,
-                                amount: Number($(this).closest('.pop').find('input').val())*100,
+                                amount: Number($(theis).closest('.pop').find('input').val())*100,
                                 text_note: textnote,
                                 person_ids: therealbuyersids
                             },
@@ -1346,7 +1348,7 @@ function updateList2(){
         var persId = $(this).attr("id");
         for(var i = 0; i < buyers.length; i++){
             if(buyers[i].id == persId){
-                if(persId!==me.person_id) {
+                if(persId!=me.person_id) {
                     buyers.splice(i, 1);
                     $("#" + persId).remove();
                     break;
