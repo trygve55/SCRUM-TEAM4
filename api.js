@@ -28,13 +28,12 @@ router.use('*', function(req, res, next){
         'mail',
         'user'
     ];
-    if(!req.session.person_id && excludes.indexOf(req.url) > -1 && req.originalUrl.indexOf('/api/user') > -1){
-        req.session.person_id = 105;
-        req.session.save();
-    }
 
     if ((req.method === "POST" || req.method === "PUT"))
         for (var p in req.body) if (p !== "password")req.body[p] = req.sanitize(req.body[p]);
+
+    if(!req.session.person_id && excludes.indexOf(req.url) > -1 && req.originalUrl.indexOf('/api/user') > -1)
+        return res.status(403).send();
 
     next();
 });

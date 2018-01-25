@@ -186,8 +186,10 @@ $(function () {
             },
             success: function (data) {
                 console.log(data);
-                if(data.login)
+                if(data.login) {
+                    localStorage.person_id=data.person_id;
                     window.location = '/index.html';
+                }
             }
         });
     });
