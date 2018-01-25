@@ -256,7 +256,9 @@ $(document).ready(function () {
             });
         }
     });
-    
+
+
+
     /**
      * Method that first checks if the old password that the user has
      * written is correct, if so it changes password.
@@ -280,26 +282,14 @@ $(document).ready(function () {
                     },
                     success: function (data) {
                         console.log(data);
-                        $('#old-password-error').hide();
-
-                        $('#save-password-success').show();
-
+                        $('#myModal').hide();
                     },
-                    error: function () {
-                        console.error
-                        $('#old-password-error').hide();
-                        $('#change-password-error').show();
-                    }
+                    error: console.error
                 });
             },
-            error: function () {
-                console.error
-                $('#old-password-error').show();
-
-            }
+            error: console.error
         });
     });
-
 
 
 
@@ -312,7 +302,7 @@ $(document).ready(function () {
         },
 
     });
-     */
+    */
 
     /*
     $('#media').carousel({

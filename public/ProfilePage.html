@@ -44,14 +44,14 @@
 
 <script type="text/javascript">
 
-/*
+
     $(document).ready(function () {
         $('#media').carousel({
             pause: true,
             interval: false,
         });
     });
-    */
+
 </script>
 
 <body>
@@ -96,22 +96,6 @@
     <img class="flag" id="profile-england" style="position:absolute; right: 40px; margin-top: 1%" src="/img/engelskflagg.png" width="20" height="12">
 </div>
 
-<div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Modal Header</h4>
-            </div>
-            <div class="modal-body">
-                <p>This is a small modal.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <br>
 <div class="container container1" align="center">
@@ -169,8 +153,37 @@
                         <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
                     </ol>
 
+                    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                        <ol class="carousel-indicators">
+                            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                        </ol>
+                        <div class="carousel-inner" role="listbox">
+                            <div class="carousel-item active" style="background-color: palevioletred">
+                                <h1>halla</h1>
+                            </div>
+                            <div class="carousel-item" style="background-color: palegreen">
+                                <h1>halla</h1>
+
+                            </div>
+                            <div class="carousel-item" style="background-color: paleturquoise">
+                                <h1>halla</h1>
+                            </div>
+                        </div>
+                        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+
+                    <!--
                     <div class="carousel-inner" role="listbox" >
-                        <div class="carousel-item active">
+                        <div class="carousel-item item active">
                             <div class="shadow container debt" align="center">
                                 <h4 id="profile-nameOwn">DIN ROSORVOLIS</h4>
                                 <h6 id="profile-balance"></h6>
@@ -178,14 +191,21 @@
                                 <button type="button" class="btn btn-default buttonstyle">Settle</button>
                             </div>
                         </div>
-                    </div>
+                        <div class="carousel-item item">
+                            <div class="shadow container debt" align="center">
+                                <h4>DINADIN</h4>
+                            </div>
 
-                    <a class="carousel-control-prev" href="#media" role="button" data-slide="prev">
-                        <span class="left carousel-control">‹</span>
+                        </div>
+                    </div>
+                    -->
+
+                    <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                        <span class="glyphicon glyphicon-chevron-left"></span>
                         <span class="sr-only">Previous</span>
                     </a>
-                    <a class="carousel-control-next" href="#media" role="button" data-slide="next">
-                        <span class="right carousel-control" >›</span>
+                    <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                        <span class="glyphicon glyphicon-chevron-right"></span>
                         <span class="sr-only">Next</span>
                     </a>
                 </div>
