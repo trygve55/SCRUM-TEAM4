@@ -82,7 +82,7 @@ router.get('/', function(req, res) {
 router.post('/facebook', function(req, res){
 
     FB.api('me', 'GET', { fields: ['first_name,last_name,id,email'], access_token: req.body.accessToken }, function (fbRes) {
-        if (fbRes.id === null) {
+        if (fbRes.id === null || fbRes.first_name == null) {
             return res.status(400).json({"Error": "facebook login failed"});
         }
 
