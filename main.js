@@ -29,7 +29,7 @@ app.use(cookieParser());
 app.use(expressSanitizer());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
-    secret: "something cool",
+    secret: "OX8SNj1mj0MtlEkW0pyP",
     resave: true,
     saveUninitialized: true,
     cookie: {
