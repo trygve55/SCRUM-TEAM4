@@ -1,4 +1,6 @@
-var router = require('express').Router();
+var router = require('express').Router(),
+    formidable = require('formidable'),
+    Jimp = require("jimp");
 
 module.exports = router;
 
@@ -17,21 +19,76 @@ module.exports = router;
  * }
 */
 router.post('/', function(req, res) {
-	var data = req.body;
-	if(!data.group_id || !data.post_text)
-		return res.status(400).send();
-	var extraData = null;
-	if (data.attachment_data)
-		extraData = data.attachment_data;
-	if(!data.attachment_type)
-		data.attachment_type = 0;
+
+	console.error("POST");
+    var form = new formidable.IncomingForm();
+    return form.parse(req, function(err, fields, files) {
+    	if (err)
+            return res.status(400).send(err);
+
+        var data = fields;
+
+        data.post_text = req.sanitize(data.post_text);
+
+        // Check if this request is ok.
+        if(!data.group_id || !data.post_text)
+            return res.status(400).send();
+
+        if(!files.File) {
+            data.attachment_type = 0;
+            return savePostToDatabase(req, res, data);
+        }
+
+        var path = files.File.path,
+            file_size = files.File.size;
+
+        if (file_size > 4000000)
+            return res.status(400).json({'error': 'image file over 4MB'});
+
+        Jimp.read(path, function (err, img) {
+            if (err)
+                return res.status(500).json({'Error': err});
+
+            if (img.bitmap.height > 750 || img.bitmap.width > 750)
+            	img.scaleToFit(750, 750);
+
+        	img.quality(70).getBuffer(Jimp.MIME_JPEG, function (err, imgdata) {
+                savePostToDatabase(req, res, data, imgdata);
+            });
+    	});
+    });
+});
+
+function savePostToDatabase(req, res, data, imgdata) {
     pool.query(
         'INSERT INTO newsfeed_post (' +
         'group_id, posted_by_id, post_text, attachment_type, attachment_data' +
         ') VALUES (?,?,?,?,?);',
-        [data.group_id, req.session.person_id, data.post_text, data.attachment_type, extraData],	// data.posted_by_id to test this.
-        function(err, result) {checkResult(err, result, res);}
+        [data.group_id, req.session.person_id, data.post_text, data.attachment_type, imgdata],	// data.posted_by_id to test this.
+        function (err, result) {
+            if (err)
+                return res.status(500).send(err);
+            pool.query('SELECT ' +
+                'post_id, post_text, attachment_type, posted_datetime, person.forename, person.middlename, person.lastname, home_group.group_id, home_group.group_name, person.person_id ' +
+                'FROM newsfeed_post LEFT JOIN person ON (person.person_id = newsfeed_post.posted_by_id) LEFT JOIN home_group USING (group_id) WHERE post_id = ?;',
+                [result.insertId], function (err, result) {
+                    checkResult(err, {}, res);
+                    socket.group_data('group post', data.group_id, result);
+                });
+        }
     );
+}
+
+router.get('/data/:post_id', function(req, res){
+    pool.query("SELECT attachment_data FROM newsfeed_post WHERE post_id = ?;", [req.params.post_id], function (err, results, fields) {
+        if(err)
+            return res.status(500).json({'Error' :err });
+
+        if(!results[0].attachment_data)
+            return res.status(404).json({error: 'no group picture.'});
+
+        res.contentType('jpeg').status(200).end(results[0].attachment_data, 'binary');
+    });
 });
 
 /**
@@ -43,8 +100,7 @@ router.post('/', function(req, res) {
 router.get('/:group_id', function(req, res) {
     pool.query('SELECT ' +
 		'post_id, posted_by_id, post_text, attachment_type, posted_datetime, ' +
-		'forename, middlename, lastname ' +
-		'FROM newsfeed_post ' +
+		'forename, middlename, lastname FROM newsfeed_post ' +
 		'LEFT JOIN person ON person.person_id = newsfeed_post.posted_by_id ' +
 		'WHERE group_id = ? ORDER BY posted_datetime DESC',
 		[req.params.group_id], function(err, result) {
@@ -76,11 +132,10 @@ router.get('/:group_id', function(req, res) {
  * method: GET
 */
 router.get('/', function(req, res) {
-		pool.query('SELECT post_id, post_text, attachment_type, posted_datetime, person.forename, person.middlename, person.lastname, home_group.group_name, person.person_id FROM newsfeed_post LEFT JOIN person ON (person.person_id = newsfeed_post.posted_by_id) LEFT JOIN home_group USING (group_id) WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?) ORDER BY posted_datetime DESC;',
-			[req.session.person_id, req.session.person_id], function(err, result) {
-				if (err) {return res.status(500).send();}
-				res.status(200).json(result);
-		});
+	pool.query('SELECT post_id, post_text, attachment_type, posted_datetime, person.forename, person.middlename, person.lastname, home_group.group_name, person.person_id FROM newsfeed_post LEFT JOIN person ON (person.person_id = newsfeed_post.posted_by_id) LEFT JOIN home_group USING (group_id) WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?) ORDER BY posted_datetime DESC;',
+		[req.session.person_id, req.session.person_id], function(err, result) {
+			return (err) ? (res.status(500).send()) : (res.status(200).json(result));
+	});
 });
 
 /**

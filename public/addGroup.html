@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>HHM - Add new Group</title>
+    <title>HHM: Add new Group</title>
 
-<!-- favicon stuff -->
     <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png">
@@ -23,6 +22,9 @@
     <link rel="stylesheet" type="text/css" href="css/addgroupstyle.css">
     <script src="https://use.fontawesome.com/dea62227f7.js"></script>
     <script src="/js/handlebars.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src="/js/notifications.js"></script>
     <script src="/js/addgroup.js"></script>
     <script src="/js/redirect.js"></script>
 
@@ -30,7 +32,7 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#" style="color: dimgray">
+    <a class="navbar-brand" href="index.html" style="color: dimgray">
         <img src="img/logo.svg" width="30" height="30" alt="">
         Household Manager
     </a>
@@ -40,7 +42,7 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
             <a id="addgroup-homepage" class="nav-item nav-link" href="index.html"></a>
-            <a id="addgroup-groups" class="nav-item nav-link active" onclick="new function () {
+            <a id="addgroup-groups" class="nav-item nav-link active" href="#" onclick="new function () {
               $.ajax({
                 url: '/api/group/me',
                 method: 'GET',
@@ -65,9 +67,11 @@
     </div>
 </nav>
 <br>
+
+
 <div class="flag" style="background-color: white">
-    <img id="login-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
-    <img id="login-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+    <img class="flag" id="addgroup-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+    <img class="flag" id="addgroup-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
 </div>
 
 <br>
@@ -87,13 +91,6 @@
                 <label class="col-sm-4 col-form-label" id="addgroup-currency" ></label>
                 <div class="col-sm-4">
                     <select class="form-control" id="currency-input"></select>
-                </div>
-            </div>
-            <br>
-            <div class="form-group row">
-                <label class="col-sm-4 col-form-label" id="addgroup-picture" ></label>
-                <div class="col-sm-7">
-                    <input type="file" class="form-control-file" id="picture-input">
                 </div>
             </div>
             <div class="form-group row">

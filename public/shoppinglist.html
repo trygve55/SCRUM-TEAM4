@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>HHM: Shoppinglist</title>
 
-    <!-- favicon stuff -->
     <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png">
@@ -13,6 +12,7 @@
     <meta name="theme-color" content="#ffffff">
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -23,13 +23,17 @@
     <script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" type="text/css" href="/css/shoppinglist.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     <script src="/js/handlebars.js"></script>
+    <script src="/js/notifications.js"></script>
     <script src="/js/shoppinglist.js"></script>
+    <script src="js/redirect.js"></script>
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#" style="color: dimgray">
+    <a class="navbar-brand" href="index.html" style="color: dimgray">
         <img src="img/logo.svg" width="30" height="30" alt="">
         Household Manager
     </a>
@@ -39,7 +43,7 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
             <a id="shop-homepage" class="nav-item nav-link" href="/index.html"></a>
-            <a id="shop-groups" class="nav-item nav-link" onclick="new function () {
+            <a id="shop-groups" class="nav-item nav-link" href="#" onclick="new function () {
               $.ajax({
                 url: '/api/group/me',
                 method: 'GET',
@@ -61,9 +65,10 @@
     </div>
 </nav>
 <br>
+
 <div class="flag" style="background-color: white">
-    <img id="login-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
-    <img id="login-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+    <img id="shop-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+    <img id="shop-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
 </div>
 <div  align="center" style="margin-right: 5%; margin-left: 5%;">
     <div class="row" id="listegruppe">

@@ -2,9 +2,8 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Homepage</title>
+        <title>HHM: Homepage</title>
 
-        <!-- favicon stuff -->
         <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png">
@@ -23,9 +22,10 @@
         <link rel="stylesheet" href="css/common.css">
         <link rel="stylesheet" href="css/index.css">
         <script src="/js/handlebars.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+        <script src="/js/notifications.js"></script>
         <script src="js/index.js"></script>
         <script src="js/redirect.js"></script>
-        <script src="/js/notifications.js"></script>
     </head>
 
     <body>
@@ -40,7 +40,7 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
                     <a id="index-homepageNavbar" class="nav-item nav-link" href="index.html"></a>
-                    <a id="index-groupsNavbar" class="nav-item nav-link" onclick="new function () {
+                    <a id="index-groupsNavbar" class="nav-item nav-link" href="#" onclick="new function () {
               $.ajax({
                 url: '/api/group/me',
                 method: 'GET',
@@ -66,8 +66,8 @@
         <br>
 
         <div class="flag" style="background-color: white">
-            <img id="index-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
-            <img id="index-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+            <img class="flag" id="index-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+            <img class="flag" id="index-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
         </div>
 
         <div class="row" align="center">
@@ -76,7 +76,7 @@
             <div class="profil col-sm-3">
                 <br>
 
-                <img src="/img/profilpic.svg" style="height: 200px; width: 200px">
+                <img id="profpic" src="/img/profilpic.svg" style="height: 200px; width: 200px">
                 <div id="index-username" style="font-size: large" ></div>
                 <div id="index-status" style="color: green; font-style: oblique ">online</div>
 
@@ -89,10 +89,7 @@
 
             <div style="width: 40px"></div>
 
-            <br>
-
-            <div id="newsfeedPost" class = "newsfeed col-sm-8">
-            </div>
+            <div id="newsfeedPost" class = "newsfeed col-sm-8"></div>
 
         </div>
 

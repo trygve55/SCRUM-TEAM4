@@ -11,3 +11,20 @@ body{
 i {
     cursor: pointer;
 }
+
+.flag {
+    cursor: pointer;
+}
+.list-group{
+    text-align: left;
+    margin-inside: 4%;
+    max-height: 60vh;
+    overflow-y: scroll;
+}
+.list-group-item{
+    padding: -6px;
+}
+
+#popup{
+    z-index: 100;
+}

@@ -1,7 +1,8 @@
-/**
- * Created by odasteinlandskaug on 10.01.2018.
- */
 $(function () {
+    /**
+     * This method calls the language api and sets the standard language as
+     * norwegian.
+     */
     $.ajax({
         url: '/api/language',
         method: 'GET',
@@ -25,6 +26,10 @@ $(function () {
         }
 
     });
+    /**
+     * This method calls the language api and sets the language to norwegian
+     * if the user clicks on the norwegian flag.
+     */
     $('#register-norway').click(function () {
         $.ajax({
             url: '/api/language',
@@ -61,6 +66,10 @@ $(function () {
         });
     });
 
+    /**
+     * This method calls the language api and sets the language to english
+     * if the user clicks on the british flag.
+     */
     $('#register-england').click(function () {
         $.ajax({
             url: '/api/language',
@@ -93,6 +102,10 @@ $(function () {
         });
     });
 
+    /**
+     * This method alerts a person that want to register if the password is invalid, happens if
+     * password field is empty and if this value does not match the repeat password field.
+     */
     $("#register-password").focusout(function (){
         if($(this).val() === "") {
             $("#register-password-error").hide();
@@ -129,6 +142,10 @@ $(function () {
         }
     });
 
+    /**
+     * This method alerts a person that wants to register if the repeat password is invalied, happens
+     * if the repeat password field is empty and/or does not match the password field.
+     */
     $("#register-repeatpassword").focusout(function (){
         if($(this).val() === "") {
             $("#register-password-error").hide();
@@ -165,6 +182,11 @@ $(function () {
         }
     });
 
+    /**
+     * This function gets the username and posts it to the database, or alerts a user that tries to
+     * register if the username is invalid, happens if the username is already in use or if the field
+     * is empty.
+     */
     $("#register-username").focusout(function(){
         if($(this).val() === "") {
             $("#register-username-error").hide();
@@ -198,6 +220,11 @@ $(function () {
         });
     });
 
+
+    /**
+     * This function gets the users email, written in the input field, and posts it to the database,
+     * or alerts a user that tries to register if this field is empty.
+     */
     $("#register-email").focusout(function(){
         if($(this).val() == "") {
             $("#register-email-error").hide();
@@ -230,6 +257,11 @@ $(function () {
         });
     });
 
+    /**
+     * This method registers the users information into the database, as long as all the fields
+     * are field and there is no invalid information in any of the fields. Else it alerts the
+     * user that one or more fields are invalid/empty.
+     */
     $('#register-done').click(function (e) {
         e.preventDefault();
         var isValid = true;
@@ -290,10 +322,15 @@ $(function () {
                     phone: $('#register-phone').val()
                 },
                 success: function (data) {
-                    console.log(data)
                     window.location='/index.html';
                 },
-                error: console.error
+                error: function(err){
+                    console.error(err);
+                    $('#register-email').css({
+                        "border": "1px solid red",
+                        "background": "#FFCECE"
+                    });
+                }
             })
         }
     });

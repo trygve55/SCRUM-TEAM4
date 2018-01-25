@@ -1,14 +1,55 @@
 // ***** Temporary test variables - delete this section when no longer needed *****
 var person = "Person";
 
-
-var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore;
+var stTransparent = "0.5",
+	statColours = [["(0, 30, 170, " + stTransparent + ")", "(0, 0, 132, 1)"], ["(170, 30, 0, " + stTransparent + ")", "(132, 0, 0, 1)"]],
+	statLabels = ["Income", "Expenses"];
+const MILLIS_DAY = 86400000;
+var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem;
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
+
+socket.on('group post', function(data){
+    console.log(data);
+    for(var i = 0; i < data.length; i++) {
+        if(data[i].group_id != currentGroup.group_id)
+            continue;
+        var length = 50;
+        var text = data[i].post_text.split(" ");
+        var short = "";
+        var rest = "";
+        for(var j = 0; j < length && j < text.length; j++){
+            short += text[j] + " ";
+        }
+        for(var k = j; k < text.length; k++){
+            rest += text[k] + " ";
+        }
+        $("#posts").prepend(feedPost({
+            name: data[i].forename + (data[i].middlename ? ' ' + data[i].middlename : '') + ' ' + data[i].lastname,
+            payload: ((data[i].attachment_type === 1) ? '/api/news/data/' + data[i].post_id : ''),
+            text: short,
+            rest_text: rest,
+            image_url: '/api/user/' + data[i].person_id + '/picture_tiny',
+            data: 'data-id="' + data[i].post_id + '"',
+            datetime: testy,
+            lang_read_more: "Read more..."
+        }));
+        if(k <= length)
+            $("#posts div[data-id=" + data[i].post_id + "] a").hide();
+        else {
+            $("#posts div[data-id=" + data[i].post_id + "] a").click(function(){
+
+                $(this).closest("div").find("span").show();
+                $(this).remove();
+            });
+        }
+    }
+});
+
 
 /**
  * When the page loads, the page must find the groups available to the user so they can be selected.
  */
-$(document).ready(function() {
+$(function() {
     $.ajax({
         url: '/template',
         method: 'GET',
@@ -19,7 +60,8 @@ $(document).ready(function() {
                 'balance.html',
                 'balanceItem.html',
                 'popupTextfieldList.html',
-                'newsfeedPost.html'
+                'newsfeedPost.html',
+                'taskItem.html'
             ]
         },
         success: function (data){
@@ -29,15 +71,21 @@ $(document).ready(function() {
             balanceItem = Handlebars.compile(data['balanceItem.html']);
             popupTextList = Handlebars.compile(data['popupTextfieldList.html']);
             feedPost = Handlebars.compile(data['newsfeedPost.html']);
+            taskItem = Handlebars.compile(data['taskItem.html']);
         }
     });
 
-	$.ajax({
+    /**
+     *  Retrieves the group information for groups the current user inhabit. Group information
+     *  changes based on which group the user clicks on.
+     */
+    $.ajax({
 		url:'/api/group/me',
 		method:'GET',
 		success: function (data) {
 			var grouplist = data;
 			console.log(data);
+
 			currentGroup = data[0];
 			for(var i = 0; i < data.length; i++){
 				addGroupToList(data[i]);
@@ -45,35 +93,26 @@ $(document).ready(function() {
 			$(".group").click(function(){
 				$('#groupwindow').show();
 				currentGroup = $(this).data("group-id");
-				console.log(currentGroup);
+
 				for(var i = 0; i < grouplist.length; i++) {
 					if (currentGroup == grouplist[i].group_id){
 						currentGroup = grouplist[i];
 						break;
 					}
 				}
-				console.log(activeTab);
+
 				changeTab();
 			});
 		},
 		error: console.error()
 	});
 
+    $("#group-picturePost").click(function () {
+        console.log("test0");
+        $("#file-attachment").trigger("click");
+    });
+
 	loadLanguageText();
-	
-	//var groups = $("div.tablink");
-	//if (groups.length > 0) {changeGroup($(groups[0]).html());}
-	
-	// TEST
-	//addGroupToList("Group E");
-	//addGroupToList("Group 1");
-	//attachTasks(testtasks.tasks);
-	
-	// Add some updating system here.
-	
-	//window.setInterval(getGroups, 5000);	// Every 5 seconds the groups will be loaded.
-
-
 });
 
 /**
@@ -94,31 +133,11 @@ function loadLanguageText() {
     });
 }
 
+/**
+ * This method clears the feed post inputfield when user press the post-button
+ */
 function ClearFields() {
     document.getElementById("group-newsfeedPost").value = "";
-}
-
-/**
- * Get all the groups this user can access.
- * This is a separate function so it can be run when the number of groups change.
- */
-function getGroups() {
-    var response;
-    // AJAX GET all groups available to user.
-    //.get("URL", function(result){response = result});
-    /*$.ajax({
-        type:"GET",
-        url:"URL",
-        contentType:"application/json",
-        dataType:"json",
-        success:function(result) {response = result;}
-    });	// GET all group names for this user.
-    */
-    var names = response.groupnames;
-    for (var i = 0; i < names.length; i++) {
-        addGroupToList(names[i]);
-    }
-    removeDeletedGroups(names);
 }
 
 /**
@@ -139,42 +158,15 @@ function changeTab(name) {
         getShoppinglist();
     else if(activeTab=='feed')
         getPost();
-    //else if(activeTab=='tasks')
-       // getTasks();
-    else if (activeTab == 'statistics')
+    else if(activeTab=='tasks')
+        getTasks();
+    else if (activeTab == 'statistics') {
         drawChart();
-}
-
-/**
- * When the user clicks on a group, load it and show the content.
- */
-function changeGroup(name) {
-    if (currentGroup != name) {
-        $("title").html(name);
-        currentGroup = name;
-        loadGroup(name);
+        drawLabelChart(new Date("1999-10-10"), new Date(), "Food and similar", 2);
     }
-}
 
-/**
- * After a group is clicked, it will be loaded. Only one is loaded at a time so that
- * it can appear faster.
- */
-function loadGroup(name) {
-    // LOAD GROUP INFO AJAX
-
-    var response;
-    /*$.ajax({
-        type:"GET",
-        url:"",
-        contentType:"application/json",
-        dataType:"json",
-        success:function(result) {response = result;}
-    });	// GET all data for this group.
-    */
-    // PUT ALL THE DATA ON THE PAGE
-    //attachTasks(result.youtasks);
-
+    else if(activeTab == 'food')
+        getCalendar();
 }
 
 /**
@@ -200,44 +192,19 @@ function removeDeletedGroups(validNames) {
     });
 }
 
-/*
-function registerGroupForSystem() {} // AJAX Post the new group.
-function postNewTask() {} // AJAX Post the new task.
-function postNewPost() {} // AJAX Post the new post.
-function addNewLsit() {} // AJAX Post the new shopping list.
-function loadStatistics() {} // AJAX Get the group statistics.
-*/
+/**
+ * This method redirect the user to the add group page when the addGroup button is clicked.
+ */
+function addGroup(){
+    window.location = 'addGroup.html'
+}
+
 
 /**
- * This adds the HTML elements for the task.
+ * This method retrieves the shoppinglists from the database and puts the entires, if there
+ * are any, into the shoppinglist.
+ *
  */
-function attachTasks(tasks) {
-    for (var i = 0; i < tasks.length; i++) {
-        var task = tasks[i];
-        if (!task.completed) {
-            if (person = task.person) {
-                $("#yourtasks").append(
-                    '<div class="chbox"><input type="checkbox" value=""><p>' + task.name + '</p></div>'
-                );
-            }
-            $("#grouptasks").append(
-                '<div class="task"><input type="checkbox" value=""><p>' + task.name + ' - ' + task.person + ' - ' + task.time + '</p></div>'
-            ); // The format here is just temporary. Change if something better gets decided.
-        }
-    }
-}
-
-//function countNewPosts() {} // From last login date, display a number of new posts
-//function countNewTasks() {} // From last login date, display a number of new tasks
-
-
-function addGroup(){
-    $('#addGroup-button').click(
-        window.location = 'addGroup.html'
-    )
-}
-
-
 function getShoppinglist() {
     $.ajax({
         url: "/api/shoppingList/" + currentGroup.shopping_list_id,
@@ -258,29 +225,9 @@ function getShoppinglist() {
     });
 }
 
-function getTasksWindow() {
-    $.ajax({
-        url: '/api/tasks' + currentGroup.group_id,
-        method: 'GET',
-        success: function (dataTask) {
-            console.log(dataTask);
-            setupTasks();
-        }
-    })
-}
-
-function getTasks() {
-    $.ajax({
-        url: "/api/tasks/person/",
-        method: 'GET',
-        success: function (dataperson) {
-            console.log(dataperson);
-        }
-    })
-}
-
-
-
+/**
+ * This function
+ */
 function setupClicks(){
     $(".list-name").unbind("click").click(function(){
         var listId = $(this).closest("div[data-id]").data("id");
@@ -411,7 +358,7 @@ function setupClicks(){
             url: '/api/budget/' + id,
             method: 'GET',
             success: function(data){
-                console.log(data);
+
                 curBudget = data;
                 var entries = "";
                 for(var i = 0; i < data.budget_entries.length; i++){
@@ -526,6 +473,9 @@ function setupClicks(){
     setupItemClicks();
 }
 
+/**
+ * This function
+ */
 function setupItemClicks(){
     $(".fa-times").unbind("click").click(function(){
         var entry_id = $(this).closest("li[data-id]").data("id");
@@ -547,6 +497,10 @@ function setupItemClicks(){
     });
 }
 
+/**
+ * This function lets a user add new items to the shoppinglist.
+ * @param ul
+ */
 function addNewItem(ul){
     $(ul).append(newListItem());
 
@@ -579,6 +533,14 @@ function addNewItem(ul){
     }).focus();
 }
 
+
+/**
+ *This function saves the new items to the database.
+ * @param id
+ * @param item
+ * @param ul
+ * @param cb
+ */
 function saveItemToDB(id, item, ul, cb){
     $.ajax({
         url: '/api/shoppingList/entry',
@@ -595,26 +557,39 @@ function saveItemToDB(id, item, ul, cb){
     });
 }
 
-
 $(function () {
+    /**
+     * This method posts new posts from a user to a group. Then call
+     * the method getPost() to post the post to the page then ClearFields()
+     * to reset the inputfield.
+     */
     $('#group-postButton').click(function() {
-        console.log('hei');
+
+        console.log("test1");
+
+        var formData = new FormData();
+        formData.append('File', $("#file-attachment")[0].files[0]);
+        formData.append('post_text', $('#group-newsfeedPost').val());
+        formData.append('group_id', currentGroup.group_id);
+        formData.append('attachment_type', 1);
+
         $.ajax({
-            url: '/api/news',
-            method: 'POST',
-            data: {
-                post_text: $('#group-newsfeedPost').val(),
-                group_id: currentGroup.group_id
-            },
-            success: function (data123) {
-                console.log(data123);
-                getPost();
+            url : '/api/news',
+            type : 'POST',
+            data : formData,
+            processData: false,
+            contentType: false,
+            success : function(data) {
+                console.log(data);
                 ClearFields();
             }
-        })
-
+        });
     });
 
+    /**
+     * This method calls the language api and sets the standard language as
+     * norwegian.
+     */
 	$.ajax({
 		url: '/api/language',
 		method: 'GET',
@@ -633,6 +608,10 @@ $(function () {
         error: console.error
     });
 
+    /**
+     * This method calls the language api and sets the language to norwegian
+     * if the user clicks on the norwegian flag.
+     */
     $('#group-norway').click(function () {
         $.ajax({
             url: '/api/language',
@@ -661,6 +640,10 @@ $(function () {
         });
     });
 
+    /**
+     * This method calls the language api and sets the language to english
+     * if the user clicks on the british flag.
+     */
     $('#group-england').click(function () {
         $.ajax({
             url: '/api/language',
@@ -701,9 +684,10 @@ function getPost(){
         method: 'GET',
 
         success: function (dataFeed) {
+            console.log(dataFeed);
             $("#posts").html("");
             for(var i = 0; i < dataFeed.length; i++) {
-                console.log(dataFeed);
+
                 var length = 50;
                 var text = dataFeed[i].post_text.split(" ");
                 var short = "";
@@ -718,20 +702,20 @@ function getPost(){
                 testy = a.toDateString();
                 $("#posts").append(feedPost({
                     name: dataFeed[i].posted_by.forename + (dataFeed[i].posted_by.middlename ? ' ' + dataFeed[i].posted_by.middlename : '') + ' ' + dataFeed[i].posted_by.lastname,
-                    payload: '',
+                    payload: ((dataFeed[i].attachment_type === 1) ? '/api/news/data/' + dataFeed[i].post_id : ''),
                     text: short,
                     rest_text: rest,
-                    image_url: (dataFeed[i].attachment_type == 0 ? '/img/profilPicture.png' : ''),
+                    image_url: '/api/user/' + dataFeed[i].posted_by.person_id + '/picture_tiny',
                     data: 'data-id="' + dataFeed[i].post_id + '"',
                     datetime: testy,
                     lang_read_more: "Read more..."
                 }));
-                console.log(j);
+
                 if(k <= length)
                     $("#posts div[data-id=" + dataFeed[i].post_id + "] a").hide();
                 else {
                     $("#posts div[data-id=" + dataFeed[i].post_id + "] a").click(function(){
-                        console.log("HEI");
+
                         $(this).closest("div").find("span").show();
                         $(this).remove();
                     });
@@ -760,6 +744,7 @@ function drawChart() {
 		url:"/api/budget/" + currentGroup.shopping_list_id,
 		contentType:"application/json",
 		dataType:"json",
+		error: function(jqXHR, text, error) {return;},
 		success:function(result) {
 			if (result) {
 				var minLimit = new Date();
@@ -767,15 +752,16 @@ function drawChart() {
 				minLimit = minLimit.setFullYear(minLimit.getFullYear() - 1);
 				
 				// Insert the values for every month.
-				//var months = Array(2).fill().map(() => Array(12).fill(0));
+				var months = Array(2).fill().map(function(){
+				    return Array(12).fill(0);
+				});
 				for (var i = 0; i < result.budget_entries.length; i++) {
 					var element = result.budget_entries[i];
 					if (element.entry_datetime != null) {
 						var entryTime = new Date(element.entry_datetime);
 						var entryMonth = mod(entryTime.getMonth() - monthNow - 1, 12);	// Perferably test the mod more.
-						if (entryTime > minLimit) {
-							if (element.amount > 0) {months[0][entryMonth] += element.amount;}
-							else {months[1][entryMonth] += element.amount;}
+						if (entryTime > minLimit && element.amount != 0) {
+							months[(element.amount > 0) ? 0 : 1][entryMonth] += element.amount;
 						}
 					}
 				}
@@ -784,65 +770,191 @@ function drawChart() {
 				var labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], rotate = monthNow + 1;
 				while (rotate-- > 0) {labels.push(labels.shift());}
 				
-				drawBarChart(months, labels);
+				drawBarChart(months, labels, statLabels, statColours, "stat0");
 			}
 		}
 	});
 }
 
 /**
- * START GET TASKS FOR GROUP
+ * Statistics for the statistics tab. Can draw in years, months or days.
+ * IntervalTypes : 0 = years, 1 = months, 2 = days.
+ */
+function drawLabelChart(start, end, typeName, intervalType) {
+	var min = new Date(start), max = new Date(end);
+
+	// AJAX get all the budget data for the chart.
+	$.ajax({
+		type: "GET",
+		url: "/api/shoppingList/statistic/"+ encodeURIComponent(typeName) +"?group_id="+ currentGroup.group_id +"&start="+ encodeURIComponent(min) +"&end="+ encodeURIComponent(max),
+		contentType: "application/json",
+		dataType: "json",
+		error: function(jqXHR, text, error) {
+			if (error == "Bad Request" && jqXHR.responseText == "No data found.") {alert(jqXHR.responseText);}
+			return;
+		},
+		success: function(result) {
+			console.log(result);
+			if (!result) {return;}
+			if (!result.length) {return;}
+			
+			// Insert the values for every interval.
+			var dataPoints = [[], []];
+			var labels = [];
+			for (var i = 0; i < result.length; i++) {
+				var element = result[i], time = new Date(element.t);
+
+				// See if the time is acceptable.
+				if (!time || element.amount == 0) {continue;}
+				if (time < min || time > max) {continue;}
+
+				var label = "" + time.getFullYear();
+				if (intervalType > 0) {label = ((time.getMonth() + 1) + "/") + label;}
+				if (intervalType > 1) {label = (time.getDate() + "/") + label;}
+
+				// Add to array if it doesn't already exist, otherwise addition.
+				var index = (element.amount > 0) ? 0 : 1, j = checkIfExist(label, labels);
+				if (j == -1) {
+					labels.push(label);
+					dataPoints[index].push(element.amount);
+					dataPoints[(index == 0) ? 1 : 0].push(0);
+				}
+				else {dataPoints[index][j] += element.amount;}
+			}
+			var rgb = ((result[0].colour) ? addInvertedColour(result[0].colour) : statColours);
+
+			drawBarChart(dataPoints, labels, statLabels, ((rgb) ? rgb : statColours), "stat1");
+		}
+	});
+}
+
+/**
+* Find if the the element is already added.
+*/
+function checkIfExist(l, ls) {
+	for (var i = 0; i < ls.length; i++) {if (ls[i] == l) {return i;}}
+	return -1;
+};
+
+/**
+ * Draw a "bar" style chart with these labels and the specified data.
+ */
+function drawBarChart(data, labels, mainLabels, colours, element) {
+    // Build the datasets. The default colours are defined at the very top of this file.
+    var datasets = [];
+    for (var i = 0; i < data.length; i++) {
+        datasets.push({
+			"label": mainLabels[i],
+			"backgroundColor": 'rgba' + colours[i][0],
+			"borderColor": 'rgba' + colours[i][1],
+			"data":data[i]
+		});
+    }
+
+    // The Charts.js part.
+    var chart = new Chart(document.getElementById(element).getContext("2d"), {
+        type: 'bar',
+        data: {"labels":labels, "datasets":datasets},
+        options: {"barPercentage":0.95, scales: {xAxes: [{stacked: true}], yAxes: [{stacked: true}]}}
+    });
+}
+
+/**
+* Create an array with both the inverted and the original in a rgba(r, g, b, a) format.
+* This is for the graphs.
+*/
+function addInvertedColour(colour) {
+	var rgb = [];
+	if (colour) {
+		rgb = [["(", "("], ["(", "("]];
+		for (var i = 0; i < 6; i += 2) {
+			var colourPart = parseInt(colour.toString(16).slice(i, i + 2), 10);
+			var rColourPart = (255 - colourPart) + ", ";
+			rgb[0][0] += colourPart + ", ";
+			rgb[0][1] += colourPart + ", ";
+			rgb[1][0] += rColourPart;
+			rgb[1][1] += rColourPart;
+		}
+		rgb[0][0] += stTransparent + ")";
+		rgb[0][1] += "1.0)";
+		rgb[1][0] += stTransparent + ")";
+		rgb[1][1] += "1.0)";
+	}
+	return rgb;
+}
+
+/**
+ * Method to retrieve all tasks given for one group, given the group ID.
  **/
 
 function getTasks() {
     $.ajax({
-        url:'',
+        url:'/api/tasks/' + currentGroup.group_id,
         method:'GET',
         success: function (dataTask) {
+            console.log(dataTask);
             $('.itemlist-task').html("");
             for(var i = 0; i < dataTask.length; i++){
-                //Getting and setting the tasks
+                if(dataTask[i].datetime_done)
+                    continue;
+                $('.itemlist-task').append(taskItem({
+                    todo_id: dataTask[i].todo_id,
+                    todo_text: dataTask[i].todo_text
+                }));
             }
+            $('.itemlist-task li .fa-check-circle-o').hide()
             setupClicksTask();
         }
     });
 }
 
+/**
+ * This function
+ */
 function setupClicksTask(){
     $(".add-task").unbind("click").click(function(){
         $(this).closest("div").children(".itemlist-task").append(newListItem());
-
         $("#new-list-item").keypress(function(e){
-            if(e.keyCode != 13 && e.which != 13)
+            if(e.keyCode != 13 && e.which != 13) {
+                console.log("error");
                 return;
+            }
+            console.log(e);
             var ul = $(this).closest("ul");
             var text = $(this).val();
             if(text != "") {
+                console.log("full remove");
                 var t = this;
-                saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                saveTaskToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
                     $(t).closest("li").remove();
+                    console.log("full remove cb");
                     addNewTask(ul);
                     setupTaskClicks();
                 });
             }
             else {
-                setupItemClicks();
+                console.log("empty remove");
                 $(this).closest("li").remove();
+                setupTaskClicks();
             }
         }).focusout(function(){
             var ul = $(this).closest("ul");
             var text = $(this).val();
             if(text != "") {
-                saveItemToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
+                saveTaskToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
                     setupTaskClicks();
                 });
             }
             $(this).closest("li").remove();
         }).focus();
     });
-
+    setupTaskClicks();
 }
 
+/**
+ * This function adds a new task to the list when enter is pressed
+ * @param ul
+ */
 function addNewTask(ul){
     $(ul).append(newListItem());
 
@@ -875,27 +987,39 @@ function addNewTask(ul){
     }).focus();
 }
 
+/**
+ * This function saves the new tasks to the database.
+ * @param id
+ * @param item
+ * @param ul
+ * @param cb
+ */
 function saveTaskToDB(id, item, ul, cb){
     $.ajax({
         url: '/api/tasks/',
         method: 'POST',
         data: {
-
+            group_id: currentGroup.group_id,
+            todo_text: item
         },
         success: function(data){
-            $(ul).append(listItem({entry_text: item, entry_id: data.shopping_cart_entry_id}));
+            $(ul).append(taskItem({entry_text: item, entry_id: data.shopping_cart_entry_id}));
+            $('.itemlist-task li .fa-check-circle-o').hide()
             if(cb)
                 cb();
         }
     });
 }
 
+/**
+ * This function
+ */
 function setupTaskClicks(){
     $(".fa-times").unbind("click").click(function(){
         var entry_id = $(this).closest("li[data-id]").data("id");
         $.ajax({
-            url: '/api/shoppingList/entry/' + entry_id,
-            method: 'DELETE',
+            url: '/api/tasks/' + entry_id + '/done',
+            method: 'PUT',
             error: console.error
         });
         $(this).closest("li[data-id]").remove();
@@ -909,23 +1033,36 @@ function setupTaskClicks(){
             $(this).find("input[type=checkbox]").prop('checked', $(this).find("input:checked").length == 0);
         }
     });
-}
 
-/**
- * Draw a "bar" style chart with these labels and the specified data.
- */
-function drawBarChart(data, labels) {
-    // Build the datasets. The colours are defined at the very top of this file.
-    var datasets = [];
-    for (var i = 0; i < data.length; i++) {
-        datasets.push({"label": statLabels[i], "backgroundColor": 'rgba' + statColours[i][0], "borderColor": 'rgba' + statColours[i][1], "data":data[i]});
-    }
+    $(".datepicker").unbind("focusout").focusout(function(){
+        if($(this).val() == "") {
+            console.log(this);
+            $(this).hide();
+        }
+    }).datepicker({
+        //dateFormat: 'DD, mm-y'
+        dateFormat: 'dd/mm/y',
+        onSelect: function() {
 
-    // The Charts.js part.
-    var chart = new Chart(document.getElementById("stat0").getContext("2d"), {
-        type: 'bar',
-        data: {"labels":labels, "datasets":datasets},
-        options: {"barPercentage":0.95, scales: {xAxes: [{stacked: true}], yAxes: [{stacked: true}]}}
+        }
+    });
+    //Hides elements yet to be shown
+    $(".datepicker").hide();
+    $('.checked').hide();
+
+    $('.fa-calendar').unbind('click').click(function () {
+        var datepicker = $(this).parent().find(".datepicker");
+        $(datepicker).css('background-color: white');
+        if(datepicker.is(":visible")){
+            if($(datepicker).val() == "")
+                datepicker.hide();
+            else
+                datepicker.blur();
+        }
+        else{
+            datepicker.show();
+            datepicker.focus();
+        }
     });
 }
 
@@ -934,4 +1071,40 @@ function drawBarChart(data, labels) {
  */
 function mod(n, m) {
     return ((n % m) + m) % m;
-};
+}
+
+/**
+ * This function makes it possible for a user to logout when on the groups page.
+ */
+$('#group-logoutNavbar').click(function () {
+    $.ajax({
+        url: '/api/auth/logout',
+        method: 'POST',
+        success: function (data) {
+            if(!data.login){
+                window.top.location="http://localhost:8000/login.html";
+            }
+        }
+    });
+});
+
+function getCalendar() {
+    $('#calendar').fullCalendar({
+        height: 510,
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay,listWeek'
+        },
+        defaultDate: '2017-12-12',
+        navLinks: true, // can click day/week names to navigate views
+        editable: true,
+        eventLimit: true, // allow "more" link when too many events
+        events: [
+            {
+                title: 'All Day Event',
+                start: '2017-12-01',
+            }
+        ]
+    });
+}

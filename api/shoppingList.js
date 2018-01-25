@@ -1,5 +1,6 @@
 
 var router = require('express').Router();
+var fx = require('money');
 
 module.exports = router;
 /**
@@ -20,32 +21,20 @@ router.post('/', function(req, res) {
             return res.status(500).json({'Error' : 'connecting to database: ' } + err);
         var data = req.body;
         connection.beginTransaction(function (err) {
-            if(err)
-                return connection.rollback(function () {
-                    res.status(500).json({'Error' : err});
-                    connection.release();
-                });
+            if (!rollbackC(err, connection, res)) {return;}
+			
             connection.query('INSERT INTO shopping_list (shopping_list_name, currency_id) VALUES (?,?)',
                 [data.shopping_list_name, checkRange(data.currency_id, 1, null)], function(err, result) {
-                    if(err)
-                        return connection.rollback(function () {
-                            res.status(500).json({'Error' : err});
-                            connection.release();
-                        });
+                    if (!rollbackC(err, connection, res)) {return;}
+					
                     connection.query('INSERT INTO shopping_list_person(shopping_list_id, person_id, invite_accepted) VALUES (?,?,?);',
                         [result.insertId, req.session.person_id, true], function (err) {
-                            if (err)
-                                return connection.rollback(function () {
-                                    res.status(500).json({'Error': err});
-                                    connection.release();
-                                });
+                            if (!rollbackC(err, connection, res)) {return;}
+							
                             connection.commit(function (err) {
-                                if (err)
-                                    return connection.rollback(function () {
-                                        res.status(500).json({'Error': err});
-                                        connection.release();
-                                    });
-                                connection.release();
+                                if (!rollbackC(err, connection, res)) {return;}
+								
+                                //connection.release();
                                 res.status(200).json({success: "true", shopping_list_id: result.insertId});
                             });
                         });
@@ -65,7 +54,6 @@ router.post('/', function(req, res) {
  * }
  */
 router.post('/invite', function(req, res) {
-    console.log(req.body);
     if(!req.body.shopping_list_id || !req.body.person_id)
         return res.status(400).send();
     pool.query('INSERT INTO shopping_list_person(shopping_list_id, person_id) SELECT ?,? FROM shopping_list_person ' +
@@ -73,10 +61,9 @@ router.post('/invite', function(req, res) {
         [req.body.shopping_list_id, req.body.person_id, req.session.person_id, req.body.shopping_list_id], function(err, result) {
             if(err)
                 return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            else if (result.affectedRows != 1)
-                res.status(403).json({success: "false", error: "no access"});
-            else
-                res.status(200).json({success: "true"});
+            if (result.affectedRows != 1)
+                return res.status(403).json({success: "false", error: "no access"});
+            res.status(200).json({success: "true"});
         });
 });
 
@@ -137,7 +124,10 @@ router.put('/info/:shopping_list_id', function(req, res) {
         return res.status(400).json({error: "no shopping list id"});
 
     if (req.body.is_hidden === "true") req.body.is_hidden = true;
-    if (req.body.is_hidden === "false") req.body.is_hidden = true;
+    if (req.body.is_hidden === "false") req.body.is_hidden = false;
+
+    if (req.body.invite_accepted === "true") req.body.invite_accepted = true;
+    if (req.body.invite_accepted === "false") req.body.invite_accepted = false;
 
     var parameters = [], request = 'UPDATE shopping_list_person SET ', first = true;
     for (var k in req.body) {
@@ -188,16 +178,15 @@ router.get('/', function(req, res) {
             } else if (!result.length) {
                 return res.status(403).json({error: "no access/does not exist", success: false});
             }
-            console.log(result);
             var shopping_lists = [];
             for (var i = 0; i < result.length;i++) {
-                var current_shopping_list_id = shoppingListExistsInArray(result[i].shopping_list_id, shopping_lists);
+                var current_shopping_list_id = existsInArray(result[i].shopping_list_id, shopping_lists);
                 if (current_shopping_list_id == -1) {
                     shopping_lists.push({
                         "shopping_list_id":result[i].shopping_list_id,
                         "shopping_list_name":result[i].shopping_list_name,
                         "color_hex":result[i].color_hex,
-                        "is_hidden":result[i].is_hidden,
+                        "is_hidden": null,
                         "currency_id":result[i].currency_id,
                         "currency_short":result[i].currency_short,
                         "currency_long":result[i].currency_long,
@@ -221,6 +210,10 @@ router.get('/', function(req, res) {
                 });
 
                 if (result[i].person_id) {
+                    if (req.session.person_id === result[i].person_id) {
+                        shopping_lists[current_shopping_list_id].is_hidden =result[i].is_hidden;
+                    }
+
                     shopping_lists[current_shopping_list_id].persons.push({
                         "person_id": result[i].person_id,
                         "forename": result[i].forename,
@@ -230,12 +223,42 @@ router.get('/', function(req, res) {
                 }
             }
             for (i = 0; i < shopping_lists.length; i++) {
-                shopping_lists[i].shopping_list_entries = removeDuplicateUsingFilter(shopping_lists[i].shopping_list_entries);
-                shopping_lists[i].persons = removeDuplicateUsingFilter(shopping_lists[i].persons);
+                shopping_lists[i].shopping_list_entries = removeDuplicates(shopping_lists[i].shopping_list_entries);
+                shopping_lists[i].persons = removeDuplicates(shopping_lists[i].persons);
             }
             res.status(200).json(shopping_lists);
         }
     );
+});
+
+/**
+ * Get person-info
+ *
+ * URL: /api/user/all
+ * method: GET
+ *
+ */
+router.get('/:shopping_list_id/users', function(req, res){
+    if(!req.session.person_id)
+        return res.status(403).send();
+    pool.query("SELECT DISTINCT person_id, email, forename, middlename, lastname, username FROM person LEFT JOIN shopping_list_person USING (person_id) WHERE shopping_list_person.shopping_list_id = ?;",
+        [req.params.shopping_list_id], function(err, result){
+        if(err)
+            res.status(500).send(err.code);
+        else {
+            var r = [];
+            for(var i = 0; i < result.length; i++){
+                if(result[i].person_id == req.session.person_id)
+                    continue;
+                r.push({
+                    name: result[i].forename + " " + (result[i].middlename ? result[i].middlename + " " : "") + result[i].lastname,
+                    email: result[i].email,
+                    id: result[i].person_id
+                });
+            }
+            res.status(200).json(r);
+        }
+    });
 });
 
 /**
@@ -264,7 +287,8 @@ router.get('/:shopping_list_id', function(req, res) {
         function(err, result) {
             if (err) {
                 return res.status(500).json({error: err});
-            } else if (!result.length) {
+            }
+			if (!result.length) {
                 return res.status(403).json({error: "no access/does not exist", success: false});
             }
             var entries = [], persons = [];
@@ -297,11 +321,47 @@ router.get('/:shopping_list_id', function(req, res) {
                 "currency_sign":result[0].currency_sign,
                 "currency_major":result[0].currency_major,
                 "currency_long":result[0].currency_long,
-                "shopping_list_entries": removeDuplicateUsingFilter(entries),
-                "persons": removeDuplicateUsingFilter(persons)
+                "shopping_list_entries": removeDuplicates(entries),
+                "persons": removeDuplicates(persons)
             });
         }
     );
+});
+
+/**
+ * Get all entries with a label in a time interval for a group.
+ *
+ * URL: /api/shoppingList/statistic/{entry_type_name}
+ * method: GET
+ * data: group_id, start, end
+ * }
+ */
+router.get('/statistic/:entry_type_name', function(req, res) {
+	var data = req.query;
+	var group = data.group_id,
+		start = new Date(decodeURIComponent(data.start)),
+		end = new Date(decodeURIComponent(data.end)),
+		person = req.session.person_id;
+
+	// Is this request ok?
+	if (!start || !end || !group || !person) {return res.status(400).send("Input values invalid.");}
+
+	// Is the person who sent the query in the group?
+	pool.query("SELECT person_id FROM group_person WHERE group_id = ? AND person_id = ?;", [group, person], function(err, result) {
+		if (err) {return res.status(500).send("Database error:" + err);}
+		if (result.length < 1) {return res.status(403).send("Invalid request: User not in group.");}
+		
+		pool.query(
+			'SELECT entry_type_color AS colour, amount, entry_datetime AS t FROM ' +
+			'budget_entry LEFT JOIN budget_entry_type USING(budget_entry_type_id) WHERE ' +
+			'entry_type_name = ? AND (entry_datetime BETWEEN ? AND ?) ' +
+			'AND budget_entry.shopping_list_id IN (SELECT shopping_list_id FROM home_group WHERE group_id = ?) ORDER BY t ASC;',
+			[decodeURIComponent(req.params.entry_type_name), start, end, group],
+			function(err, result) {
+				return (err) ? (res.status(500).json({error: err})) : ((result.length < 1) ? (res.status(400).send("No data found.")) : (res.status(200).json(result)));
+			}
+		);
+	});
 });
 
 /**
@@ -319,6 +379,9 @@ router.get('/:shopping_list_id', function(req, res) {
  */
 router.post('/entry', function(req, res) {
     var data = req.body, p_id = req.session.person_id;
+
+    if (!req.body.entry_text || req.body.entry_text.length === 0)
+        return res.status(400).json({"error": "no text note"});
 
     /*connection.query(
         'INSERT INTO shopping_list_entry(  ' +
@@ -378,10 +441,19 @@ router.post('/entry', function(req, res) {
  */
 router.put('/:shopping_list_id', function(req, res) {
     var query = putRequestSetup(req.params.shopping_list_id , req, "shopping_list");
-    pool.query(query[0], query[1], function(err, result) {
-            checkResult(err, result, res);
-        }
-    );
+    pool.query('SELECT currency_short FROM shopping_list LEFT JOIN currency USING (currency_id) WHERE shopping_list_id = ?',
+        [req.params.shopping_list_id], function(err, currency){
+            pool.query(query[0], query[1], function(err, result) {
+                checkResult(err, result, res);
+                if (!req.body.currency_id) return;
+                pool.query('SELECT budget_entry_id, amount, currency_short FROM budget_entry LEFT JOIN shopping_list USING (shopping_list_id) LEFT JOIN currency USING (currency_id) WHERE shopping_list_id = ?',
+                    [req.params.shopping_list_id], function(err, result){
+                        if(err)
+                            return res.status(500).send();
+                        if (result.length !== 0) changeAmounts(result, currency[0].currency_short, 0);
+                    });
+            });
+        });
 });
 
 // Help methods:
@@ -389,6 +461,20 @@ router.put('/:shopping_list_id', function(req, res) {
 /**
  * Make the neccesary setup for a put request.
  */
+function changeAmounts(result, currency, i){
+    if(result.length && result.length <= i)
+        return;
+    convert(result[i].amount, currency, result[i].currency_short, function(namt){
+        pool.query("UPDATE budget_entry SET amount = ? WHERE budget_entry_id = ?",
+            [namt, result[i].budget_entry_id], function(err){
+                if(err)
+                    console.error(err);
+                i++;
+                changeAmounts(result, currency, i);
+            });
+    });
+}
+
 function putRequestSetup(id, req, tableName) {
     var parameters = [], request = 'UPDATE ' + tableName + ' SET ', first = true;
     for (var k in req.body) {
@@ -447,7 +533,11 @@ function checkRange(value, min, max) {
     return value;
 }
 
-function removeDuplicateUsingFilter(arr){
+
+/**
+* Make sure the array only contains unique elements.
+*/
+function removeDuplicates(arr) {
     var added_ids = [], unique_array = arr.filter(function(elem, index, self) {
         if (elem.person_id) {
             if (added_ids.indexOf(elem.person_id) == -1) {
@@ -467,12 +557,28 @@ function removeDuplicateUsingFilter(arr){
         }
         return index == self.indexOf(elem);
     });
-    return unique_array
+    return unique_array;
 }
 
-function shoppingListExistsInArray(shopping_list_id, array) {
-    for (var i = 0; i < array.length;i++) {
+/**
+* Find the index of this in this JSON array, if it exists. -1 otherwise.
+*/
+function existsInArray(shopping_list_id, array) {
+    for (var i = 0; i < array.length; i++) {
         if (array[i].shopping_list_id == shopping_list_id) return i;
     }
     return -1;
+}
+
+/**
+ * The code to be executed if something failed and the transaction should cancel.
+*/
+function rollbackC(err, connection, res) {
+	if (err)
+		connection.rollback(function () {
+			res.status(500).json({'Error': err});
+			connection.release();
+			return false;
+		});
+	return true;
 }
