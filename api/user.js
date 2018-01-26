@@ -59,7 +59,7 @@ router.get('/checkFacebook', function(req, res){
             return res.status(500).json({error: err});
         } else {
             if (result[0].facebook_api_id == null)
-                return res.status(400).json({facebook: false});
+                return res.status(200).json({facebook: false});
             else
                 return res.status(200).json({facebook: true});
         }
@@ -536,6 +536,7 @@ router.put('/', function(req, res) {
 
     pool.query(sqlQuery, values, function (err) {
             if (err) {
+                console.log(err);
                 return res.status(500).send("Internal database error(1)");
             }
             return res.status(200).send("Profile updated");
@@ -675,6 +676,7 @@ router.post('/verifyAccount', function(req, res) {
         }
         pool.query('SELECT verify_token FROM person WHERE person_id = ?', [payload.id], function(err, result) {
             if(err) {
+
                 return res.status(500).send("Internal database error (1)");
             }
             if(result.length < 1) {

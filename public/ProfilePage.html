@@ -44,14 +44,14 @@
 
 <script type="text/javascript">
 
-/*
-    $(document).ready(function () {
-        $('#media').carousel({
-            pause: true,
-            interval: false,
-        });
-    });
+    /*
+
+    $('.carousel').carousel({
+        interval: 2000
+    })
+
     */
+
 </script>
 
 <body>
@@ -96,6 +96,7 @@
     <img class="flag" id="profile-england" style="position:absolute; right: 40px; margin-top: 1%" src="/img/engelskflagg.png" width="20" height="12">
 </div>
 
+
 <br>
 <div class="container container1" align="center">
     <br>
@@ -104,8 +105,8 @@
 
             <div class="container personaliaborder">
                 <div>
-                <div class="row textarea">
-                    <div class="col-sm" style="margin-left: 5%">
+                <div class="row textarea" style="padding-left: 5px">
+                    <div class="col-lg-4 col-md-5 col-sm-5 pic" style="margin-left: 5%">
                         <div class="row picture">
                             <img  id="profpic" style="border:none" >
                         </div>
@@ -117,8 +118,8 @@
                         </div>
                     </div>
 
-                    <div class="col-sm" align="left">
-                        <div style="height:auto" id="profile-name" class="okoko"></div>
+                    <div  class="col-lg-6 col-md-7 col-sm-5 txt" align="left">
+                        <div style="height:auto; font-size: 150%" id="profile-name" class="okoko"></div>
                         <h4></h4>
                         <div style="height:auto" id="profile-email" class="okoko"></div>
                         <h4></h4>
@@ -145,36 +146,81 @@
             </div>
 
             <div class="container debtborder tester">
-                <div id="media" class="carousel slide media-carousel" data-ride="carousel">
+                <div id="carouselExampleIndicators" class="carousel slide media-carousel" data-ride="carousel">
                     <ol class="carousel-indicators">
                         <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
                         <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
                         <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
                     </ol>
-
-                    <div class="carousel-inner" role="listbox" >
-                        <div class="carousel-item active">
-                            <div class="shadow container debt" align="center">
-                                <h4 id="profile-nameOwn">DIN ROSORVOLIS</h4>
+                    <div class="carousel-inner" role="listbox">
+                        <div class="carousel-item active newcarouselbox">
+                            <div class="newcarouselboxinside">
+                                <br>
+                                <h4 id="profile-nameOwn">DINA R</h4>
                                 <h6 id="profile-balance"></h6>
-                                <h6 id="profile-moneyOwn">+50</h6>
-                                <button type="button" class="btn btn-default buttonstyle">Settle</button>
+                                <h6 id="profile-moneyOwn" style="color: red">50 kr</h6>
+                                <i class="fa fa-credit-card" aria-hidden="true"><text id="p-settle"> Settle</text></i>
                             </div>
                         </div>
-                    </div>
+                        <div class="carousel-item newcarouselbox">
+                            <div class="newcarouselboxinside">
+                                <br>
+                                <h4>DINA</h4>
+                                <h6>kk</h6>
+                                <h6 style="color: #3dc63f">50 kr</h6>
+                            </div>
 
-                    <a class="carousel-control-prev" href="#media" role="button" data-slide="prev">
-                        <span class="left carousel-control">‹</span>
+                        </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                        <span class="fa fa-chevron-left" aria-hidden="true"></span>
                         <span class="sr-only">Previous</span>
                     </a>
-                    <a class="carousel-control-next" href="#media" role="button" data-slide="next">
-                        <span class="right carousel-control" >›</span>
+                    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                        <span class="fa fa-chevron-right" aria-hidden="true"></span>
                         <span class="sr-only">Next</span>
                     </a>
                 </div>
+
+                <!--
+                <div id="media" class="carousel slide media-carousel" data-ride="carousel">
+                    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                        <ol class="carousel-indicators">
+                            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                        </ol>
+                        <div class="carousel-inner" role="listbox">
+                            <div class="carousel-item active shadow">
+                                <h4 id="profile-nameOwn">DIN ROSORVOLIS</h4>
+                                <h6 id="profile-balance"></h6>
+                                <h6 id="profile-moneyOwn">+50</h6>
+                                <button type="button" class="btn btn-default buttonstyle" style="background-color: white">Settle</button>
+                            </div>
+                            <div class="carousel-item shadow">
+                                <h1>halla</h1>
+
+                            </div>
+                            <div class="carousel-item shadow">
+                                <h1>halla</h1>
+                            </div>
+                        </div>
+
+                        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                            <span class="fa fa-chevron-left" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                            <span class="fa fa-chevron-right" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+
+                -->
             </div>
         </div>
-        <div class="col-sm-6 colu2" style="padding-right: 5%">
+        <div class="col-sm-6 colu2" style="padding-right: 4%">
 
             <h6 id="p-changeinfo"></h6>
 
@@ -184,7 +230,7 @@
                         <label for="p-usernam" id="p-username"></label>
                     </div>
                     <div class="col-8">
-                        <input type="text" class="form-control" id="p-usernam"  placeholder="">
+                        <input type="text" class="form-control inpt" id="p-usernam"  placeholder="" style="width: 100%">
                     </div>
                 </div>
                 <div class="row form-group">
@@ -192,7 +238,7 @@
                         <label for="p-forenam" id="p-forename"></label>
                     </div>
                     <div class="col-8">
-                        <input type="text" class="form-control" id="p-forenam"  placeholder="">
+                        <input type="text" class="form-control inpt" id="p-forenam"  placeholder="">
                     </div>
                 </div>
                 <div class="row form-group">
@@ -221,37 +267,36 @@
                 </div>
 
                 <div class="row form-group">
-                    <!--
+
                     <div class="col-4" align="left">
                         <label for="p-gen" id="p-gender"></label>
                     </div>
                     <div class="col-8">
-                        <select class="dropdown" id="p-gen" >
-                            <option id="p-other"></option>
-                            <option id="p-female"></option>
-                            <option id="p-male"></option>
-                            <option id="p-genderopt" selected></option>
+                        <select class="form-control" id="p-gen" style="width: 100%" >
+                            <option value="4" id="p-genderopt"></option>
+                            <option value="0" id="p-other"></option>
+                            <option value="1" id="p-female"></option>
+                            <option value="2" id="p-male"></option>
                         </select>
                     </div>
-
-                    -->
                 </div>
 
                 <div class="row form-group">
                     <div class="col-4" align="left">
-                        <label for="datepicker">Birthdate</label>
+                        <label id="p-birthdate" for="datepicker"></label>
                     </div>
                     <div class="col-8">
 
-                        <input type="text" id="datepicker">
+                        <input class="form-control" type="text" id="datepicker" style="width: 100%">
                     </div>
                 </div>
 
                 <div class="row form-group">
-                    <div class="col-4" align="left">
+                    <div class="col-7" align="left">
+                        <p id="save-success" style="color: #3dc63f; font-style: italic; margin: 0; display: none;"></p>
                     </div>
-                    <div class="col-8" align="right">
-                        <button type="button" id="but" class="btn btn-default buttonstyle">Save info</button>
+                    <div class="col-5" align="right">
+                        <button type="button" id="but" class="btn btn-default buttonstyle buttonn"></button>
                     </div>
                 </div>
 
@@ -260,30 +305,34 @@
             </form>
 
 
-            <form>
+            <form id="passwordarea">
             <div style="align: left; padding-top: 5%">
                 <h6 id="p-changepassword"></h6>
                 <div class="row form-group">
                     <div class="col-4" align="left">
-                        <label for="usr" id="p-oldpassword"></label>
+                        <label for="oldpwd" id="p-oldpassword"></label>
                     </div>
                     <div class="col-8">
-                        <input type="password" class="form-control" id="usr">
+                        <input type="password" class="form-control" id="oldpwd">
                     </div>
                 </div>
                 <div class="row form-group">
                     <div class="col-4" align="left">
-                        <label for="pwd" id="p-newpassword"></label>
+                        <label for="newpwd" id="p-newpassword"></label>
                     </div>
                     <div class="col-8">
-                        <input type="password" class="form-control" id="pwd">
+                        <input type="password" class="form-control" id="newpwd">
                     </div>
                 </div>
                 <div class="row form-group">
-                    <div class="col-4" align="left">
+                    <div class="col-7" align="left">
+                        <p id="old-password-error" style="color: red; font-style: italic; margin: 0; display: none;"></p>
+                        <p id="change-password-error" style="color: red; font-style: italic; margin: 0; display: none;"></p>
+                        <p id="save-password-success" style="color: #3dc63f; font-style: italic; margin: 0; display: none;"></p>
+
                     </div>
-                    <div class="col-8" align="right">
-                        <button id="but1" type="button" class="btn btn-default buttonstyle" style="align:right">Save password</button>
+                    <div class="col-5" align="right">
+                        <button id="pwbut" type="button" class="btn btn-default buttonstyle buttonn" style="align:right"></button>
                     </div>
                 </div>
             </div>
