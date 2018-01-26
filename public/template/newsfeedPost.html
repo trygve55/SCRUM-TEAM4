@@ -1,23 +1,23 @@
- <div style="width: 90%" class="post" {{{data}}}>
+ <div class="post" {{{data}}}>
     <div  class= "row">
         <div class ="col-xs-4">
             <h3></h3>
-            <img id="group-feedProfilPicture" src="{{image_url}}">
+            <img id="group-feedProfilPicture" style="border-radius: 50%" src="{{image_url}}">
             <h3></h3>
             <div align="center">
                 <div id="group-feedName">{{name}}</div>
             </div>
         </div>
         <br>
-        <div class="col-sm-9">
+        <div class="col-sm-10">
             <div align="right">
-                <div style="width: 90%" id="group-feedTime">{{datetime}}</div>
+                <div  id="group-feedTime">{{datetime}}</div>
             </div>
             <br>
-            <div  style="text-align: left; width: 90%" id="group-feedText">
+            <div  style="text-align: left;" id="group-feedText">
                 {{{text}}}
                 <a href="#" class="read-more">{{lang_read_more}}</a>
-                <span class="text-rest" style="display: none; width: 90%">{{{rest_text}}}</span>
+                <span class="text-rest" style="display: none;">{{{rest_text}}}</span>
             </div>
             <br>
             <img src="{{payload}}" style="width:80%; max-width: 80%; max-height: 100vh">

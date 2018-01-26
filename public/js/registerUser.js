@@ -1,4 +1,5 @@
 $(function () {
+
     /**
      * This method calls the language api and sets the standard language as
      * norwegian.
@@ -334,6 +335,8 @@ $(function () {
             })
         }
     });
+
+    $('[data-toggle="tooltip"]').tooltip();
 });
 
 

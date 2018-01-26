@@ -1274,11 +1274,11 @@ function getCalendar() {
                     center: 'title',
                     right: 'month,agendaWeek,agendaDay,listWeek'
                 },
+                eventColor: '#7ebccc',
                 defaultDate: '2018-01-01',
                 navLinks: true, // can click day/week names to navigate views
-                editable: true,
                 eventLimit: true, // allow "more" link when too many events
-                events: events,
+                events: events
             });
         },
         error: console.error()

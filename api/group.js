@@ -22,6 +22,22 @@ var router = require('express').Router(),
 module.exports = router;
 
 /**
+ * Get your privilege
+ *
+ * URL: /api/group/me/privileges
+ * method: GET
+ */
+router.get('/:group_id/me/privileges', function(req, res){
+    if(!req.session.person_id)
+        return res.status(500).send();
+    pool.query('SELECT role_id FROM group_person WHERE person_id = ? AND group_id = ?', [req.session.person_id, req.params.group_id], function(err, result){
+        if(err)
+            return res.status(500).send();
+        res.status(200).send(result[0].role_id == 2);
+    });
+});
+
+/**
  * Checks if the group name is already taken
  *
  * URL: /api/group/name

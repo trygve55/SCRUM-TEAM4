@@ -291,9 +291,7 @@ div.grouptablink.backvariant{
     margin-top: 20px;
     margin-bottom: 20px;
     min-height:175px;
-    max-width: 85%;
-	width: 85%;
-	max-width: 85%;
+
 	max-height: 85vh;
     -moz-box-shadow: 0 0 1px grey;
     -webkit-box-shadow: 0 0 1px grey;
