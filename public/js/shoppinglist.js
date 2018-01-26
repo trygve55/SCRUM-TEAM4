@@ -3,7 +3,7 @@ var users = [];
 var lists = [];
 var newmembers = [];
 var curBudget, currencies;
-var list, balance, listItem, newListItem, popupTextList, popupList, balanceItem, listReplace, popupMembers, newlabel, popupSettle;
+var list, balance, listItem, newListItem, popupTextList, popupList, balanceItem, listReplace, popupMembers, newlabel, popupSettle, popupLabel;
 var me;
 var generalLabels;
 var thenewlabel, byersSelect, byersAll;
@@ -91,6 +91,7 @@ $('document').ready(function () {
             $(".fa-trash").html(" " + data["shop-delete"]);
             $(".fa-plus-circle").html(" " + data["shop-additem"]);
             generalLabels = [data["newlabel"],data["label1"], data["label2"], data["label3"], data["label4"]];
+
             thenewlabel = data["newlabel"];
             byersSelect = data["byers-select"];
             byersAll = data["byers-all"];
@@ -131,6 +132,7 @@ $('document').ready(function () {
                         $(".fa-plus-circle").html(" " + data["shop-add-item"]);
                         $(".list-name-input").attr('placeholder', data["shop-list-name-input"]);
                         generalLabels = [data["newlabel"],data["label1"], data["label2"], data["label3"], data["label4"]];
+
                         thenewlabel = data["newlabel"];
                         byersSelect = data["byers-select"];
                         byersAll = data["byers-all"];
@@ -208,7 +210,8 @@ $('document').ready(function () {
                 "listReplace.html",
                 "popupMembers.html",
                 "newlabel.html",
-                "popupSettle.html"
+                "popupSettle.html",
+                "popupLabel.html"
             ]
         },
         success: function(data){
@@ -223,6 +226,7 @@ $('document').ready(function () {
             popupMembers = Handlebars.compile(data["popupMembers.html"]);
             newlabel = Handlebars.compile(data["newlabel.html"]);
             popupSettle = Handlebars.compile(data["popupSettle.html"]);
+            popupLabel = Handlebars.compile(data["popupLabel.html"]);
             prep();
         }
     });
@@ -266,16 +270,12 @@ function prep(){
                         lang_settlement: lang["shop-balance"],
                         color_hex: (d.color_hex ? d.color_hex.toString(16) : "FFFFFF")
                     }));
-                    if (d.is_hidden == null) {
-                        console.log("removing");
-                        $('div[data-id=' + d.shopping_list_id + ']').find(".fa-users").remove();
-                        $('div[data-id=' + d.shopping_list_id + ']').find(".fa-trash").remove();
-                        $('div[data-id=' + d.shopping_list_id + ']').find(".fa-money").remove();
-                    }
+
                     $('div[data-id=' + d.shopping_list_id + ']').find("select").val(d.currency_id);
                 }
             }
             setupClicks();
+            setupItemClicks();
         }
     });
 
@@ -308,12 +308,17 @@ function prep(){
                             shopping_list_entries: "",
                             lang_add_item: lang["shop-add-item"],
                             lang_buy_items: lang["shop-buy"],
+                            lang_currency: currencies,
                             lang_share_members: lang["shop-share"],
                             lang_delete_list: lang["shop-delete"],
                             lang_settlement: lang["shop-balance"],
                             color_hex: (data.color_hex ? data.color_hex.toString(16) : "FFFFFF")
                         }));
                         setupClicks();
+                        $('div[data-id=' + data.shopping_list_id + ']').find("select").val(data.currency_id);
+
+                        setupClicks();
+                        setupItemClicks();
                     }
                 });
             }
@@ -412,6 +417,54 @@ function setupClicks(){
 
     //-----------------Sets up colorbuttons------------
     function colorRefresh() {
+        $('.label-select').unbind("click").click(function(){
+            var li = $(this).closest('div[data-id]').data("id");
+            console.log(li);
+            $.ajax({
+                url: '/api/budget/entryType',
+                method: 'GET',
+                data: {
+                    shopping_list_id: li
+                },
+                success: function (data) {
+                    var tll = '<li class="list-group-item list-group-item-action active" id=-1>'+lang["lang-new-label"]+'</li>';
+                    for(var i=0; i<data.budget_entry_types.length; i++){
+                        tll += '<li class="list-group-item list-group-item-action" id='+data.budget_entry_types[i].budget_entry_type_id+'>'+data.budget_entry_types[i].entry_type_name+'</li>';
+                    }
+                    $('body').append(popupLabel({
+                        label_headline: lang["label-headline"],
+                        the_label_list: tll,
+                        label_goback: lang["label-goback"],
+                        lang_new_label: lang["lang-new-label"],
+                        lang_new_label_name: lang["lang-new-label-name"],
+                        lang_new_label_color: lang["lang-new-label-color"],
+                        lang_new_label_add: lang["lang-new-label-add"],
+                        lang_new_label_reset: lang["lang-new-label-reset"],
+                        lang_edit_label: lang["lang-edit-label"],
+                        lang_update_label_update: lang["lang-update-label-update"],
+                        lang_update_label_delete: lang["lang-update-label-delete"],
+
+                    }));
+                    $('.labeledit').hide();
+                    $('.labelgoback').unbind("click").click(function () {
+                        $('.pop').remove();
+                    });
+                    $('li').unbind("click").click(function () {
+                        if($(this).attr('id')==-1){
+                            $('li').removeClass("active");
+                            $(this).addClass("active");
+                            $('.labeledit').hide();
+                            $('.labelnew').show();
+                        }else{
+                            $('li').removeClass("active");
+                            $(this).addClass("active");
+                            $('.labeledit').show();
+                            $('.labelnew').hide();
+                        }
+                    });
+                }
+            });
+        });
         $('.pink-select').unbind("click").click(function () {
             var ls = $(this).closest("div[data-id]");
             var id = $(ls).css('background-color', $(this).data('color')).data("id");
@@ -478,7 +531,6 @@ function setupClicks(){
                 }
             }
         }
-
         //Opens popup
         $("body").append(popupMembers({
             members: lang["shop-add-members"],
@@ -530,6 +582,7 @@ function setupClicks(){
         $("#popup-members-cancel").click(function () {
             newmembers = [];
             $(this).closest(".pop").remove();
+            users=[];
         });
 
         //Adds members to list in database (Sends invite)
@@ -548,6 +601,7 @@ function setupClicks(){
             }
             $(this).closest(".pop").remove();
             newmembers=[];
+            users=[];
         });
     });
 
@@ -580,21 +634,21 @@ function setupClicks(){
                     entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].text_note +"</td><td>" + data.budget_entries[i].amount/100 + " "+sign+"</td>";
                 }
 
-                var oe = '';
+
                 var oeM = '';
                 var oeB = '';
                 var balancelist = curBudget.to_pay;
 
                 for(var i=0; i<balancelist.length; i++){
                     var name = balancelist[i].person.forename + " " + balancelist[i].person.lastname;
-                    var numb = -(balancelist[i].amount_to_pay/100).toFixed(2);
+                    var numb = -(balancelist[i].amount_to_pay/100).toFixed(0);
                     if(numb < 0){
-                        oeM += "<tr style='background-color: lightcoral' class='balancelist'><td>" + name +"</td><td>" + numb + " "+sign+"</td>";
+                        oeM += "<tr  class='balancelist minus'><td>" + name +"</td><td>" + numb + " "+sign+"</td>";
                     }else{
-                        oeB += "<tr style='background-color: lightgreen; color: grey' class='balancelist'><td>" + name +"</td><td>" + numb + " "+sign+"</td>";
+                        oeB += "<tr class='balancelist plus'><td>" + name +"</td><td>" + numb + " "+sign+"</td>";
                     }
                 }
-                oe = oeM + oeB;
+                var oe = oeM + oeB;
 
                 $(mbutton).closest("div[data-id]").html(balance({
                     title: lang["shop-balance"],
@@ -619,19 +673,20 @@ function setupClicks(){
                             }
                             var thelist = balancelist[j];
                             console.log(thelist);
-                            st = lang["settle-text-one"] + thefullname + lang["settle-text-two"] + this.innerHTML.split(">")[3].split("<")[0];
+                            st = lang["settle-text-one"] + thefullname + lang["settle-text-two"] + this.innerHTML.split(">")[3].split("<")[0].replace("-", "");
                             $('body').append(popupSettle({
                                 settle_text: st,
                                 settle_yes: lang["settle-yes"],
                                 settle_no: lang["settle-no"]
                             }));
+                            var arrayString = thelist.budget_entry_ids.join(",");
                             $('.btn-success').unbind("click").click(function () {
                                 $.ajax({
                                     url: 'api/budget/pay',
                                     method: 'PUT',
                                     contentType: 'application/json',
                                     data: JSON.stringify({
-                                        budget_entry_ids: thelist.budget_entry_ids,
+                                        budget_entry_ids: arrayString,
                                         is_paid: true
                                     }),
                                     error: console.error,

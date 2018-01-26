@@ -582,6 +582,9 @@ router.put('/pay', function(req, res) {
         queryValues.push(bis[i].person_id);
     }
 
+    console.log(query);
+    console.log(req.body);
+
     if(req.body.is_paid) {
         console.log("1");
         pool.query('UPDATE person_budget_entry SET datetime_paid = CURRENT_TIMESTAMP WHERE budget_entry_id = ? AND person_id = ?;',

@@ -42,7 +42,7 @@
     overflow-y: scroll;
 }
 
-.fa-circle:hover{
+.fa-circle:hover, .fa-tags:hover{
     filter: brightness(85%);
 }
 .pink{
@@ -204,4 +204,14 @@ label {
 }
 .entrybuyername:hover{
     text-decoration: line-through;
+}
+.minus{
+    background-color: lightcoral;
+}
+.minus:hover{
+    background-color: #f96666;
+}
+.plus{
+    background-color: lightgreen;
+    color: grey
 }

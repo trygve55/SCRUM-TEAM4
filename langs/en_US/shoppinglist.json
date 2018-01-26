@@ -6,7 +6,7 @@
   "shop-profile": "Profile",
   "shop-logout": "Log out",
   "shop-addlist": "Add shoppinglist",
-  "shop-delete": "Delete list",
+  "shop-delete": "Remove list",
   "shop-share": "Members",
   "shop-buy": "Buy",
   "shop-add-item": "Add item",
@@ -52,5 +52,15 @@
   "settle-yes": "Yes",
   "settle-no": "Cancel",
   "settle-text-one": "Are you sure you want to settle balance with ",
-  "settle-text-two": " at cost "
+  "settle-text-two": " at cost ",
+  "label-headline": "Edit label",
+  "label-goback": "Go back",
+  "lang-new-label": "New label",
+  "lang-new-label-name": "Name",
+  "lang-new-label-color": "Color",
+  "lang-new-label-add": "Add",
+  "lang-new-label-reset": "Reset",
+  "lang-edit-label": "Edit label",
+  "lang-update-label-update": "Update",
+  "lang-update-label-delete": "Delete label"
 }
