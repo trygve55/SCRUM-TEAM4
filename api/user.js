@@ -495,6 +495,7 @@ router.get('/:person_id/picture_tiny', function(req, res){
 });
 
 
+
 /**
  * Update profile
  *
@@ -507,6 +508,7 @@ router.get('/:person_id/picture_tiny', function(req, res){
  *      [user_language]
  * }
  */
+
 
 router.put('/', function(req, res) {
     if(req.session.person_id == null) {
@@ -530,6 +532,7 @@ router.put('/', function(req, res) {
         values.push(req.body[p]);
     }
     values.push(req.session.person_id);
+
 
     pool.query(sqlQuery, values, function (err) {
             if (err) {
@@ -657,7 +660,7 @@ var transporter = nodemailer.createTransport({
  * }
  *
  */
-router.post('/verifyAccount', function(req, resp) {
+router.post('/verifyAccount', function(req, res) {
     if(req.body.token == null) {
         return res.status(400).send("Bad request (no token variable)");
     }
@@ -668,22 +671,25 @@ router.post('/verifyAccount', function(req, resp) {
         if(err) {
             console.log(token);
             console.log(err);
-            return resp.status(400).send("Bad token (1)");
+            return res.status(400).send("Bad token (1)");
         }
         pool.query('SELECT verify_token FROM person WHERE person_id = ?', [payload.id], function(err, result) {
             if(err) {
-                return resp.status(500).send("Internal database error (1)");
+                return res.status(500).send("Internal database error (1)");
+            }
+            if(result.length < 1) {
+                return res.status(400).send("Outdated / faulty token");
             }
             if(result[0].verify_token != token) {
                 console.log(result[0].verify_token);
                 console.log(token);
-                return resp.status(400).send("Bad token (2)");
+                return res.status(400).send("Bad token (2)");
             } else {
                 pool.query("UPDATE person SET verify_token = NULL WHERE person_id = ?", [payload.id], function(err, result) {
                     if(err) {
-                        return resp.status(500).send("Internal database error(2)");
+                        return res.status(500).send("Internal database error(2)");
                     }
-                    return resp.status(200).send("Account verified");
+                    return res.status(200).send("Account verified");
                 });
             }
         });

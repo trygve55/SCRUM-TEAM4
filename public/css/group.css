@@ -5,7 +5,10 @@
 	border-radius: 25px;
 	max-height: 670px;
 	min-width: 320px;
+}
 
+.nav-item {
+	cursor: pointer;
 }
 
 .listeTask{
@@ -133,6 +136,12 @@ label {
 }
 #tasks-cancel:hover{
 	filter: brightness(70%);
+}
+
+#groupwindowStart{
+    background-color: white;
+    border-radius: 10px;
+    height: 670px;
 }
 
 #groupwindow {
@@ -307,7 +316,8 @@ div.grouptablink.backvariant{
 	background-color: white;
 	border-radius: 5px;
 	text-align: center;
-	font-size: 15px
+	font-size: 15px;
+	color: gray;
 }
 .fa-check-circle-o, .fa-circle-o{
 	margin: 2px;
@@ -319,7 +329,7 @@ div.grouptablink.backvariant{
 .fa-times:hover{
 	color: indianred;
 }
-.fa-calendar, .fa-times, .fa-list-ul, .fa-bars, .fa-arrow-circle-o-left{
+.fa-calendar, .fa-times, .fa-list-ul, .fa-bars, .fa-arrow-circle-o-left, .fa-user{
 	color: darkgrey;
 }
 .greyhover:hover{
@@ -328,6 +338,6 @@ div.grouptablink.backvariant{
 .marked:hover{
 	background-color: #e0f4f9;
 }
-.fa-list-ul:hover, .fa-bars:hover, .fa-arrow-circle-o-left:hover{
+.fa-list-ul:hover, .fa-bars:hover, .fa-arrow-circle-o-left:hover, .fa-user:hover{
 	color: mediumseagreen;
 }

@@ -1,13 +1,14 @@
 <li class="list-group-item marked" data-id="{{todo_id}}">
     <div class='row'>
         <div class="col-sm-5">
-            <i class="fa fa-check-circle-o" aria-hidden="true" id='checked' style='font-size: 15px;'></i>
             <i class="fa fa-circle-o" aria-hidden="true" id='unchecked' style='font-size: 15px;'></i>
             {{todo_text}}
         </div>
         <div class='col-sm-7' style='text-align: right'>
-            <input class='datepicker' type="text">
+            <span style="color: darkgray">{{assign_name}}</span>
+            <input class='datepicker' type="text" value="{{todo_deadline}}">
             <i class="fa fa-calendar" aria-hidden="true" style='font-size: 20px;'></i>
+            <i class="fa fa-user" aria-hidden="true"  style='font-size: 20px;'></i>
             <i class="fa fa-times" aria-hidden="true" style='font-size: 20px;'></i>
         </div>
     </div>

@@ -112,21 +112,18 @@ $('document').ready(function () {
     });
 });
 
-// TODO: FIX
 function prep(){
     $.ajax({
-        url: '/api/shoppingList/',
+        url: '/api/private/entry/',
         method: 'GET',
         success: function(data){
             for(var j = 0; j < data.length; j++) {
                 var d = data[j];
                 var entries = "";
                 for (var i = 0; i < d.shopping_list_entries.length; i++) {
-                    if(d.shopping_list_entries[i].purchased_by_person_id)
-                        continue;
                     entries += taskItem({
-                        entry_text: d.shopping_list_entries[i].entry_text,
-                        entry_id: d.shopping_list_entries[i].shopping_list_entry_id
+                        entry_text: d.private_todo_entries[i].todo_text,
+                        entry_id: d.private_todo_entries[i].private_todo_entry_id
                     });
                 }
                 $("#addlist").after(tasklist({
@@ -500,3 +497,20 @@ $('#shop-logout').click(function () {
         }
     });
 });
+
+var hexDigits = new Array
+("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f");
+
+/**
+ * This function converts rgb color to hex format.
+ * @param rgb
+ * @returns {string}
+ */
+function rgb2hex(rgb) {
+    rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+    return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+}
+
+function hex(x) {
+    return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
+}

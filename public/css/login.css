@@ -1,11 +1,20 @@
+body{
+    overflow-x: hidden;
+    height: auto;
+}
+
 div.transbox {
-    margin-top: 150px;
+
+    position: relative;
     background-color: #ffffff;
     opacity: 0.8;
     height: auto;
+    margin-top: 27%;
     filter: alpha(opacity=60); /* For IE8 and earlier */
     border-radius: 15px;
     margin-bottom: 50px;
+
+
 }
 
 .fa.fa-arrow-circle-o-right {
@@ -25,14 +34,15 @@ img{
 
 
 .Facebook{
-    background-color: #7ebccc;
-    width: 40%;
+    background-color: #4267b2;
+    width: 60%;
     color: white;
     border-radius: 4px;
 
 }
 
 .Facebook:hover {
-    background-color: #a3e6f7;
+    background-color: #3b5998;
+    cursor: pointer;
 }
 
