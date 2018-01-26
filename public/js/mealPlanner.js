@@ -1,6 +1,30 @@
-var recipeList, popupRecipe, ingredients, recipeListEdit, recipe, chosenRecipe, ing;
+var recipeList, popupRecipe, ingredients, recipeListEdit, recipe, chosenRecipe, ing, timeRecipe;
 
 $(function () {
+
+    var s = window.location.search.substring(1,window.location.search.length).split("&");
+    var o = {};
+    for(var i = 0; i < s.length;i ++){
+        var a = s[i].split("=");
+        o[a[0]]=a[1];
+    }
+
+    var recipeNameChosenGroup= "";
+    var recipeTimeChosenGroup= "";
+    $.ajax({
+        url: '/api/recipe/' + o.group_id,
+        method: 'GET',
+        success: function (datatFOod) {
+            for(var i = 0; i <datatFOod.length; i++){
+                recipeNameChosenGroup = datatFOod[i].recipe_name;
+                recipeTimeChosenGroup = datatFOod[i].meal_datetime.split("T")[0];
+                console.log(recipeNameChosenGroup);
+                console.log(recipeTimeChosenGroup);
+            }
+
+        }
+    });
+
     $.ajax({
         url: '/template',
         method: 'GET',
@@ -23,6 +47,7 @@ $(function () {
         }
     });
 
+
     /**
      * This method creates the standard calender.
      */
@@ -39,15 +64,12 @@ $(function () {
         eventLimit: true, // allow "more" link when too many events
         events: [
             {
-                title: 'All Day Event',
-                start: '2018-01-25'
-            },
-            {
-                title: 'Tomatsuppe',
-                start: '2018-01-18'
+                title: recipeNameChosenGroup,
+                start: recipeTimeChosenGroup
             }
         ]
     });
+
 
 
     /**
@@ -142,8 +164,19 @@ $(function () {
         });
 
     });
+    
+    $('#meal-filter').keyup(function(){
+        console.log("hei");
+        var search = $(this).val();
+        updateList(recipe.filter(function(obj){
+            return obj.recipe_name.toLowerCase().indexOf(search.toLowerCase()) > -1 || search == "";
+        }));
+    })
 
 });
+
+
+
 
 function prep(){
     /**
@@ -155,61 +188,7 @@ function prep(){
         method: 'GET',
         success: function (data) {
             recipe = data;
-            for(var i = 0; i < data.length; i ++) {
-                $('.recipelist').append(recipeList({
-                    recipe_id: data[i].recipe_id,
-                    recipe_text: data[i].recipe_name
-                }));
-            }
-
-            /**
-             * Method for chosing one recipe.
-             */
-            $('li').click(function () {
-                var id = $(this).closest('li').attr('data-id');
-                var rec = null;
-                var des = "";
-                var nameRec = "";
-                for(var i = 0; i < recipe.length; i++){
-                   if(recipe[i].recipe_id == id){
-                       rec = recipe[i];
-                       console.log(rec);
-                       des = recipe[i].recipe_directions;
-                       console.log(des);
-                       nameRec = recipe[i].recipe_name;
-                   }
-                }
-                var ingers = "";
-                var ings = null;
-                var amounts = null;
-                var units = null;
-                for(var i = 0; i < rec.ingredients.length; i++){
-                    console.log(rec.ingredients[i])
-                    ings = rec.ingredients[i].ingredient_name;
-                    amounts = rec.ingredients[i].ingredient_amount;
-                    units = rec.ingredients[i].ingredient_unit;
-
-                    ingers += ing({
-                         ing_text: amounts + ' ' + units + ' ' + ings,
-                        ing_id: i
-                    });
-
-                    console.log(ings);
-                }
-
-                $('body').append(chosenRecipe({
-                    recipetitle: nameRec,
-                    divers: ingers,
-                    description: des,
-                    cancelrecipe: lang["cancel-recipe"],
-                    completerecipe: lang["complete-recipe"]
-                }))
-                $("#popup-cancel-recipe").click(function () {
-                    $(this).closest(".pop").remove();
-                });
-
-
-            });
+            updateList(data);
         }
     });
 
@@ -285,10 +264,6 @@ function prep(){
     });
 }
 
-function updateChosenRecipe(){
-    $(".recipeIngredientList").html("");
-}
-
 function updateIngedientList(){
     $(".ingredientlist").html("");
     for(var i = 1; i < ingredients.length; i++) {
@@ -302,3 +277,92 @@ function updateIngedientList(){
         $(li.remove());
     });
 }
+
+function updateList(data){
+    $('.recipelist').html("");
+    for(var i = 0; i < data.length; i ++) {
+        $('.recipelist').append(recipeList({
+            recipe_id: data[i].recipe_id,
+            recipe_text: data[i].recipe_name
+        }));
+    }
+
+    /**
+     * Method for chosing one recipe.
+     */
+    $('li').click(function () {
+        var id = $(this).closest('li').attr('data-id');
+        var rec = null;
+        var des = "";
+        var nameRec = "";
+        var idRec= "";
+        for(var i = 0; i < recipe.length; i++){
+            if(recipe[i].recipe_id == id){
+                rec = recipe[i];
+                console.log(rec);
+                des = recipe[i].recipe_directions;
+                console.log(des);
+                nameRec = recipe[i].recipe_name;
+                idRec = recipe[i].recipe_id;
+            }
+        }
+        var ingers = "";
+        var ings = null;
+        var amounts = null;
+        var units = null;
+
+        for(var i = 0; i < rec.ingredients.length; i++){
+            console.log(rec.ingredients[i])
+            ings = rec.ingredients[i].ingredient_name;
+            amounts = rec.ingredients[i].ingredient_amount;
+            units = rec.ingredients[i].ingredient_unit;
+
+            ingers += ing({
+                ing_text: amounts + ' ' + units + ' ' + ings,
+                ing_id: i
+            });
+
+            console.log(ings);
+        }
+
+        $('body').append(chosenRecipe({
+            recipetitle: nameRec,
+            divers: ingers,
+            description: des,
+            cancelrecipe: lang["cancel-recipe"],
+            completerecipe: lang["complete-recipe"]
+        }));
+        $("#from-datepicker").datepicker({
+            dateFormat: 'dd-mm-yy',
+            altField: '#from-datepicker',
+            altFormat: 'yy-mm-dd',
+        });
+
+
+
+        $("#popup-cancel-recipe").click(function () {
+            $(this).closest(".pop").remove();
+        });
+
+        $("#popup-complete-recipe").click(function () {
+            var d = $('#from-datepicker').val();
+            if(d != ""){
+                d = d.split("/");
+                d = d[1] + "/" + d[0] + "/" + d[2];
+            }
+            $.ajax({
+                url: '/api/recipe/' + o.group_id,
+                method: 'POST',
+                data: {
+                    recipe_id: idRec,
+                    meal_datetime: (d == "" ? "NULL" : d)
+                },
+                success: function (dataFood) {
+                    console.log(dataFood);
+                }
+            })
+        });
+
+
+    });
+};

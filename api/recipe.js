@@ -7,7 +7,7 @@ var router = require('express').Router();
  * method: GET
  */
 router.get('/:group_id', function(req, res){
-    pool.query('SELECT recipe_id, recipe_directions, recipe_servings, recipe_time, forename, middlename, lastname, meal_datetime ' +
+    pool.query('SELECT recipe_id, recipe_name, recipe_directions, recipe_servings, recipe_time, forename, middlename, lastname, meal_datetime ' +
     'FROM recipe LEFT JOIN group_recipe USING (recipe_id) '+
     'LEFT JOIN home_group USING (group_id) ' +
     'LEFT JOIN person ON (recipe.person_id = person.person_id) ' +
