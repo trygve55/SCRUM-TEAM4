@@ -602,6 +602,7 @@ router.put('/pay', function(req, res) { // TODO check if user has access to this
         queryValues.push(bis[i].person_id);
     }
 
+
     if(req.body.is_paid) pool.query('UPDATE person_budget_entry SET datetime_paid = CURRENT_TIMESTAMP WHERE budget_entry_id = ? AND person_id = ?;',
         [req.params.budget_entry_id, req.body.person_id], function(err, result) {
             if(err)
