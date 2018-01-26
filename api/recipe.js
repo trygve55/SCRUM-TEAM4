@@ -247,7 +247,7 @@ router.post('/', function(req, res){
 /**
  * Move recipe to date
  *
- * URL: /api/recipe/{group_id}/setDate
+ * URL: /api/recipe/{group_id}/date
  * method: PUT
  * data: {
  *      todo_id,
@@ -255,13 +255,31 @@ router.post('/', function(req, res){
  *      newDate
  * }
  */
-router.put('/:group_id/setDate', function(req, res){
+router.put('/:group_id/date', function(req, res){
     pool.query('UPDATE group_recipe SET meal_datetime = ? WHERE recipe_id = ? AND group_id = ? AND meal_datetime = ?',
         [req.body.newDate, req.body.recipe_id, req.params.group_id, req.body.originalDate], function(err, result){
             if(err)
                 return res.status(500).send();
 
-        })
+        });
+});
+
+/**
+ * Delete recipe at date, group id and recipe id
+ *
+ * URL: /api/recipe/{group_id}/date
+ * method: DELETE
+ * data: {
+ *      todo_id,
+ *      originalDate
+ * }
+ */
+router.delete('/:group_id/date', function(req, res){
+    pool.query('DELETE group_recipe WHERE recipe_id = ? AND group_id = ? AND meal_datetime = ?',
+        [req.body.newDate, req.body.recipe_id, req.params.group_id, req.body.originalDate], function(err, result){
+            if(err)
+                return res.status(500).send();
+        });
 });
 
 module.exports = router;
