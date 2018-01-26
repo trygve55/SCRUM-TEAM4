@@ -1,0 +1,31 @@
+<div class="pop" >
+    <div {{{data}}} class="pop-content" id="recipe-popup" style=" min-width: 50vh; max-width: 600px ">
+        <p align="center" style="font-size: 20px;">{{recipetitle}}</p>
+        <div class="row">
+            <div class="col-sm">
+                <div style="border: inset; padding: 2vh; border-radius: 10px; min-height: 30vh;">
+                    <div align="center" style="width: 50%;"><input id="recipe-name" class="form-control" placeholder="{{recipeingredient}}"></div>
+                    <h5 style="margin-left: 10px;margin-top: 10px">{{ingredient}}</h5>
+                    <ul class="list-group ingredientlist"></ul>
+                    <div class="addIngredients row">
+                        <div style="" class="quantity col-sm-3"><input class="form-control" id="ingredient-quantity" placeholder="{{recipequantity}}"></div>
+                        <div style="" class="measurement-unit col-sm-3"><input class="form-control" id="ingredient-measurement" placeholder="{{recipeunit}}"></div>
+                        <div style="" class="name col-sm-5"><input class="form-control" id="ingredient-name" placeholder="{{recipename}}"></div>
+                    </div>
+                        <h5></h5>
+                    <button  class="btn addIngredients-button" style="background-color: #e4e4e4; border-radius: 5px;">{{recipeaddIngredient}}</button>
+                        <br>
+                        <br>
+                    <textarea style="width: 91%; resize: none; height: 100px; padding-left: 1%; border-radius: 5px " id="recipe-description" placeholder="{{recipedescription}}"></textarea>
+                        <br>
+                    <div style="min-width: 180px; max-width: 160px;"><input class="form-control" id="amount-people" placeholder="{{recipeservings}}"></div>
+                        <br>
+                </div>
+            </div>
+        </div>
+        <div align="center" style="margin-top: 2vh">
+            <button align="right" id="popup-cancel" type="button" class="btn" style="background-color: #e4e4e4">{{cancel}}</button>
+            <button align="right" id="popup-complete" type="button" class="btn" style="background-color: #e4e4e4">{{complete}}</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,8 @@
+{
+  "login-header": "LOG IN",
+  "login-email": "Username/Email",
+  "login-password": "Password",
+  "login-forgotpassword": "Forgot password?",
+  "login-registerNewUser": "Register new user",
+  "login-facebook": "Log in with Facebook"
+}

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>HHM: Groups</title>
+
+        <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png">
+        <link rel="manifest" href="img/favicons/manifest.json">
+        <link rel="mask-icon" href="img/favicons/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="theme-color" content="#ffffff">
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
+		<script src="https://use.fontawesome.com/dea62227f7.js"></script>
+		<script src="/js/handlebars.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+		<script src="/js/notifications.js"></script>
+		<script src="js/redirect.js"></script>
+
+		<link rel="stylesheet"  href="/css/fullcalendar.min.css">
+
+		<script src='/js/lib/moment.min.js'></script>
+		<script src='/js/lib/jquery-ui.min.js'></script>
+		<script src='/js/lib/fullcalendar.min.js'></script>
+
+		<script src="/js/group.js"></script>
+		<link rel="stylesheet" href="css/common.css">
+		<link rel="stylesheet" type="text/css" href="/css/group.css">
+	</head>
+
+	<body>
+
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="index.html" style="color: dimgray">
+			<img src="img/logo.svg" width="30" height="30" alt="">
+			Household Manager
+		</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+			<div class="navbar-nav">
+				<a id="group-homepageNavbar" class="nav-item nav-link" href="index.html"></a>
+				<a id="group-groupsNavbar" class="nav-item nav-link" href="#" onclick="new function () {
+              $.ajax({
+                url: '/api/group/me',
+                method: 'GET',
+                success: function(data){
+                    if(!data.length || data.length == 0)
+                        window.location = '/noGroup.html';
+                    else
+                        window.location = '/group.html';
+                }
+              });
+            }();"></a>
+				<a id="group-tasksNavbar" class="nav-item nav-link" href="tasks.html"></a>
+				<a id="group-shoppinglistsNavbar" class="nav-item nav-link" href="shoppinglist.html"></a>
+			</div>
+			<div class="navbar-nav ml-auto">
+				<i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
+				<a id="group-profileNavbar" class="nav-item nav-link" href="ProfilePage.html"></a>
+				<i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
+				<a onclick="logout()" class="nav-item nav-link" href="login.html" id="group-logoutNavbar"></a>
+			</div>
+		</div>
+	</nav>
+
+	<br>
+
+	<div class="flag" style="background-color: white">
+		<img class="flag" id="group-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+		<img class="flag" id="group-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+	</div>
+
+		<div  id="grouppage" class="row" align="center">
+			<br>
+				<div id="groupselection" class="transparency text-center col-sm-3">
+
+					<p class="langtext" id="desc_title0"></p>
+
+					<div onclick="addGroup()" style="padding-top: 2px; height: 30px; border-radius: 10px; background-color: white; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class="tablink text-center backvariant" id="addGroup-button">Add Group</div>
+					<br>
+				</div>
+
+			<br>
+			<div id="groupwindowStart" class="transparency col-sm-8"><img src="/img/HouseholdManager.png" style="margin-top: 12%; ;height: 60%; width:95%"> </div>
+
+			<div id="groupwindow" class="transparency col-sm-8">
+				<div id="grouptabs">
+					<div class="container">
+						<ul class="nav nav-tabs">
+							<ul class="nav nav-tabs" role="tablist">
+
+								<li class="nav-item">
+									<a style="color: black" class="nav-link active" onclick="changeTab('feed')" role="tab" data-toggle="tab" id="desc_title2"></a>
+								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link" onclick="changeTab('tasks')"  role="tab" data-toggle="tab" id="desc_title1"></a>
+								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link" onclick="changeTab('shopping')" role="tab" data-toggle="tab" id="desc_title3"></a>
+								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link"  onclick="changeTab('statistics')"  role="tab" data-toggle="tab" id="desc_title4"></a>
+								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link"  onclick="changeTab('leave')"  role="tab" data-toggle="tab" id="desc_title7"></a>
+								</li>
+								<li class="nav-item">
+									<a style="color: black" class="nav-link"  onclick="changeTab('food')"  role="tab" data-toggle="tab" id="desc_title8"></a>
+								</li>
+							</ul>
+
+							<div class="tab-content">
+								<div role="tabpanel" class="tab-pane fade"></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
+								<div role="tabpanel" class="tab-pane fade" ></div>
+							</div>
+						</ul>
+					</div>
+				</div>
+
+				<div id="feed" class="row grouptab text-center">
+					<div>
+						<div align="center">
+							<textarea placeholder="Anything you want to say...?" id="group-newsfeedPost"></textarea>
+						</div>
+
+						<div class="row" >
+							<div id="group-picturePost" class="col-sm-4" align="center">
+								<i  class="fa fa-camera" aria-hidden="true"> Add picture</i>
+							</div>
+							<div id="group-post" class="group-post col-sm-7">
+								<div align="right">
+									<i id="group-postButton" class="fa fa-sticky-note" aria-hidden="true">  Post</i>
+								</div>
+							</div>
+							<div  id="group-post2" class="group-post col-sm-7" style="display: none">
+									<i class="fa fa-sticky-note" aria-hidden="true">  Post</i>
+							</div>
+						</div>
+
+						<form id="news-post-form" action="" enctype="multipart/form-data" method="post" style="visibility:hidden">
+							<input type="file" name="File" id="file-attachment"><br>
+						</form>
+
+						<div id="posts" align="center"></div>
+						<br>
+
+					</div>
+				</div>
+
+				<div id="tasks" class="grouptab" style="padding-left: 7%; padding-right: 7%">
+					<div id="cur-tasks">
+						<div class="row">
+							<div class="col-sm listeTask" style="background-color: #{{color_hex}}; width: 90%">
+                                <h4 class="list-name-task"></h4>
+								<ul class="list-group itemlist-task"></ul>
+								<ul class="list-group">
+									<li class="list-group-item add-task">
+										<i class="fa fa-plus-circle" aria-hidden="true" id="add-task"></i>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<i class="fa fa-list-ul" aria-hidden="true" style='font-size: 18px;'>&nbsp;Utførte gjøremål</i>
+					</div>
+					<div id="done-tasks" style="display: none;">
+						<div class="row">
+							<div class="col-sm listeTask" style="background-color: #{{color_hex}}; width: 90%">
+                                <h4 class="list-name-task"></h4>
+								<ul class="list-group itemlist-task"></ul>
+							</div>
+						</div>
+						<i class="fa fa-list-ul" aria-hidden="true" style='font-size: 18px;'>&nbsp;Tilbake</i>
+					</div>
+				</div>
+
+				<div id="shopping" class="grouptab">
+					<div class="col-sm liste" style="background-color: #{{color_hex}}; width: 90%">
+						<div class="row">
+							<div class="col-sm-7" style="text-align: left">
+								<div class="list-name-div" style="margin-bottom: 6px; display: none;">
+									<input type="text" class="form-control list-name-input">
+								</div>
+								<h4 class="list-name">Handleliste</h4>
+							</div>
+						</div>
+						<ul class="list-group itemlist"></ul>
+						<ul class="list-group">
+							<li class="list-group-item add-item">
+								<i class="fa fa-plus-circle" aria-hidden="true" id="add-item"></i>
+							</li>
+						</ul>
+						<i class="fa fa-shopping-cart" aria-hidden="true" style="font-size: 1.8vh" id="buy"></i>
+						<i class="fa fa-money" style="font-size: 1.8vh" aria-hidden="true" id="settle"></i>
+					</div>
+				</div>
+				<div id="statistics" class="grouptab text-center">
+					<hr width="90%">
+					<div class='col-sm-3'>
+						<div class="form-group">
+							<select id="entry_types" class="selectpicker" data-live-search="true">
+								
+							</select>
+							<select id="time_types" class="selectpicker">
+								<option>Years</option>
+								<option>Months</option>
+								<option>Days</option>
+							</select>
+							<div class="form-group">
+								<label class="control-label" id="ds_label" for="date_start">Start date: </label>
+								<input class="form-control" id="date_start" name="date_start" placeholder="DD/MM/YYYY" type="text"/>
+							</div>
+							<div class="form-group">
+								<label class="control-label" id="de_label" for="date_end">End date: </label>
+								<input class="form-control" id="date_end" name="date_end" placeholder="DD/MM/YYYY" type="text"/>
+							</div>
+							<button id="showStat" type="button" class="btn btn-primary" onclick="drawStats()">
+								<p class="langtext" id="desc_button1"></p>
+							</button>
+						</div>
+					</div>
+					<div id="stat_container">
+						<p id="stat_header"></p>
+						<canvas id="stat0" class="chart"></canvas>
+						<canvas id="stat1" class="chart"></canvas>
+					</div>
+				</div>
+				<div id="leave" class="grouptab text-center">
+					<br>
+					<h4>{{members}}</h4>
+					<ul class="list-group memberlist" style="margin-top: 1vh; margin-bottom: 1vh">{{{memberlist}}}</ul>
+					<div class="row" >
+						<div class="col-md-8" id="scrollable-dropdown-menu">
+							<input class="typeahead form-control" id="shop-member" placeholder="{{textfield}}">
+						</div>
+					</div>
+					<div>
+						<button type="button" class="btn btn-primary" onclick="leaveGroup()">
+							<p class="langtext" id="desc_button0"></p>
+						</button>
+						<br>
+						<div id="upload-button">
+							<i class="fa fa-picture-o" aria-hidden="true"> <text id="p-changephoto"> </text></i>
+						</div>
+						<form id="uploadPic" action="" enctype="multipart/form-data" method="post" style="visibility:hidden">
+							<input type="file" name="File" id="file-upload"><br>
+						</form>
+					</div>
+				</div>
+
+
+				<div id="food" class="grouptab">
+					<br>
+						<div id='calendar'></div>
+					<br>
+						<button onclick="window.location='/mealPlanner.html'" id="food-button" style="-moz-box-shadow: 0 0 1px grey; -webkit-box-shadow: 0 0 1px grey; box-shadow:  0 0 1px grey; border-radius: 10px;"></button>
+				</div>
+
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>HHM: Homepage</title>
+
+        <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png">
+        <link rel="manifest" href="img/favicons/manifest.json">
+        <link rel="mask-icon" href="img/favicons/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="theme-color" content="#ffffff">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="https://use.fontawesome.com/dea62227f7.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+        <link rel="stylesheet" href="css/common.css">
+        <link rel="stylesheet" href="css/index.css">
+        <script src="/js/handlebars.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+        <script src="/js/notifications.js"></script>
+        <script src="js/index.js"></script>
+        <script src="js/redirect.js"></script>
+    </head>
+
+    <body>
+        <nav style="width: 100%" class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#" style="color: dimgray">
+                <img src="img/logo.svg" width="30" height="30" alt="">
+                Household Manager
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a id="index-homepageNavbar" class="nav-item nav-link" href="index.html"></a>
+                    <a id="index-groupsNavbar" class="nav-item nav-link" href="#" onclick="new function () {
+              $.ajax({
+                url: '/api/group/me',
+                method: 'GET',
+                success: function(data){
+                    if(!data.length || data.length == 0)
+                        window.location = '/noGroup.html';
+                    else
+                        window.location = '/group.html';
+                }
+              });
+            }();"></a>
+                    <a id="index-tasksNavbar" class="nav-item nav-link" href="tasks.html"></a>
+                    <a id="index-shoppinglistsNavbar" class="nav-item nav-link" href="shoppinglist.html"></a>
+                </div>
+                <div class="navbar-nav ml-auto">
+                    <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
+                    <a id="index-profileNavbar" class="nav-item nav-link" href="ProfilePage.html"></a>
+                    <i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
+                    <a class="nav-item nav-link" id="index-logoutNavbar"></a>
+                </div>
+            </div>
+        </nav>
+        <br>
+
+        <div class="flag" style="background-color: white">
+            <img class="flag" id="index-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
+            <img class="flag" id="index-england" style="position:absolute; right: 40px" src="/img/engelskflagg.png" width="20" height="12">
+        </div>
+
+        <div class="row" align="center">
+            <br>
+            <div style="width: 40px"></div>
+            <div class="profil col-sm-3">
+                <br>
+
+                <img id="profpic" src="/img/profilpic.svg" style="height: 200px; width: 200px">
+                <div id="index-username" style="font-size: large" ></div>
+                <div id="index-status" style="color: green; font-style: oblique ">online</div>
+
+                <div class ="index-todo" id="index-todolist"></div>
+
+                <i style="color:#a3e6f7;" class="fa fa-sign-out" aria-hidden="true"></i>
+                <a href="login.html" style="color: dimgray" id="index-logout"></a>
+
+            </div>
+
+            <div style="width: 40px"></div>
+
+            <div id="newsfeedPost" class = "newsfeed col-sm-8"></div>
+
+        </div>
+
+    </body>
+</html>

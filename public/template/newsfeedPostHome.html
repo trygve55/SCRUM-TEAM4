@@ -1,0 +1,29 @@
+<div style="padding: 2%; text-align: center" class="newsfeed" {{{data}}}>
+    <div  class= "row">
+        <div class ="col-xs-2">
+            <h3></h3>
+            <img align="left" style="max-width: 100px; max-height: 100px" class="group-feedProfilPicture" src="{{image_url}}">
+            <h3></h3>
+            <div align="center">
+                <div style=" padding: 2px; width: 100px" class="group-feedName">{{name}}</div>
+            </div>
+        </div>
+        <br>
+        <div  class="col-sm-9">
+            <div align="right">
+                <div  class="group-feedTime">{{datetime}}</div>
+            </div>
+            <div class="row">
+                <div style="text-align: left; font-size: x-large; padding-left: 3%; width: 200px" class="group-feedGroup"> {{groupname}}</div>
+            </div>
+            <h4></h4>
+            <div style="text-align: left;padding-left: 3% " class="group-feedText">
+                {{{text}}}
+                <a href="#" class="read-more">{{lang_read_more}}</a>
+                <span class="text-rest" style="display: none;">{{{rest_text}}}</span>
+            </div>
+            <br>
+            <img src="{{payload}}" style="max-width: 70%; max-height: 450px;">
+        </div>
+    </div>
+</div>

@@ -1,0 +1,219 @@
+body{
+    font-family: "Trebuchet MS";
+    background-size: cover;
+    font-style: inherit;
+    background-attachment: fixed;
+
+
+}
+
+div.container1{
+
+    width:100%;
+    height:100%;
+
+    background-color: white;
+    border-radius: 15px;
+    overflow: hidden;
+    padding-bottom: 2%;
+
+
+}
+
+/*
+div.bordr{
+    border-right: 1px solid lightgrey;
+    height: 450px;
+}
+*/
+
+div.changeinfo {
+    margin-top: 5%;
+    padding: 2%;
+    font-size: 90%;
+
+}
+
+.colu1{
+}
+
+.colu2{
+    width: auto;
+
+}
+
+div.personaliaborder{
+    padding: 2%;
+}
+
+div.textarea{
+    font-size: 90%;
+}
+
+
+@media (max-width: 900px){
+    #profpic{
+        width: 150px;
+        height: 150px;
+    }
+
+}
+
+
+@media (min-width: 500px) and (max-width: 768px) {
+    .colu1{
+        min-width: 500px;
+    }
+
+    .colu2{
+        min-width: 500px;
+    }
+}
+
+/*
+@media(max-width:767px){
+    .colu1 {
+    }
+}
+
+@media(min-width:375px){
+    .colu1 {
+        min-width: 500px;
+    }
+}
+*/
+
+#okok{
+    overflow-y: scroll;
+
+}
+
+#profpic{
+    width: 180px;
+    height: 180px;
+}
+
+.okoko2{
+    float:left;
+    display: none;
+    text-align: center;
+}
+
+.okoko{
+    width: 95%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fa-picture-o{
+    font-size: 20px;
+    color: grey;
+    padding: 2%;
+}
+
+.fa-picture-o:hover{
+    color: #00BFF3;
+}
+
+/*
+@include media-breakpoint-up(sm) { ... }
+@media screen and (max-width: 375px) {
+    .picture img {
+        display: none!important;
+    }
+    .okoko{
+        display: none!important;
+    }
+    .okoko2{
+        display: block!important;
+        float: left;
+        text-align: center;
+
+    }
+}
+
+*/
+
+#profile-name{
+    padding-top: 6%;
+}
+
+div.debtborder{
+    padding: 2%;
+    margin-bottom: 5%;
+    margin-top: 8%;
+}
+
+
+
+.b{
+    position: absolute;
+    bottom: 0;
+    align: center;
+}
+
+h4 {
+    font-size: 90%;
+}
+
+h6{
+    font-size: 30%
+}
+
+/* carousel */
+.media-carousel
+{
+    margin-bottom: 0;
+}
+/* Previous button  */
+.media-carousel .carousel-control.left
+{
+    left: -12px;
+    background-image: none;
+    background: none repeat scroll 0 0 #00BFF3;
+    border: 4px solid #FFFFFF;
+    border-radius: 23px 23px 23px 23px;
+    height: 40px;
+    width : 40px;
+}
+/* Next button  */
+.media-carousel .carousel-control.right
+{
+    right: -12px !important;
+    background-image: none;
+    background: none repeat scroll 0 0 #00BFF3;
+    border: 4px solid #FFFFFF;
+    border-radius: 23px 23px 23px 23px;
+    height: 40px;
+    width : 40px;
+}
+/* Changes the position of the indicators */
+.media-carousel .carousel-indicators
+{
+    top: auto;
+    bottom: -15%;
+}
+/* Changes the colour of the indicators */
+.media-carousel .carousel-indicators li
+{
+    background: #c0c0c0;
+}
+.media-carousel .carousel-indicators .active
+{
+    background: #00BFF3;
+}
+
+/* End carousel */
+
+div.shadow{
+    width: 70%;
+    min-width: 50%;
+    height: 200px;
+    border-radius: 10px;
+    -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.1) inset;
+    -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.1) inset;
+    box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.1) inset;
+    margin-bottom: 1%;
+    padding: 2%;
+}

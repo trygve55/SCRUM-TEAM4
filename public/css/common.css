@@ -1,0 +1,33 @@
+body{
+    font-family: Trebuchet MS;
+    font-style: inherit;
+    background: url("/img/BackgroundImage.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+i {
+    cursor: pointer;
+}
+
+.flag {
+    cursor: pointer;
+}
+.list-group{
+    text-align: left;
+    margin-inside: 4%;
+    max-height: 60vh;
+    overflow-y: scroll;
+}
+.list-group-item{
+    padding: -6px;
+}
+
+#popup{
+    z-index: 100;
+}
+.fa-times:hover{
+    color: indianred;
+}

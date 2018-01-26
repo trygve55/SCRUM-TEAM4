@@ -1,0 +1,73 @@
+.profil{
+    background-color: white;
+    border-radius: 10px;
+    height: 670px;
+    margin-top: 20px;
+    overflow: auto;
+}
+
+.index-todo{
+    padding: 20px;
+    background-color: gainsboro;
+    margin: 25px;
+    height: 310px;
+}
+
+.newsfeed{
+    padding:2%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    min-height:175px;
+    min-width:175px;
+    width: 85%;
+    max-width: 85%;
+    max-height: 85vh;
+    -moz-box-shadow: 0 0 1px grey;
+    -webkit-box-shadow: 0 0 1px grey;
+    box-shadow:  0 0 1px grey;
+    border-radius: 10px;
+    overflow-y: auto;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.group-feedProfilPicture{
+    padding: 10%;
+    max-width: 100px;
+    max-height: 100px;
+    image-rendering: crisp-edges;
+}
+
+body{
+    overflow-x: hidden;
+    width: 100%;
+}
+
+@media screen and (max-width: 1024px) {
+    .profil{
+
+        min-width: 90%;
+        text-align: center;
+    }
+    .newsfeed{
+        padding-left: 2%;
+        padding-right: 2%;
+        min-width: 100%;
+        text-align: center;
+    }
+}
+
+@media screen and (max-width: 375px) {
+    .profil{
+
+        padding-left: 50px;
+        padding-right: 50px ;
+        text-align: center;
+    }
+    .newsfeed{
+
+        padding-left: 50px;
+        padding-right: 50px ;
+        text-align: center;
+    }
+}
