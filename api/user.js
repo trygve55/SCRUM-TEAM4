@@ -495,6 +495,7 @@ router.get('/:person_id/picture_tiny', function(req, res){
 });
 
 
+
 /**
  * Update profile
  *
@@ -507,6 +508,7 @@ router.get('/:person_id/picture_tiny', function(req, res){
  *      [user_language]
  * }
  */
+
 
 router.put('/', function(req, res) {
     if(req.session.person_id == null) {
@@ -530,6 +532,7 @@ router.put('/', function(req, res) {
         values.push(req.body[p]);
     }
     values.push(req.session.person_id);
+
 
     pool.query(sqlQuery, values, function (err) {
             if (err) {
