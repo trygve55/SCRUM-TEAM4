@@ -1239,24 +1239,46 @@ $('#group-logoutNavbar').click(function () {
     });
 });
 
+
+
 function getCalendar() {
-    $('#calendar').fullCalendar({
-        height: 510,
-        header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'month,agendaWeek,agendaDay,listWeek'
-        },
-        defaultDate: '2017-12-12',
-        navLinks: true, // can click day/week names to navigate views
-        editable: true,
-        eventLimit: true, // allow "more" links when too many events
-        events: [
-            {
-                title: 'All Day Event',
-                start: '2017-12-01',
+    var recipeNameChosenGroup = "";
+    var recipeTimeChosenGroup = "";
+    console.log(currentGroup);
+    $.ajax({
+        url: '/api/recipe/' + currentGroup.group_id,
+        method: 'GET',
+        success: function (datatFOod) {
+            var events = [];
+            for (var i = 0; i < datatFOod.length; i++) {
+                recipeNameChosenGroup = datatFOod[i].recipe_name;
+                recipeTimeChosenGroup = datatFOod[i].meal_datetime.split("T")[0];
+                console.log(recipeNameChosenGroup);
+                console.log(recipeTimeChosenGroup);
+                events.push({
+                    title: recipeNameChosenGroup,
+                    start: recipeTimeChosenGroup,
+                    recipe_id: datatFOod[i].recipe_id
+                })
             }
-        ]
+            /**
+             * This method creates the standard calender.
+             */
+            $('#calendar').fullCalendar({
+                height: 630,
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay,listWeek'
+                },
+                defaultDate: '2018-01-01',
+                navLinks: true, // can click day/week names to navigate views
+                editable: true,
+                eventLimit: true, // allow "more" link when too many events
+                events: events,
+            });
+        },
+        error: console.error()
     });
 }
 
