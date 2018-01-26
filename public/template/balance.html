@@ -1,6 +1,6 @@
 <div {{{data}}} class="settlement" >
-    <h4>{{title}}</h4>
-    <div style="max-height: 65vh; overflow-y: scroll ">
+    <h4 style="margin-bottom: 2vh">{{title}}</h4>
+    <div style="max-height: 30vh; overflow-y: scroll; margin-bottom: 2vh; border: 2px solid grey; background-color: white;">
         <table class="table table-hover table-bordered" >
             <thead>
             <tr>
@@ -11,7 +11,19 @@
             <tbody>{{{budget_entries}}}</tbody>
         </table>
     </div>
-    <div align="center" style="margin-top: 5%">
-        <button align="right" id="popup-complete" type="button" class="btn" style="background-color: lightgrey">{{complete}}</button>
+    <div style="max-height: 29vh; overflow-y:scroll; border: 2px solid grey; background-color: white;">
+        <table class="table table-hover table-bordered">
+            <thead>
+            <tr>
+                <th>{{lang_name}}</th>
+                <th>{{lang_owe}}</th>
+            </tr>
+            </thead>
+            <tbody>{{{owe_entries}}}</tbody>
+        </table>
+    </div>
+    <div align="center" style="margin: 2vh">
+        <button type="button" class="btn bal-complete" style="background-color: lightgrey">{{bal_complete}}</button>
+        <button type="button" class="btn bal-settle" style="background-color: lightgrey">{{lang_settle}}</button>
     </div>
 </div>

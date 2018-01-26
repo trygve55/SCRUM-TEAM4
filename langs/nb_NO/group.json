@@ -29,6 +29,8 @@
 	"shop-cancel": "Avbryt",
 	"reg_cost": "Registrer Kostnad",
 	"desc_button0": "Administrer",
+	"desc_button1": "Vis",
+	"stat_header": "Siste 12 måneder",
 	"list-name-task": "Gjøremål",
 	"add-task": " Legg til gjøremål",
 	"food-button": "Rediger måltidsplanlegger"

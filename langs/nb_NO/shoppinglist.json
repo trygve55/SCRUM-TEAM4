@@ -18,7 +18,7 @@
   "shop-list-name-input": "Ny liste",
   "shop-buy-title": "Registrer utgift",
   "shop-buy-text": "Pris",
-  "shop-ok": "OK",
+  "shop-ok": "Kjøp!",
   "shop-trip": "Handletur",
   "shop-price": "Pris",
   "shop-input-members": "Skriv inn nytt medlem her",
@@ -39,7 +39,14 @@
   "settle": "Gjør opp",
   "new-label-name": "Kategorinavn",
   "new-label-color": "Farge",
-  "byers-label": "Betalere",
+  "lang-payers": "Betalere",
+  "lang-payed": "Gjort opp",
+  "lang-settle": "Betal alle",
   "byers-all": "Alle",
-  "byers-select": "Velg brukere"
+  "byers-select": "Velg brukere",
+  "lang-name": "Navn",
+  "lang-owe": "Balanse",
+  "memb_cancel": "Avbryt",
+  "memb_complete": "Ferdig!",
+  "bal-ok": "Tilbake"
 }
