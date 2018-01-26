@@ -42,6 +42,8 @@ socket.on('group post', function(data){
 });
 
 socket.on('group task', function(data){
+    console.log("socket task");
+    console.log(data);
     for(var i = 0; i < dataTask.length; i++){
         for(var j = 0; j < data.length; j++) {
             if (dataTask[i].todo_id == data[j].todo_id)
@@ -55,10 +57,11 @@ socket.on('group task', function(data){
         else
             showDoneTasks();
     }
-    console.log("update");
 });
 
 socket.on('group task remove', function(data){
+    console.log("socket remove task");
+    console.log(data);
     for(var i = 0; i < dataTask.length; i++){
         if(dataTask[i].todo_id == data)
             dataTask.splice(i, 1);
@@ -945,7 +948,6 @@ function getTasks() {
         url:'/api/tasks/' + currentGroup.group_id,
         method:'GET',
         success: function (data) {
-
             dataTask = data;
             showCurTasks();
         }
@@ -957,7 +959,7 @@ function showCurTasks(){
     $("#cur-tasks").show();
     $('#cur-tasks .itemlist-task').html("").show();
     for(var i = 0; i < dataTask.length; i++){
-        if(dataTask[i].datetime_done)
+        if(dataTask[i].datetime_done || dataTask[i].is_deactivated)
             continue;
         var d = (dataTask[i].datetime_deadline ? new Date(dataTask[i].datetime_deadline).toISOString().split("T")[0].split('-').join('/') : "");
         if(d != ""){
@@ -967,7 +969,8 @@ function showCurTasks(){
         $('#cur-tasks .itemlist-task').append(taskItem({
             todo_id: dataTask[i].todo_id,
             todo_text: dataTask[i].todo_text,
-            todo_deadline: d
+            todo_deadline: d,
+            assign_name: (dataTask[i].assigned_to && dataTask[i].assigned_to.forename && dataTask[i].assigned_to.lastname ? dataTask[i].assigned_to.forename + " " + dataTask[i].assigned_to.lastname.substring(0, 1).toUpperCase() + "." : "")
         }));
     }
     $('#cur-tasks .itemlist-task li .fa-check-circle-o').hide();
@@ -979,7 +982,7 @@ function showDoneTasks(){
     $("#done-tasks").show();
     $('#done-tasks .itemlist-task').html("");
     for(var i = 0; i < dataTask.length; i++){
-        if(!dataTask[i].datetime_done)
+        if(!dataTask[i].datetime_done || dataTask[i].is_deactivated)
             continue;
 
         var d = (dataTask[i].datetime_deadline ? new Date(dataTask[i].datetime_deadline).toISOString().split("T")[0].split('-').join('/') : "");
@@ -1053,9 +1056,7 @@ function setupClicksTaskDone(){
  */
 function addNewTask(ul){
     $("#cur-tasks").find(".itemlist-task").append(newListItem());
-    console.log($("#new-list-item"));
     $("#new-list-item").keypress(function(e){
-        console.log("HEI");
         if(e.keyCode != 13 && e.which != 13)
             return;
         var ul = $(this).closest("ul");
@@ -1073,7 +1074,6 @@ function addNewTask(ul){
             $(this).closest("li").remove();
         }
     }).focusout(function(e){
-        console.log(e);
         var ul = $(this).closest("ul");
         var text = $(this).val();
         if(text != "") {
@@ -1130,14 +1130,12 @@ function setupTaskClicks(){
                 d = d.split("/");
                 d = d[1] + "/" + d[0] + "/" + d[2];
             }
-            console.log(d);
             $.ajax({
                 url: '/api/tasks/' + $(this).closest("li[data-id]").data('id'),
                 method: 'PUT',
                 data: {
-                    datetime_deadline: ($(this).val() == "" ? 'NULL' : new Date($(this).val()).toISOString().split("T").join(" ").split("Z")[0])
+                    datetime_deadline: (d == "" ? "NULL" : d)
                 },
-                success: console.log,
                 error: console.error
             });
         }
@@ -1173,6 +1171,8 @@ function setupTaskClicks(){
             method: 'PUT'
         });
     });
+
+    $('.fa-user').unbind('click').click(addMembersPopup);
 }
 
 function setupTaskClicksDone(){
@@ -1312,4 +1312,8 @@ function drawStats() {
 	$('#stat1').remove();
 	drawLabelChart($("#date_start").datepicker('getDate'), $("#date_end").datepicker('getDate'), $("#entry_types").val(), $("#time_types option:selected").index());
 	hideFirstStat();
+}
+
+function addMembersPopup(){
+
 }

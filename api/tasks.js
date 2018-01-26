@@ -268,19 +268,23 @@ router.get('/todo/:todo_id', function(req, res) {
 	);
 });
 
-router.delete(':group_id/todo/:todo_id', function(req, res){
-    pool.query('DELETE FROM todo WHERE todo.todo_id = ?',
-        [req.params.todo_id], function(err, result) {
-            pool.query('SELECT todo_id, datetime_deadline, datetime_added, datetime_done, forename, middlename, lastname, todo_text, is_deactivated, color_hex, todo.group_id FROM todo LEFT JOIN home_group USING (group_id) LEFT Join person ON done_by_id = person.person_id WHERE todo_id = ?',
-                [req.params.todo_id], function(err, result){
-                    if(err)
-                        return res.status(500).send();
-                    else if(result.length == 0)
-                        return res.status(500).send();
-                    socket.group_data('group task remove', req.params.group_id, req.params.todo_id);
-                    return res.status(200).send();
-                });
+/**
+ * Delete the todo item
+ *
+ * URL: /api/tasks/todo/{todo_id}
+ * method: DELETE
+ */
+router.delete('/todo/:todo_id', function(req, res){
+    pool.query('SELECT group_id FROM todo WHERE todo_id = ?', [req.params.todo_id], function(err, result){
+        if(err || result.length == 0)
+            return res.status(500).send(err);
+        pool.query('UPDATE todo SET is_deactivated = 1 WHERE todo_id = ?', [req.params.todo_id], function(err) {
+            if(err)
+                return res.status(500).send(err);
+            socket.group_data('group task remove', result[0].group_id, req.params.todo_id);
+            return res.status(200).send();
         });
+    });
 });
 
 /**
@@ -293,7 +297,35 @@ router.get('/:group_id', function(req, res) {
 	console.log(req.params.group_id);
 	pool.query('SELECT todo_id, datetime_deadline, datetime_added, datetime_done, forename, middlename, lastname, todo_text, is_deactivated, color_hex FROM todo LEFT JOIN home_group USING (group_id) LEFT Join person ON done_by_id = person.person_id WHERE group_id = ?',
 		[req.params.group_id], function(err, result){
-			return (err) ? (res.status(500).send()) : (res.status(200).json(result));
+	        if(err)
+	            return res.status(500).send();
+            if(result.length == 0)
+                return res.status(200).json(result);
+	        var qry = "SELECT forename, middlename, lastname, todo_id FROM todo LEFT JOIN todo_person USING (todo_id) LEFT JOIN person USING (person_id) WHERE todo_id IN ("
+            var vals = [];
+			for(var i = 0; i < result.length; i++){
+	            if(i != 0)
+	                qry += ", ";
+	            qry += "?"
+                vals.push(result[i].todo_id);
+            }
+            qry += ");";
+			pool.query(qry, vals, function (err, ret) {
+			    if(err)
+			        return res.status(500).send();
+                for(var i = 0; i < result.length; i++){
+                    for(var j = 0; j < ret.length; j++){
+                        if(result[i].todo_id == ret[j].todo_id) {
+                            result[i].assigned_to = {
+                                forename: ret[i].forename,
+                                middlename: ret[i].middlename,
+                                lastname: ret[i].lastname
+                            };
+                        }
+                    }
+                }
+                res.status(200).json(result);
+            });
 		});
 });
 
