@@ -292,6 +292,8 @@ function prep(){
      */
 
     $('#addlist').click(function () {
+        console.log("new list clicked");
+
         $.ajax({
             url: '/api/shoppingList',
             method: 'POST',
@@ -318,7 +320,15 @@ function prep(){
                             color_hex: (data.color_hex ? data.color_hex.toString(16) : "FFFFFF")
                         }));
                         setupClicks();
-                        $('div[data-id=' + data.shopping_list_id + ']').find("select").val(data.currency_id);
+                        var thisdiv = $('div[data-id=' + data.shopping_list_id + ']');
+                        thisdiv.find("select").val(data.currency_id);
+
+                        var titlediv = thisdiv.find('.list-name');
+                        var title = titlediv.html();
+                        $(titlediv).hide();
+                        var div = thisdiv.find(".list-name-div");
+                        $(div).show();
+                        $(div).children(".list-name-input").val(title).focus();
 
                         setupClicks();
                         setupItemClicks();

@@ -33,5 +33,9 @@
 	"stat_header": "Siste 12 måneder",
 	"list-name-task": "Gjøremål",
 	"add-task": " Legg til gjøremål",
-	"food-button": "Rediger måltidsplanlegger"
+	"food-button": "Rediger måltidsplanlegger",
+	"assign-header": "Legg til gjøremålstaker",
+	"assign-name": "Medlem",
+	"assign-ok": "Ferdig",
+	"assign-cancel": "Avbryt"
 }

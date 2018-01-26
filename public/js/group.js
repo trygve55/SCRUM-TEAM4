@@ -1,4 +1,4 @@
-var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem;
+var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, popupAssign;
 var stTransparent = "0.5",
 	statColours = [["(0, 30, 170, " + stTransparent + ")", "(0, 0, 132, 1)"], ["(170, 30, 0, " + stTransparent + ")", "(132, 0, 0, 1)"]],
 	statLabels = ["Income", "Expenses"];
@@ -112,7 +112,8 @@ $(function() {
                 'newsfeedPost.html',
                 'taskItem.html',
                 'taskListGroup.html',
-                'taskItemDone.html'
+                'taskItemDone.html',
+                'popupAssign.html'
             ]
         },
         success: function (data){
@@ -125,6 +126,7 @@ $(function() {
             taskItem = Handlebars.compile(data['taskItem.html']);
             taskListGroup = Handlebars.compile(data['taskListGroup.html']);
             taskItemDone = Handlebars.compile(data['taskItemDone.html']);
+            popupAssign = Handlebars.compile(data['popupAssign.html']);
         }
     });
 
@@ -1333,5 +1335,64 @@ function drawStats() {
 }
 
 function addMembersPopup(){
+    var themember;
+    //Shows suggestions when characters is typed
+    $('#scrollable-dropdown-menu3 .typeahead').typeahead({
+            highlight: true
+        },
+        {
+            name: 'user-names',
+            display: 'name',
+            source: new Bloodhound({
+                datumTokenizer: function(d){
+                    return Bloodhound.tokenizers.whitespace(d.name).concat([d.email]);
+                },
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                prefetch: '/api/user/all/' + currentGroup.group_id
+            }),
+            templates: {
+                empty: [
+                    '<div class="empty-message">',
+                    'No users found',
+                    '</div>'
+                ].join('\n'),
+                suggestion: Handlebars.compile('<div>{{name}} – {{email}}</div>')
+            }
+        });
 
+    //Adds member to list when clicked
+    $(".typeahead").bind('typeahead:select', function(a, data){
+        themember = data;
+        $(".typeahead").val("");
+    });
+
+    //Empty inputfield when its closed
+    $(".typeahead").bind('typeahead:close', function(){
+        $(".typeahead").val("");
+    });
+
+    $('body').append(popupAssign({
+        assign_header: lang["assign-header"],
+        assign_name: lang["assign-name"],
+        assign_ok: lang["assign-ok"],
+        assign_cancel: lang["assign-cancel"]
+    }));
+
+    $('.assignok').unbind("click").click(function () {
+        var personid = '';
+        var personids = [];
+        personids.push(personid);
+        var todoid = $(this).closest('div[data-id]').data('id');
+        $.ajax({
+            url: '/api/tasks/person/'+todoid,
+            method: 'POST',
+            data: {
+                people: personids
+            }
+        })
+    });
+
+    $('.assigncancel').unbind("click").click(function () {
+        $('.pop').remove();
+    });
 }
