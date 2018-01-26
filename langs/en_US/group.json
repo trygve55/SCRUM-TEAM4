@@ -33,5 +33,9 @@
 	"stat_header": "Last 12 months",
 	"list-name-task": "Tasks",
 	"add-task": "Add task",
-	"food-button": "Edit meal planner"
+	"food-button": "Edit meal planner",
+	"assign-header": "Add task assignee",
+	"assign-name": "Member",
+	"assign-ok": "Done",
+	"assign-cancel": "Cancel"
 }
