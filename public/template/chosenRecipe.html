@@ -1,0 +1,18 @@
+<div class="pop" >
+    <div {{{data}}} class="pop-content" id="recipe-popup" style=" min-width: 50vh; max-width: 600px ">
+        <p align="center" style="font-size: 20px;">{{recipetitle}}</p>
+        <div class="row">
+            <div class="col-sm">
+                <div style="border: inset; padding: 2vh; border-radius: 10px; min-height: 30vh">
+                    <ul style="height: 260px" class="list-group recipeIngredientList">{{{divers}}}</ul>
+                    <br>
+                    <pre style="white-space: pre-wrap; width: 92%"><ul>{{{description}}}</ul></pre>
+                </div>
+            </div>
+        </div>
+        <div align="center" style="margin-top: 2vh">
+            <button align="right" id="popup-cancel-recipe" type="button" class="btn" style="background-color: #e4e4e4">{{cancelrecipe}}</button>
+            <button align="right" id="popup-complete-recipe" type="button" class="btn" style="background-color: #e4e4e4">{{completerecipe}}</button>
+        </div>
+    </div>
+</div>

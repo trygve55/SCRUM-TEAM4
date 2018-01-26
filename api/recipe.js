@@ -129,6 +129,9 @@ router.post('/:group_id', function(req, res){
  * }
  */
 router.post('/', function(req, res){
+    req.session.person_id = 104;
+    console.log(req.body);
+    req.body.ingredients.splice(0, 1);
     if(!req.session.person_id)
         return res.status(500).send();
     if(!req.body.recipe_name || !req.body.recipe_directions || !req.body.recipe_servings || !req.body.ingredients || !(req.body.ingredients instanceof Array) || req.body.ingredients.length == 0)
