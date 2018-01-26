@@ -85,7 +85,7 @@ a.selected {
     color: mediumseagreen;
 }
 
-#scrollable-dropdown-menu3 .tt-dropdown-menu {
+#scrollable-dropdown-menu .tt-dropdown-menu {
     max-height: 150px;
     overflow-y: auto;
 }

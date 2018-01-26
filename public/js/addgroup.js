@@ -132,7 +132,10 @@ $('document').ready(function(){
                     return Bloodhound.tokenizers.whitespace(d.name).concat([d.email]);
                 },
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
-                prefetch: '/api/user/all?slim=1'
+                prefetch: {
+                    url: '/api/user/all?slim=1',
+                    cache: false
+                }
             }),
             templates: {
                 empty: [

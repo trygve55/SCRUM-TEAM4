@@ -1359,7 +1359,7 @@ function drawStats() {
 function addMembersPopup(){
     var themember;
     //Shows suggestions when characters is typed
-    $('#scrollable-dropdown-menu3 .typeahead').typeahead({
+    $('#scrollable-dropdown-menu .typeahead').typeahead({
             highlight: true
         },
         {
@@ -1370,7 +1370,10 @@ function addMembersPopup(){
                     return Bloodhound.tokenizers.whitespace(d.name).concat([d.email]);
                 },
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
-                prefetch: '/api/user/all/' + currentGroup.group_id
+                prefetch: {
+                    url: '/api/user/all/' + currentGroup.group_id,
+                    cache: false
+                }
             }),
             templates: {
                 empty: [
