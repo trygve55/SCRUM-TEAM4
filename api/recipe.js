@@ -186,6 +186,34 @@ router.post('/:group_id', function(req, res){
     req.body.meal_datetime.setMinutes(0);
     req.body.meal_datetime.setSeconds(0);
     req.body.meal_datetime = req.body.meal_datetime.toISOString().split('T')[0];
+    pool.query('INSERT INTO person_recipe (recipe_id, person_id, meal_datetime) VALUES (?, ?, ?)',
+        [req.body.recipe_id, req.session.person_id, req.body.meal_datetime], function(err, result){
+            if(err)
+                return res.status(500).send(err);
+            res.status(200).send(result);
+        });
+});
+
+/**
+ * Register recipe for group calendar
+ *
+ * URL: /api/recipe/{group_id}
+ * method: POST
+ * data: {
+ *      recipe_id,
+ *      meal_datetime
+ * }
+ */
+router.post('/:group_id', function(req, res){
+    if(!req.session.person_id)
+        return res.status(500).send();
+    if(!req.body.recipe_id || !req.body.meal_datetime)
+        return res.status(400).send();
+    req.body.meal_datetime = new Date(req.body.meal_datetime);
+    req.body.meal_datetime.setHours(1);
+    req.body.meal_datetime.setMinutes(0);
+    req.body.meal_datetime.setSeconds(0);
+    req.body.meal_datetime = req.body.meal_datetime.toISOString().split('T')[0];
     pool.query('INSERT INTO group_recipe (recipe_id, group_id, meal_datetime) VALUES (?, ?, ?)',
         [req.body.recipe_id, req.params.group_id, req.body.meal_datetime], function(err, result){
             if(err)

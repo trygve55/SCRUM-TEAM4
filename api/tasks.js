@@ -269,6 +269,21 @@ router.get('/todo/:todo_id', function(req, res) {
 	);
 });
 
+router.delete(':group_id/todo/:todo_id', function(req, res){
+    pool.query('DELETE FROM todo WHERE todo.todo_id = ?',
+        [req.params.todo_id], function(err, result) {
+            pool.query('SELECT todo_id, datetime_deadline, datetime_added, datetime_done, forename, middlename, lastname, todo_text, is_deactivated, color_hex, todo.group_id FROM todo LEFT JOIN home_group USING (group_id) LEFT Join person ON done_by_id = person.person_id WHERE todo_id = ?',
+                [req.params.todo_id], function(err, result){
+                    if(err)
+                        return res.status(500).send();
+                    else if(result.length == 0)
+                        return res.status(500).send();
+                    socket.group_data('group task remove', req.params.group_id, req.params.todo_id);
+                    return res.status(200).send();
+                });
+        });
+});
+
 /**
  * Delete the todo item
  *

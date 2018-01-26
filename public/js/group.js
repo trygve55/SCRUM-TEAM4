@@ -1,8 +1,8 @@
-var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem;
 var stTransparent = "0.5",
 	statColours = [["(0, 30, 170, " + stTransparent + ")", "(0, 0, 132, 1)"], ["(170, 30, 0, " + stTransparent + ")", "(132, 0, 0, 1)"]],
 	statLabels = ["Income", "Expenses"];
 const MILLIS_DAY = 86400000;
+var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone;
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
 
 socket.on('group post', function(data){
@@ -80,8 +80,6 @@ socket.on('group task', function(data){
 });
 
 socket.on('group task remove', function(data){
-    console.log("socket remove task");
-    console.log(data);
     for(var i = 0; i < dataTask.length; i++){
         if(dataTask[i].todo_id == data)
             dataTask.splice(i, 1);
@@ -1081,6 +1079,7 @@ function setupClicksTaskDone(){
 function addNewTask(ul){
     $("#cur-tasks").find(".itemlist-task").append(newListItem());
     $("#new-list-item").keypress(function(e){
+        console.log("HEI");
         if(e.keyCode != 13 && e.which != 13)
             return;
         var ul = $(this).closest("ul");
