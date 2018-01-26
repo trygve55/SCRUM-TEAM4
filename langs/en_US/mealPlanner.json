@@ -18,5 +18,7 @@
   "recipe-description": "Description...",
   "recipe-servings": "Servings (Optional)",
   "recipe-cancel": "Cancel",
-  "recipe-complete": "Complete"
+  "recipe-complete": "Complete",
+  "cancel-recipe": "Cancel",
+  "complete-recipe": "Complete"
 }

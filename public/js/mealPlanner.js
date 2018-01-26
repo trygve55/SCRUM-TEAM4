@@ -1,4 +1,4 @@
-var recipeList, popupRecipe, ingredients, recipeListEdit, recipe;
+var recipeList, popupRecipe, ingredients, recipeListEdit, recipe, chosenRecipe, ing;
 
 $(function () {
     $.ajax({
@@ -8,13 +8,17 @@ $(function () {
             files: [
                 'recipeList.html',
                 'popupRecipe.html',
-                'recipeListEdit.html'
+                'recipeListEdit.html',
+                'chosenRecipe.html',
+                'ing.html'
             ]
         },
         success: function (data){
             recipeList = Handlebars.compile(data['recipeList.html']);
             popupRecipe = Handlebars.compile(data['popupRecipe.html']);
             recipeListEdit = Handlebars.compile(data['recipeListEdit.html']);
+            chosenRecipe = Handlebars.compile(data['chosenRecipe.html']);
+            ing = Handlebars.compile(data['ing.html']);
             prep();
         }
     });
@@ -150,14 +154,66 @@ function prep(){
         url: '/api/recipe',
         method: 'GET',
         success: function (data) {
+            recipe = data;
             for(var i = 0; i < data.length; i ++) {
                 $('.recipelist').append(recipeList({
                     recipe_id: data[i].recipe_id,
                     recipe_text: data[i].recipe_name
                 }));
             }
+
+            /**
+             * Method for chosing one recipe.
+             */
+            $('li').click(function () {
+                var id = $(this).closest('li').attr('data-id');
+                var rec = null;
+                var des = "";
+                var nameRec = "";
+                for(var i = 0; i < recipe.length; i++){
+                   if(recipe[i].recipe_id == id){
+                       rec = recipe[i];
+                       console.log(rec);
+                       des = recipe[i].recipe_directions;
+                       console.log(des);
+                       nameRec = recipe[i].recipe_name;
+                   }
+                }
+                var ingers = "";
+                var ings = null;
+                var amounts = null;
+                var units = null;
+                for(var i = 0; i < rec.ingredients.length; i++){
+                    console.log(rec.ingredients[i])
+                    ings = rec.ingredients[i].ingredient_name;
+                    amounts = rec.ingredients[i].ingredient_amount;
+                    units = rec.ingredients[i].ingredient_unit;
+
+                    ingers += ing({
+                         ing_text: amounts + ' ' + units + ' ' + ings,
+                        ing_id: i
+                    });
+
+                    console.log(ings);
+                }
+
+                $('body').append(chosenRecipe({
+                    recipetitle: nameRec,
+                    divers: ingers,
+                    description: des,
+                    cancelrecipe: lang["cancel-recipe"],
+                    completerecipe: lang["complete-recipe"]
+                }))
+                $("#popup-cancel-recipe").click(function () {
+                    $(this).closest(".pop").remove();
+                });
+
+
+            });
         }
     });
+
+
 
     /**
      * This function creates a popup. Makes it possible for a user to add a recipe to the database.
@@ -198,30 +254,6 @@ function prep(){
             $("#ingredient-measurement").val("");
         });
 
-        /**
-         * If complete is pressed.
-         *
-         * URL: /api/recipe
-         * method: POST
-         * data: {
- *      recipe_name,
- *      recipe_directions,
- *      recipe_time,
- *      ingredients [
- *          {
- *              ingredient_amount,
- *              ingredient_unit,
- *              ingredient_name,
- *
- *              Optional:
- *              ingredient_optional
- *          }
- *      ]
- *
- *      Optional:
- *      recipe_servings
- * }
-         */
         $("#popup-complete").click(function () {
             var data = {
                 recipe_name: $('#recipe-name').val(),
@@ -244,14 +276,17 @@ function prep(){
                     recipe_servings: serv,
                     ingredients: ingredients
                 }),
-                success: function (data) {
-                    console.log(data);
-                    $('#popup-complete').closest(".pop").remove();
+                success: function () {
+                    $(".pop").remove();
                 },
                 error: console.error
             });
         });
     });
+}
+
+function updateChosenRecipe(){
+    $(".recipeIngredientList").html("");
 }
 
 function updateIngedientList(){

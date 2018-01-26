@@ -18,5 +18,7 @@
   "recipe-description": "Beskrivelse...",
   "recipe-servings": "Serveringer (Valgfri)",
   "recipe-cancel": "Avbryt",
-  "recipe-complete": "Fullfør"
+  "recipe-complete": "Fullfør",
+  "cancel-recipe": "Avbryt",
+  "complete-recipe": "Fullfør"
 }
