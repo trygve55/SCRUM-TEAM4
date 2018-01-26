@@ -34,5 +34,6 @@ img{
 
 .Facebook:hover {
     background-color: #a3e6f7;
+    cursor: pointer;
 }
 

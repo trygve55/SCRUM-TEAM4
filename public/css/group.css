@@ -5,7 +5,10 @@
 	border-radius: 25px;
 	max-height: 670px;
 	min-width: 320px;
+}
 
+.nav-item {
+	cursor: pointer;
 }
 
 .listeTask{
