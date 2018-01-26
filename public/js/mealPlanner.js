@@ -1,4 +1,4 @@
-var recipeList, popupRecipe, ingredients, recipeListEdit, recipe, chosenRecipe, ing, timeRecipe;
+var recipeList, popupRecipe, ingredients, recipeListEdit, recipe, chosenRecipe, ing, recipeCalender;
 
 $(function () {
 
@@ -15,12 +15,75 @@ $(function () {
         url: '/api/recipe/' + o.group_id,
         method: 'GET',
         success: function (datatFOod) {
+            var events = [];
             for(var i = 0; i <datatFOod.length; i++){
                 recipeNameChosenGroup = datatFOod[i].recipe_name;
                 recipeTimeChosenGroup = datatFOod[i].meal_datetime.split("T")[0];
                 console.log(recipeNameChosenGroup);
                 console.log(recipeTimeChosenGroup);
+                events.push({
+                    title:recipeNameChosenGroup,
+                    start:recipeTimeChosenGroup,
+                    recipe_id: datatFOod[i].recipe_id
+                })
             }
+            /**
+             * This method creates the standard calender.
+             */
+            $('#calendar').fullCalendar({
+                height: 630,
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay,listWeek'
+                },
+                defaultDate: '2018-01-01',
+                navLinks: true, // can click day/week names to navigate views
+                editable: true,
+                eventLimit: true, // allow "more" link when too many events
+                events: events,
+                eventDrop: function (e) {
+                    console.log(e);
+                    console.log(e.start._i)
+                },
+                eventClick: function (test) {
+                    console.log(test.recipe_id);
+                    var ingd = "";
+                    for(var i = 0; i < recipe.length; i++){
+                        if(test.recipe_id==recipe[i].recipe_id){
+                            ingd = recipe[i];
+                        }
+                    }
+
+                    var ab= "";
+                    var bc= "";
+                    var cd= "";
+                    var ingreds = "";
+
+                    for(var i = 0; i <ingd.ingredients.length; i++){
+                        ab = ingd.ingredients[i].ingredient_amount;
+                        bc = ingd.ingredients[i].ingredient_unit;
+                        cd = ingd.ingredients[i].ingredient_name;
+
+                        ingreds += ing({
+                            ing_text: ab + ' ' + bc + ' ' + cd,
+                            ing_id: i
+                        })
+                    }
+                    console.log(ingd);
+                    $('body').append(recipeCalender({
+                        divers: ingreds,
+                        description: ingd.recipe_directions,
+                        cancelrecipe: lang["popup-close-recipe"],
+
+                    }));
+                    $("#popup-close-recipe").click(function () {
+                        $(this).closest(".pop").remove();
+                    });
+
+
+                }
+            });
 
         }
     });
@@ -34,7 +97,8 @@ $(function () {
                 'popupRecipe.html',
                 'recipeListEdit.html',
                 'chosenRecipe.html',
-                'ing.html'
+                'ing.html',
+                'recipeCalender.html'
             ]
         },
         success: function (data){
@@ -43,32 +107,14 @@ $(function () {
             recipeListEdit = Handlebars.compile(data['recipeListEdit.html']);
             chosenRecipe = Handlebars.compile(data['chosenRecipe.html']);
             ing = Handlebars.compile(data['ing.html']);
+            recipeCalender = Handlebars.compile(data['recipeCalender.html']);
             prep();
         }
     });
 
 
-    /**
-     * This method creates the standard calender.
-     */
-    $('#calendar').fullCalendar({
-        height: 630,
-        header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'month,agendaWeek,agendaDay,listWeek'
-        },
-        defaultDate: '2018-01-01',
-        navLinks: true, // can click day/week names to navigate views
-        editable: true,
-        eventLimit: true, // allow "more" link when too many events
-        events: [
-            {
-                title: recipeNameChosenGroup,
-                start: recipeTimeChosenGroup
-            }
-        ]
-    });
+
+
 
 
 
@@ -346,9 +392,12 @@ function updateList(data){
 
         $("#popup-complete-recipe").click(function () {
             var d = $('#from-datepicker').val();
-            if(d != ""){
-                d = d.split("/");
-                d = d[1] + "/" + d[0] + "/" + d[2];
+
+            var s = window.location.search.substring(1,window.location.search.length).split("&");
+            var o = {};
+            for(var i = 0; i < s.length;i ++){
+                var a = s[i].split("=");
+                o[a[0]]=a[1];
             }
             $.ajax({
                 url: '/api/recipe/' + o.group_id,
@@ -359,7 +408,9 @@ function updateList(data){
                 },
                 success: function (dataFood) {
                     console.log(dataFood);
-                }
+                    location.reload();
+                },
+                error: console.error
             })
         });
 

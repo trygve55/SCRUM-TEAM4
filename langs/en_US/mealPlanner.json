@@ -20,5 +20,6 @@
   "recipe-cancel": "Cancel",
   "recipe-complete": "Complete",
   "cancel-recipe": "Cancel",
-  "complete-recipe": "Add to calendar"
+  "complete-recipe": "Add to calendar",
+  "popup-close-recipe": "Close"
 }
