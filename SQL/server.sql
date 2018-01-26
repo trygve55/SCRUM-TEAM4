@@ -280,6 +280,15 @@ CREATE TABLE group_recipe (
 	CONSTRAINT group_recipe_pk PRIMARY KEY(recipe_id, group_id, meal_datetime)
 );
 
+CREATE TABLE person_recipe (
+    recipe_id INTEGER NOT NULL,
+    person_id INTEGER NOT NULL,
+    meal_datetime DATE NOT NULL,
+    CONSTRAINT person_recipe_fk FOREIGN KEY(recipe_id) REFERENCES recipe(recipe_id),
+    CONSTRAINT recipe_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
+    CONSTRAINT person_recipe_pk PRIMARY KEY(recipe_id, person_id, meal_datetime)
+);
+
 INSERT INTO home_role(role_id, role_name) VALUES (1, 'Member');
 INSERT INTO home_role(role_id, role_name) VALUES (2, 'Admin');
 

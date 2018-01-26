@@ -5,11 +5,10 @@ var stTransparent = "0.5",
 	statColours = [["(0, 30, 170, " + stTransparent + ")", "(0, 0, 132, 1)"], ["(170, 30, 0, " + stTransparent + ")", "(132, 0, 0, 1)"]],
 	statLabels = ["Income", "Expenses"];
 const MILLIS_DAY = 86400000;
-var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem;
+var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone;
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
 
 socket.on('group post', function(data){
-    console.log(data);
     for(var i = 0; i < data.length; i++) {
         if(data[i].group_id != currentGroup.group_id)
             continue;
@@ -45,6 +44,36 @@ socket.on('group post', function(data){
     }
 });
 
+socket.on('group task', function(data){
+    for(var i = 0; i < dataTask.length; i++){
+        for(var j = 0; j < data.length; j++) {
+            if (dataTask[i].todo_id == data[j].todo_id)
+                return dataTask[i] = data[j];
+        }
+    }
+    dataTask = dataTask.concat(data);
+    if(activeTab == "tasks"){
+        if($("#cur-tasks").is(":visible"))
+            showCurTasks();
+        else
+            showDoneTasks();
+    }
+    console.log("update");
+});
+
+socket.on('group task remove', function(data){
+    for(var i = 0; i < dataTask.length; i++){
+        if(dataTask[i].todo_id == data)
+            dataTask.splice(i, 1);
+    }
+    if(activeTab == "tasks"){
+        if($("#cur-tasks").is(":visible"))
+            showCurTasks();
+        else
+            showDoneTasks();
+    }
+});
+
 
 /**
  * When the page loads, the page must find the groups available to the user so they can be selected.
@@ -61,7 +90,9 @@ $(function() {
                 'balanceItem.html',
                 'popupTextfieldList.html',
                 'newsfeedPost.html',
-                'taskItem.html'
+                'taskItem.html',
+                'taskListGroup.html',
+                'taskItemDone.html'
             ]
         },
         success: function (data){
@@ -72,6 +103,8 @@ $(function() {
             popupTextList = Handlebars.compile(data['popupTextfieldList.html']);
             feedPost = Handlebars.compile(data['newsfeedPost.html']);
             taskItem = Handlebars.compile(data['taskItem.html']);
+            taskListGroup = Handlebars.compile(data['taskListGroup.html']);
+            taskItemDone = Handlebars.compile(data['taskItemDone.html']);
         }
     });
 
@@ -84,13 +117,14 @@ $(function() {
 		method:'GET',
 		success: function (data) {
 			var grouplist = data;
-			console.log(data);
+
 
 			currentGroup = data[0];
 			for(var i = 0; i < data.length; i++){
 				addGroupToList(data[i]);
 			}
 			$(".group").click(function(){
+			    $('#groupwindowStart').hide();
 				$('#groupwindow').show();
 				currentGroup = $(this).data("group-id");
 
@@ -108,7 +142,7 @@ $(function() {
 	});
 
     $("#group-picturePost").click(function () {
-        console.log("test0");
+
         $("#file-attachment").trigger("click");
     });
 
@@ -126,8 +160,10 @@ function loadLanguageText() {
         dataType:"json",
         success:function(result) {
             for (var p in result) {
-                if(result.hasOwnProperty(p))
+                if(result.hasOwnProperty(p)) {
                     $("#" + p).html(result[p]);
+                    $("." + p).html(result[p]);
+                }
             }
         }
     });
@@ -163,8 +199,8 @@ function changeTab(name) {
     else if (activeTab == 'statistics') {
 		createLabelOptions();
         drawChart();
+        drawLabelChart(new Date("1999-10-10"), new Date(), "Food and similar", 2);
     }
-
     else if(activeTab == 'food')
         getCalendar();
 }
@@ -565,7 +601,7 @@ $(function () {
      */
     $('#group-postButton').click(function() {
 
-        console.log("test1");
+
 
         var formData = new FormData();
         formData.append('File', $("#file-attachment")[0].files[0]);
@@ -580,7 +616,7 @@ $(function () {
             processData: false,
             contentType: false,
             success : function(data) {
-                console.log(data);
+
                 ClearFields();
             }
         });
@@ -686,7 +722,6 @@ function getPost(){
         success: function (dataFeed) {
             $("#posts").html("");
             for(var i = 0; i < dataFeed.length; i++) {
-
                 var length = 50;
                 var text = dataFeed[i].post_text.split(" ");
                 var short = "";
@@ -697,8 +732,6 @@ function getPost(){
                 for(var k = j; k < text.length; k++){
                     rest += text[k] + " ";
                 }
-                a = new Date(dataFeed[i].posted_datetime);
-                testy = a.toDateString();
                 $("#posts").append(feedPost({
                     name: dataFeed[i].posted_by.forename + (dataFeed[i].posted_by.middlename ? ' ' + dataFeed[i].posted_by.middlename : '') + ' ' + dataFeed[i].posted_by.lastname,
                     payload: ((dataFeed[i].attachment_type === 1) ? '/api/news/data/' + dataFeed[i].post_id : ''),
@@ -706,7 +739,7 @@ function getPost(){
                     rest_text: rest,
                     image_url: '/api/user/' + dataFeed[i].posted_by.person_id + '/picture_tiny',
                     data: 'data-id="' + dataFeed[i].post_id + '"',
-                    datetime: testy,
+                    datetime: new Date(dataFeed[i].posted_datetime).toDateString(),
                     lang_read_more: "Read more..."
                 }));
 
@@ -907,21 +940,56 @@ function getTasks() {
     $.ajax({
         url:'/api/tasks/' + currentGroup.group_id,
         method:'GET',
-        success: function (dataTask) {
-            console.log(dataTask);
-            $('.itemlist-task').html("");
-            for(var i = 0; i < dataTask.length; i++){
-                if(dataTask[i].datetime_done)
-                    continue;
-                $('.itemlist-task').append(taskItem({
-                    todo_id: dataTask[i].todo_id,
-                    todo_text: dataTask[i].todo_text
-                }));
-            }
-            $('.itemlist-task li .fa-check-circle-o').hide()
-            setupClicksTask();
+        success: function (data) {
+
+            dataTask = data;
+            showCurTasks();
         }
     });
+}
+
+function showCurTasks(){
+    $('#done-tasks').hide();
+    $("#cur-tasks").show();
+    $('#cur-tasks .itemlist-task').html("").show();
+    for(var i = 0; i < dataTask.length; i++){
+        if(dataTask[i].datetime_done)
+            continue;
+        var d = (dataTask[i].datetime_deadline ? new Date(dataTask[i].datetime_deadline).toISOString().split("T")[0].split('-').join('/') : "");
+        if(d != ""){
+            d = d.split("/");
+            d = d[2] + "/" + d[1] + "/" + d[0].substring(2, 4);
+        }
+        $('#cur-tasks .itemlist-task').append(taskItem({
+            todo_id: dataTask[i].todo_id,
+            todo_text: dataTask[i].todo_text,
+            todo_deadline: d
+        }));
+    }
+    $('#cur-tasks .itemlist-task li .fa-check-circle-o').hide();
+    setupClicksTask();
+}
+
+function showDoneTasks(){
+    $('#cur-tasks').hide();
+    $("#done-tasks").show();
+    $('#done-tasks .itemlist-task').html("");
+    for(var i = 0; i < dataTask.length; i++){
+        if(!dataTask[i].datetime_done)
+            continue;
+
+        var d = (dataTask[i].datetime_deadline ? new Date(dataTask[i].datetime_deadline).toISOString().split("T")[0].split('-').join('/') : "");
+        if(d != ""){
+            d = d.split("/");
+            d = d[2] + "/" + d[1] + "/" + d[0].substring(2, 4);
+        }
+        $('#done-tasks .itemlist-task').append(taskItemDone({
+            todo_id: dataTask[i].todo_id,
+            todo_text: dataTask[i].todo_text
+        }));
+    }
+    $('#done-tasks .itemlist-task li .fa-circle-o').hide();
+    setupClicksTaskDone();
 }
 
 /**
@@ -931,25 +999,19 @@ function setupClicksTask(){
     $(".add-task").unbind("click").click(function(){
         $(this).closest("div").children(".itemlist-task").append(newListItem());
         $("#new-list-item").keypress(function(e){
-            if(e.keyCode != 13 && e.which != 13) {
-                console.log("error");
+            if(e.keyCode != 13 && e.which != 13)
                 return;
-            }
-            console.log(e);
             var ul = $(this).closest("ul");
             var text = $(this).val();
             if(text != "") {
-                console.log("full remove");
                 var t = this;
                 saveTaskToDB($(this).closest("div[data-id]").data("id"), text, ul, function(){
                     $(t).closest("li").remove();
-                    console.log("full remove cb");
                     addNewTask(ul);
                     setupTaskClicks();
                 });
             }
             else {
-                console.log("empty remove");
                 $(this).closest("li").remove();
                 setupTaskClicks();
             }
@@ -964,7 +1026,21 @@ function setupClicksTask(){
             $(this).closest("li").remove();
         }).focus();
     });
+
+    $('.fa-list-ul').unbind('click').click(function(){
+        showDoneTasks();
+    });
     setupTaskClicks();
+}
+
+/**
+ * This function
+ */
+function setupClicksTaskDone(){
+    $('.fa-list-ul').unbind('click').click(function(){
+        showCurTasks();
+    });
+    setupTaskClicksDone();
 }
 
 /**
@@ -972,9 +1048,10 @@ function setupClicksTask(){
  * @param ul
  */
 function addNewTask(ul){
-    $(ul).append(newListItem());
-
+    $("#cur-tasks").find(".itemlist-task").append(newListItem());
+    console.log($("#new-list-item"));
     $("#new-list-item").keypress(function(e){
+        console.log("HEI");
         if(e.keyCode != 13 && e.which != 13)
             return;
         var ul = $(this).closest("ul");
@@ -991,7 +1068,8 @@ function addNewTask(ul){
             setupTaskClicks();
             $(this).closest("li").remove();
         }
-    }).focusout(function(){
+    }).focusout(function(e){
+        console.log(e);
         var ul = $(this).closest("ul");
         var text = $(this).val();
         if(text != "") {
@@ -1019,8 +1097,6 @@ function saveTaskToDB(id, item, ul, cb){
             todo_text: item
         },
         success: function(data){
-            $(ul).append(taskItem({entry_text: item, entry_id: data.shopping_cart_entry_id}));
-            $('.itemlist-task li .fa-check-circle-o').hide()
             if(cb)
                 cb();
         }
@@ -1034,36 +1110,36 @@ function setupTaskClicks(){
     $(".fa-times").unbind("click").click(function(){
         var entry_id = $(this).closest("li[data-id]").data("id");
         $.ajax({
-            url: '/api/tasks/' + entry_id + '/done',
-            method: 'PUT',
+            url: '/api/tasks/todo/' + entry_id,
+            method: 'DELETE',
             error: console.error
         });
         $(this).closest("li[data-id]").remove();
     });
 
-    $("li[data-id]").unbind("click").click(function(e){
-        if($(this).is('.fa-times'))
-            return;
-        else if(!$(e.target).is('input')) {
-            e.preventDefault();
-            $(this).find("input[type=checkbox]").prop('checked', $(this).find("input:checked").length == 0);
-        }
-    });
-
-    $(".datepicker").unbind("focusout").focusout(function(){
-        if($(this).val() == "") {
-            console.log(this);
-            $(this).hide();
-        }
-    }).datepicker({
+    $(".datepicker").datepicker({
         //dateFormat: 'DD, mm-y'
         dateFormat: 'dd/mm/y',
         onSelect: function() {
-
+            var d = $(this).val();
+            if(d != ""){
+                d = d.split("/");
+                d = d[1] + "/" + d[0] + "/" + d[2];
+            }
+            console.log(d);
+            $.ajax({
+                url: '/api/tasks/' + $(this).closest("li[data-id]").data('id'),
+                method: 'PUT',
+                data: {
+                    datetime_deadline: ($(this).val() == "" ? 'NULL' : new Date($(this).val()).toISOString().split("T").join(" ").split("Z")[0])
+                },
+                success: console.log,
+                error: console.error
+            });
         }
     });
     //Hides elements yet to be shown
-    $(".datepicker").hide();
+    $('input.datepicker').filter(function() { return this.value === ""; }).hide();
     $('.checked').hide();
 
     $('.fa-calendar').unbind('click').click(function () {
@@ -1072,13 +1148,51 @@ function setupTaskClicks(){
         if(datepicker.is(":visible")){
             if($(datepicker).val() == "")
                 datepicker.hide();
-            else
+            else if(datepicker.is(':focus'))
                 datepicker.blur();
+            else
+                datepicker.focus();
         }
         else{
             datepicker.show();
             datepicker.focus();
         }
+    });
+
+    $('li[data-id]').unbind("click").click(function(e){
+        if($(e.target).hasClass("fa") || $(e.target).hasClass("datepicker"))
+            return;
+        var id = $(this).data("id");
+        $(this).remove();
+        $.ajax({
+            url: '/api/tasks/' + id + '/done',
+            method: 'PUT'
+        });
+    });
+}
+
+function setupTaskClicksDone(){
+    $(".fa-times").unbind("click").click(function(){
+        var entry_id = $(this).closest("li[data-id]").data("id");
+        $.ajax({
+            url: '/api/tasks/' + entry_id + '/done',
+            method: 'PUT',
+            error: console.error
+        });
+        $(this).closest("li[data-id]").remove();
+    });
+    $('.checked').hide();
+
+    $('li[data-id]').unbind("click").click(function(){
+        var id = $(this).data("id");
+        $(this).remove();
+        $.ajax({
+            url: '/api/tasks/' + id + '/undo',
+            method: 'PUT',
+            data: {
+                datetime_done: 'NULL'
+            }
+        });
     });
 }
 

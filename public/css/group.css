@@ -138,6 +138,12 @@ label {
 	filter: brightness(70%);
 }
 
+#groupwindowStart{
+    background-color: white;
+    border-radius: 10px;
+    height: 670px;
+}
+
 #groupwindow {
 	background-color: white;
 	border-radius: 10px;
@@ -310,7 +316,8 @@ div.grouptablink.backvariant{
 	background-color: white;
 	border-radius: 5px;
 	text-align: center;
-	font-size: 15px
+	font-size: 15px;
+	color: gray;
 }
 .fa-check-circle-o, .fa-circle-o{
 	margin: 2px;

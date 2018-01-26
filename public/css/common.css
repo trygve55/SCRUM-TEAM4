@@ -28,3 +28,6 @@ i {
 #popup{
     z-index: 100;
 }
+.fa-times:hover{
+    color: indianred;
+}

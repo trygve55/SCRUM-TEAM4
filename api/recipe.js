@@ -3,15 +3,61 @@ var router = require('express').Router();
 /**
  * Get all the recipes a group has currently planned
  *
+ * URL: /api/recipe/me
+ * method: GET
+ */
+router.get('/me', function(req, res){
+    pool.query('SELECT recipe_id, recipe_directions, recipe_servings, recipe_time, forename, middlename, lastname, meal_datetime ' +
+        'FROM recipe LEFT JOIN person_recipe USING (recipe_id) '+
+        'LEFT JOIN person ON (recipe.person_id = person.person_id) ' +
+        'WHERE person_recipe.person_id = ?',
+        [req.session.person_id], function(err, result){
+            if(err)
+                return res.status(500).send(err);
+            var recipes = result;
+            pool.query('SELECT recipe_id, ingredient_id, ingredient_amount, ingredient_unit, ingredient_name, ingredient_optional ' +
+                'FROM recipe_ingredient ' +
+                'LEFT JOIN recipe USING (recipe_id) ' +
+                'LEFT JOIN person_recipe USING (recipe_id) ' +
+                'WHERE person_recipe.person_id = ?', [req.session.person_id], function(err, result){
+                if(err)
+                    return res.status(500).send(err);
+                for(var i = 0; i < result.length; i++){
+                    for(var j = 0; j < recipes.length; j++){
+                        if(result[i].recipe_id == recipes[j].recipe_id){
+                            if(!recipes[j].person){
+                                recipes[j].person = {};
+                                recipes[j].person.forename = recipes[j].forename;
+                                recipes[j].person.middlename = recipes[j].middlename;
+                                recipes[j].person.lastname = recipes[j].lastname;
+                                delete recipes[j].forename;
+                                delete recipes[j].middlename;
+                                delete recipes[j].lastname;
+                            }
+                            if(!recipes[j].ingredients)
+                                recipes[j].ingredients = [];
+                            delete result[i].recipe_id;
+                            recipes[j].ingredients.push(result[i]);
+                        }
+                    }
+                }
+                res.status(200).json(recipes);
+            });
+        });
+});
+
+/**
+ * Get all the recipes a group has currently planned
+ *
  * URL: /api/recipe/{group_id}
  * method: GET
  */
 router.get('/:group_id', function(req, res){
     pool.query('SELECT recipe_id, recipe_directions, recipe_servings, recipe_time, forename, middlename, lastname, meal_datetime ' +
-    'FROM recipe LEFT JOIN group_recipe USING (recipe_id) '+
-    'LEFT JOIN home_group USING (group_id) ' +
-    'LEFT JOIN person ON (recipe.person_id = person.person_id) ' +
-    'WHERE home_group.group_id = ?',
+        'FROM recipe LEFT JOIN group_recipe USING (recipe_id) '+
+        'LEFT JOIN home_group USING (group_id) ' +
+        'LEFT JOIN person ON (recipe.person_id = person.person_id) ' +
+        'WHERE home_group.group_id = ?',
         [req.params.group_id], function(err, result){
             if(err)
                 return res.status(500).send(err);
@@ -27,6 +73,15 @@ router.get('/:group_id', function(req, res){
                 for(var i = 0; i < result.length; i++){
                     for(var j = 0; j < recipes.length; j++){
                         if(result[i].recipe_id == recipes[j].recipe_id){
+                            if(!recipes[j].person){
+                                recipes[j].person = {};
+                                recipes[j].person.forename = recipes[j].forename;
+                                recipes[j].person.middlename = recipes[j].middlename;
+                                recipes[j].person.lastname = recipes[j].lastname;
+                                delete recipes[j].forename;
+                                delete recipes[j].middlename;
+                                delete recipes[j].lastname;
+                            }
                             if(!recipes[j].ingredients)
                                 recipes[j].ingredients = [];
                             delete result[i].recipe_id;
@@ -62,6 +117,15 @@ router.get('/', function(req, res){
                 for(var i = 0; i < result.length; i++){
                     for(var j = 0; j < recipes.length; j++){
                         if(result[i].recipe_id == recipes[j].recipe_id){
+                            if(!recipes[j].person){
+                                recipes[j].person = {};
+                                recipes[j].person.forename = recipes[j].forename;
+                                recipes[j].person.middlename = recipes[j].middlename;
+                                recipes[j].person.lastname = recipes[j].lastname;
+                                delete recipes[j].forename;
+                                delete recipes[j].middlename;
+                                delete recipes[j].lastname;
+                            }
                             if(!recipes[j].ingredients)
                                 recipes[j].ingredients = [];
                             delete result[i].recipe_id;
@@ -77,6 +141,36 @@ router.get('/', function(req, res){
 /**
  * Register recipe for group calendar
  *
+ * URL: /api/recipe/me
+ * method: POST
+ * data: {
+ *      recipe_id,
+ *      meal_datetime
+ * }
+ */
+router.post('/me', function(req, res){
+    req.session.person_id = 105;
+    req.session.save();
+    if(!req.session.person_id)
+        return res.status(500).send();
+    if(!req.body.recipe_id || !req.body.meal_datetime)
+        return res.status(400).send();
+    req.body.meal_datetime = new Date(req.body.meal_datetime);
+    req.body.meal_datetime.setHours(1);
+    req.body.meal_datetime.setMinutes(0);
+    req.body.meal_datetime.setSeconds(0);
+    req.body.meal_datetime = req.body.meal_datetime.toISOString().split('T')[0];
+    pool.query('INSERT INTO person_recipe (recipe_id, person_id, meal_datetime) VALUES (?, ?, ?)',
+        [req.body.recipe_id, req.session.person_id, req.body.meal_datetime], function(err, result){
+            if(err)
+                return res.status(500).send(err);
+            res.status(200).send(result);
+        });
+});
+
+/**
+ * Register recipe for group calendar
+ *
  * URL: /api/recipe/{group_id}
  * method: POST
  * data: {
@@ -85,8 +179,6 @@ router.get('/', function(req, res){
  * }
  */
 router.post('/:group_id', function(req, res){
-    req.session.person_id = 105;
-    req.session.save();
     if(!req.session.person_id)
         return res.status(500).send();
     if(!req.body.recipe_id || !req.body.meal_datetime)
