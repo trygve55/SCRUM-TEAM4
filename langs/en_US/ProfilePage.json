@@ -28,7 +28,15 @@
   "p-changephoto": "Change photo",
   "p-gender": "Gender",
   "p-genderopt": "< Gender (optional) >",
-  "p-female":, "Female",
-  "p-male":, "Male",
-  "p-other": "Other"
+  "p-female": "Female",
+  "p-male": "Male",
+  "p-other": "Other",
+  "p-birthdate": "Birthdate",
+  "save-success": "New information saved!",
+  "old-password-error": "Old password is incorrect",
+  "change-password-error": "Password needs minimum 8 letters and minimum 1 number",
+  "save-password-success": "Your password has been changed!",
+  "pwbut": "Save password",
+  "but": "Save info"
+
 }

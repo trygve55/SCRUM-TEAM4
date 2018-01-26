@@ -3,7 +3,7 @@ var user;
 var curBudget;
 var testetest;
 var shopid;
-var listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList;
+var balance, balanceItem, popupTextList;
 
 
 $(document).ready(function () {
@@ -12,8 +12,6 @@ $(document).ready(function () {
     $('#save-success').hide();
     $('#old-password-error').hide();
     $('#change-password-error').hide();
-
-
     $('#profpic').attr("src","api/user/" + localStorage.person_id + "/picture");
 
     /**
@@ -76,6 +74,7 @@ $(document).ready(function () {
      * if the user clicks on the british flag.
      */
     $('#profile-england').click(function () {
+        console.log("hei");
         $.ajax({
             url: '/api/language',
             method: 'POST',
@@ -83,21 +82,20 @@ $(document).ready(function () {
                 lang: 'en_US'
             },
             success: function () {
+                console.log("fer");
                 $.ajax({
                     url: '/api/language',
                     method: 'GET',
-                    data: {
-                        lang: 'en_US',
-                        path: window.location.pathname
-                    },
                     success: function (data) {
+                        console.log(data);
                         lang = data;
                         for (var p in data) {
                             if (data.hasOwnProperty(p)) {
                                 $("#" + p).html(data[p]);
                             }
                         }
-                    }
+                    },
+                    error: console.error
                 });
             },
             error: console.error
@@ -162,17 +160,7 @@ $(document).ready(function () {
             $('#p-lastnam').val(data[0].lastname);
             $('#p-usernam').val(data[0].username);
             $('#p-phonenumb').val(data[0].phone);
-
-
-            if (data[0].birth_date) {
-                var date = data[0].birth_date;
-                //var formattedDate = new Date(date).toIsoString().slice(0,10); //split("T")[0];
-                var formattedDate = date.split("T")[0];
-
-                console.log(date);
-                $('#datepicker').val(formattedDate);
-            }
-
+            $('#p-gen').val(data[0].gender);
             $('#profile-email').text(data[0].email);
             $('#profile-phone').text(data[0].phone ? data[0].phone : "");
             $('#profile-username').text(data[0].username == data[0].facebook_api_id ? "" : data[0].username);
@@ -180,6 +168,19 @@ $(document).ready(function () {
             $('#profile-email2').text(data[0].email);
             $('#profile-phone2').text(data[0].phone ? data[0].phone : "");
             $('#profile-username2').text(data[0].username == data[0].facebook_api_id ? "" : data[0].username);
+            if (data[0].birth_date) {
+                var date = data[0].birth_date;
+                var formattedDate = date.split("T")[0];
+                var nysplitt = formattedDate.split('-');
+                var tallet = parseInt(nysplitt[2]);
+                var tallaaa = tallet+1;
+                var tall = tallaaa.toString();
+                if(tall < 10){
+                    tall = 0 + tall;
+                }
+                var riktigdato = nysplitt[0] + '-' + nysplitt[1] + '-' + tall;
+                $('#datepicker').val(riktigdato);
+            }
         }
     });
 
@@ -193,13 +194,17 @@ $(document).ready(function () {
     });
 
 
+    /**
+     * Method that calls on the method underneath when change photo is clicked
+     */
     $("#p-changephoto").click(function () {
         $("#file-upload").trigger("click");
     });
 
+    /**
+     * Method for uploading profile picture
+     */
     $("#file-upload").change(function () {
-
-
         var formData = new FormData();
         formData.append('File', $("#file-upload")[0].files[0]);
 
@@ -218,102 +223,46 @@ $(document).ready(function () {
     });
 
     /**
-     * Method for saving info that has been written into input fields
+     * Method for saving info that has been written into input fields when
+     * save info button has been clicked.
      */
     $("#but").click(function () {
-        if($('#datepicker').val() == '') {
-            $.ajax({
-                url: '/api/user/',
-                method: 'PUT',
-                data: {
-                    username: $('#p-usernam').val(),
-                    forename: $('#p-forenam').val(),
-                    middlename: $('#p-middlenam').val(),
-                    lastname: $('#p-lastnam').val(),
-                    phone: $('#p-phonenumb').val(),
-                    gender: $('#p-gen').val(),
-                    birth_date: null
-                },
-                success: function (data) {
-                    $('#save-success').show();
-                    console.log(data);
-                },
-                error: console.error
-            });
-        }
-        else{
-            $.ajax({
-                url: '/api/user/',
-                method: 'PUT',
-                data: {
-                    username: $('#p-usernam').val(),
-                    forename: $('#p-forenam').val(),
-                    middlename: $('#p-middlenam').val(),
-                    lastname: $('#p-lastnam').val(),
-                    phone: $('#p-phonenumb').val(),
-                    gender: $('#p-gen').val(),
-                    birth_date: $('#datepicker').val()
-                },
-                success: function (data) {
-                    $('#save-success').show();
-                    console.log(data)
-                },
-                error: console.error
-            });
-        }
+        changeInfo();
+    });
+
+    /**
+     * Methid for saving info when enter is pressed while the
+     * date field is selected.
+     */
+    $('#datepicker').keypress(function (e) {
+        if (e.keyCode != 13 || e.which != 13)
+            return;
+        changeInfo();
+
     });
 
 
 
     /**
-     * Method that first checks if the old password that the user has
-     * written is correct, if so it changes password.
+     * Method for changing password when the save password button is clicked.
      */
     $("#pwbut").click(function () {
         // outer ajax checks if old password is correct
-        $.ajax({
-            url: '/api/user/checkPassword',
-            method: 'POST',
-            data: {
-                password: $('#oldpwd').val()
-            },
-            success: function (data) {
-
-                // inner ajax changes password, if old password was correct
-                $.ajax({
-                    url: '/api/user/password',
-                    method: 'PUT',
-                    data: {
-                        password: $('#newpwd').val()
-                    },
-                    success: function (data) {
-                        $('#old-password-error').hide();
-                        $('#save-password-success').show();
-                        console.log(data);
-                    },
-                    error: function () {
-                        $('#old-password-error').hide();
-                        $('#change-password-error').show();
-                        console.error
-                    }
-                });
-            },
-            error: function () {
-                $('#old-password-error').show();
-            }
-        });
+       changePassword();
     });
 
-
-
-
-    /*
-    $('#media').carousel({
-        pause: true,
-        interval: false
+    /**
+     * Method for changing password when enter is pressed.
+     */
+    $('#newpwd').keypress(function (e) {
+        if(e.keyCode!=13 || e.which!=13)
+            return;
+        changePassword();
     });
-    */
 
+    /**
+     * Method for logging out.
+     */
     $('#profile-logout').click(function () {
         $.ajax({
             url: '/api/auth/logout',
@@ -327,3 +276,90 @@ $(document).ready(function () {
     });
 });
 
+/**
+ * Function for changing information about the user. Saves new info in database
+ */
+function changeInfo() {
+    // if no birthdate is entered, null is saved in the database
+    if($('#datepicker').val() == '') {
+        $.ajax({
+            url: '/api/user/',
+            method: 'PUT',
+            data: {
+                username: $('#p-usernam').val(),
+                forename: $('#p-forenam').val(),
+                middlename: $('#p-middlenam').val(),
+                lastname: $('#p-lastnam').val(),
+                phone: $('#p-phonenumb').val(),
+                gender: $('#p-gen').val(),
+                birth_date: null
+            },
+            success: function (data) {
+                $('#save-success').show();
+                console.log(data);
+            },
+            error: console.error
+        });
+    }
+    // if a birthday is entered, the value is saved in the database
+    else{
+        $.ajax({
+            url: '/api/user/',
+            method: 'PUT',
+            data: {
+                username: $('#p-usernam').val(),
+                forename: $('#p-forenam').val(),
+                middlename: $('#p-middlenam').val(),
+                lastname: $('#p-lastnam').val(),
+                phone: $('#p-phonenumb').val(),
+                gender: $('#p-gen').val(),
+                birth_date: $('#datepicker').val()
+            },
+            success: function (data) {
+                $('#save-success').show();
+                console.log(data)
+                console.log($('#datepicker').val());
+            },
+            error: console.error
+        });
+    }
+}
+
+/**
+ * Method for password of a user. Checks if the old password is correct and
+ * if the new password is not allowed.
+ */
+function changePassword() {
+    // outer ajax checks if old password is correct
+    $.ajax({
+        url: '/api/user/checkPassword',
+        method: 'POST',
+        data: {
+            password: $('#oldpwd').val()
+        },
+        success: function (data) {
+
+            // inner ajax changes password, if old password was correct
+            $.ajax({
+                url: '/api/user/password',
+                method: 'PUT',
+                data: {
+                    password: $('#newpwd').val()
+                },
+                success: function (data) {
+                    $('#old-password-error').hide();
+                    $('#save-password-success').show();
+                    console.log(data);
+                },
+                error: function () {
+                    $('#old-password-error').hide();
+                    $('#change-password-error').show();
+                    console.error
+                }
+            });
+        },
+        error: function () {
+            $('#old-password-error').show();
+        }
+    });
+}
