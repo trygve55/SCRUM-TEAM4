@@ -9,8 +9,9 @@ module.exports = router;
  * URL: /api/budget/entryType
  * method: POST
  * data: {
- *      budget_entry_name,
- *      budget_entry_color
+ *      entry_type_name
+ *      entry_type_color,
+ *      shopping_list_id
  * }
  */
 router.post('/entryType', function(req, res) {
@@ -213,7 +214,6 @@ function addPersonBudgetEntry(req, res, connection, result) {
             if (!first) {
                 query += ",";
             } else first = false;
-
             queryValues.push(person_ids[i]);
             queryValues.push(result.insertId);
             query += "(?,?)";

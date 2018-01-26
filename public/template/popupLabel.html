@@ -1,33 +1,44 @@
 <div class="pop">
-    <div {{{data}}} class="pop-content" id="label-popup" style="width: 60vh">
+    <div {{{data}}} class="pop-content" id="label-popup" style="width: 80vh">
         <h5>{{label_headline}}</h5>
         <div class="row">
             <div class="col-sm">
-                <ul class="list-group">{{{the_label_list}}}</ul>
+                <ul class="list-group" style="overflow-x: hidden">{{{the_label_list}}}</ul>
             </div>
             <div class="col-sm">
                 <div class="labelnew" style="border-radius: 20px; border: 2px outset; padding: 2vh; margin-bottom: 3vh">
                     <h6 style="text-align: center">{{lang_new_label}}</h6>
-                    {{lang_new_label_name}}:
-                    <input class="form-control label-name-input" placeholder="" style="margin-bottom: 1vh;">
-                    {{lang_new_label_color}}:
-                    <input class="form-control label-color-input" placeholder="#5ef97b" style="margin-bottom: 1vh;">
-                    <div align="center">
-                        <button type="button" class="btn btn-info">{{lang_new_label_add}}</button>
-                        <button type="button" class="btn btn-danger">{{lang_new_label_reset}}</button>
+                    <div style="margin-bottom: 1vh; margin-top: 2vh">
+                        {{lang_new_label_color}}:
+                        <input class='colorpicker' id="colorpick">
+                    </div>
+                    <div>
+                        {{lang_new_label_name}}:
+                        <input class="form-control" id="label-name-input" placeholder="" style="margin-bottom: 1vh;">
+                    </div>
+                    <div align="center" style="margin-top: 1vh">
+                        <button type="button" class="btn btn-info add">{{lang_new_label_add}}</button>
+                        <button type="button" class="btn btn-danger reset">{{lang_new_label_reset}}</button>
                     </div>
                 </div>
                 <div class="labeledit" style="border-radius: 20px; border: 2px outset; padding: 2vh; margin-bottom: 3vh">
                     <h6 style="text-align: center">{{lang_edit_label}}</h6>
+                    <div style="margin-bottom: 1vh; margin-top: 2vh">
+                        {{lang_new_label_color}}:
+                        <input class='colorpicker'>
+                    </div>
                     {{lang_new_label_name}}:
-                    <input class="form-control label-name-input" placeholder="" style="margin-bottom: 1vh;">
-                    {{lang_new_label_color}}:
-                    <input class="form-control label-color-input" placeholder="" style="margin-bottom: 1vh;">
-                    <div align="center"> <button type="button" class="btn btn-info">{{lang_update_label_update}}</button>
-                        <button type="button" class="btn btn-danger" style="margin-top: 1vh">{{lang_update_label_delete}}</button></div>
+                    <input class="form-control" id="label-edit-input" placeholder="" style="margin-bottom: 1vh;">
+
+                    <div align="center">
+                        <button type="button" class="btn btn-info updatelabel">{{lang_update_label_update}}</button>
+                        <div style="margin-top: 1vh; border-bottom: 1px solid darkgrey"></div>
+                        <button type="button" class="btn btn-danger deletelabel" style="margin-top: 1vh">{{lang_update_label_delete}}</button>
+                    </div>
                 </div>
             </div>
         </div>
+        <br>
         <div align="center">
             <button type="button" class="btn labelgoback" style="background-color: lightgrey">{{label_goback}}</button>
         </div>

@@ -215,3 +215,12 @@ label {
     background-color: lightgreen;
     color: grey
 }
+.activ{
+    filter: brightness(85%);
+    font-weight: bold;
+    position: absolute;
+    left: 8vh;
+}
+.list-group-item-action:hover{
+    filter: brightness(93%);
+}

@@ -62,5 +62,10 @@
   "lang-new-label-reset": "Tøm",
   "lang-edit-label": "Rediger kategori",
   "lang-update-label-update": "Oppdater",
-  "lang-update-label-delete": "Slett kategori"
+  "lang-update-label-delete": "Slett kategori",
+  "settle-all": "Betal alle negative oppgjør",
+  "are-you-sure": "Er du sikker på at du ønsker å gjøre opp alle negative balanser til totalsummen ",
+  "yes-settle-all": "Ja",
+  "no-settle-all": "Nei",
+  "shop-complete": "Lukk"
 }

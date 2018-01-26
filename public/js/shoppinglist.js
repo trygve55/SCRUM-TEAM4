@@ -4,6 +4,7 @@ var lists = [];
 var newmembers = [];
 var curBudget, currencies;
 var list, balance, listItem, newListItem, popupTextList, popupList, balanceItem, listReplace, popupMembers, newlabel, popupSettle, popupLabel;
+var settleAll;
 var me;
 var generalLabels;
 var thenewlabel, byersSelect, byersAll;
@@ -211,7 +212,8 @@ $('document').ready(function () {
                 "popupMembers.html",
                 "newlabel.html",
                 "popupSettle.html",
-                "popupLabel.html"
+                "popupLabel.html",
+                "settleAll.html"
             ]
         },
         success: function(data){
@@ -227,6 +229,7 @@ $('document').ready(function () {
             newlabel = Handlebars.compile(data["newlabel.html"]);
             popupSettle = Handlebars.compile(data["popupSettle.html"]);
             popupLabel = Handlebars.compile(data["popupLabel.html"]);
+            settleAll = Handlebars.compile(data["settleAll.html"]);
             prep();
         }
     });
@@ -419,7 +422,6 @@ function setupClicks(){
     function colorRefresh() {
         $('.label-select').unbind("click").click(function(){
             var li = $(this).closest('div[data-id]').data("id");
-            console.log(li);
             $.ajax({
                 url: '/api/budget/entryType',
                 method: 'GET',
@@ -427,9 +429,10 @@ function setupClicks(){
                     shopping_list_id: li
                 },
                 success: function (data) {
-                    var tll = '<li class="list-group-item list-group-item-action active" id=-1>'+lang["lang-new-label"]+'</li>';
-                    for(var i=0; i<data.budget_entry_types.length; i++){
-                        tll += '<li class="list-group-item list-group-item-action" id='+data.budget_entry_types[i].budget_entry_type_id+'>'+data.budget_entry_types[i].entry_type_name+'</li>';
+                    var tll = '<li class="list-group-item list-group-item-action activ newlabel" id=-1>'+lang["lang-new-label"]+'</li>';
+                    for(var i=data.budget_entry_types.length-1; i>=0; i--){
+                        var color = Number(data.budget_entry_types[i].entry_type_color).toString(16);
+                        tll += '<li style="background-color: #'+color+'; color: black" class="list-group-item list-group-item-action" id='+data.budget_entry_types[i].budget_entry_type_id+'>'+data.budget_entry_types[i].entry_type_name+'</li>';
                     }
                     $('body').append(popupLabel({
                         label_headline: lang["label-headline"],
@@ -445,22 +448,103 @@ function setupClicks(){
                         lang_update_label_delete: lang["lang-update-label-delete"],
 
                     }));
+
+                    var currColor = "#a9d5f2";
+                    $(".colorpicker").spectrum({
+                        color: "#a9d5f2",
+                        change: function(color){
+                            currColor = color.toHexString();
+                            console.log(currColor);
+                        }
+                    });
                     $('.labeledit').hide();
                     $('.labelgoback').unbind("click").click(function () {
                         $('.pop').remove();
                     });
-                    $('li').unbind("click").click(function () {
-                        if($(this).attr('id')==-1){
-                            $('li').removeClass("active");
-                            $(this).addClass("active");
-                            $('.labeledit').hide();
-                            $('.labelnew').show();
-                        }else{
-                            $('li').removeClass("active");
-                            $(this).addClass("active");
-                            $('.labeledit').show();
-                            $('.labelnew').hide();
-                        }
+                    
+                    var thedata = data;
+                    setTableClicks(data);
+                    $('.add').unbind("click").click(function (){
+                        if($('#label-name-input').val()=="") return;
+                        var thenewcolor = currColor;
+                        console.log(thenewcolor);
+                        var newcolorhash = currColor.split("#")[1];
+                        var newtext = $('#label-name-input').val();
+                        var newcolorInt = Number(parseInt(newcolorhash, 16));
+
+                        $.ajax({
+                            url: '/api/budget/entryType',
+                            method: 'POST',
+                            data: {
+                                entry_type_name: newtext,
+                                entry_type_color: newcolorInt,
+                                shopping_list_id: li
+                            },
+                            success: function(data){
+                                $('li.newlabel').after('<li style="background-color: '+thenewcolor+'; color: black" class="list-group-item list-group-item-action" id='+data.budget_entry_type_id+'>'+newtext+'</li>');
+                                colorRefresh();
+                                setTableClicks(thedata);
+                                $('#label-name-input').val('');
+                                $(".colorpicker").spectrum({
+                                        color: "#a9d5f2",
+                                        change: function(color){
+                                            currColor = color.toHexString();
+                                            console.log(currColor);
+                                        }
+                                });
+                            },
+                            error: console.error
+                        });
+                    });
+                    $('.deletelabel').unbind("click").click(function (){
+                        var labelid = $('li.activ').attr('id');
+                        console.log(labelid);
+                        $.ajax({
+                            url: '/api/budget/entryType/'+labelid,
+                            method: 'DELETE',
+                            success: function () {
+                                console.log("success deleting");
+                                $('li.activ').remove();
+                                $('li').removeClass("activ");
+                                $('li.newlabel').addClass("activ");
+                                $('.labeledit').hide();
+                                $('.labelnew').show();
+                                $(".colorpicker").spectrum({
+                                    color: "#a9d5f2"
+                                });
+                            },
+                            error: console.error
+                        });
+                    });
+                    $('.updatelabel').unbind("click").click(function (){
+                        var newcolorhash = currColor.split("#")[1];
+                        var newtext = $('#label-edit-input').val();
+                        var labelid = $('li.activ').attr('id');
+                        var newcolorInt = Number(parseInt(newcolorhash, 16));
+                        $.ajax({
+                            url: '/api/budget/entryType/'+labelid,
+                            method: 'PUT',
+                            data:{
+                                entry_type_name: newtext,
+                                entry_type_color: newcolorInt
+                            },
+                            success: function(data){
+                                $('li.activ').text(newtext);
+                                setTableClicks(thedata);
+
+                            },
+                            error: console.error
+                        })
+                    });
+                    $('.reset').unbind("click").click(function () {
+                        $('#label-name-input').val('');
+                        $(".colorpicker").spectrum({
+                            color: "#a9d5f2",
+                            change: function(color){
+                                currColor = color.toHexString();
+                                console.log(currColor);
+                            }
+                        });
                     });
                 }
             });
@@ -667,33 +751,39 @@ function setupClicks(){
                     var name = this.innerHTML.split('>')[1].split('<')[0];
                     for(var j=0; j<balancelist.length; j++){
                         var thefullname = balancelist[j].person.forename + " " + balancelist[j].person.lastname;
+                        var personid = balancelist[j].person.person_id;
                         if(thefullname == name){
                             if(balancelist[j].amount_to_pay <= 0) {
                                 break;
                             }
                             var thelist = balancelist[j];
-                            console.log(thelist);
+                            var budgetids = thelist.budget_entry_ids;
+                            var arr=[];
+                            for(var k=0; k<budgetids.length; k++){
+                                arr.push(budgetids[k].budget_entry_id);
+                            }
                             st = lang["settle-text-one"] + thefullname + lang["settle-text-two"] + this.innerHTML.split(">")[3].split("<")[0].replace("-", "");
                             $('body').append(popupSettle({
                                 settle_text: st,
                                 settle_yes: lang["settle-yes"],
                                 settle_no: lang["settle-no"]
                             }));
-                            var arrayString = thelist.budget_entry_ids.join(",");
+                            var arrayString = arr.join(",");
                             $('.btn-success').unbind("click").click(function () {
+                                var suc = this;
                                 $.ajax({
                                     url: 'api/budget/pay',
                                     method: 'PUT',
                                     contentType: 'application/json',
                                     data: JSON.stringify({
                                         budget_entry_ids: arrayString,
-                                        is_paid: true
+                                        person_id: personid
                                     }),
                                     error: console.error,
                                     success: function (data) {
-                                        $(this).closest('.pop').remove();
+                                        $(suc).closest('.pop').remove();
                                     }
-                                    })
+                                })
                             });
                             $('.btn-danger').unbind("click").click(function () {
                                 $(this).closest('.pop').remove();
@@ -759,12 +849,28 @@ function setupClicks(){
                         goods_label: lang["goods-label"],
                         time: formattedDateTime,
                         time_label: lang["time-label"],
-                        complete: lang["shop-ok"]
+                        shop_complete: lang["shop-complete"]
                     }));
                     $("#balance-info-complete").click(function(){
                         $(this).closest(".pop").remove();
                         $(".pop").show();
                     });
+                });
+
+                $('.bal-settle').unbind("click").click(function(){
+                    var cost = "34 kr";
+                    $('body').append(settleAll({
+                        settle_all: lang["settle-all"],
+                        are_you_sure: lang["are-you-sure"] +cost,
+                        yes_settle_all: lang["yes-settle-all"],
+                        no_settle_all: lang['no-settle-all']
+                    }));
+                    $('.notsettleall').unbind("click").click(function () {
+                        $('.pop').remove();
+                    });
+                    $('.settleall').unbind("click").click(function () {
+                        $('.pop-content').append('Not made');
+                    })
                 });
                 
                 $('.bal-complete').unbind("click").click(function(){
@@ -1470,5 +1576,57 @@ function updateList2(){
             }
         }
         updateList2();
+    });
+}
+function setTableClicks(element){
+    var data = element;
+    $('li.list-group-item-action').unbind("click").click(function () {
+        if ($(this).attr('id') == -1) {
+            $('li').removeClass("activ");
+            $(this).addClass("activ");
+            $('.labeledit').hide();
+            $('.labelnew').show();
+            currColor = "#a9d5f2";
+            $(".colorpicker").spectrum({
+                color: "#a9d5f2",
+                change: function (color) {
+                    currColor = color.toHexString();
+                }
+            });
+        } else {
+            $('li').removeClass("activ");
+            $(this).addClass("activ");
+            $('.labeledit').show();
+            $('.labelnew').hide();
+
+            var thisid = $(this).attr('id');
+            var color = "f00";
+            var noll = false;
+            for (var j = 0; j < data.budget_entry_types.length; j++) {
+                if (data.budget_entry_types[j].budget_entry_type_id == thisid) {
+                    $('#label-edit-input').val(data.budget_entry_types[j].entry_type_name);
+                    if (data.budget_entry_types[j].entry_type_color == null) {
+                        noll = true;
+                        currColor
+                    } else {
+                        color = Number(data.budget_entry_types[j].entry_type_color).toString(16);
+                        currColor = Number(data.budget_entry_types[j].entry_type_color).toString(16);
+                    }
+                }
+            }
+            if (noll) {
+                colortext = "#FFFFFF";
+            } else {
+                var colortext = "#" + color;
+            }
+
+            $(".colorpicker").spectrum({
+                color: colortext,
+                change: function (color) {
+                    currColor = color.toHexString();
+                    $('li.activ').css('background-color', currColor);
+                }
+            });
+        }
     });
 }
