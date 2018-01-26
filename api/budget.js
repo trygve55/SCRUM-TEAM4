@@ -283,6 +283,79 @@ function addShoppingListEntryToBudgetEntry(req, res, connection, result) {
         addPersonBudgetEntry(req, res, connection, result);
     });
 }
+/**
+ * Get debt between logged in user and anyone else. Returns a json object, where the keys are person_ids, and their value
+ * is balance between the user and the person_id.
+ *
+ * URL: /api/budget/getDebt
+ * method: GET
+ * data: {
+ *
+ * }
+ */
+
+router.get('/getDebt', function(req,res) {
+    var person_id = 6//req.session.person_id;
+    var sqlQuery = "SELECT amount, person_id, be.budget_entry_id, datetime_paid FROM budget_entry be " +
+        "RIGHT JOIN person_budget_entry pbe USING (budget_entry_id) " +
+        "WHERE added_by_id = ? AND be.added_by_id != pbe.person_id;";
+    pool.query(sqlQuery, [person_id], function(err, result) {
+        if(err) {
+            return res.status(500).send("Internal database error (1)");
+        }
+        var count = {};
+        var values ={};
+        var id = 0;
+        var pid = 0;
+        result.forEach(function(el) {
+            id = el.budget_entry_id;
+            if(!count.hasOwnProperty(id)) {
+                count[id] = 2; //+1 because the user isn't included in the results
+            } else {
+                count[id]++;
+            }
+        });
+        result.forEach(function(el) {
+            if(el.datetime_paid = "null") {
+                id = el.budget_entry_id;
+                pid = el.person_id;
+                if (!values.hasOwnProperty(pid)) {
+                    values[pid] = el.amount / count[id];
+                } else {
+                    values[pid] += el.amount / count[id];
+                }
+            }
+        });
+        sqlQuery = "SELECT COUNT(person_id) AS persons, budget_entry_id FROM person_budget_entry WHERE budget_entry_id IN (\n" +
+            "SELECT budget_entry_id FROM person_budget_entry WHERE person_id = ?) GROUP BY budget_entry_id";
+        pool.query(sqlQuery, [person_id], function(err, resOne) {
+            if(err) {
+                return res.status(500).send("Internal database error (2)");
+            }
+            count = {};
+            resOne.forEach(function(el) {
+                count[el.budget_entry_id] = el.persons;
+            });
+            sqlQuery = "SELECT added_by_id, amount, budget_entry_id FROM budget_entry WHERE budget_entry_id IN (SELECT budget_entry_id FROM person_budget_entry WHERE person_id = ?)";
+            pool.query(sqlQuery, [person_id], function(err, resTwo) {
+                if(err) {
+                    return res.status(500).send("Internal database error (3)");
+                }
+                resTwo.forEach(function(el) {
+                    pid = el.added_by_id;
+                    id = el.budget_entry_id;
+                    if(!values.hasOwnProperty(pid)) {
+                        values[pid] = -(el.amount / count[id]);
+                    } else {
+                        values[pid] -= (el.amount / count[id]);
+                    }
+                });
+                return res.status(200).json(values);
+            });
+        });
+    });
+});
+
 
 /**
  * Get full budget for a shopping list
