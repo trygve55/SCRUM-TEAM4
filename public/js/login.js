@@ -190,6 +190,17 @@ $(function () {
                     localStorage.person_id=data.person_id;
                     window.location = '/index.html';
                 }
+            },
+            error: function (data) {
+                $("#login-email").css({
+                    "border": "1px solid red",
+                    "background": "#FFCECE"
+                });
+                $("#login-password").css({
+                    "border": "1px solid red",
+                    "background": "#FFCECE"
+                });
+                $("#ifwrong").html("<div style='color: red'>Username and/or password is incorrect</div>");
             }
         });
     });
@@ -212,6 +223,17 @@ $(function () {
                 console.log(data);
                 if(data.login)
                     window.location = '/index.html';
+            },
+            error: function (data) {
+                $("#login-email").css({
+                    "border": "1px solid red",
+                    "background": "#FFCECE"
+                });
+                $("#login-password").css({
+                    "border": "1px solid red",
+                    "background": "#FFCECE"
+                });
+                $("#ifwrong").show();
             }
         });
     })
