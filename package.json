@@ -36,6 +36,7 @@
     "open-exchange-rates": "^0.3.0",
     "package.json": "^2.0.1",
     "path": "^0.12.7",
+    "query-string": "^5.0.1",
     "request": "^2.83.0",
     "rotating-file-stream": "^1.3.4",
     "socket.io": "^2.0.4",

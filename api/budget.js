@@ -554,22 +554,42 @@ router.post('/pay/:budget_entry_id', function(req, res) {
 });
 
 /**
- * Adds a to pay for a budget entry
+ * Sets entries in person_budget_entry to paid, with the current timestamp
  *
  * URL: /api/budget/{budget_entry_id}
  * method: PUT
  * data: {
- *      budget_entry_ids[{
- *          budget_entry_id,
- *          person {
- *              person_id
- *          }
- *      },
- *      is_paid
+ *      person_id,
+ *      budget_entry_ids: "###,###,###,###"
  * }
+ * (budget_entry_ids is a string, with ids separated by commas. example: "200,390,29")
  */
-router.put('/pay', function(req, res) {
+router.put('/pay', function(req, res) { // TODO check if user has access to this data
+    if(req.body.person_id == null || req.body.person_id.isNaN) {
+        return res.status(400).send("Bad request, no person_id variable");
+    }
+    if(req.body.budget_entry_ids == null) {
+        return res.status(400).send("Bad request, no budget_entry_ids variable");
+    }
+    var ids = req.body.budget_entry_ids.split(",");
+    var sqlQuery = "UPDATE person_budget_entry SET datetime_paid = CURRENT_TIMESTAMP WHERE person_id = ? AND budget_entry_id IN (";
+    for(var i = 0; i < ids.length; i++) {
+        if(ids[i].isNaN) {
+            return res.status(400).send("Not a number: " + ids[i]);
+        }
+        sqlQuery += "?, ";
+        //ids[i] = parseInt(ids[i]);
+    }
+    sqlQuery = sqlQuery.slice(0,-2) + ")";
+    ids.unshift(req.body.person_id);
+    pool.query(sqlQuery,ids,function(err) {
+        if(err) {
+            return res.status(500).send("Internal database error");
+        }
+        return res.status(200).send("Query successful");
+    });
 
+    /*
     var query = "", queryValues = [], bis = req.body.budget_entry_ids;
 
     if (!bis || bis.length === 0 || req.body.is_paid === null)
@@ -581,6 +601,7 @@ router.put('/pay', function(req, res) {
         queryValues.push(bis[i].budget_entry_id);
         queryValues.push(bis[i].person_id);
     }
+
 
     if(req.body.is_paid) pool.query('UPDATE person_budget_entry SET datetime_paid = CURRENT_TIMESTAMP WHERE budget_entry_id = ? AND person_id = ?;',
         [req.params.budget_entry_id, req.body.person_id], function(err, result) {
@@ -598,7 +619,7 @@ router.put('/pay', function(req, res) {
                 res.status(403).json({success: "false", error: "no access"});
             else
                 res.status(200).send();
-        });
+        });*/
 });
 
 /**

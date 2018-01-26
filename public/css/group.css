@@ -5,7 +5,10 @@
 	border-radius: 25px;
 	max-height: 670px;
 	min-width: 320px;
+}
 
+.nav-item {
+	cursor: pointer;
 }
 
 .listeTask{
@@ -133,6 +136,12 @@ label {
 }
 #tasks-cancel:hover{
 	filter: brightness(70%);
+}
+
+#groupwindowStart{
+    background-color: white;
+    border-radius: 10px;
+    height: 670px;
 }
 
 #groupwindow {
@@ -307,7 +316,8 @@ div.grouptablink.backvariant{
 	background-color: white;
 	border-radius: 5px;
 	text-align: center;
-	font-size: 15px
+	font-size: 15px;
+	color: gray;
 }
 .fa-check-circle-o, .fa-circle-o{
 	margin: 2px;
