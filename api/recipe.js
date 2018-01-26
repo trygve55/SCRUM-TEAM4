@@ -149,8 +149,6 @@ router.get('/', function(req, res){
  * }
  */
 router.post('/me', function(req, res){
-    req.session.person_id = 105;
-    req.session.save();
     if(!req.session.person_id)
         return res.status(500).send();
     if(!req.body.recipe_id || !req.body.meal_datetime)
@@ -221,8 +219,6 @@ router.post('/:group_id', function(req, res){
  * }
  */
 router.post('/', function(req, res){
-    req.session.person_id = 104;
-    console.log(req.body);
     req.body.ingredients.splice(0, 1);
     if(!req.session.person_id)
         return res.status(500).send();
@@ -246,6 +242,26 @@ router.post('/', function(req, res){
                 res.status(200).send();
             });
         });
+});
+
+/**
+ * Move recipe to date
+ *
+ * URL: /api/recipe/{group_id}/setDate
+ * method: PUT
+ * data: {
+ *      todo_id,
+ *      originalDate,
+ *      newDate
+ * }
+ */
+router.put('/:group_id/setDate', function(req, res){
+    pool.query('UPDATE group_recipe SET meal_datetime = ? WHERE recipe_id = ? AND group_id = ? AND meal_datetime = ?',
+        [req.body.newDate, req.body.recipe_id, req.params.group_id, req.body.originalDate], function(err, result){
+            if(err)
+                return res.status(500).send();
+
+        })
 });
 
 module.exports = router;

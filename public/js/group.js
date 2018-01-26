@@ -44,13 +44,33 @@ socket.on('group post', function(data){
 socket.on('group task', function(data){
     console.log("socket task");
     console.log(data);
+    var found = 0;
     for(var i = 0; i < dataTask.length; i++){
         for(var j = 0; j < data.length; j++) {
-            if (dataTask[i].todo_id == data[j].todo_id)
-                return dataTask[i] = data[j];
+            if (dataTask[i].todo_id == data[j].todo_id) {
+                dataTask[i] = data[j];
+                found++;
+                break;
+            }
         }
     }
-    dataTask = dataTask.concat(data);
+    if(found != data.length) {
+        if(found == 0)
+            dataTask = dataTask.concat(data);
+        else {
+            for(var j = 0; j < data.length; j++) {
+                var f = false;
+                for(var i = 0; i < dataTask.length; i++){
+                    if (dataTask[i].todo_id == data[j].todo_id) {
+                        f = true;
+                        break;
+                    }
+                }
+                if(!f)
+                    dataTask.push(data[j]);
+            }
+        }
+    }
     if(activeTab == "tasks"){
         if($("#cur-tasks").is(":visible"))
             showCurTasks();
@@ -124,6 +144,9 @@ $(function() {
 				addGroupToList(data[i]);
 			}
 			$(".group").click(function(){
+                if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+                    $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+                }
 			    $('#groupwindowStart').hide();
 				$('#groupwindow').show();
 				currentGroup = $(this).data("group-id");
@@ -957,11 +980,12 @@ function getTasks() {
 function showCurTasks(){
     $('#done-tasks').hide();
     $("#cur-tasks").show();
-    $('#cur-tasks .itemlist-task').html("").show();
+    $('#cur-tasks .itemlist-task').html("");
     for(var i = 0; i < dataTask.length; i++){
         if(dataTask[i].datetime_done || dataTask[i].is_deactivated)
             continue;
         var d = (dataTask[i].datetime_deadline ? new Date(dataTask[i].datetime_deadline).toISOString().split("T")[0].split('-').join('/') : "");
+        console.log(d);
         if(d != ""){
             d = d.split("/");
             d = d[2] + "/" + d[1] + "/" + d[0].substring(2, 4);
@@ -1118,7 +1142,6 @@ function setupTaskClicks(){
             method: 'DELETE',
             error: console.error
         });
-        $(this).closest("li[data-id]").remove();
     });
 
     $(".datepicker").datepicker({
@@ -1128,7 +1151,7 @@ function setupTaskClicks(){
             var d = $(this).val();
             if(d != ""){
                 d = d.split("/");
-                d = d[1] + "/" + d[0] + "/" + d[2];
+                d = d[2] + "-" + d[1] + "-" + d[0];
             }
             $.ajax({
                 url: '/api/tasks/' + $(this).closest("li[data-id]").data('id'),
@@ -1165,7 +1188,6 @@ function setupTaskClicks(){
         if($(e.target).hasClass("fa") || $(e.target).hasClass("datepicker"))
             return;
         var id = $(this).data("id");
-        $(this).remove();
         $.ajax({
             url: '/api/tasks/' + id + '/done',
             method: 'PUT'
@@ -1179,23 +1201,19 @@ function setupTaskClicksDone(){
     $(".fa-times").unbind("click").click(function(){
         var entry_id = $(this).closest("li[data-id]").data("id");
         $.ajax({
-            url: '/api/tasks/' + entry_id + '/done',
-            method: 'PUT',
+            url: '/api/tasks/todo/' + entry_id,
+            method: 'DELETE',
             error: console.error
         });
-        $(this).closest("li[data-id]").remove();
     });
+
     $('.checked').hide();
 
     $('li[data-id]').unbind("click").click(function(){
         var id = $(this).data("id");
-        $(this).remove();
         $.ajax({
             url: '/api/tasks/' + id + '/undo',
-            method: 'PUT',
-            data: {
-                datetime_done: 'NULL'
-            }
+            method: 'PUT'
         });
     });
 }

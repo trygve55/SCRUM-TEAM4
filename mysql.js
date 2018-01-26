@@ -8,6 +8,7 @@ pool = mysql.createPool({
     database : 'g_tdat2003_t4',
     connectTimeout: 120000,
     debug : false,
+    timezone: 'utc',
     typeCast: function castField( field, useDefaultTypeCasting ) {
 
         if ( ( field.type === "BIT" ) && ( field.length === 1 ) ) {
