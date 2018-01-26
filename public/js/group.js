@@ -1,11 +1,8 @@
-// ***** Temporary test variables - delete this section when no longer needed *****
-var person = "Person";
-
+var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem;
 var stTransparent = "0.5",
 	statColours = [["(0, 30, 170, " + stTransparent + ")", "(0, 0, 132, 1)"], ["(170, 30, 0, " + stTransparent + ")", "(132, 0, 0, 1)"]],
 	statLabels = ["Income", "Expenses"];
 const MILLIS_DAY = 86400000;
-var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone;
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
 
 socket.on('group post', function(data){
@@ -180,6 +177,8 @@ function ClearFields() {
  * When the user clicks on a tab, load and show the information within, and hide any other tabs.
  */
 function changeTab(name) {
+	$('#stat0').remove();
+	$('#stat1').remove();
     activeTab='feed';
     if(name)
         activeTab = name;
@@ -199,7 +198,8 @@ function changeTab(name) {
     else if (activeTab == 'statistics') {
 		createLabelOptions();
         drawChart();
-        drawLabelChart(new Date("1999-10-10"), new Date(), "Food and similar", 2);
+		$("#date_start").datepicker({startDate: '-10d'});
+		$("#date_end").datepicker();
     }
     else if(activeTab == 'food')
         getCalendar();
@@ -801,20 +801,22 @@ function drawChart() {
 			var months = Array(2).fill().map(function(){
 				return Array(12).fill(0);
 			});
+			var validAmount = false;
 			for (var i = 0; i < result.budget_entries.length; i++) {
 				var element = result.budget_entries[i];
 				if (element.entry_datetime != null) {
 					var entryTime = new Date(element.entry_datetime);
-					var entryMonth = mod(entryTime.getMonth() - monthNow - 1, 12);	// Perferably test the mod more.
 					if (entryTime > minLimit && element.amount != 0) {
-						months[(element.amount > 0) ? 0 : 1][entryMonth] += element.amount;
+						months[(element.amount > 0) ? 0 : 1][mod(entryTime.getMonth() - monthNow - 1, 12)] += element.amount;
 					}
+					if (element.amount != 0) {validAmount = true;}
 				}
 			}
-			if (months[0].length < 0 && months[1].length < 0) {
+			if (!validAmount) {
 				hideFirstStat();
 				return;
 			}
+			else {$('#stat_container').append('<canvas id="stat0" class="chart"></canvas>');}
 
 			// Adjust the labels.
 			var labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], rotate = monthNow + 1;
@@ -847,8 +849,7 @@ function drawLabelChart(start, end, typeName, intervalType) {
 			if (!result.length) {return;}
 			
 			// Insert the values for every interval.
-			var dataPoints = [[], []];
-			var labels = [];
+			var dataPoints = [[], []], labels = [], validAmount = false;
 			for (var i = 0; i < result.length; i++) {
 				var element = result[i], time = new Date(element.t);
 
@@ -859,6 +860,7 @@ function drawLabelChart(start, end, typeName, intervalType) {
 				var label = "" + time.getFullYear();
 				if (intervalType > 0) {label = ((time.getMonth() + 1) + "/") + label;}
 				if (intervalType > 1) {label = (time.getDate() + "/") + label;}
+				if (element.amount != 0) {validAmount = true;}
 
 				// Add to array if it doesn't already exist, otherwise addition.
 				var index = (element.amount > 0) ? 0 : 1, j = checkIfExist(label, labels);
@@ -869,8 +871,10 @@ function drawLabelChart(start, end, typeName, intervalType) {
 				}
 				else {dataPoints[index][j] += element.amount;}
 			}
+			if (!validAmount) {return;}
 			var rgb = ((result[0].colour) ? addInvertedColour(result[0].colour) : statColours);
 
+			$('#stat_container').append('<canvas id="stat1" class="chart"></canvas>');
 			drawBarChart(dataPoints, labels, statLabels, ((rgb) ? rgb : statColours), "stat1");
 		}
 	});
@@ -1270,9 +1274,12 @@ function createLabelOptions() {
 function hideFirstStat() {
 	$("#stat0").css('display', 'none');
 	$("#stat_header").css('display', 'none');
+	$('#stat0').remove();
 }
 
 function showFirstStat() {
+	
+	$('#stat_container').append('<canvas id="stat0" class="chart"></canvas>');
 	$("#stat0").css('display', 'block');
 	$("#stat_header").css('display', 'block');
 }
@@ -1283,17 +1290,26 @@ function hideSecondStat() {
 	$("#stat1").css('display', 'none');
 	$("#date_start").hide();
 	$("#date_end").hide();
+	$("#time_types").hide();
+	$("#ds_label").hide();
+	$("#de_label").hide();
+	$('#stat0').remove();
 }
 
 function showSecondStat() {
+	$('#stat_container').append('<canvas id="stat0" class="chart"></canvas>');
 	$("#showStat").show();
 	$("#entry_types").show();
 	$("#stat1").css('display', 'block');
 	$("#date_start").show();
 	$("#date_end").show();
+	$("#time_types").show();
+	$("#ds_label").show();
+	$("#de_label").show();
 }
 
 function drawStats() {
-	drawLabelChart(new Date("1999-10-10"), new Date(), $("#entry_types").val(), 2);
+	$('#stat1').remove();
+	drawLabelChart($("#date_start").datepicker('getDate'), $("#date_end").datepicker('getDate'), $("#entry_types").val(), $("#time_types option:selected").index());
 	hideFirstStat();
 }
