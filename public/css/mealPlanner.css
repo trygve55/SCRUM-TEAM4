@@ -1,18 +1,18 @@
 #meal-recipes{
     background-color: white;
     border-radius: 10px;
-    height: 670px;
-    margin-left: 40px;
-    margin-right: 20px;
-    margin-top: 20px;
+    height: 80vh;
+    margin-bottom: 2vh;
+    margin-top:2vh;
+    margin-left: 3.0%;
 }
 #meal-calendar{
     background-color: white;
     border-radius: 10px;
-    height: 670px;
-    margin-left: 20px;
-    margin-top: 20px;
+    height: 80vh;
+    margin-top:2vh;
     overflow-y: auto;
+    margin-left: 2.2%;
 }
 
 body{
@@ -69,4 +69,14 @@ body{
     border-bottom: 1px solid #EFEFEF;
     margin: 8px 0;
     padding-bottom: 8px;
+}
+
+@media screen and (max-width: 768px) {
+    #meal-recipes {
+        margin-left: 0%;
+        height: 100%;
+    }
+    #meal-calendar {
+        margin-left: 0%;
+    }
 }
