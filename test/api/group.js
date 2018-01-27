@@ -62,6 +62,43 @@ describe('Group API', function() {
         });
     });
     describe('/api/group/ POST functions', function() {
+        describe('/api/group/', function() {
+            it('should reject bad requests', function(done) {
+                request.post('/api/group/').send().expect(400).end(done);
+            });
+            it('should create a new group ', function(done) {
+                request.post("/api/group/").send({
+                    group_name: "The Legion",
+                    currency: 37
+                }).expect(200).end(function(err, res) {
+                    pool.query("SELECT COUNT(*) FROM home_group WHERE group_name = 'The Legion'", function(err, result) {
+                        if(err) throw err;
+                        chai.expect(result[0]["COUNT(*)"]).to.equal(1);
+                        done();
+                    });
+                });
+            });
+            after('delete group data created in test', function(done) {
+                pool.query("SELECT COUNT(*), group_id, shopping_list_id FROM home_group WHERE group_name = 'The Legion'", function(err, result) {
+                    if(err) throw err;
+                    var data = result[0];
+                    if(data["COUNT(*)"] > 0) {
+                        pool.query("DELETE FROM group_person WHERE group_id = ?", [data["group_id"]], function(err) {
+                            if(err) throw err;
+                            pool.query("DELETE FROM home_group WHERE group_id = ?", [data["group_id"]], function(err) {
+                                if(err) throw err;
+                                pool.query("DELETE FROM shopping_list WHERE shopping_list_id = ?", [data["shopping_list_id"]], function(err) {
+                                    if(err) throw err;
+                                    done();
+                                });
+                            });
+                        });
+                    } else {
+                        done();
+                    }
+                });
+            });
+        });
         /*describe('/:group_id/members', function() {
             it('should add the specified users to the group', function(done) {
                 request.post('/api/group/1/members')
@@ -90,7 +127,29 @@ describe('Group API', function() {
     describe('/api/group/ PUT functions', function() {
         describe('/api/group/:group_id', function() {
             it('should update the group info', function(done) {
-
+                var group_name = "SHOULD BE 'test group'",
+                    group_desc = "If you're reading this, I am probably dead. Lol jk but actually if you're reading this" +
+                        "a test-cleanup failed. group_desc should be 'lol'";
+                request.put('/api/group/1')
+                    .send({
+                        "group_name": group_name,
+                        "group_desc": group_desc
+                    })
+                    .expect(200)
+                    .end(function(err, res) {
+                        pool.query("SELECT group_name, group_desc FROM home_group WHERE group_id = 1", function(err, result) {
+                            if(err) throw err;
+                            chai.expect(result[0].group_name).to.equal(group_name);
+                            chai.expect(result[0].group_desc).to.equal(group_desc);
+                            done();
+                        });
+                    });
+            });
+            after('change group 1 back to proper values', function(done) {
+                pool.query("UPDATE home_group SET group_name = 'test group', group_desc = 'lol' WHERE group_id = 1", function(err, result) {
+                    if(err) throw err;
+                    done();
+                });
             });
         });
     });

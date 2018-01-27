@@ -28,14 +28,11 @@ module.exports = router;
  * method: GET
  */
 router.get('/:group_id/me/privileges', function(req, res){
-    req.session.person_id = 1; //TODO remove this
     if(!req.session.person_id)
         return res.status(500).send();
     pool.query('SELECT role_id FROM group_person WHERE person_id = ? AND group_id = ?', [req.session.person_id, req.params.group_id], function(err, result){
         if(err)
             return res.status(500).send();
-        console.log(result);
-        console.log("person_id: " + req.session.person_id + ", group_id" + req.params.group_id);
         if(result.length > 0) {
             res.status(200).send(result[0].role_id == 2);
         } else {
@@ -182,7 +179,6 @@ router.get('/', function(req, res){
  * }
  */
 router.post('/:group_id/members', function(req, res){
-    console.log(req.body);
     if(!req.session.person_id)
         return res.status(500).send("Person_id");
     if(!(req.body.members instanceof Array)){
@@ -568,11 +564,8 @@ router.put('/:group_id', function(req, res){
         var f = true;
         var vals = [];
         for (var p in req.body) {
-            if(acceptedGroupVars.indexOf(p) < 0) {
-                console.log("hadehade");
-                res.status(400).send("Bad request (bad variable: '" + p + "')");
-                return;
-            }
+            if(acceptedGroupVars.indexOf(p) < 0)
+                return res.status(400).send("Bad request (bad variable: '" + p + "')");
             if (!f)
                 qry += ", ";
             qry += p + " = ?";
@@ -581,11 +574,8 @@ router.put('/:group_id', function(req, res){
         }
         vals.push(req.params.group_id);
         qry += " WHERE group_id = ?";
-        console.log(qry);
-        console.log(vals);
         pool.query(qry, vals, function (err, result) {
-            console.log("gååleggdeg");
-            return (err) ? (res.status(400).send(err.code + "\n" + err.sqlMessage)) : (res.status(200).json(result));
+            return (err) ? (res.status(500).send(err.code + "\n" + err.sqlMessage)) : (res.status(200).json(result));
         });
     });
 });
@@ -602,8 +592,6 @@ router.put('/:group_id', function(req, res){
  */
 router.post('/', function(req, res){
     var acceptedGroupVars = ["group_name", "currency"];
-    if(!req.session.person_id)
-        return res.status(403).send("You must log in");
     for(var p in req.body) {
         if(acceptedGroupVars.indexOf(p) < 0) return res.status(400).send("Bad variable: " + p);
     }
