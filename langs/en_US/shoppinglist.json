@@ -67,5 +67,6 @@
   "are-you-sure": "Are you sure you want to settle all negative balances to the cost of ",
   "yes-settle-all": "Yes",
   "no-settle-all": "No",
-  "shop-complete": "Close"
+  "shop-complete": "Close",
+  "label-none": "No label"
 }

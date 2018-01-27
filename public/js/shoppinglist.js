@@ -762,10 +762,8 @@ function setupClicks(){
 
                 $('.balancelist').unbind("click").click(function () {
                     var name = this.innerHTML.split('>')[1].split('<')[0];
-                    console.log(name);
                     for(var j=0; j<balancelist.length; j++){
                         var thefullname = balancelist[j].forename + " " + balancelist[j].lastname;
-                        console.log(thefullname);
                         var personid = balancelist[j].person_id;
                         if(thefullname == name){
                             if(balancelist[j].amount <= 0) {
@@ -814,14 +812,15 @@ function setupClicks(){
                 $('tr[data-id]').click(function(){
                     var id = $(this).closest("tr[data-id]").data("id");
                     var entry = null;
-                    for(var i = 0; i < curBudget.budget_entries.length; i++){
-                        if(curBudget.budget_entries[i].budget_entry_id == id){
-                            entry = curBudget.budget_entries[i];
+                    for(var i = 0; i < curBudget.budget.length; i++){
+                        if(curBudget.budget[i].budget_entry_id == id){
+                            entry = curBudget.budget[i];
+                            break;
                         }
                     }
                     if(!entry)
                         return;
-                    var entrylist = entry.budget_shopping_list_entries;
+                    var entrylist = entry.shopping_list_entries;
                     var g = "";
                     for(var j=0; j<entrylist.length; j++){
                         g += "<li class='list-group-item'>"+entrylist[j].entry_text+"</li>";
@@ -847,12 +846,12 @@ function setupClicks(){
                     var time = datetime.split("T")[1].split(".")[0]; //09:23:02
                     var timeNsec = time.split(":")[0] + ":" + time.split(":")[1];
                     var formattedDateTime = date + "/" + month + "/" + year + ", " + timeNsec;
-                    var la = entry.budget_entry_type.budget_entry_type_name;
-                    var bc = Number(entry.budget_entry_type.budget_entry_type_color).toString(16);
-                    var lh = '<div style="background-color: #'+bc+'; padding-left: 1vh; padding-top: 0.5vh; padding-bottom: 0.5vh;border-radius: 15px;">'+lang["label-label"]+': '+la+'</div>'
+                    var la = entry.entry_type.entry_type_name;
+                    var bc = Number(entry.entry_type.entry_type_color).toString(16);
+                    var lh = '<div style="background-color: #'+bc+'; padding-left: 1vh; padding-top: 0.5vh; padding-bottom: 0.5vh;border-radius: 15px;">'+lang["label-label"]+': '+(la ? la : lang["label-none"])+'</div>';
                     $("body").append(balanceItem({
                         comment: entry.text_note,
-                        bought_by: entry.added_by.forename + " " + entry.added_by.lastname,
+                        bought_by: (entry.purchased_by.person_id == me.person_id ? lang["me"] : entry.purchased_by.forename + " " + entry.purchased_by.lastname),
                         bought_by_label: lang["bought-by-label"],
                         cost: entry.amount/100 + " " + sign,
                         cost_label: lang["cost-label"],
@@ -873,19 +872,39 @@ function setupClicks(){
                 });
 
                 $('.bal-settle').unbind("click").click(function(){
-                    var cost = "34 kr";
+                    var cost = 0;
+                    var ids = [];
+                    for(var i = 0; i < curBudget.my_balance.length; i++){
+                        if(curBudget.my_balance[i].amount < 0) {
+                            cost += curBudget.my_balance[i].amount / 100;
+                            ids.push(curBudget.my_balance[i].person_id);
+                        }
+                    }
                     $('body').append(settleAll({
                         settle_all: lang["settle-all"],
-                        are_you_sure: lang["are-you-sure"] +cost,
+                        are_you_sure: lang["are-you-sure"] +cost + " " + sign,
                         yes_settle_all: lang["yes-settle-all"],
                         no_settle_all: lang['no-settle-all']
                     }));
+
                     $('.notsettleall').unbind("click").click(function () {
                         $('.pop').remove();
                     });
+
                     $('.settleall').unbind("click").click(function () {
-                        $('.pop-content').append('Not made');
-                    })
+                        $.ajax({
+                            url: 'api/budget/paySpecific',
+                            method: 'PUT',
+                            contentType: 'application/json',
+                            data: JSON.stringify({
+                                person_ids: ids
+                            }),
+                            error: console.error,
+                            success: function (data) {
+                                $('.pop').remove();
+                            }
+                        });
+                    });
                 });
                 
                 $('.bal-complete').unbind("click").click(function(){

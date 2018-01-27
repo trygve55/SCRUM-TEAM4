@@ -67,5 +67,6 @@
   "are-you-sure": "Er du sikker på at du ønsker å gjøre opp alle negative balanser til totalsummen ",
   "yes-settle-all": "Ja",
   "no-settle-all": "Nei",
-  "shop-complete": "Lukk"
+  "shop-complete": "Lukk",
+  "label-none": "Ingen kategori"
 }

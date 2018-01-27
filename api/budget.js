@@ -281,6 +281,8 @@ router.get('/getDebt', function(req,res) {
  * method: GET
  */
 router.get('/:shopping_list_id', function(req, res){
+    if(isNaN(Number(req.params.shopping_list_id)))
+        return res.status(500).send();
     pool.query('SELECT budget_entry_id, shopping_list_entry_id, entry_text, datetime_purchased, amount, text_note, entry_datetime, forename, lastname, entry_type_name, entry_type_color, person_id ' +
         'FROM shopping_list_entry ' +
         'LEFT JOIN budget_entry USING (budget_entry_id) ' +
@@ -377,6 +379,52 @@ router.post('/pay/:budget_entry_id', function(req, res) {
             res.status(403).json({success: "false", error: "no access"});
         else
             res.status(200).send();
+    });
+});
+
+/**
+ * Sets entries in person_budget_entry to paid, with the current timestamp
+ *
+ * URL: /api/budget/paySpecific
+ * method: PUT
+ * data: {
+ *      person_ids: "###,###,###,###"
+ * }
+ * (budget_entry_ids is a string, with ids separated by commas. example: "200,390,29")
+ */
+router.put('/paySpecific', function(req, res) {
+    console.log(req.body);
+    if(req.body.person_ids == null) {
+        return res.status(400).send("Bad request, no person_ids variable");
+    }
+    var ids = req.body.person_ids.split(",").concat([req.session.person_id]);
+    var sqlQuery = "UPDATE person_budget_entry SET datetime_paid = CURRENT_TIMESTAMP " +
+        "WHERE (person_id, budget_entry_id) IN " +
+        "(SELECT t.person_id, t.budget_entry_id FROM " +
+        "(SELECT person_budget_entry.person_id, person_budget_entry.budget_entry_id " +
+        "FROM person_budget_entry " +
+        "LEFT JOIN budget_entry USING (budget_entry_id) " +
+        "WHERE person_id IN ";
+    var p = "(";
+    for(var i = 0; i < ids.length; i++) {
+        if(ids[i].isNaN) {
+            return res.status(400).send("Not a number: " + ids[i]);
+        }
+        p += "?, ";
+    }
+    p = p.slice(0,-2) + ")";
+    sqlQuery += p + " AND " +
+    "added_by_id IN " + p + " AND " +
+    "datetime_paid IS NULL) t)";
+    ids = ids.concat(ids);
+    console.log(sqlQuery);
+    console.log(ids);
+    pool.query(sqlQuery,ids,function(err) {
+        console.log(err);
+        if(err) {
+            return res.status(500).send("Internal database error");
+        }
+        return res.status(200).send("Query successful");
     });
 });
 
