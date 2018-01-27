@@ -20,7 +20,7 @@ group_pic
 group_pic_tiny
 has_group_pic
 default_currency_id
-group_deactivated</panel_attributes>
+is_hidden</panel_attributes>
     <additional_attributes/>
   </element>
   <element>

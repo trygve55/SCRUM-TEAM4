@@ -16,6 +16,7 @@ module.exports = router;
  */
 router.post('/entryType', function(req, res) {
     var data = req.body;
+    console.log(data);
     pool.query('INSERT INTO budget_entry_type (entry_type_name, entry_type_color, shopping_list_id) SELECT ?, ?, ? ' +
         'FROM shopping_list WHERE shopping_list_id IN ' +
         '(SELECT home_group.shopping_list_id FROM person   ' +
@@ -133,9 +134,9 @@ router.delete('/entryType/:budget_entry_type_id', function(req, res) {
  * }
  */
 router.post('/', function(req, res){
+    console.log(req.body);
     req.body.shopping_list_entry_ids = req.body.shopping_list_entry_ids.split(",");
     req.body.person_ids = req.body.person_ids.split(",");
-    console.log(req.body);
     req.body.text_note = req.body.text_note.substring(0, 254);
     pool.getConnection(function(err, connection) {
         if (err)
