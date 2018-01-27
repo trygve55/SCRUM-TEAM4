@@ -97,14 +97,12 @@ router.delete('/entry/:shopping_list_entry_id', function(req, res) {
     pool.query(
         'DELETE FROM shopping_list_entry ' +
         'WHERE shopping_list_entry_id = ? AND shopping_list_id IN ' +
-        '(SELECT shopping_list_id FROM person WHERE person_id = ? ' +
-        'UNION ' +
-        'SELECT home_group.shopping_list_id FROM person ' +
+        '(SELECT home_group.shopping_list_id FROM person ' +
         'LEFT JOIN group_person USING(person_id) ' +
         'LEFT JOIN home_group USING(group_id) ' +
         'WHERE person.person_id = ? ' +
         'UNION  ' +
-        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?) LIMIT 1',
+        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ? AND invite_accepted = 1) LIMIT 1',
         [Number(req.params.shopping_list_entry_id), req.session.person_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
             checkResult(err, result, res);
         });
@@ -139,9 +137,7 @@ router.put('/info/:shopping_list_id', function(req, res) {
     }
     request += ' WHERE person_id = ? AND shopping_list_id = ? ' +
         'AND shopping_list_id IN  ' +
-        '(SELECT t.shopping_list_id FROM (SELECT shopping_list_id FROM person) t WHERE person_id = ?  ' +
-        'UNION ' +
-        'SELECT k.shopping_list_id FROM (SELECT shopping_list_id FROM shopping_list_person) k WHERE person_id = ?) LIMIT 1';
+        '(SELECT k.shopping_list_id FROM (SELECT shopping_list_id FROM shopping_list_person) k WHERE person_id = ?  AND invite_accepted = 1) LIMIT 1';
 
     parameters.push(req.session.person_id);
     parameters.push(req.params.shopping_list_id);
@@ -168,9 +164,7 @@ router.get('/', function(req, res) {
         'LEFT JOIN shopping_list_person USING(shopping_list_id) ' +
         'LEFT JOIN (SELECT person_id, forename, middlename, lastname FROM person) p USING(person_id) ' +
         'WHERE shopping_list_id IN  ' +
-        '(SELECT shopping_list_id FROM person WHERE person_id = ?  ' +
-        'UNION ' +
-        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?)',
+        '(SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?)',
         [p_id, p_id, p_id],
         function(err, result) {
             if (err) {
@@ -275,9 +269,7 @@ router.get('/:shopping_list_id', function(req, res) {
         'LEFT JOIN shopping_list_person USING(shopping_list_id) ' +
         'LEFT JOIN (SELECT person_id, forename, middlename, lastname FROM person) p USING(person_id) ' +
         'WHERE shopping_list.shopping_list_id = ? AND shopping_list_id IN  ' +
-        '(SELECT shopping_list_id FROM person WHERE person_id = ?  ' +
-        'UNION  ' +
-        'SELECT home_group.shopping_list_id FROM person  ' +
+        '(SELECT home_group.shopping_list_id FROM person  ' +
         'LEFT JOIN group_person USING(person_id) ' +
         'LEFT JOIN home_group USING(group_id) ' +
         'WHERE person.person_id = ? ' +
