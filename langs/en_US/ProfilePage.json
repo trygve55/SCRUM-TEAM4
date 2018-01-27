@@ -37,6 +37,6 @@
   "save-password-success": "Your password has been changed!",
   "pwbut": "Save password",
   "but": "Save info",
-  "profpicsuccess": "Picture successfully uploaded!"
-
+  "profpicsuccess": "Picture successfully uploaded!",
+  "profpicfailure": "Failure, picture was not uploaded"
 }
