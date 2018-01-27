@@ -52,62 +52,7 @@ div.changeinfo {
 div.textarea{
     font-size: 100%;
 }
-
-.mainrow{
-    padding-left: 15%;
 }
-
-@media (max-width: 900px){
-    #profpic{
-        width: 150px;
-        height: 150px;
-    }
-    .leftcontainer{
-        min-width: 56vh;
-
-    }
-    .rightcontainer {
-        padding: 0px;
-        min-width: 56vh;
-    }
-    .mainrow{
-        padding-left: 0px;
-    }
-}
-
-
-@media (min-width: 500px) and (max-width: 768px) {
-    .leftcontainer{
-        min-width: 80vh;
-    }
-
-    .rightcontainer{
-        min-width: 80vh;
-    }
-
-    .mainrow{
-        padding-left: 20%;
-        padding: auto;
-    }
-
-
-
-
-
-}
-
-/*
-@media(max-width:767px){
-    .colu1 {
-    }
-}
-
-@media(min-width:375px){
-    .colu1 {
-        min-width: 500px;
-    }
-}
-*/
 
 #okok{
     overflow-y: scroll;
