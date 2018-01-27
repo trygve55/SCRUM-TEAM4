@@ -17,13 +17,13 @@ body{
 
 div.container1{
 
-    width:100%;
-    height:100%;
-
+    height: 87vh;
     background-color: white;
     border-radius: 15px;
     overflow: hidden;
     padding-bottom: 2%;
+    border-top: #a3e6f7 1vh solid;
+    border-bottom: #a3e6f7 1vh solid;
 
 
 }
