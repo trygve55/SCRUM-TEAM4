@@ -6,6 +6,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var expressSanitizer = require('express-sanitizer');
+var helmet = require('helmet');
 var fs = require('fs');
 var rfs = require('rotating-file-stream');
 var app = express();
@@ -23,6 +24,7 @@ var logStream = rfs(function(){
 var output = '[:date[web]] ":method :url" :status :res[content-length] - :response-time ms - :remote-addr';
 app.use(logger(output));
 app.use(logger(output, {stream: logStream}));
+app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());

@@ -3,7 +3,7 @@ var stTransparent = "0.5",
 	statColours = [["(0, 30, 170, " + stTransparent + ")", "(0, 0, 132, 1)"], ["(170, 30, 0, " + stTransparent + ")", "(132, 0, 0, 1)"]],
 	statLabels = ["Income", "Expenses"];
 const MILLIS_DAY = 86400000;
-var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone, popupAssign;
+var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone, popupAssign, listMemebers, listMemebersAdmin;
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
 var generalLabels;
 
@@ -113,7 +113,9 @@ $(function() {
                 'taskItem.html',
                 'taskListGroup.html',
                 'taskItemDone.html',
-                'popupAssign.html'
+                'popupAssign.html',
+                'listMemebers.html',
+                'listMemebersAdmin.html'
             ]
         },
         success: function (data){
@@ -127,6 +129,8 @@ $(function() {
             taskListGroup = Handlebars.compile(data['taskListGroup.html']);
             taskItemDone = Handlebars.compile(data['taskItemDone.html']);
             popupAssign = Handlebars.compile(data['popupAssign.html']);
+            listMemebers = Handlebars.compile(data['listMemebers.html']);
+            listMemebersAdmin = Handlebars.compile(data['listMemebersAdmin.html']);
         }
     });
 
@@ -239,7 +243,7 @@ function changeTab(name) {
 }
 
 
-function adminChange(){
+function adminChange() {
     console.log(currentGroup.group_name);
     console.log(currentGroup.group_id);
     $('#changegroup-NameButton').click(function () {
@@ -257,14 +261,20 @@ function adminChange(){
         });
     });
 
+
     $.ajax({
-        url: '/api/group/' + currentGroup.group_id,
+        url: '/api/group/' + currentGroup.group_id + '/users',
         method: 'GET',
         success: function (data) {
-            console.log(data);
+            for(var i = 0; i < data.length; i++) {
+                var namess = data[i].name;
+                $('#list-all-members').append(listMemebersAdmin({
+                    member_text: namess,
+                    member_id: i
+                }));
+            }
         }
-    })
-
+    });
 }
 
 /**
@@ -328,7 +338,6 @@ function getShoppinglist() {
  * This function
  */
 function setupClicks(){
-
     $(".list-name-input").unbind("focusout").focusout(function(){
         var text = $(this).val();
         var id = $(this).closest("div[data-id]").data("id");
@@ -563,8 +572,7 @@ function setupClicks(){
         $('select.byers-input').change(function () {
             var shopid = currentShoppingList.shopping_list_id;
             if($(this).find(":selected").attr('id')=='choosemembers'){
-                console.log("zero");
-                $(".addbyers").show();
+                $('.addbyers').show();
                 $('#scrollable-dropdown-menu2 .typeahead').typeahead({
                         highlight: true
                     },
@@ -578,7 +586,7 @@ function setupClicks(){
                             },
                             queryTokenizer: Bloodhound.tokenizers.whitespace,
                             prefetch: {
-                                url: '/api/shoppingList/'+shopid+'/users',
+                                url: '/api/group/'+currentGroup.group_id+'/users',
                                 cache: false
                             }
                         }),
@@ -596,7 +604,7 @@ function setupClicks(){
                 $(".typeahead").bind('typeahead:select', function(a, data){
                     if($.inArray(data, buyers) === -1){
                         buyers.push(data);
-                        $('.membersadded').append(data.forename + " " + data.lastname);
+                        $('.membersadded').append(data.name);
                     }
                 });
 
@@ -612,7 +620,7 @@ function setupClicks(){
 
         $('#t-popup-complete').unbind("click").click(function () {
             var shopid = currentShoppingList.shopping_list_id;
-           var price = $('#shop-entry-cost').val();
+            var price = $('#shop-entry-cost').val();
            if(isNaN(price)) return;
            var comment = $('#shop-entry-name').val();
            if(comment==""){
@@ -636,7 +644,7 @@ function setupClicks(){
                    colorInt = Number(parseInt(color.split("#")[1],16));
                }
                console.log("New entrytype: " + name + ", color: "+ colorInt);
-               /*$.ajax({
+               $.ajax({
                    url: '/api/budget/entryType',
                    method: 'POST',
                    data: {
@@ -646,7 +654,7 @@ function setupClicks(){
                    },success:function (data) {
                        budgetentrytypeid = data;
                    },error:console.error
-               });*/
+               });
            }else { //labels in the DB
                budgetentrytypeid = labelvalue;
            }
@@ -678,7 +686,7 @@ function setupClicks(){
                }
            }
            console.log("sending in: " + shopid + ", " + price + ", " + comment + ", " + personsids + ", " + slei + ", " + budgetentrytypeid);
-           /*$.ajax({
+           $.ajax({
                url: '/api/budget',
                method: 'POST',
                data: inputdata,
@@ -687,7 +695,7 @@ function setupClicks(){
                    $('.pop').remove();
                },
                error: console.error
-           })*/
+           })
 
         });
         $('#t-popup-cancel').unbind("click").click(function () {

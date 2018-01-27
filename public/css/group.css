@@ -3,7 +3,7 @@
 	padding: 2%;
 	background-color: white;
 	border-radius: 25px;
-	max-height: 670px;
+	height: 100vh;
 	min-width: 320px;
 }
 
@@ -260,7 +260,8 @@ div.grouptablink.backvariant{
 @media screen and (max-width: 414px) {
 	#changename-group-admin{
 		align-content: center;
-		padding-left: 7%;
+		padding-left: 9%;
+		margin-top: 75px
 	}
 	#membersofgroup{
 		padding-right: 11%;
@@ -275,8 +276,8 @@ div.grouptablink.backvariant{
 #group-newsfeedPost{
     border-style:groove;
     resize: none;
-    padding-left: 4%;
-    width:85%;
+    padding-left: 2vh;
+    width:112vh;
     text-align: left;
     height: 80px;
     border-radius: 5px;
@@ -290,7 +291,8 @@ div.grouptablink.backvariant{
 }
 
 .post{
-    padding:2%;
+    padding:4vh;
+	padding-right: 8vh;
     margin-top: 20px;
     margin-bottom: 20px;
     min-height:175px;

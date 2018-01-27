@@ -24,7 +24,7 @@ module.exports = router;
 /**
  * Get your privilege
  *
- * URL: /api/group/me/privileges
+ * URL: /api/group/{group_id}/me/privileges
  * method: GET
  */
 router.get('/:group_id/me/privileges', function(req, res){
@@ -34,6 +34,30 @@ router.get('/:group_id/me/privileges', function(req, res){
         if(err)
             return res.status(500).send();
         res.status(200).send(result[0].role_id == 2);
+    });
+});
+
+/**
+ * Get all users for a group
+ *
+ * URL: /api/group/{group_id}/users
+ * method: GET
+ */
+router.get('/:group_id/users', function(req, res){
+    if(!req.session.person_id)
+        return res.status(500).send();
+    pool.query('SELECT person_id, forename, lastname, email FROM group_person LEFT JOIN person USING (person_id) WHERE group_id = ?', [req.params.group_id], function(err, result){
+        if(err)
+            return res.status(500).send();
+        var ret = [];
+        for(var i = 0; i < result.length; i++){
+            ret.push({
+                person_id: result[i].person_id,
+                name: result[i].forename + " " + result[i].lastname,
+                email: result[i].email
+            });
+        }
+        res.status(200).json(ret);
     });
 });
 
@@ -144,6 +168,7 @@ router.post('/:group_id/members', function(req, res){
             req.body.members = [req.body.members];
         if(!req.body.members || req.body.members.length == 0)
             return res.status(400).send("Bad Request");
+        req.body.members = req.body.members[0].split(',');
     }
     pool.getConnection(function(err, connection){
         if(err) {
