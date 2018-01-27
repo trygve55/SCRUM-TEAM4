@@ -12,6 +12,8 @@ $(document).ready(function () {
     $('#save-success').hide();
     $('#old-password-error').hide();
     $('#change-password-error').hide();
+    $('#profpicsuccess').hide();
+    $('#profpicfailure').hide();
     $('#profpic').attr("src","api/user/" + localStorage.person_id + "/picture");
 
     /**
@@ -218,6 +220,13 @@ $(document).ready(function () {
                 console.log(data);
                 d = new Date();
                 $('#profpic').attr("src","api/user/" + testetest + "/picture?t="+d.getTime());
+                $('#profpicfailure').hide();
+                $('#profpicsuccess').show();
+
+            },
+            error: function () {
+                $('#profpicsuccess').hide();
+                $('#profpicfailure').show();
             }
         });
     });
@@ -348,6 +357,7 @@ function changePassword() {
                 },
                 success: function (data) {
                     $('#old-password-error').hide();
+                    $('#change-password-error').show();
                     $('#save-password-success').show();
                     console.log(data);
                 },
@@ -359,6 +369,8 @@ function changePassword() {
             });
         },
         error: function () {
+            $('#save-password-success').hide();
+            $('#change-password-error').hide();
             $('#old-password-error').show();
         }
     });
