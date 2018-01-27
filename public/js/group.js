@@ -1642,7 +1642,9 @@ function setupTaskClicks(){
         });
     });
 
-    $('.fa-user').unbind('click').click(addMembersPopup);
+    $('.fa-user').unbind('click').click(function(){
+        addMembersPopup($(this).closest('li[data-id]').data('id'));
+    });
 }
 
 function setupTaskClicksDone(){
@@ -1800,13 +1802,26 @@ function drawStats() {
 	hideFirstStat();
 }
 
-function addMembersPopup(){
+function addMembersPopup(todo){
+    var thememberstring;
     var themember;
+
+    for(var i=0; i<dataTask.length; i++){
+        if(dataTask[i].todo_id==todo){
+            if(dataTask[i].assigned_to.forename ==null) thememberstring = null;
+            else{
+                thememberstring = dataTask[i].assigned_to.forename + " " + dataTask[i].assigned_to.lastname;
+
+            }
+        }
+    }
+
     $('body').append(popupAssign({
         assign_header: lang["assign-header"],
         assign_name: lang["assign-name"],
         assign_ok: lang["assign-ok"],
-        assign_cancel: lang["assign-cancel"]
+        assign_cancel: lang["assign-cancel"],
+        member_task: thememberstring
     }));
     //Shows suggestions when characters is typed
     $('#scrollable-dropdown-menu .typeahead').typeahead({
@@ -1838,25 +1853,26 @@ function addMembersPopup(){
     //Adds member to list when clicked
     $(".typeahead").bind('typeahead:select', function(a, data){
         themember = data;
-        $(".typeahead").val("");
-    });
 
-    //Empty inputfield when its closed
-    $(".typeahead").bind('typeahead:close', function(){
-        $(".typeahead").val("");
     });
 
     $('.assignok').unbind("click").click(function () {
-        var personid = '';
+        var personid = themember.person_id;
         var personids = [];
         personids.push(personid);
-        var todoid = $(this).closest('div[data-id]').data('id');
+        console.log(personids);
+        console.log("---");
         $.ajax({
-            url: '/api/tasks/person/'+todoid,
+            url: '/api/tasks/person/'+todo,
             method: 'POST',
             data: {
-                people: personids
-            }
+                people: personids.join(",")
+            },
+            success: function () {
+                console.log("Todo updated");
+                $('.pop').remove();
+            },
+            error: console.error
         })
     });
 
