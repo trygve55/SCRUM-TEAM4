@@ -464,7 +464,6 @@ function setupClicks(){
                         color: "#a9d5f2",
                         change: function(color){
                             currColor = color.toHexString();
-                            console.log(currColor);
                         }
                     });
                     $('.labeledit').hide();
@@ -496,7 +495,6 @@ function setupClicks(){
                                 setTableClicks(thedata);
                                 $('#label-name-input').val('');
                                 $(".colorpicker").spectrum({
-                                        color: "#a9d5f2",
                                         change: function(color){
                                             currColor = color.toHexString();
                                             console.log(currColor);
