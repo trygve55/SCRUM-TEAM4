@@ -858,7 +858,7 @@ $(function () {
      * the method getPost() to post the post to the page then ClearFields()
      * to reset the inputfield.
      */
-    $('#group-postButton').click(function() {
+    $('#group-post2').click(function() {
 
 
 
