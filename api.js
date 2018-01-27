@@ -1,10 +1,6 @@
 var router = require('express').Router();
 
-router.use('*', function(req, res, next){
-    req.session.person_id = 16;
-    req.session.save();
-    next();
-});
+
 
 router.use('/language', require('./api/language'));
 router.use('/auth', require('./api/auth'));
