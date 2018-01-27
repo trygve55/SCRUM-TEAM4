@@ -232,8 +232,39 @@ function changeTab(name) {
 		$("#date_start").datepicker({startDate: '-10d'});
 		$("#date_end").datepicker();
     }
+    else if (activeTab == 'leave')
+        adminChange();
     else if(activeTab == 'food')
         getCalendar();
+}
+
+
+function adminChange(){
+    console.log(currentGroup.group_name);
+    console.log(currentGroup.group_id);
+    $('#changegroup-NameButton').click(function () {
+        $.ajax({
+            url: '/api/group/' + currentGroup.group_id,
+            method: 'PUT',
+            data: {
+                group_name: $('#changegroup_Name').val()
+            },
+            success: function () {
+                console.log("hei")
+                location.reload();
+            },
+            error: console.error()
+        });
+    });
+
+    $.ajax({
+        url: '/api/group/' + currentGroup.group_id,
+        method: 'GET',
+        success: function (data) {
+            console.log(data);
+        }
+    })
+
 }
 
 /**
