@@ -2,6 +2,7 @@ body{
     font-family: "Trebuchet MS";
     background-size: cover;
     font-style: inherit;
+    overflow-x: hidden;
 }
 
 .buttonn{
@@ -29,6 +30,7 @@ div.leftcontainer{
     overflow: hidden;
     border-top: #a3e6f7 1vh solid;
     border-bottom: #a3e6f7 1vh solid;
+    margin-bottom: 20px;
 }
 
 div.rightcontainer{
@@ -39,15 +41,8 @@ div.rightcontainer{
     border-bottom: #a3e6f7 1vh solid;
 }
 
-/*
-div.bordr{
-    border-right: 1px solid lightgrey;
-    height: 450px;
-}
-*/
 
 div.changeinfo {
-
     margin-top: 5%;
     padding: 2%;
 }
@@ -56,24 +51,45 @@ div.textarea{
     font-size: 100%;
 }
 
+.mainrow{
+    padding-left: 15%;
+}
 
 @media (max-width: 900px){
     #profpic{
         width: 150px;
         height: 150px;
     }
+    .leftcontainer{
+        min-width: 56vh;
 
+    }
+    .rightcontainer {
+        padding: 0px;
+        min-width: 56vh;
+    }
+    .mainrow{
+        padding-left: 0px;
+    }
 }
 
 
 @media (min-width: 500px) and (max-width: 768px) {
-    .colu1{
-        min-width: 500px;
+    .leftcontainer{
+        min-width: 80vh;
     }
 
-    .colu2{
-        min-width: 500px;
+    .rightcontainer{
+        min-width: 80vh;
     }
+
+    .mainrow{
+        padding-left: 20%;
+        padding: auto;
+    }
+
+
+
 
 
 }
