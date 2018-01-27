@@ -1,7 +1,7 @@
 .profil{
     background-color: white;
     border-radius: 10px;
-    height: 640px;
+    height: 87vh;
     margin-top: 20px;
     overflow: auto;
 }
@@ -17,9 +17,7 @@
     padding:2%;
     margin-top: 20px;
     margin-bottom: 20px;
-    min-height:175px;
-    min-width:175px;
-    width: 85%;
+    min-height:87vh;
     max-width: 85%;
     max-height: 90vh;
     -moz-box-shadow: 0 0 1px grey;
@@ -46,13 +44,13 @@ body{
 @media screen and (max-width: 1024px) {
     .profil{
 
-        min-width: 90%;
+        min-width: 70%;
         text-align: center;
     }
     .newsfeed{
         padding-left: 2%;
         padding-right: 2%;
-        min-width: 100%;
+        min-width: 70%;
         text-align: center;
     }
 }
