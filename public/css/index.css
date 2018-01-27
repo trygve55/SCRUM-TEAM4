@@ -17,7 +17,7 @@
 }
 
 .newsfeed{
-    margin-left:3.6%;
+    margin-left:2.0%;
     padding:2%;
     height: 87vh;
     margin-top: 20px;
@@ -67,7 +67,18 @@ hr {
 
     }
     .newsfeed{
+        margin-left:3.6%;
         height: 100%;
         text-align: center;
+    }
+}
+
+@media screen and (max-width: 575px) {
+    .profil {
+        margin-left: 0%;
+        height: 100%;
+    }
+    .newsfeed {
+        margin-left: 0%;
     }
 }

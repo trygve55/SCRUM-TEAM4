@@ -131,12 +131,14 @@ label {
 }
 
 #groupwindowStart{
+	margin-left: 2.0%;
     background-color: white;
     border-radius: 10px;
     height: 87vh;
 }
 
 #groupwindow {
+	margin-left: 2.0%;
 	background-color: white;
 	border-radius: 10px;
 	height: 87vh;
@@ -337,6 +339,13 @@ div.grouptablink.backvariant{
 	padding-left: 4vh;
 }
 
+#groupselection{
+	border-top: #a3e6f7 1vh solid;
+	border-bottom: #a3e6f7 1vh solid;
+	margin-left: 4.17%;
+	margin-bottom: 1vh;
+}
+
 @media screen and (max-width: 992px) {
 	#groupselection{
 		height: 100%;
@@ -345,6 +354,22 @@ div.grouptablink.backvariant{
 		visibility: hidden;
 	}
 	#groupwindow{
+		margin-left: 4.17%;
+		height: 100%;
+		text-align: center;
+	}
+}
+
+@media screen and (max-width: 576px) {
+	#groupselection {
+		margin-left: 0%;
+		height: 100%;
+	}
+	#groupwindowStart{
+		visibility: hidden;
+	}
+	#groupwindow{
+		margin-left: 0%;
 		height: 100%;
 		text-align: center;
 	}
