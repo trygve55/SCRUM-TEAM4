@@ -259,8 +259,32 @@ router.post('/:group_id/members', function(req, res){
  *      person_id, person to delete
  * }
  */
+router.delete('/:group_id/group', function(req, res){
+    if(!req.session.person_id)
+        return res.status(500).send();
+    pool.query('UPDATE home_group SET is_hidden = 1 WHERE group_id IN ' +
+        '(SELECT t.group_id FROM (SELECT group_id FROM home_group ' +
+        'LEFT JOIN group_person USING (group_id) ' +
+        'WHERE person_id = ? AND role_id = 2 AND group_id = ?) t)', [req.session.person_id, req.params.group_id], function(err, result){
+        if(err)
+            return res.status(500).send();
+        if(result.affectedRows == 0)
+            return res.status(403).send();
+        res.status(200).send();
+    });
+});
+
+/**
+ * Removes a users access to the group
+ *
+ * URL: /api/group/{group_id}
+ * method: DELETE
+ * data: {
+ *      person_id, person to delete
+ * }
+ */
 router.delete('/:group_id', function(req, res){
-	// Check if this request is ok.
+    // Check if this request is ok.
     if(!req.session.person_id)
         return res.status(500).send();
     if(!req.params.group_id)
@@ -285,13 +309,13 @@ router.delete('/:group_id', function(req, res){
                     connection.release();
                     return res.status(400).send();
                 }*/
-		connection.query("DELETE FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function (err, result) {
-			connection.release();
-			if (err)
-				return res.status(500).send();
-			res.status(200).send();
-		});
-            //});
+        connection.query("DELETE FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function (err, result) {
+            connection.release();
+            if (err)
+                return res.status(500).send();
+            res.status(200).send();
+        });
+        //});
         //});
     });
 });
