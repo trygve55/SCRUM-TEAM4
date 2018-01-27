@@ -54,6 +54,13 @@ body{
     background-color: #7ebccc;
 }
 
+hr {
+    border: none;
+    height: 1px;
+    color: #444444;
+    background-color: #444444;
+}
+
 @media screen and (max-width: 992px) {
     .profil{
         text-align: center;

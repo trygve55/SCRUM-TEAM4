@@ -183,8 +183,6 @@ label {
 	background-color: white;
 	height: auto;
 	border-radius: 10px;
-	margin-right:10px;
-	margin-left: 10px ;
 	padding: 2%;
 }
 
@@ -264,8 +262,8 @@ div.grouptablink.backvariant{
 #group-newsfeedPost{
     border-style:groove;
     resize: none;
+	width:90%;
     padding-left: 2vh;
-    width:112vh;
     text-align: left;
     height: 80px;
     border-radius: 5px;
@@ -279,10 +277,9 @@ div.grouptablink.backvariant{
 }
 
 .post{
-    padding:4vh;
-	padding-right: 8vh;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    padding:3vh;
+    margin-top: 10px;
+    margin-bottom: 10px;
     min-height:175px;
 
 	max-height: 85vh;
@@ -336,6 +333,26 @@ div.grouptablink.backvariant{
 	background-color: #00a7d1;
 }
 #posts{
-	padding-right: 8vh;
-	padding-left: 8vh;
+	padding-right: 4vh;
+	padding-left: 4vh;
+}
+
+@media screen and (max-width: 992px) {
+	#groupselection{
+		height: 100%;
+	}
+	#groupwindowStart{
+		visibility: hidden;
+	}
+	#groupwindow{
+		height: 100%;
+		text-align: center;
+	}
+}
+
+hr {
+	border: none;
+	height: 1px;
+	color: #444444;
+	background-color: #444444;
 }
