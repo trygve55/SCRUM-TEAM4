@@ -22,13 +22,18 @@
     width: 85%;
     max-width: 85%;
     max-height: 85vh;
+
+    border-top: solid;
+    border-top-color: #ff;
+    border-width: thick;
+    /*
     -moz-box-shadow: 0 0 1px grey;
     -webkit-box-shadow: 0 0 1px grey;
     box-shadow:  0 0 1px grey;
     border-radius: 10px;
+    */
     overflow-y: auto;
     background-color: white;
-    border-radius: 10px;
 }
 
 .group-feedProfilPicture{
