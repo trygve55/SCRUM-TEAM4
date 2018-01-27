@@ -248,7 +248,7 @@ router.delete('/person/:todo_id', function(req, res) {
 /**
  * Get the data about a task
  *
- * URL: /api/tasks/{todo_id}
+ * URL: /api/tasks/todo/{todo_id}
  * method: GET
  */
 router.get('/todo/:todo_id', function(req, res) {
