@@ -170,7 +170,7 @@ router.get('/', function(req, res) {
         'WHERE shopping_list_id IN  ' +
         '(SELECT shopping_list_id FROM person WHERE person_id = ?  ' +
         'UNION ' +
-        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?)',
+        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ? AND invite_accepted = 1)',
         [p_id, p_id, p_id],
         function(err, result) {
             if (err) {

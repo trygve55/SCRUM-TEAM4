@@ -207,7 +207,7 @@ $('document').ready(function () {
                 "listItem.html",
                 "newListItem.html",
                 "popupList.html",
-                "popupTextfieldList.html",
+                "popupTextfieldList2.html",
                 "listReplace.html",
                 "popupMembers.html",
                 "newlabel.html",
@@ -221,7 +221,7 @@ $('document').ready(function () {
             balance = Handlebars.compile(data["balance.html"]);
             listItem = Handlebars.compile(data["listItem.html"]);
             newListItem = Handlebars.compile(data["newListItem.html"]);
-            popupTextList = Handlebars.compile(data["popupTextfieldList.html"]);
+            popupTextList = Handlebars.compile(data["popupTextfieldList2.html"]);
             popupList = Handlebars.compile(data["popupList.html"]);
             balanceItem = Handlebars.compile(data["balanceItem.html"]);
             listReplace = Handlebars.compile(data["listReplace.html"]);
@@ -1000,7 +1000,8 @@ function setupClicks(){
                     found = false;
                 }
 
-                var items = $(mycart).closest("div[data-id]").find(".list-group-item input:checked").closest('li[data-id]');
+                var items = $(mycart).closest("div[data-id]").find(".list-group-item.active");
+                console.log(items);
                 if (items.length == 0)
                     return;
                 var entries = $(items[0]).data("id");
@@ -1496,10 +1497,8 @@ function setupItemClicks(){
     $("li[data-id]").unbind("click").click(function(e){
         if($(this).is('.fa-times'))
             return;
-        else if(!$(e.target).is('input')) {
-            e.preventDefault();
-            $(this).find("input[type=checkbox]").prop('checked', $(this).find("input:checked").length == 0);
-        }
+        e.preventDefault();
+        $(this).toggleClass('active').css('z-index', '0');
     });
 }
 

@@ -144,6 +144,7 @@ router.post('/', function(req, res){
     req.body.shopping_list_entry_ids = req.body.shopping_list_entry_ids.split(",");
     req.body.person_ids = req.body.person_ids.split(",");
     console.log(req.body);
+    req.body.text_note = req.body.text_note.substring(0, 254);
     pool.getConnection(function(err, connection) {
         if (err)
             return res.status(500).send();
@@ -293,6 +294,11 @@ router.get('/:shopping_list_id', function(req, res){
         'ORDER BY budget_entry_id ASC', [req.params.shopping_list_id], function(err, result){
             if(err)
                 return res.status(500).send();
+            if(result.length == 0)
+                return res.status(200).json({
+                    my_balance: [],
+                    budget: []
+                });
             var budget = [];
             var qry = 'SELECT budget_entry_id, person_id, datetime_paid, forename, lastname FROM budget_entry LEFT JOIN person_budget_entry USING (budget_entry_id) LEFT JOIN person USING (person_id) WHERE budget_entry_id IN (?';
             var vals = [result[0].budget_entry_id];
@@ -364,7 +370,7 @@ router.get('/:shopping_list_id', function(req, res){
  */
 router.post('/pay/:budget_entry_id', function(req, res) {
     var query = "", queryValues = [], payers = req.body.person_ids, budget_entry_id = req.params.budget_entry_id;
-    if (payers.length === 0) return res.status(400).json({error: "no payers array"})
+    if (payers.length === 0) return res.status(400).json({error: "no payers array"});
     for (var i = 0; i < payers.length;i++) {
         if (i !== 0) query += ", ";
         query += "( ?, ? " + ((req.body.is_paid) ? ',CURRENT_TIMESTAMP)': ',NULL )');
