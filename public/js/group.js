@@ -293,6 +293,7 @@ function adminChange() {
                                         member_text: data[i].name,
                                         member_id: data[i].person_id,
                                     }));
+
                                 } else {
                                     $('#list-all-members').append(listMemebers({
                                         member_text: data[i].name,
@@ -308,11 +309,29 @@ function adminChange() {
 
             })
         }
+
     });
+}
+
+/**
+ * Leave the currently selected group.
+ * The page just reloads so that the group is removed from the list.
+ */
 
 
+function leaveGroup() {
+            $.ajax({
+                url: '/api/group/' + currentGroup.group_id,
+                method: 'DELETE',
+                data: {
+                    person_id: localStorage.person_id
+                },
+                success: function () {
+                    location.reload();	// false = from cache, true = from server.
+                },
+                error: console.error
 
-
+            });
 }
 
 /**
@@ -1001,13 +1020,12 @@ function getPost(){
         }
     });
 }
-/**
- * Leave the currently selected group.
- * The page just reloads so that the group is removed from the list.
- */
-function leaveGroup() {
-    $.ajax({url: '/api/group/' + currentGroup.group_id, method: 'DELETE', error: console.error()});
-    location.reload();	// false = from cache, true = from server.
+
+
+function deletegroup() {
+    $.ajax({
+        url: '/api/group'
+    })
 }
 
 /**
