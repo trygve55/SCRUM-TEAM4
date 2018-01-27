@@ -12,6 +12,7 @@ $(document).ready(function () {
     $('#save-success').hide();
     $('#old-password-error').hide();
     $('#change-password-error').hide();
+    $('#profpicsuccess').hide();
     $('#profpic').attr("src","api/user/" + localStorage.person_id + "/picture");
 
     /**
@@ -218,6 +219,7 @@ $(document).ready(function () {
                 console.log(data);
                 d = new Date();
                 $('#profpic').attr("src","api/user/" + testetest + "/picture?t="+d.getTime());
+                $('#profpicsuccess').show();
             }
         });
     });

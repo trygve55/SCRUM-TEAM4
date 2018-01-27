@@ -36,5 +36,6 @@
   "change-password-error": "Passord krever minst 8 bokstaver og minst 1 tall",
   "save-password-success": "Ditt passord er endret!",
   "pwbut": "Lagre passord",
-  "but": "Lagre info"
+  "but": "Lagre info",
+  "profpicsuccess": "Opplasting av profilbilde vellykket!"
 }

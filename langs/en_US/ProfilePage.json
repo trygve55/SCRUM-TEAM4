@@ -36,6 +36,7 @@
   "change-password-error": "Password needs minimum 8 letters and minimum 1 number",
   "save-password-success": "Your password has been changed!",
   "pwbut": "Save password",
-  "but": "Save info"
+  "but": "Save info",
+  "profpicsuccess": "Picture successfully uploaded!"
 
 }

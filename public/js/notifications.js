@@ -59,6 +59,12 @@ $(function(){
                                 });
                             }
                         }
+                        if(notifications.length == null){
+                            h += notItem({
+                                text: "You have no notifications" + notifications[i].todo_text
+                            });
+                        }
+
                         $("#popup").html(h + "</ul>");
                         $("#popup").css({
                             'position': 'absolute',
