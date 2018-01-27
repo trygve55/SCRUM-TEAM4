@@ -14,7 +14,7 @@ router.post('/', function (req, res) {
     pool.query('INSERT INTO private_todo_list (person_id) VALUES(?)', [p_id], function(err, result) {
         if (err)
             return res.status(500).json({error: err});
-        return res.status(200).json({result: result});
+        return res.status(200).json({private_todo_list_id: result.insertId});
     });
 });
 
@@ -44,7 +44,7 @@ router.post('/entry', function (req, res) {
                 return res.status(500).json({error: err});
             else if (result.affectedRows === 0)
                 return res.status(400).json({error: "No access/does not exist"});
-            return res.status(200).json({success:"added entry", result:result})
+            return res.status(200).json({success:"added entry", private_todo_list_id: result.insertId})
         });
 });
 
@@ -58,13 +58,12 @@ router.post('/entry', function (req, res) {
 
 router.get('/', function(req, res) {
     var p_id = req.session.person_id;
-
     pool.query('SELECT * FROM private_todo_list ' +
         'LEFT JOIN private_todo_entry ' +
         'USING(private_todo_list_id) ' +
         'WHERE person_id = ?;',[p_id], function (err, result) {
         if(err)
-            return res.status(400).json({error: "sql-fail"});
+            return res.status(500).json({error: err});
         if(!result.length)
             return res.status(400).json({error: "the data requested does not exist"});
 
@@ -90,13 +89,54 @@ router.get('/', function(req, res) {
                 "datetime_done":result[i].datetime_done
             });
         }
-        console.log(private_todo_lists);
         for (i = 0; i < private_todo_lists.length; i++) {
             private_todo_lists[i].private_todo_entries = removeDuplicates(private_todo_lists[i].private_todo_entries);
         }
         return res.status(200).json(private_todo_lists);
     });
 });
+
+/**
+ *  Get specific todo_list based on current user and list_id
+ *
+ *  URL: /api/tasks/private/{private_todo_list_id}
+ *  method: GET
+ *
+ */
+
+router.get('/:private_todo_list_id', function(req, res) {
+    var p_id = req.session.person_id;
+
+    pool.query('SELECT * FROM private_todo_list ' +
+        'LEFT JOIN private_todo_entry ' +
+        'USING(private_todo_list_id) ' +
+        'WHERE person_id = ? AND private_todo_list_id = ?;',
+        [p_id, req.params.private_todo_list_id], function (err, result) {
+        if(err)
+            return res.status(500).json({error: err});
+        if(!result.length)
+            return res.status(403).json({error: "the data requested does not exist"});
+
+        var entries = [];
+        for (var i = 0; i < result.length; i++) {
+            if(result[i].private_todo_entry_id) entries.push({
+                "private_todo_entry_id":result[i].private_todo_entry_id,
+                "todo_text":result[i].todo_text,
+                "datetime_deadline":result[i].datetime_deadline,
+                "datetime_added":result[i].datetime_added,
+                "datetime_done":result[i].datetime_done
+            });
+        }
+        res.status(200).json({
+            "private_todo_list_id": result[0].private_todo_list_id,
+            "private_todo_list_name": result[0].private_todo_list_name,
+            "is_deactivated": result[0].is_deactivated,
+            "color_hex": result[0].color_hex,
+            "private_todo_entries": removeDuplicates(entries)
+        })
+    });
+});
+
 
 /**
  * Update shopping list

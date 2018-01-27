@@ -114,27 +114,30 @@ $('document').ready(function () {
 
 function prep(){
     $.ajax({
-        url: '/api/private/entry/',
+        url: '/api/tasks/private/',
         method: 'GET',
-        success: function(data){
+        success: function(data) {
             for(var j = 0; j < data.length; j++) {
+                console.log(data[j]);
                 var d = data[j];
                 var entries = "";
-                for (var i = 0; i < d.shopping_list_entries.length; i++) {
+                for (var i = 0; i < d.private_todo_entries.length; i++) {
                     entries += taskItem({
-                        entry_text: d.private_todo_entries[i].todo_text,
-                        entry_id: d.private_todo_entries[i].private_todo_entry_id
+                        todo_id: d.private_todo_entries[i].private_todo_entry_id,
+                        todo_text: d.private_todo_entries[i].todo_text
                     });
                 }
-                $("#addlist").after(tasklist({
-                    task_list_id: d.shopping_list_id,
-                    task_list_name: (d.shopping_list_name == "" ? lang["task-default-name"] : d.shopping_list_name),
-                    task_list_entries: entries,
-                    lang_add_item: lang["task-add-item"],
-                    lang_done_items: lang["task-done-tasks"],
-                    lang_delete: lang["task-delete"],
-                    color_hex: (d.color_hex ? d.color_hex.toString(16) : "FFFFFF")
-                }));
+                if (!d.is_deactivated) {
+                    $("#addlist").after(tasklist({
+                        task_list_id: d.private_todo_list_id,
+                        task_list_name: (d.private_todo_list_name == "" ? lang["task-default-name"] : d.private_todo_list_name),
+                        task_list_entries: entries,
+                        lang_add_item: lang["task-add-item"],
+                        lang_done_items: lang["task-done-tasks"],
+                        lang_delete: lang["task-delete"],
+                        color_hex: (d.color_hex ? d.color_hex.toString(16) : "FFFFFF")
+                    }));
+                }
             }
             setupClicks();
         }
@@ -147,21 +150,20 @@ function prep(){
      */
     $('#addlist').click(function () {
         $.ajax({
-            url: '/api/shoppingList',
+            url: '/api/tasks/private/',
             method: 'POST',
             data: {
-                currency_id: 100,
-                shopping_list_name: lang["task-default-name"]
+                private_todo_list_name: lang["task-default-name"]
             },
-            success: function(data){
+            success: function(data) {
                 $.ajax({
-                    url: '/api/shoppingList/' + data.shopping_list_id,
+                    url: '/api/tasks/private/' + data.private_todo_list_id,
                     method: 'GET',
-                    success: function(data){
+                    success: function(data) {
                         $("#addlist").after(tasklist({
-                            shopping_list_id: data.shopping_list_id,
-                            shopping_list_name: data.shopping_list_name,
-                            shopping_list_entries: "",
+                            task_list_id: data.private_todo_list_id,
+                            task_list_name: data.private_todo_list_name,
+                            task_list_entries:"",
                             lang_add_item: lang["task-add-item"],
                             lang_done_items: lang["task-done-tasks"],
                             lang_delete: lang["task-delete"],
@@ -176,6 +178,7 @@ function prep(){
 }
 
 function setupClicks(){
+    console.log("click");
     $(".list-name").unbind("click").click(function(){
         var listId = $(this).closest("div[data-id]").data("id");
         var title = $(this).html();
@@ -193,10 +196,10 @@ function setupClicks(){
         $(this).parent().hide();
         $(h4).show();
         $.ajax({
-            url: '/api/shoppingList/' + id,
+            url: '/api/tasks/private/entry/' + id,
             method: 'PUT',
             data: {
-                shopping_list_name: text
+                private_list_name: text
             }
         });});
 
@@ -210,7 +213,7 @@ function setupClicks(){
         $(this).parent().hide();
         $(h4).show();
         $.ajax({
-            url: '/api/shoppingList/' + id,
+            url: '/api/tasks/private/list/' + id,
             method: 'PUT',
             data: {
                 shopping_list_name: text
@@ -219,6 +222,7 @@ function setupClicks(){
     });
 
     $(".add-item").unbind("click").click(function(){
+        console.log('denna');
         $(this).closest("div").children(".itemlist").append(newListItem());
 
         $("#new-list-item").keypress(function(e){
@@ -254,7 +258,7 @@ function setupClicks(){
         var ls = $(this).closest("div[data-id]");
         var id = $(ls).css('background-color', $(this).data('color')).data("id");
         $.ajax({
-            url: '/api/shoppingList/' + id,
+            url: '/api/tasks/private/list/' + id,
             method: 'PUT',
             data: {
                 color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
@@ -266,7 +270,7 @@ function setupClicks(){
         var ls = $(this).closest("div[data-id]");
         var id = $(ls).css('background-color', $(this).data('color')).data("id");
         $.ajax({
-            url: '/api/shoppingList/' + id,
+            url: '/api/tasks/private/list/' + id,
             method: 'PUT',
             data: {
                 color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
@@ -278,7 +282,7 @@ function setupClicks(){
         var ls = $(this).closest("div[data-id]");
         var id = $(ls).css('background-color', $(this).data('color')).data("id");
         $.ajax({
-            url: '/api/shoppingList/' + id,
+            url: '/api/tasks/private/list/' + id,
             method: 'PUT',
             data: {
                 color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
@@ -290,14 +294,14 @@ function setupClicks(){
         var ls = $(this).closest("div[data-id]");
         var id = $(ls).css('background-color', $(this).data('color')).data("id");
         $.ajax({
-            url: '/api/shoppingList/' + id,
+            url: '/api/tasks/private/list/' + id,
             method: 'PUT',
             data: {
                 color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
             }
         });
     });
-
+/*
     $(".fa-money").unbind("click").click(function(){
         var id = $(this).closest("div[data-id]").data("id");
         $.ajax({
@@ -415,21 +419,22 @@ function setupClicks(){
     });
 
     setupItemClicks();
+    */
 }
 
 function setupItemClicks(){
     $(".fa-times").unbind("click").click(function(){
         var entry_id = $(this).closest("li[data-id]").data("id");
         $.ajax({
-            url: '/api/shoppingList/entry/' + entry_id,
+            url: '/api/tasks/private/entry/' + entry_id,
             method: 'DELETE',
             error: console.error
         });
         $(this).closest("li[data-id]").remove();
     });
 
-    $("li[data-id]").unbind("click").click(function(e){
-        if($(this).is('.fa-times'))
+    $("li[data-id]").unbind("click").click(function(e) {
+        if($(this).is('.fa-trash'))
             return;
         else if(!$(e.target).is('input')) {
             e.preventDefault();
@@ -439,6 +444,7 @@ function setupItemClicks(){
 }
 
 function addNewItem(ul){
+    console.log(this);
     $(ul).append(newListItem());
 
     $("#new-list-item").keypress(function(e){
@@ -472,14 +478,14 @@ function addNewItem(ul){
 
 function saveItemToDB(id, item, ul, cb){
     $.ajax({
-        url: '/api/shoppingList/entry',
+        url: '/api/tasks/private/entry',
         method: 'POST',
         data: {
-            shopping_list_id: id,
-            entry_text: item
+            private_todo_list_id: id,
+            todo_text: item
         },
         success: function(data){
-            $(ul).append(taskItem({entry_text: item, entry_id: data.shopping_cart_entry_id}));
+            $(ul).append(taskItem({todo_id: data.private_todo_list_id, todo_text: data.todo_text}));
             if(cb)
                 cb();
         }
