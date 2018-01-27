@@ -264,8 +264,8 @@ div.grouptablink.backvariant{
 #group-newsfeedPost{
     border-style:groove;
     resize: none;
-    padding-left: 4%;
-    width:85%;
+    padding-left: 2vh;
+    width:112vh;
     text-align: left;
     height: 80px;
     border-radius: 5px;
@@ -279,7 +279,8 @@ div.grouptablink.backvariant{
 }
 
 .post{
-    padding:2%;
+    padding:4vh;
+	padding-right: 8vh;
     margin-top: 20px;
     margin-bottom: 20px;
     min-height:175px;
