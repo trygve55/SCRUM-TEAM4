@@ -262,7 +262,7 @@
 					<div id="theAdmin" style="margin: 2vh">
 						<h4>Administrate group</h4>
 
-						<div class="row"  style="height: 65vh;">
+						<div class="row" id="changename-group-admin" style="height: 65vh;">
 							<div style="padding: 3vh; border: lightgrey 1px solid; border-radius: 10px; margin: 2vh">
 								<div class="col-sm">
 									<div class="row">
@@ -270,20 +270,21 @@
 										<input class="form-control">
 									</div>
 									<div class="row">
-										Endre
+										<div style="background-color: #a3e6f7; margin-top: 5px; padding: 8px; width: 25%; border-radius: 10px; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class=" text-center backvariant">Endre</div>
 									</div>
 
 								</div>
 							</div>
-							<div class="col-sm">
-								<div style="padding: 3vh; border: lightgrey 1px solid; border-radius: 10px; margin: 2vh">
+							<div class="col-sm" id="membersofgroup">
+								<div style="padding: 2vh; border: lightgrey 1px solid; border-radius: 10px; margin: 2vh">
 									<h5>Members of group</h5>
-									<ul class="list-group" id="list-all-members">
+									<ul style="float: inherit" class="list-group" id="list-all-members">
 										<li class="list-group-item">Diiinniis</li>
 									</ul>
+									<h4></h4>
 									<div class="row">
-										<div class="col-sm-5">Add members:</div>
-										<div class="col-sm-6"><input class="form-control"></div>
+										<div class="col-sm-4">Add members:</div>
+										<div class="col-sm-8"><input id="addMembers-Admin" class="form-control"></div>
 									</div>
 								</div>
 							</div>

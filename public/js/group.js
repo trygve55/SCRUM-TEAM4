@@ -1409,7 +1409,7 @@ function getCalendar() {
              * This method creates the standard calender.
              */
             $('#calendar').fullCalendar({
-                height: 630,
+                height: 530,
                 header: {
                     left: 'prev,next today',
                     center: 'title',
@@ -1579,3 +1579,29 @@ function findMe(){
         }
     });
 }
+
+
+/**
+ * THE ADMIN PAGE
+ */
+
+
+/**
+ * Gets all users in the database
+ */
+$.ajax({
+    url: '/api/user/all',
+    method: 'GET',
+    success: function(data){
+        for(var i = 0; i < data.length; i++) {
+            allUsers.push({
+                id: data.person_id,
+                name: data[i].forename + " " + (data[i].middlename ? data[i].middlename + " " : "") + data[i].lastname,
+                username: data[i].username
+            });
+        }
+    }
+});
+
+/
+

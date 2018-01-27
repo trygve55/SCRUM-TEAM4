@@ -257,6 +257,17 @@ div.grouptablink.backvariant{
 
 }
 
+@media screen and (max-width: 414px) {
+	#changename-group-admin{
+		align-content: center;
+		padding-left: 7%;
+	}
+	#membersofgroup{
+		padding-right: 11%;
+	}
+
+}
+
 #feed{
     padding-top: 2%;
 }
