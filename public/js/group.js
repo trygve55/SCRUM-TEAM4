@@ -1589,6 +1589,8 @@ function findMe(){
 /**
  * Gets all users in the database
  */
+var allUsers = [];
+
 $.ajax({
     url: '/api/user/all',
     method: 'GET',
@@ -1603,5 +1605,23 @@ $.ajax({
     }
 });
 
-/
 
+$('document').ready(function() {
+    /**
+     * This method retrvies information about a user: person_id,forname and lastname
+     */
+    $.ajax({
+        url: '/api/user/getUser',
+        method: 'GET',
+        data: {
+            variables: [
+                'person_id',
+                'forename',
+                'lastname'
+            ]
+        },
+        success: function (data) {
+            me = data[0];
+        }
+    });
+});
