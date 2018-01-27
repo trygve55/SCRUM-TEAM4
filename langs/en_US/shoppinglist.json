@@ -62,5 +62,11 @@
   "lang-new-label-reset": "Reset",
   "lang-edit-label": "Edit label",
   "lang-update-label-update": "Update",
-  "lang-update-label-delete": "Delete label"
+  "lang-update-label-delete": "Delete label",
+  "settle-all": "Settle all",
+  "are-you-sure": "Are you sure you want to settle all negative balances to the cost of ",
+  "yes-settle-all": "Yes",
+  "no-settle-all": "No",
+  "shop-complete": "Close",
+  "label-none": "No label"
 }

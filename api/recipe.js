@@ -53,11 +53,11 @@ router.get('/me', function(req, res){
  * method: GET
  */
 router.get('/:group_id', function(req, res){
-    pool.query('SELECT recipe_id, recipe_directions, recipe_servings, recipe_time, forename, middlename, lastname, meal_datetime ' +
-        'FROM recipe LEFT JOIN group_recipe USING (recipe_id) '+
-        'LEFT JOIN home_group USING (group_id) ' +
-        'LEFT JOIN person ON (recipe.person_id = person.person_id) ' +
-        'WHERE home_group.group_id = ?',
+    pool.query('SELECT recipe_id, recipe_name, recipe_directions, recipe_servings, recipe_time, forename, middlename, lastname, meal_datetime ' +
+    'FROM recipe LEFT JOIN group_recipe USING (recipe_id) '+
+    'LEFT JOIN home_group USING (group_id) ' +
+    'LEFT JOIN person ON (recipe.person_id = person.person_id) ' +
+    'WHERE home_group.group_id = ?',
         [req.params.group_id], function(err, result){
             if(err)
                 return res.status(500).send(err);
@@ -149,8 +149,34 @@ router.get('/', function(req, res){
  * }
  */
 router.post('/me', function(req, res){
-    req.session.person_id = 105;
-    req.session.save();
+    if(!req.session.person_id)
+        return res.status(500).send();
+    if(!req.body.recipe_id || !req.body.meal_datetime)
+        return res.status(400).send();
+    req.body.meal_datetime = new Date(req.body.meal_datetime);
+    req.body.meal_datetime.setHours(1);
+    req.body.meal_datetime.setMinutes(0);
+    req.body.meal_datetime.setSeconds(0);
+    req.body.meal_datetime = req.body.meal_datetime.toISOString().split('T')[0];
+    pool.query('INSERT INTO person_recipe (recipe_id, person_id, meal_datetime) VALUES (?, ?, ?)',
+        [req.body.recipe_id, req.session.person_id, req.body.meal_datetime], function(err, result){
+            if(err)
+                return res.status(500).send(err);
+            res.status(200).send(result);
+        });
+});
+
+/**
+ * Register recipe for group calendar
+ *
+ * URL: /api/recipe
+ * method: POST
+ * data: {
+ *      recipe_id,
+ *      meal_datetime
+ * }
+ */
+router.post('/me', function(req, res){
     if(!req.session.person_id)
         return res.status(500).send();
     if(!req.body.recipe_id || !req.body.meal_datetime)
@@ -221,9 +247,8 @@ router.post('/:group_id', function(req, res){
  * }
  */
 router.post('/', function(req, res){
-    req.session.person_id = 104;
-    console.log(req.body);
-    req.body.ingredients.splice(0, 1);
+    req.body.ingredients = JSON.parse(req.body.ingredients);
+    req.body.ingredients.splice(0,1);
     if(!req.session.person_id)
         return res.status(500).send();
     if(!req.body.recipe_name || !req.body.recipe_directions || !req.body.recipe_servings || !req.body.ingredients || !(req.body.ingredients instanceof Array) || req.body.ingredients.length == 0)
@@ -245,6 +270,44 @@ router.post('/', function(req, res){
                     return res.status(500).send(err);
                 res.status(200).send();
             });
+        });
+});
+
+/**
+ * Move recipe to date
+ *
+ * URL: /api/recipe/{group_id}/date
+ * method: PUT
+ * data: {
+ *      todo_id,
+ *      originalDate,
+ *      newDate
+ * }
+ */
+router.put('/:group_id/date', function(req, res){
+    pool.query('UPDATE group_recipe SET meal_datetime = ? WHERE recipe_id = ? AND group_id = ? AND meal_datetime = ?',
+        [req.body.newDate, req.body.recipe_id, req.params.group_id, req.body.originalDate], function(err, result){
+            if(err)
+                return res.status(500).send();
+
+        });
+});
+
+/**
+ * Delete recipe at date, group id and recipe id
+ *
+ * URL: /api/recipe/{group_id}/date
+ * method: DELETE
+ * data: {
+ *      todo_id,
+ *      originalDate
+ * }
+ */
+router.delete('/:group_id/date', function(req, res){
+    pool.query('DELETE group_recipe WHERE recipe_id = ? AND group_id = ? AND meal_datetime = ?',
+        [req.body.newDate, req.body.recipe_id, req.params.group_id, req.body.originalDate], function(err, result){
+            if(err)
+                return res.status(500).send();
         });
 });
 

@@ -187,7 +187,7 @@ router.put('/:todo_id/undo', function(req, res) {
         '(SELECT t.todo_id FROM ' +
         '(SELECT * FROM todo ' +
         'LEFT JOIN group_person USING (group_id) ' +
-        'WHERE person_id = ?) t)', [req.session.person_id, req.params.todo_id, req.session.person_id], function(err, result) {
+        'WHERE person_id = ?) t)', [req.params.todo_id, req.session.person_id], function(err, result) {
             pool.query('SELECT todo_id, datetime_deadline, datetime_added, datetime_done, forename, middlename, lastname, todo_text, is_deactivated, color_hex, todo.group_id FROM todo LEFT JOIN home_group USING (group_id) LEFT Join person ON done_by_id = person.person_id WHERE todo_id = ?',
                 [req.params.todo_id], function(err, result){
                     if(err)
@@ -210,6 +210,7 @@ router.put('/:todo_id/undo', function(req, res) {
  * }
  */
 router.put('/:todo_id', function(req, res) {
+    console.log(req.body);
     var query = putRequestSetup(checkRange(req.params.todo_id, 1, null), req.body, "todo");
     pool.query(query[0], query[1], function(err, result) {
         pool.query('SELECT todo_id, datetime_deadline, datetime_added, datetime_done, forename, middlename, lastname, todo_text, is_deactivated, color_hex, todo.group_id FROM todo LEFT JOIN home_group USING (group_id) LEFT Join person ON done_by_id = person.person_id WHERE todo_id = ?',
@@ -266,6 +267,21 @@ router.get('/todo/:todo_id', function(req, res) {
             return res.status(200).json(values);
 		}
 	);
+});
+
+router.delete(':group_id/todo/:todo_id', function(req, res){
+    pool.query('DELETE FROM todo WHERE todo.todo_id = ?',
+        [req.params.todo_id], function(err, result) {
+            pool.query('SELECT todo_id, datetime_deadline, datetime_added, datetime_done, forename, middlename, lastname, todo_text, is_deactivated, color_hex, todo.group_id FROM todo LEFT JOIN home_group USING (group_id) LEFT Join person ON done_by_id = person.person_id WHERE todo_id = ?',
+                [req.params.todo_id], function(err, result){
+                    if(err)
+                        return res.status(500).send();
+                    else if(result.length == 0)
+                        return res.status(500).send();
+                    socket.group_data('group task remove', req.params.group_id, req.params.todo_id);
+                    return res.status(200).send();
+                });
+        });
 });
 
 /**

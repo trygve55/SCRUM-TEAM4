@@ -39,7 +39,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a id="index-homepageNavbar" class="nav-item nav-link" href="index.html"></a>
+                    <a id="index-homepageNavbar" class="nav-item nav-link active" href="index.html"></a>
                     <a id="index-groupsNavbar" class="nav-item nav-link" href="#" onclick="new function () {
               $.ajax({
                 url: '/api/group/me',
@@ -63,7 +63,7 @@
                 </div>
             </div>
         </nav>
-        <br>
+
 
         <div class="flag" style="background-color: white">
             <img class="flag" id="index-norway" style="position:absolute; right:15px" src="/img/norwegianflag.jpg" width="20" height="12">
@@ -71,25 +71,27 @@
         </div>
 
         <div class="row" align="center">
-            <br>
-            <div style="width: 40px"></div>
-            <div class="profil col-sm-3">
+            <div style="width: 6vh;"></div>
+            <div class="profil col-sm-3" style="height: 87vh; border-bottom: #a3e6f7 1vh solid; border-top: #a3e6f7 1vh solid;">
                 <br>
 
-                <img id="profpic" src="/img/profilpic.svg" style="height: 200px; width: 200px">
+                <img id="profpic" src="/img/profilpic.svg" style="height: 200px; width: 200px; border-radius: 50%">
                 <div id="index-username" style="font-size: large" ></div>
                 <div id="index-status" style="color: green; font-style: oblique ">online</div>
 
-                <div class ="index-todo" id="index-todolist"></div>
+                <div class ="index-todo" style="border-radius: 15px; padding: 2vh">
+                    <h5 id="index-todolist"></h5>
+                    <ul class="list-group" style="border: 1px grey solid; height: 30vh; background-color: white">
+                        <li class="list-group-item">Vaske gulvet</li>
+                    </ul>
+                </div>
 
-                <i style="color:#a3e6f7;" class="fa fa-sign-out" aria-hidden="true"></i>
-                <a href="login.html" style="color: dimgray" id="index-logout"></a>
 
             </div>
 
-            <div style="width: 40px"></div>
+            <div style="width: 4vh"></div>
 
-            <div id="newsfeedPost" class = "newsfeed col-sm-8"></div>
+            <div id="newsfeedPost" class ="newsfeed col-sm-8" style="height: 87vh; border-bottom: #a3e6f7 1vh solid; border-top: #a3e6f7 1vh solid; margin-right: 5vh"></div>
 
         </div>
 

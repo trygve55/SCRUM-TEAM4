@@ -16,7 +16,6 @@
   "p-oldpassword": "Gammelt passord",
   "p-username": "Brukernavn",
   "p-forename": "Fornavn",
-  "p-middlename": "Mellomnavn",
   "p-lastname": "Etternavn",
   "p-phonenumber": "Mobilnummer",
   "p-birthdate": "Fødselsdato",
@@ -30,5 +29,12 @@
   "p-genderopt": "< Kjønn (valgfritt) >",
   "p-female": "Kvinne",
   "p-male": "Mann",
-  "p-other": "Annet"
+  "p-other": "Annet",
+  "p-birthdate": "Fødselsdato",
+  "save-success": "Endringene dine er lagret!",
+  "old-password-error": "Gammelt passord stemmer ikke",
+  "change-password-error": "Passord krever minst 8 bokstaver og minst 1 tall",
+  "save-password-success": "Ditt passord er endret!",
+  "pwbut": "Lagre passord",
+  "but": "Lagre info"
 }

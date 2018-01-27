@@ -20,5 +20,6 @@
   "recipe-cancel": "Avbryt",
   "recipe-complete": "Fullfør",
   "cancel-recipe": "Avbryt",
-  "complete-recipe": "Fullfør"
+  "complete-recipe": "Legg til i kalender",
+  "popup-close-recipe": "Lukk"
 }

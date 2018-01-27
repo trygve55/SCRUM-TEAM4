@@ -18,8 +18,42 @@ module.exports = router;
  * method: GET
  *
  */
+router.get('/all/:group_id', function(req, res){
+    if(!req.session.person_id)
+        return res.status(403).send();
+    pool.getConnection(function(err, connection){
+        if(err) {
+            connection.release();
+            return res.status(500).send("Error");
+        }
+        connection.query("SELECT person_id, email, forename, middlename, lastname, username FROM person LEFT JOIN group_person USING (person_id) WHERE group_id = ?;", [req.params.group_id], function(err, result){
+            connection.release();
+            if(err)
+                res.status(500).send(err.code);
+            var r = [];
+            for(var i = 0; i < result.length; i++){
+                if(result[i].person_id == req.session.person_id)
+                    continue;
+                r.push({
+                    name: result[i].forename + " " + (result[i].middlename ? result[i].middlename + " " : "") + result[i].lastname,
+                    email: result[i].email,
+                    id: result[i].person_id
+                });
+            }
+            res.status(200).json(r);
+        });
+    });
+});
+
+/**
+ * Get person-info
+ *
+ * URL: /api/user/all
+ * method: GET
+ *
+ */
 router.get('/all', function(req, res){
-   if(!req.session.person_id)
+    if(!req.session.person_id)
         return res.status(403).send();
     pool.getConnection(function(err, connection){
         if(err) {
@@ -59,7 +93,7 @@ router.get('/checkFacebook', function(req, res){
             return res.status(500).json({error: err});
         } else {
             if (result[0].facebook_api_id == null)
-                return res.status(400).json({facebook: false});
+                return res.status(200).json({facebook: false});
             else
                 return res.status(200).json({facebook: true});
         }
@@ -186,6 +220,8 @@ router.post('/register', function(req, res) {
 
         var user = req.body;
 
+        console.log(user.email);
+
         if (!checkValidUsername(user.username) && !checkValidEmail(user.email)) {
             connection.release();
             res.status(400).json({message:"Syntax-error"})
@@ -216,108 +252,99 @@ router.post('/register', function(req, res) {
                 connection.beginTransaction(function (err) {
                     if (err) {
                         connection.release();
-                        res.status(500).json({message: "database connection failed"});
-                    } else connection.query('INSERT INTO shopping_list (currency_id) VALUES(?);', [100], function (err, result) {
-                        if (err) {
-                                connection.rollback(function () {
+                        return res.status(500).json({message: "database connection failed"});
+                    }
+
+                    auth.hashPassword(user, function (user) {
+
+                        var values = [
+                            user.email,
+                            user.username,
+                            user.password_hash,
+                            user.forename,
+                            user.middlename,
+                            user.lastname,
+                            user.phone,
+                            user.birth_day ? new Date(user.birth_day).toISOString().slice(0, 10) : null,
+                            user.gender,
+                            user.profile_pic
+                        ];
+
+                        if (user.phone) {
+                            if (!checkValidPhone(user.phone)) {
                                 connection.release();
-                                res.status(500).json({error: err});
-                            });
-                        } else {
-                            user.shopping_list_id = result.insertId;
-                            auth.hashPassword(user, function (user) {
+                                return res.status(400).send("Phone number is not valid");
+                            }
+                        }
 
-                                var values = [
-                                    user.email,
-                                    user.username,
-                                    user.password_hash,
-                                    user.forename,
-                                    user.middlename,
-                                    user.lastname,
-                                    user.phone,
-                                    user.birth_day ? new Date(user.birth_day).toISOString().slice(0, 10) : null,
-                                    user.gender,
-                                    user.profile_pic,
-                                    user.shopping_list_id
-                                ];
+                        if (user.middlename) {
+                            if (!checkValidName(user.middlename)) {
+                                connection.release();
+                                return res.status(400).send("Middlename is not valid");
+                            }
+                        }
 
-                                if (user.phone) {
-                                    if (!checkValidPhone(user.phone)) {
-                                        connection.release();
-                                        return res.status(400).send("Phone number is not valid");
-                                    }
-                                }
+                        if (!checkValidForename(user.forename)) {
+                            connection.release();
+                            return res.status(400).json({message:"Invalid forename"});
+                        }
 
-                                if (user.middlename) {
-                                    if (!checkValidName(user.middlename)) {
-                                        connection.release();
-                                        return res.status(400).send("Middlename is not valid");
-                                    }
-                                }
+                        if (!checkValidName(user.lastname)){
+                            connection.release();
+                            return res.status(400).json({message:"Invalid lastname"});
+                        }
 
-                                if (!checkValidForename(user.forename)) {
+                        connection.query('INSERT INTO person ' +
+                            '(email, username, password_hash, forename, middlename,' +
+                            'lastname, phone, birth_date,' +
+                            'gender, profile_pic) VALUES (?,?,?,?,?,?,?,?,?,?);', values, function (err, response) {
+                            if (err) {
+                                connection.rollback(function () {
                                     connection.release();
-                                    return res.status(400).json({message:"Invalid forename"});
-                                }
-
-                                if (!checkValidName(user.lastname)){
-                                    connection.release();
-                                    return res.status(400).json({message:"Invalid lastname"});
-                                }
-
-                                connection.query('INSERT INTO person ' +
-                                    '(email, username, password_hash, forename, middlename,' +
-                                    'lastname, phone, birth_date,' +
-                                    'gender, profile_pic, shopping_list_id) VALUES (?,?,?,?,?,?,?,?,?,?,?);', values, function (err, response) {
+                                    res.status(500).json({error: err});
+                                });
+                            } else {
+                                var token = jwt.sign({
+                                    iss: issuer,
+                                    id: response.insertId
+                                }, secret);
+                                connection.query('UPDATE person SET verify_token = ? WHERE person_id = ?', [token, response.insertId], function(err) {
                                     if (err) {
-                                            connection.rollback(function () {
+                                        connection.rollback(function () {
                                             connection.release();
-                                            res.status(500).json({error: err});
+                                            return res.status(500).send("Internal database error (1)");
                                         });
                                     } else {
-                                        var token = jwt.sign({
-                                            iss: issuer,
-                                            id: response.insertId
-                                        }, secret);
-                                        connection.query('UPDATE person SET verify_token = ? WHERE person_id = ?', [token, response.insertId], function(err) {
+                                        connection.commit(function (err) {
                                             if (err) {
                                                 connection.rollback(function () {
                                                     connection.release();
-                                                    return res.status(500).send("Internal database error (1)");
+                                                    res.status(500).json({error: err});
                                                 });
                                             } else {
-                                                connection.commit(function (err) {
-                                                    if (err) {
-                                                        connection.rollback(function () {
-                                                            connection.release();
-                                                            res.status(500).json({error: err});
-                                                        });
+                                                connection.release();
+                                                if (req.body.lang == null || !verifyAccountEmails.hasOwnProperty(req.body.lang)) {
+                                                    var mail = verifyAccountEmails.en_US;
+                                                } else {
+                                                    var mail = verifyAccountEmails[req.body.lang];
+                                                }
+                                                var url = urlVerify + token;
+                                                mailOptions.to = user.email;
+                                                mailOptions.subject = mail.subject;
+                                                mailOptions.text = mail.text.replace("#name", user.forename).replace("#url", url);
+                                                transporter.sendMail(mailOptions, function (error, info) {
+                                                    if (error) {
+                                                        return res.status(500).send("Internal server error in email (1), person entry created");
                                                     } else {
-                                                        connection.release();
-                                                        if (req.body.lang == null || !verifyAccountEmails.hasOwnProperty(req.body.lang)) {
-                                                            var mail = verifyAccountEmails.en_US;
-                                                        } else {
-                                                            var mail = verifyAccountEmails[req.body.lang];
-                                                        }
-                                                        var url = urlVerify + token;
-                                                        mailOptions.to = user.email;
-                                                        mailOptions.subject = mail.subject;
-                                                        mailOptions.text = mail.text.replace("#name", user.forename).replace("#url", url);
-                                                        transporter.sendMail(mailOptions, function (error, info) {
-                                                            if (error) {
-                                                                return res.status(500).send("Internal server error in email (1), person entry created");
-                                                            } else {
-                                                                res.status(200).send("Transaction successful, email sent");
-                                                            }
-                                                        });
+                                                        res.status(200).send("Transaction successful, email sent");
                                                     }
                                                 });
                                             }
                                         });
                                     }
                                 });
-                            });
-                        }
+                            }
+                        });
                     });
                 });
             });
@@ -367,6 +394,8 @@ router.get('/user', function (req, res) {
  */
 
 router.get('/mail', function (req, res) {
+
+
     pool.getConnection(function (err, connection) {
         if(err) {
             connection.release();
@@ -398,6 +427,7 @@ router.get('/mail', function (req, res) {
  */
 
 function checkValidPhone(phonenumber){
+    return true;
     var phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im; //TODO: find better solution for regex
     return phoneRegex.test(phonenumber);
 }
@@ -536,6 +566,7 @@ router.put('/', function(req, res) {
 
     pool.query(sqlQuery, values, function (err) {
             if (err) {
+                console.log(err);
                 return res.status(500).send("Internal database error(1)");
             }
             return res.status(200).send("Profile updated");
@@ -675,6 +706,7 @@ router.post('/verifyAccount', function(req, res) {
         }
         pool.query('SELECT verify_token FROM person WHERE person_id = ?', [payload.id], function(err, result) {
             if(err) {
+
                 return res.status(500).send("Internal database error (1)");
             }
             if(result.length < 1) {

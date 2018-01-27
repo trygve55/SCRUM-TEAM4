@@ -84,10 +84,9 @@ module.exports = function(http){
 
     return {
         group_data: function(channel, group_id, data){
-            console.log(socks[0].groups.indexOf(Number(group_id)));
+            console.log(arguments);
             for(var i = 0; i < socks.length; i++){
                 if(socks[i].groups.indexOf(Number(group_id)) > -1) {
-                    console.log(socks[i]);
                     socks[i].socket.emit(channel, data);
                 }
             }
@@ -96,7 +95,6 @@ module.exports = function(http){
             console.log(arguments);
             for(var i = 0; i < socks.length; i++){
                 if(socks[i].person_id == person_id) {
-                    console.log(socks[i]);
                     socks[i].socket.emit(channel, data);
                 }
             }
@@ -105,7 +103,6 @@ module.exports = function(http){
             console.log(arguments);
             for(var i = 0; i < socks.length; i++){
                 if(socks[i].shopping_lists.indexOf(Number(shopping_list_id)) > -1) {
-                    console.log(socks[i]);
                     socks[i].socket.emit(channel, data);
                 }
             }
