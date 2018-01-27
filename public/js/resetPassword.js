@@ -5,12 +5,8 @@
 var lang;
 
 $('document').ready(function () {
-    //$("#success-alert").hide();
-    //$("#warning-alert").hide();
     $('#rp-error').hide();
     $('#rp-success').hide();
-
-
 
     $.ajax({
         url: '/api/language',
@@ -96,83 +92,9 @@ $('document').ready(function () {
         });
     });
 
-    /*
-
-    $("#rp-new").focusout(function (){
-        if($(this).val() === "") {
-            $("#rp-error").hide();
-            $("#rp-new").css({
-                "border": "1px solid #ced4da",
-                "background": "white"
-            });
-            $("#rp-repeat").css({
-                "border": "1px solid #ced4da",
-                "background": "white"
-            });
-        }
-        else if($(this).val() !== $("#rp-repeat").val() && $("#rp-repeat").val() !== ""){
-            $("#rp-error").show();
-            $('#rp-new').css({
-                "border": "1px solid red",
-                "background": "#FFCECE"
-            });
-            $("#rp-repeat").css({
-                "border": "1px solid red",
-                "background": "#FFCECE"
-            });
-        }
-        else {
-            $("#rp-error").hide();
-            $("#rp-new").css({
-                "border": "1px solid #ced4da",
-                "background": "white"
-            });
-            $("#rp-repeat").css({
-                "border": "1px solid #ced4da",
-                "background": "white"
-            });
-        }
-    });
-
-
-    $("#rp-repeat").focusout(function (){
-        if($(this).val() === "") {
-            $("#rp-error").hide();
-            $("#rp-new").css({
-                "border": "1px solid #ced4da",
-                "background": "white"
-            });
-            $("#rp-repeat").css({
-                "border": "1px solid #ced4da",
-                "background": "white"
-            });
-        }
-        else if($(this).val() !== $("#rp-new").val()){
-            $("#rp-error").show();
-            $('#rp-new').css({
-                "border": "1px solid red",
-                "background": "#FFCECE"
-            });
-            $("#rp-repeat").css({
-                "border": "1px solid red",
-                "background": "#FFCECE"
-            });
-        }
-        else {
-            $("#rp-error").hide();
-            $("#rp-new").css({
-                "border": "1px solid #ced4da",
-                "background": "white"
-            });
-            $("#rp-repeat").css({
-                "border": "1px solid #ced4da",
-                "background": "white"
-            });
-        }
-    });
-
-    */
-
+    /**
+     * Method for saving new password when clicking the save password button.
+     */
     $('#rp-save').click(function () {
         if($('#rp-repeat').val() == $("#rp-new").val()) {
             $.ajax({
@@ -202,6 +124,9 @@ $('document').ready(function () {
         }
     });
 
+    /**
+     * Method for saving new password when pressing enter.
+     */
     $('#rp-repeat').keypress(function (e) {
         if(e.keyCode!=13||e.which!=13 && $('#rp-repeat').val() != $("#rp-new").val()) {
             return;

@@ -420,64 +420,6 @@ router.get('/mail', function (req, res) {
     });
 });
 
-/**
- *
- *
- *
- */
-
-function checkValidPhone(phonenumber){
-    return true;
-    var phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im; //TODO: find better solution for regex
-    return phoneRegex.test(phonenumber);
-}
-
-/**
- * Excludes numbers and special characters
- */
-
-function checkValidName(nameString) {
-    var nameRegex = /[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
-    if (nameString) return nameRegex.test(nameString);
-}
-
-/**
- * Excludes numbers, spaces and special characters
- */
-
-function checkValidForename(nameString) {
-    var nameRegex = /^\S[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
-    if (nameString) return nameRegex.test(nameString);
-}
-
-/**
- * Excludes all special characters and spaces
- */
-
-function checkValidUsername(username) {
-    var usernameRegex = /^[a-zA-Z0-9]+$/;
-    if(username) return usernameRegex.test(username.toLowerCase());
-}
-
-/**
- * Minimum 8 characters, one upper case letter and one number
- */
-
-function checkValidPassword(password) {
-    var usernameRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-    return usernameRegex.test(password);
-}
-
-/**
- * Only valid email will return true
- * [username]@[domain]
- */
-
-function checkValidEmail(email) {
-    var emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (email) return emailRegex.test(email.toLowerCase());
-}
-
 
 /**
  *
@@ -558,18 +500,25 @@ router.put('/', function(req, res) {
     sqlQuery = sqlQuery.slice(0,-2);
     sqlQuery += " WHERE person_id = ?";
     var values = [];
+    var fields = "person_id";
     for(var p in req.body) {
         values.push(req.body[p]);
+        fields += ", " + p;
     }
     values.push(req.session.person_id);
 
 
     pool.query(sqlQuery, values, function (err) {
-            if (err) {
-                console.log(err);
-                return res.status(500).send("Internal database error(1)");
-            }
-            return res.status(200).send("Profile updated");
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Internal database error(1)");
+        }
+        res.status(200).send("Profile updated");
+        pool.query('SELECT forename, birth_date, email, facebook_api_id, gender, lastname, person_id, phone, username FROM person WHERE person_id = ?', [req.session.person_id], function(err, result){
+            if(err)
+                return console.error(err);
+            socket.person_data('profile update', req.session.person_id, result);
+        });
     });
 });
 
@@ -606,7 +555,7 @@ router.post('/picture', function(req, res){
 
         Jimp.read(path, function (err, img) {
             if (err)
-                return res.status(500).json({'Error': err});
+                return res.status(500).json({'Error': "Wrong file format"});
 
             var img_tiny = img.clone();
 
@@ -884,6 +833,8 @@ function reqForPrivateVars(reqVars) {
     return result;
 }
 
+
+
 router.get('/getUser', function(req, res) {
     if(!req.query.hasOwnProperty('users')) {
         req.query.users = [req.session.person_id];
@@ -934,5 +885,63 @@ function checkRequestArray(variables, users) {
         if(isNaN(element)) errors++;
     });
     return errors;
+}
+
+/**
+ *
+ *
+ *
+ */
+
+function checkValidPhone(phonenumber){
+    return true;
+    var phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im; //TODO: find better solution for regex
+    return phoneRegex.test(phonenumber);
+}
+
+/**
+ * Excludes numbers and special characters
+ */
+
+function checkValidName(nameString) {
+    var nameRegex = /[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
+    if (nameString) return nameRegex.test(nameString);
+}
+
+/**
+ * Excludes numbers, spaces and special characters
+ */
+
+function checkValidForename(nameString) {
+    var nameRegex = /^\S[a-zA-ZÆÐƎƏƐƔĲŊŒẞÞǷȜæðǝəɛɣĳŋœĸſßþƿȝĄƁÇĐƊĘĦĮƘŁØƠŞȘŢȚŦŲƯY̨Ƴąɓçđɗęħįƙłøơşșţțŧųưy̨ƴÁÀÂÄǍĂĀÃÅǺĄÆǼǢƁĆĊĈČÇĎḌĐƊÐÉÈĖÊËĚĔĒĘẸƎƏƐĠĜǦĞĢƔáàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣĤḤĦIÍÌİÎÏǏĬĪĨĮỊĲĴĶƘĹĻŁĽĿʼNŃN̈ŇÑŅŊÓÒÔÖǑŎŌÕŐỌØǾƠŒĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœŔŘŖŚŜŠŞȘṢẞŤŢṬŦÞÚÙÛÜǓŬŪŨŰŮŲỤƯẂẀŴẄǷÝỲŶŸȲỸƳŹŻŽẒŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ]+$/;
+    if (nameString) return nameRegex.test(nameString);
+}
+
+/**
+ * Excludes all special characters and spaces
+ */
+
+function checkValidUsername(username) {
+    var usernameRegex = /^[a-zA-Z0-9]+$/;
+    if(username) return usernameRegex.test(username.toLowerCase());
+}
+
+/**
+ * Minimum 8 characters, one upper case letter and one number
+ */
+
+function checkValidPassword(password) {
+    var usernameRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    return usernameRegex.test(password);
+}
+
+/**
+ * Only valid email will return true
+ * [username]@[domain]
+ */
+
+function checkValidEmail(email) {
+    var emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (email) return emailRegex.test(email.toLowerCase());
 }
 

@@ -1,6 +1,8 @@
 var socket = io();
 var notifications = [];
 var notItem, notItemAD;
+var langNotification;
+
 
 socket.emit('setup', {
     person_id: Cookies.get('person_id')
@@ -14,6 +16,87 @@ socket.on('invite group', function(data){
 });
 
 $(function(){
+    /**
+     * This method calls the language api and sets the standard language as
+     * norwegian.
+     */
+    $.ajax({
+        url: '/api/language',
+        method: 'GET',
+        data: {
+            lang: 'nb_NO',
+            path: '/notifications.html'
+        },
+        success: function (data) {
+            langNotification = data;
+        }
+    });
+
+    /**
+     * This method calls the language api and sets the language to norwegian
+     * if the user clicks on the norwegian flag.
+     */
+    $('#login-norway').click(function () {
+        $.ajax({
+            url: '/api/language',
+            method: 'POST',
+            data: {
+                lang: 'nb_NO'
+            },
+            success: function (){
+                $.ajax({
+                    url: '/api/language',
+                    method: 'GET',
+                    data: {
+                        lang: 'nb_NO',
+                        path: window.location.pathname
+                    },
+                    success: function (data) {
+                        for (var p in data) {
+                            if (data.hasOwnProperty(p)) {
+                                $("#" + p).html(data[p]);
+                            }
+                        }
+                    }
+                });
+            },
+            error: console.error
+        });
+
+    });
+
+    /**
+     * This method calls the language api and sets the language to english
+     * if the user clicks on the british flag.
+     */
+    $('#login-england').click(function () {
+        $.ajax({
+            url: '/api/language',
+            method: 'POST',
+            data: {
+                lang: 'en_US'
+            },
+            success: function (){
+                $.ajax({
+                    url: '/api/language',
+                    method: 'GET',
+                    data: {
+                        lang: 'en_US',
+                        path: window.location.pathname
+                    },
+                    success: function (data) {
+                        for (var p in data) {
+                            if (data.hasOwnProperty(p)) {
+                                $("#" + p).html(data[p]);
+                            }
+                        }
+                    }
+                });
+            },
+            error: console.error
+        });
+    });
+
     if(window.innerWidth > 991)
         $(".navbar-nav.ml-auto").prepend("<i style='margin-top: 10px; margin-right: 15px' id='notification-center' class='fa fa-bell' aria-hidden='true'></i>");
     else
@@ -34,6 +117,8 @@ $(function(){
                     for(var i = 0; i < data.length; i++) {
                         notifications = notifications.concat(data[i]);
                     }
+                    notificationColor();
+
                     $("#notification-center").click(function(){
                         if($("#popup").length > 0)
                             return $("#popup").remove();
@@ -42,23 +127,35 @@ $(function(){
                         for(var i = 0; i < notifications.length; i++){
                             if(notifications[i].group_id){
                                 h += notItemAD({
-                                    text: "You have been invited to the group: " + notifications[i].group_name,
-                                    data: "data-group='" + notifications[i].group_id + "'"
+                                    text: langNotification["n-group-invite"] + notifications[i].group_name,
+                                    data: "data-group='" + notifications[i].group_id + "'",
+                                    n_accept: '',
+                                    n_decline: ''
                                 });
                             }
                             else if(notifications[i].person_id){
                                 h += notItem({
-                                    text: "You have an unfinished task: " + notifications[i].todo_text,
-                                    data: "data-todo='" + notifications[i].todo_id + "'"
+                                    text: langNotification["n-unfinished-task"] + notifications[i].todo_text,
+                                    data: "data-todo='" + notifications[i].todo_id + "'",
+                                    n_accept: '',
+                                    n_decline: ''
                                 });
                             }
                             else if(notifications[i].shopping_list_id){
                                 h += notItemAD({
-                                    text: "You have been invited to the shopping list: " + notifications[i].shopping_list_name,
-                                    data: "data-slist='" + notifications[i].shopping_list_id + "'"
+                                    text: langNotification["n-shoppinglist-invite"] + notifications[i].shopping_list_name,
+                                    data: "data-slist='" + notifications[i].shopping_list_id + "'",
+                                    n_accept: '',
+                                    n_decline: ''
                                 });
                             }
                         }
+                        if(notifications.length == 0){
+                            h += notItem({
+                                text: langNotification["n-no-notifications"]
+                            });
+                        }
+
                         $("#popup").html(h + "</ul>");
                         $("#popup").css({
                             'position': 'absolute',
@@ -79,9 +176,10 @@ $(function(){
                                         for(var i = 0; i < notifications.length; i++){
                                             if(notifications[i].group_id == group_id) {
                                                 notifications.splice(i, 1);
+                                                notificationColor();
                                             }
                                         }
-                                        $(li).closest("li").html("Invitation accepted");
+                                        $(li).closest("li").html(langNotification["n-accept-inv"]);
                                     },
                                     error: console.error
                                 });
@@ -97,9 +195,10 @@ $(function(){
                                         for(var i = 0; i < notifications.length; i++){
                                             if(notifications[i].group_id == group_id) {
                                                 notifications.splice(i, 1);
+                                                notificationColor();
                                             }
                                         }
-                                        $(li).closest("li").html("Invitation accepted");
+                                        $(li).closest("li").html(langNotification["n-accept-inv"]);
                                     },
                                     error: console.error
                                 });
@@ -118,9 +217,10 @@ $(function(){
                                         for(var i = 0; i < notifications.length; i++){
                                             if(notifications[i].group_id == group_id) {
                                                 notifications.splice(i, 1);
+                                                notificationColor();
                                             }
                                         }
-                                        $(li).closest("li").html("Invitation declined");
+                                        $(li).closest("li").html(langNotification["n-decline-inv"]);
                                     },
                                     error: console.error
                                 });
@@ -136,9 +236,10 @@ $(function(){
                                         for(var i = 0; i < notifications.length; i++){
                                             if(notifications[i].shopping_list_id == list_id) {
                                                 notifications.splice(i, 1);
+                                                notificationColor();
                                             }
                                         }
-                                        $(li).closest("li").html("Invitation declined");
+                                        $(li).closest("li").html(langNotification["n-decline-inv"]);
                                     },
                                     error: console.error
                                 });
@@ -156,3 +257,15 @@ $(function(){
         }
     });
 });
+
+/**
+ * Method that changes color of notification bell depending on if the user has any notifications.
+ */
+function notificationColor() {
+    if(notifications.length != 0){
+        $("#notification-center").css("color", "red");
+    }
+    else{
+        $("#notification-center").css("color", "black");
+    }
+}

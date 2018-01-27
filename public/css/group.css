@@ -131,12 +131,14 @@ label {
 }
 
 #groupwindowStart{
+	margin-left: 2.0%;
     background-color: white;
     border-radius: 10px;
     height: 87vh;
 }
 
 #groupwindow {
+	margin-left: 2.0%;
 	background-color: white;
 	border-radius: 10px;
 	height: 87vh;
@@ -183,8 +185,6 @@ label {
 	background-color: white;
 	height: auto;
 	border-radius: 10px;
-	margin-right:10px;
-	margin-left: 10px ;
 	padding: 2%;
 }
 
@@ -257,6 +257,18 @@ div.grouptablink.backvariant{
 
 }
 
+@media screen and (max-width: 414px) {
+	#changename-group-admin{
+		align-content: center;
+		padding-left: 9%;
+		margin-top: 75px
+	}
+	#membersofgroup{
+		padding-right: 11%;
+	}
+
+}
+
 #feed{
     padding-top: 2%;
 }
@@ -264,8 +276,8 @@ div.grouptablink.backvariant{
 #group-newsfeedPost{
     border-style:groove;
     resize: none;
+	width:90%;
     padding-left: 2vh;
-    width:112vh;
     text-align: left;
     height: 80px;
     border-radius: 5px;
@@ -279,10 +291,9 @@ div.grouptablink.backvariant{
 }
 
 .post{
-    padding:4vh;
-	padding-right: 8vh;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    padding:3vh;
+    margin-top: 10px;
+    margin-bottom: 10px;
     min-height:175px;
 
 	max-height: 85vh;
@@ -336,6 +347,71 @@ div.grouptablink.backvariant{
 	background-color: #00a7d1;
 }
 #posts{
+	padding-right: 4vh;
+	padding-left: 4vh;
+}
+
+#groupselection{
+	border-top: #a3e6f7 1vh solid;
+	border-bottom: #a3e6f7 1vh solid;
+	margin-left: 4.17%;
+	margin-bottom: 1vh;
+}
+
+@media screen and (max-width: 992px) {
+	#groupselection{
+		height: 100%;
+	}
+	#groupwindowStart{
+		visibility: hidden;
+	}
+	#groupwindow{
+		margin-left: 4.17%;
+		height: 100%;
+		text-align: center;
+	}
+}
+
+@media screen and (max-width: 576px) {
+	#groupselection {
+		margin-left: 0%;
+		height: 100%;
+	}
+	#groupwindowStart{
+		visibility: hidden;
+	}
+	#groupwindow{
+		margin-left: 0%;
+		height: 100%;
+		text-align: center;
+	}
+}
+
+hr {
+	border: none;
+	height: 1px;
+	color: #444444;
+	background-color: #444444;
 	padding-right: 8vh;
 	padding-left: 8vh;
+}
+
+#scrollable-dropdown-menu .tt-dropdown-menu {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.typeahead,
+.tt-query,
+.tt-hint {
+    border: 2px solid #ccc;
+    outline: none;
+}
+
+.typeahead {
+    background-color: #fff;
+}
+
+.typeahead:focus {
+    border: 2px solid #0097cf;
 }

@@ -2,9 +2,7 @@ body{
     font-family: "Trebuchet MS";
     background-size: cover;
     font-style: inherit;
-    background-attachment: fixed;
-
-
+    overflow-x: hidden;
 }
 
 .buttonn{
@@ -19,83 +17,41 @@ div.container1{
 
     height: 87vh;
     background-color: white;
-    border-radius: 15px;
+    border-radius: 10px;
     overflow: hidden;
     padding-bottom: 2%;
     border-top: #a3e6f7 1vh solid;
     border-bottom: #a3e6f7 1vh solid;
-
-
 }
 
-/*
-div.bordr{
-    border-right: 1px solid lightgrey;
-    height: 450px;
+div.leftcontainer{
+    /*height: 75vh;*/
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    border-top: #a3e6f7 1vh solid;
+    border-bottom: #a3e6f7 1vh solid;
+    margin-bottom: 20px;
 }
-*/
+
+div.rightcontainer{
+    /*height: 75vh;*/
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    border-top: #a3e6f7 1vh solid;
+    border-bottom: #a3e6f7 1vh solid;
+}
+
 
 div.changeinfo {
     margin-top: 5%;
     padding: 2%;
-    font-size: 90%;
-
-}
-
-.colu1{
-}
-
-.colu2{
-    width: auto;
-
-}
-
-div.personaliaborder{
-    padding: 2%;
 }
 
 div.textarea{
-    font-size: 90%;
+    font-size: 100%;
 }
-
-
-@media (max-width: 900px){
-    #profpic{
-        width: 150px;
-        height: 150px;
-    }
-
-}
-
-
-@media (min-width: 500px) and (max-width: 768px) {
-    .colu1{
-        min-width: 500px;
-    }
-
-    .colu2{
-        min-width: 500px;
-    }
-
-
-}
-
-.txt{
-    margin-left: 20px;
-}
-
-/*
-@media(max-width:767px){
-    .colu1 {
-    }
-}
-
-@media(min-width:375px){
-    .colu1 {
-        min-width: 500px;
-    }
-}
-*/
 
 #okok{
     overflow-y: scroll;
@@ -219,56 +175,3 @@ div.debtborder{
 {
     background: black;
 }
-
-/*
-
-div.shadow{
-    width: 70%;
-    min-width: 50%;
-    height: 200px;
-    border-radius: 10px;
-    border: outset 2px;
-    -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.1) inset;
-    -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.1) inset;
-    box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.1) inset;
-    margin-bottom: 1%;
-    padding: 2%;
-    background-color: paleturquoise;
-}
-
-
-.fa-chevron-left, .fa-chevron-right{
-    font-size: 20px;
-    color: black;
-}
-
-.fa-chevron-left{
-    padding-left: 10px
-
-}
-
-.fa-chevron-right{
-    padding-right: 10px;
-}
-
-
-
-.media-carousel .carousel-indicators
-{
-    top: auto;
-}
-
-.media-carousel .carousel-indicators li
-{
-    background: #828282;
-}
-.media-carousel .carousel-indicators .active
-{
-    background: black;
-}
-
-.media-carousel{
-    width: 100%;
-}
-
-*/

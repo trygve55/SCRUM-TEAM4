@@ -5,7 +5,7 @@ module.exports = router;
 /**
  * Get all the currencies correctly sorted
  *
- * URL: '/api/currency
+ * URL: /api/currency
  */
 router.get('/', function(req, res){
     pool.query('SELECT * FROM currency ORDER BY currency_major DESC, currency_long ASC;', function(err, result) {
