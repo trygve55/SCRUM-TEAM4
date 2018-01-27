@@ -31,3 +31,6 @@ i {
 .fa-times:hover{
     color: indianred;
 }
+.active{
+    z-index: 0;
+}

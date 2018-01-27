@@ -164,7 +164,7 @@ router.get('/', function(req, res) {
         'LEFT JOIN shopping_list_person USING(shopping_list_id) ' +
         'LEFT JOIN (SELECT person_id, forename, middlename, lastname FROM person) p USING(person_id) ' +
         'WHERE shopping_list_id IN  ' +
-        '(SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?)',
+        '(SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ? AND invite_accepted = 1)',
         [p_id, p_id, p_id],
         function(err, result) {
             if (err) {

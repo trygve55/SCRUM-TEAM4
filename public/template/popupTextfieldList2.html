@@ -1,0 +1,42 @@
+<div class="pop" >
+    <div {{{data}}} class="pop-content" id="shop-popup" style=" min-width: 69vh; ">
+        <p align="center" style="font-size: 20px;">{{title}}</p>
+        <div class="row">
+            <div class="col-sm-7">
+                <div style="border: inset; padding: 2vh; border-radius: 10px; min-height: 30vh;">
+                    <div class="row"  style="margin-bottom: 2vh">
+                        <div class="col-sm-5" style="text-align: left;"> <label>{{textfield}} ({{currency}}):</label></div>
+                        <div class="col-sm-7"><input class="form-control" id="shop-entry-cost" placeholder=""></div>
+                    </div>
+                    <div class="row"  style="margin-bottom: 2vh">
+                        <div class="col-sm-5" style="text-align: left"> <label>{{textfield_com}}:</label></div>
+                        <div class="col-sm-7"><input class="form-control" id="shop-entry-name" placeholder=""></div>
+                    </div>
+                    <div class="row labelrow">
+                        <div class="col-sm-5" style="text-align: left"> <label>{{textfield_label}}:</label></div>
+                        <div class="col-sm-7 newlabel">
+                            <select class="form-control label-input" id="labelid" style="color: grey">{{{label}}}</select>
+                        </div>
+                    </div>
+                    <div class="row byersrow" style="margin-botton: 2vh; margin-top: 2vh">
+                        <div class="col-sm-5"><label>{{byers_label}}:</label></div>
+                        <div class="col-sm-7">
+                            <select class="form-control byers-input" id="byersid" style="color: grey">{{{byers}}}</select>
+                        </div>
+                    </div>
+                    <div class="addbyers" style="width: 31vh">
+                        <div id="scrollable-dropdown-menu2">
+                            <input class="typeahead form-control" style="margin-top: 2vh; width: 31vh" placeholder="username">
+                        </div>
+                        <div class="users-entry" style="margin-top: 1vh; padding-top:1vh; padding-left: 1vh; padding-bottom:0; background-color: lightyellow; height: 10vh; overflow-x: scroll; border-radius: 5px; border: outset 2px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5" ><ul class="list-group" style="max-height: 30vh;">{{{list}}}</ul></div>
+        </div>
+        <div align="center" style="margin-top: 2vh">
+            <button align="right" id="t-popup-cancel" type="button" class="btn" style="background-color: lightgrey">{{cancel}}</button>
+            <button align="right" id="t-popup-complete" type="button" class="btn" style="background-color: lightgrey">{{complete}}</button>
+        </div>
+    </div>
+</div>
