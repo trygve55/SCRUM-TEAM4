@@ -15,7 +15,7 @@ if os.path.exists("data.txt"):
 #(URL:\s*[{/a-z_A-Z}]*)((?:([a-zA-Z*():]|\s)*)(\{\s*(\*.*[a-zA-Z]+.*\s*)*\*\s*\}))?
 #(URL:\s*[{/a-z_A-Z}]*)((?:([a-zA-Z*():]|\s)*)(?:data\s*:\s*)\{[)(\]\[\w\,\s_*"\-\.]*\})?
 regExp = re.compile(r'''(router\.[a-zA-Z/'():_-]*',)''');
-regExp2 = re.compile(r'''(URL:\s*[{/a-z_A-Z}]*)((?:([a-zA-Z*():]|\s)*)(?:data\s*:\s*)\{[)(\]\[\w\,\s_*"\-\.:-]*\})?''');
+regExp2 = re.compile(r'''(URL:\s*[{/a-z_A-Z}]*)((?:([a-zA-Z*():]|\s)*)(?:data\s*:\s*)\{[)(\]\[\w\,\s_*"\-\.:/-]*\})?''');
 files = [f for f in os.listdir('.') if os.path.isfile(f)];
 
 for i in files:
