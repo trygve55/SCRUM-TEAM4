@@ -1198,7 +1198,7 @@ function setupClicksTask(){
         }).focus();
     });
 
-    $('.fa-list-ul').unbind('click').click(function(){
+    $('#done-tasks-btn').unbind('click').click(function(){
         showDoneTasks();
     });
     setupTaskClicks();
@@ -1497,6 +1497,12 @@ function drawStats() {
 
 function addMembersPopup(){
     var themember;
+    $('body').append(popupAssign({
+        assign_header: lang["assign-header"],
+        assign_name: lang["assign-name"],
+        assign_ok: lang["assign-ok"],
+        assign_cancel: lang["assign-cancel"]
+    }));
     //Shows suggestions when characters is typed
     $('#scrollable-dropdown-menu .typeahead').typeahead({
             highlight: true
@@ -1506,11 +1512,12 @@ function addMembersPopup(){
             display: 'name',
             source: new Bloodhound({
                 datumTokenizer: function(d){
+                    console.log(d);
                     return Bloodhound.tokenizers.whitespace(d.name).concat([d.email]);
                 },
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
                 prefetch: {
-                    url: '/api/user/all/' + currentGroup.group_id,
+                    url: '/api/group/'+currentGroup.group_id+'/users',
                     cache: false
                 }
             }),
@@ -1534,13 +1541,6 @@ function addMembersPopup(){
     $(".typeahead").bind('typeahead:close', function(){
         $(".typeahead").val("");
     });
-
-    $('body').append(popupAssign({
-        assign_header: lang["assign-header"],
-        assign_name: lang["assign-name"],
-        assign_ok: lang["assign-ok"],
-        assign_cancel: lang["assign-cancel"]
-    }));
 
     $('.assignok').unbind("click").click(function () {
         var personid = '';
