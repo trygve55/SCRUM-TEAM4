@@ -1,6 +1,7 @@
 
 
 .profil{
+    margin-left:3.6%;
     background-color: white;
     border-radius: 10px;
     height: 87vh;
@@ -16,10 +17,10 @@
 }
 
 .newsfeed{
+    margin-left:3.6%;
     padding:2%;
     margin-top: 20px;
     margin-bottom: 20px;
-    max-width: 85%;
     -moz-box-shadow: 0 0 1px grey;
     -webkit-box-shadow: 0 0 1px grey;
     box-shadow:  0 0 1px grey;
