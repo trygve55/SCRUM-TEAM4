@@ -573,6 +573,17 @@ router.put('/', function(req, res) {
     });
 });
 
+/**
+ * Updates profile picture
+ *
+ * URL: /api/user/picture
+ * method: POST
+ * data (FORM) {
+ *      File
+ * }
+ */
+
+
 router.post('/picture', function(req, res){
     if(req.session.person_id == null) {
         return res.status(403).send("Invalid request, you must log in");
