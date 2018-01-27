@@ -7,5 +7,12 @@
   "register-lastname": "Etternavn*",
   "register-email": "Epost*",
   "register-phone": "Telefonnummer",
+  "username": "Brukernavn:",
+  "password": "Passord:",
+  "repeatpassword": "Repeter passord:",
+  "firstname": "Fornavn:",
+  "lastname": "Etternavn:",
+  "email": "Epost:",
+  "phone": "Telefonnummer:",
   "register-fillIn": "Vennligst fyll inn hvert felt markert med *"
 }

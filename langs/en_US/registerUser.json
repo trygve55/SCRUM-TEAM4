@@ -7,5 +7,12 @@
   "register-lastname": "Lastname*",
   "register-email": "Email*",
   "register-phone": "Phone number",
+  "username": "Username:",
+  "password": "Password:",
+  "repeatpassword": "Repeat password:",
+  "firstname": "Firstname:",
+  "lastname": "Lastname:",
+  "email": "Email:",
+  "phone": "Phone number:",
   "register-fillIn": "Please fill in each field marked with *"
 }

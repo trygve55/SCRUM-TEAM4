@@ -50,7 +50,8 @@ router.post('/', function(req, res) {
                 return res.status(500).json({'Error': err});
 
             if (img.bitmap.height > 750 || img.bitmap.width > 750)
-            	img.scaleToFit(750, 750);
+            	img.background(0x00000000)
+					.scaleToFit(750, 750);
 
         	img.quality(70).getBuffer(Jimp.MIME_JPEG, function (err, imgdata) {
                 savePostToDatabase(req, res, data, imgdata);

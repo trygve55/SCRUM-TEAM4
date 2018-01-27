@@ -1,0 +1,10 @@
+{
+  "n-group-invite": "You have been invited to the group: ",
+  "n-unfinished-task": "You have an unfinished task: ",
+  "n-shoppinglist-invite": "You have been invited to the shopping list: ",
+  "n-no-notifications": "You have no notifications",
+  "n-accept-inv": "Invitation accepted",
+  "n-decline-inv": "Invitation declined",
+  "n-accept": "Accept",
+  "n-decline": "Decline"
+}

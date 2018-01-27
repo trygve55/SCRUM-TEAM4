@@ -24,6 +24,14 @@ $(function () {
             $("#register-lastname").attr("placeholder", data["register-lastname"]);
             $("#register-email").attr("placeholder", data["register-email"]);
             $("#register-phone").attr("placeholder", data["register-phone"]);
+
+            $("#username").text(data["username"]);
+            $("#password").text(data["password"]);
+            $("#repeatpassword").text(data["repeatpassword"]);
+            $("#firstname").text(data["firstname"]);
+            $("#lastname").text(data["lastname"]);
+            $("#email").text(data["email"]);
+            $("#phone").text(data["phone"]);
         }
 
     });
@@ -60,6 +68,14 @@ $(function () {
                         $("#register-lastname").attr("placeholder", data["register-lastname"]);
                         $("#register-email").attr("placeholder", data["register-email"]);
                         $("#register-phone").attr("placeholder", data["register-phone"]);
+
+                        $("#username").text(data["username"]);
+                        $("#password").text(data["password"]);
+                        $("#repeatpassword").text(data["repeatpassword"]);
+                        $("#firstname").text(data["firstname"]);
+                        $("#lastname").text(data["lastname"]);
+                        $("#email").text(data["email"]);
+                        $("#phone").text(data["phone"]);
                     }
                 });
             },
@@ -96,6 +112,14 @@ $(function () {
                         $("#register-lastname").attr("placeholder", data["register-lastname"]);
                         $("#register-email").attr("placeholder", data["register-email"]);
                         $("#register-phone").attr("placeholder", data["register-phone"]);
+
+                        $("#username").text(data["username"]);
+                        $("#password").text(data["password"]);
+                        $("#repeatpassword").text(data["repeatpassword"]);
+                        $("#firstname").text(data["firstname"]);
+                        $("#lastname").text(data["lastname"]);
+                        $("#email").text(data["email"]);
+                        $("#phone").text(data["phone"]);
                     }
                 });
             },
