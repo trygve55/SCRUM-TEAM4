@@ -39,7 +39,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a id="index-homepageNavbar" class="nav-item nav-link" href="index.html"></a>
+                    <a id="index-homepageNavbar" class="nav-item nav-link active" href="index.html"></a>
                     <a id="index-groupsNavbar" class="nav-item nav-link" href="#" onclick="new function () {
               $.ajax({
                 url: '/api/group/me',
@@ -76,20 +76,18 @@
             <div class="profil col-sm-3">
                 <br>
 
-                <img id="profpic" src="/img/profilpic.svg" style="height: 200px; width: 200px">
+                <img id="profpic" src="/img/profilpic.svg" style="height: 200px; width: 200px; border-radius: 50%">
                 <div id="index-username" style="font-size: large" ></div>
                 <div id="index-status" style="color: green; font-style: oblique ">online</div>
 
                 <div class ="index-todo" id="index-todolist"></div>
 
-                <i style="color:#a3e6f7;" class="fa fa-sign-out" aria-hidden="true"></i>
-                <a href="login.html" style="color: dimgray" id="index-logout"></a>
 
             </div>
 
             <div style="width: 40px"></div>
 
-            <div id="newsfeedPost" class = "newsfeed col-sm-8"></div>
+            <div id="newsfeedPost" class ="newsfeed col-sm-8"></div>
 
         </div>
 

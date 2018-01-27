@@ -4,7 +4,6 @@
   "register-password": "Password*",
   "register-repeatpassword": "Repeat password*",
   "register-firstname": "Firstname*",
-  "register-middlename": "Middelname*",
   "register-lastname": "Lastname*",
   "register-email": "Email*",
   "register-phone": "Phone number",

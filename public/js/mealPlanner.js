@@ -25,8 +25,9 @@ $(function () {
                     title:recipeNameChosenGroup,
                     start:recipeTimeChosenGroup,
                     recipe_id: datatFOod[i].recipe_id
-                })
+                });
             }
+
             /**
              * This method creates the standard calender.
              */
@@ -39,9 +40,18 @@ $(function () {
                 },
                 defaultDate: '2018-01-01',
                 navLinks: true, // can click day/week names to navigate views
-                editable: true,
                 eventLimit: true, // allow "more" link when too many events
                 events: events,
+                editable: true,
+                droppable: true, // this allows things to be dropped onto the calendar
+                drop: function() {
+                    // is the "remove after drop" checkbox checked?
+                    if ($('#drop-remove').is(':checked')) {
+                        // if so, remove the element from the "Draggable Events" list
+                        $(this).remove();
+                    }
+                },
+                eventColor: '#7ebccc',
                 eventDrop: function (e) {
                     console.log(e);
                     console.log(e.start._i)
@@ -290,7 +300,8 @@ function prep(){
             var dir = $('#recipe-description').val();
             var serv = $('#amount-people').val();
             console.log(data);
-            jQuery.ajaxSettings.traditional = true;
+            console.log(ingredients);
+            //jQuery.ajaxSettings.traditional = true;
             $.ajax({
                 url: '/api/recipe',
                 method: 'POST',
@@ -299,7 +310,7 @@ function prep(){
                     recipe_name: name,
                     recipe_directions: dir,
                     recipe_servings: serv,
-                    ingredients: ingredients
+                    ingredients: JSON.stringify(ingredients)
                 }),
                 success: function () {
                     $(".pop").remove();
@@ -332,6 +343,25 @@ function updateList(data){
             recipe_text: data[i].recipe_name
         }));
     }
+
+    $('#meal-recipe .fc-event').each(function() {
+        // store data so the calendar knows to render an event upon drop
+        $(this).data('event', {
+            title: $.trim($(this).text()), // use the element's text as the event title
+            stick: true // maintain when user navigates (see docs on the renderEvent method)
+        });
+        // make the event draggable using jQuery UI
+        $(this).draggable({
+            zIndex: 999,
+            revert: true,      // will cause the event to go back to its
+            revertDuration: 0,  //  original position after the drag
+            helper: "clone",
+            start: function(e, ui){
+                $(ui.helper).css('background-color', '#7ebccc')
+            }
+        });
+        $(this).css('background', 'transparent').css('color', 'black').css('border', '1px solid lightgray');
+    });
 
     /**
      * Method for chosing one recipe.
@@ -399,6 +429,8 @@ function updateList(data){
                 var a = s[i].split("=");
                 o[a[0]]=a[1];
             }
+
+            console.log(o.group_id);
             $.ajax({
                 url: '/api/recipe/' + o.group_id,
                 method: 'POST',
@@ -406,8 +438,7 @@ function updateList(data){
                     recipe_id: idRec,
                     meal_datetime: (d == "" ? "NULL" : d)
                 },
-                success: function (dataFood) {
-                    console.log(dataFood);
+                success: function () {
                     location.reload();
                 },
                 error: console.error
