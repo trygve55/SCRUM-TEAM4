@@ -28,7 +28,7 @@ socket.on('group post', function(data){
             rest_text: rest,
             image_url: '/api/user/' + data[i].person_id + '/picture_tiny',
             data: 'data-id="' + data[i].post_id + '"',
-            datetime: testy,
+            datetime: new Date(data[i].posted_datetime).toDateString(),
             lang_read_more: "Read more..."
         }));
         if(k <= length)
