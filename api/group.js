@@ -22,18 +22,20 @@ var router = require('express').Router(),
 module.exports = router;
 
 /**
- * Get your privilege
+ * Check if you have administrator privileges for a group
  *
  * URL: /api/group/{group_id}/me/privileges
  * method: GET
  */
 router.get('/:group_id/me/privileges', function(req, res){
-    req.session.person_id = 1;
+    req.session.person_id = 1; //TODO remove this
     if(!req.session.person_id)
         return res.status(500).send();
     pool.query('SELECT role_id FROM group_person WHERE person_id = ? AND group_id = ?', [req.session.person_id, req.params.group_id], function(err, result){
         if(err)
             return res.status(500).send();
+        console.log(result);
+        console.log("person_id: " + req.session.person_id + ", group_id" + req.params.group_id);
         if(result.length > 0) {
             res.status(200).send(result[0].role_id == 2);
         } else {
@@ -164,10 +166,13 @@ router.get('/', function(req, res){
  * }
  */
 router.post('/:group_id/members', function(req, res){
+    console.log(req.body);
     if(!req.session.person_id)
         return res.status(500).send("Person_id");
     if(!(req.body.members instanceof Array)){
-        req.body.members = req.body['members[]'];
+        if(!req.body.members) {
+            req.body.members = req.body['members[]'];
+        }
         delete req.body['members[]'];
         if(!(req.body.members instanceof Array))
             req.body.members = [req.body.members];
@@ -240,49 +245,47 @@ router.post('/:group_id/members', function(req, res){
 });
 
 /**
- * Removes a users access to the group
+ * Removes a user's access to the group. If no person_id is provided, the logged in user is removed from the group
  *
  * URL: /api/group/{group_id}
  * method: DELETE
  * data: {
- *      person_id, person to delete
+ *      [person_id]
  * }
  */
 router.delete('/:group_id', function(req, res){
-	// Check if this request is ok.
-    if(!req.session.person_id)
-        return res.status(500).send();
+	console.log(req.body.person_id);
     if(!req.params.group_id)
         return res.status(400).send();
-    pool.getConnection(function(err, connection){
-        if (!checkConnectionError(err, connection, res)) {return;}/*
-        connection.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
-            if(err) {
-                connection.release();
-                return res.status(500).send();
+    if(req.body.person_id == null || req.body.person_id == req.session.person_id) {
+        console.log("You done goofed");
+        console.log("First: " + (req.body.person_id == null) + ", second: " + (req.body.person_id == req.session.person_id));
+        pool.query("DELETE FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
+            if(err) return res.status(500).send("Internal database error(3)");
+            return res.status(200).send("You have been removed from the group");
+        });
+    } else {
+        pool.getConnection(function (err, connection) {
+            if (!checkConnectionError(err, connection, res)) {
+                return;
             }
-            if(req.body.person_id != req.session.person_id || (result.length == 0 || result[0].role_id != 2)) {
-                connection.release();
-                return res.status(400).send();
-            }
-            connection.query("SELECT role_id FROM group_person WHERE group_id = ?", [req.params.group_id], function(err, result) {
-                if(err){
+            connection.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function (err, result) {
+                if (err) {
                     connection.release();
-                    return res.status(500).send();
+                    return res.status(500).send("Internal database error (1)");
                 }
-                if(result.length <= 1){
+                if(!result[0]["role_id"] || result[0].role_id != 2) {
+                    return res.status(403).send("You do not have rights to remove that person");
+                }
+                connection.query("DELETE FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.body.person_id], function (err, result) {
                     connection.release();
-                    return res.status(400).send();
-                }*/
-		connection.query("DELETE FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function (err, result) {
-			connection.release();
-			if (err)
-				return res.status(500).send();
-			res.status(200).send();
-		});
-            //});
-        //});
-    });
+                    if (err)
+                        return res.status(500).send("Internal database error (2)");
+                    res.status(200).send();
+                });
+            });
+        });
+    }
 });
 
 /**
@@ -511,7 +514,7 @@ router.get('/:group_id/todo', function(req, res) {
 					for (var p in result[0]) {values[p] = result[0][p];}
 					delete values.person_id;
 					values.people = people;
-					res.json(values);
+					res.status(200).json(values);
 				}
 			}
 		);
