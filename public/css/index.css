@@ -19,6 +19,7 @@
 .newsfeed{
     margin-left:3.6%;
     padding:2%;
+    height: 87vh;
     margin-top: 20px;
     margin-bottom: 20px;
     -moz-box-shadow: 0 0 1px grey;
@@ -56,8 +57,10 @@ body{
 @media screen and (max-width: 992px) {
     .profil{
         text-align: center;
+
     }
     .newsfeed{
+        height: 100%;
         text-align: center;
     }
 }
