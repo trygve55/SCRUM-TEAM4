@@ -112,6 +112,7 @@ $('document').ready(function(){
                         "background": "#FFCECE"
                     });
                 }
+                window.href = "group.js";
             }
         });
     });
