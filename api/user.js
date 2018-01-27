@@ -833,6 +833,8 @@ function reqForPrivateVars(reqVars) {
     return result;
 }
 
+
+
 router.get('/getUser', function(req, res) {
     if(!req.query.hasOwnProperty('users')) {
         req.query.users = [req.session.person_id];
