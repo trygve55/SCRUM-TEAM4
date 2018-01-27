@@ -20,6 +20,10 @@ DROP TABLE IF EXISTS budget_entry_person;
 DROP TABLE IF EXISTS person_budget_entry;
 DROP TABLE IF EXISTS private_todo_entry;
 DROP TABLE IF EXISTS private_todo_list;
+DROP TABLE IF EXISTS recipe;
+DROP TABLE IF EXISTS recipe_ingredient;
+DROP TABLE IF EXISTS group_recipe;
+DROP TABLE IF EXISTS person_recipe;
 SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE currency (
@@ -285,7 +289,7 @@ CREATE TABLE person_recipe (
     person_id INTEGER NOT NULL,
     meal_datetime DATE NOT NULL,
     CONSTRAINT person_recipe_fk FOREIGN KEY(recipe_id) REFERENCES recipe(recipe_id),
-    CONSTRAINT recipe_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
+    CONSTRAINT recipe_person_back_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
     CONSTRAINT person_recipe_pk PRIMARY KEY(recipe_id, person_id, meal_datetime)
 );
 
