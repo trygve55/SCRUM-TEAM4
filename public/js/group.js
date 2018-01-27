@@ -150,6 +150,8 @@ $(function() {
                     $("html, body").animate({ scrollTop: $(document).height() }, "slow");
                 }
 			    $('#groupwindowStart').hide();
+                $(".group").removeClass("aktiv");
+                $(this).addClass("aktiv");
 				$('#groupwindow').show();
 				currentGroup = $(this).data("group-id");
 
@@ -243,7 +245,8 @@ function addGroupToList(group) {
     for (var i = 0; i < groups.length; i++) {
         if ($(groups[i]).html() == group.group_name) return;
     }
-    $("#groupselection").append('<div style="padding-top: 2px; height: 30px; border-radius: 10px; background-color: white; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class="tablink text-center backvariant group" data-group-id="' + group.group_id + '">' + group.group_name + '</div><h4></h4>');
+    $("#thelistgroup").append('<li class="list-group-item tablink group"  data-group-id="' + group.group_id + '">' + group.group_name + '</li>');
+    //$("#groupselection").append('<div style="padding-top: 2px; height: 30px; border-radius: 10px; background-color: white; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class="tablink text-center backvariant group" data-group-id="' + group.group_id + '">' + group.group_name + '</div><h4></h4>');
 }
 
 /**
@@ -425,6 +428,7 @@ function setupClicks(){
         if(items.length == 0)
             return;
         var entries = $(items[0]).data("id");
+
         var list = "<li class=\"list-group-item\">" + $(items[0]).html() + "</li>";
         for(var i = 1; i < items.length; i++){
             entries += "," + $(items[i]).data("id");
@@ -491,8 +495,13 @@ function setupClicks(){
         }));
         $(".addbyers").hide();
         $(".newlabel").hide();
+
+        var currColor = "#a9d5f2";
         $(".colorpicker").spectrum({
-            color: "#a9d5f2"
+            color: "#a9d5f2",
+            change: function (color) {
+                currColor = color.toHexString();
+            }
         });
         /*$(".colorpicker").spectrum({
                 color: "#a9d5f2",
@@ -503,11 +512,9 @@ function setupClicks(){
 
         //If label-input is changed
         $('select.label-input').change(function () {
-            if($(this).find(":selected").attr('id')==-1){
-                console.log("id is " + $(this).find(":selected").attr('id'));
+            if($(this).find(":selected").text() == generalLabels[0]){
                 $(".newlabel").show();
             }else{
-                console.log("html is " + $(".newlabel").html());
                 $(".newlabel").hide();
             }
         });
@@ -591,9 +598,7 @@ function setupClicks(){
                var colorInt;
                if($('.newlabel').is(":visible")){
                    name = $('#new-label-name').val();
-                   var color = $('.colorpicker').val().toHexString();
-                   console.log(color);
-                   colorInt = Number(parseInt(color.split("#")[1],16));
+                   colorInt = Number(parseInt(currColor.split("#")[1],16));
                }else{
                    name = $('select.label-input').text();
                    var color = '#a9d5f2';
@@ -641,7 +646,7 @@ function setupClicks(){
                    budget_entry_type_id: budgetentrytypeid
                }
            }
-           console.log("sending in: " + inputdata);
+           console.log("sending in: " + shopid + ", " + price + ", " + comment + ", " + personsids + ", " + slei + ", " + budgetentrytypeid);
            /*$.ajax({
                url: '/api/budget',
                method: 'POST',

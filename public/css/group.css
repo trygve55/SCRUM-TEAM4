@@ -11,15 +11,7 @@
 	cursor: pointer;
 }
 
-.listeTask{
-	margin: 1%;
-	padding: 2%;
-	background-color: white;
-	border-radius: 25px;
-	max-height: 670px;
-	min-width: 320px;
-	width: 90%;
-}
+
 
 .adde {
 	margin: 1%;
@@ -141,13 +133,13 @@ label {
 #groupwindowStart{
     background-color: white;
     border-radius: 10px;
-    height: 670px;
+    height: 88vh;
 }
 
 #groupwindow {
 	background-color: white;
 	border-radius: 10px;
-	height: 670px;
+	height: 88vh;
 	overflow: auto;
 	display: none;
 }
@@ -242,7 +234,7 @@ div.grouptablink.backvariant{
 }
 
 #groupselection{
-	height: 670px;
+	height: 88vh;
 	overflow-y: auto;
 
 }
@@ -338,4 +330,11 @@ div.grouptablink.backvariant{
 }
 .fa-list-ul:hover, .fa-bars:hover, .fa-arrow-circle-o-left:hover, .fa-user:hover{
 	color: mediumseagreen;
+}
+.aktiv{
+	background-color: #00a7d1;
+}
+#posts{
+	padding-right: 8vh;
+	padding-left: 8vh;
 }
