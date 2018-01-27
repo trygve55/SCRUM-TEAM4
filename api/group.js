@@ -38,6 +38,22 @@ router.get('/:group_id/me/privileges', function(req, res){
 });
 
 /**
+ * Get group members privileges
+ *
+ * URL: /api/group/{group_id}/privileges
+ * method: GET
+ */
+router.get('/:group_id/privileges', function(req, res){
+    if(!req.session.person_id)
+        return res.status(500).send();
+    pool.query('SELECT * FROM group_person LEFT JOIN home_role USING (role_id) WHERE group_id = ?', [req.params.group_id], function(err, result){
+        if(err)
+            return res.status(500).send();
+        res.status(200).json(result);
+    });
+});
+
+/**
  * Get all users for a group
  *
  * URL: /api/group/{group_id}/users
@@ -523,46 +539,45 @@ router.get('/:group_id/todo', function(req, res) {
  * }
  */
 router.put('/:group_id', function(req, res){
-    var acceptedGroupVars= [];
+    var acceptedGroupVars= [
+        'group_name',
+        'group_desc',
+        'group_type',
+        'group_default_currency_id'
+    ];
     if(!req.session.person_id)
         return res.status(500).send();
-    pool.getConnection(function(err, connection){
+    pool.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
         if(err) {
-            connection.release();
-            return res.status(500).send("Error");
+            console.log(err);
+            return res.status(500).send(err);
         }
-        connection.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
-            connection.release();
-            if(err) {
-                return res.status(500).send();
+        if(result.length == 0 || result[0].role_id != 2) {
+            console.log("heihei");
+            return res.status(400).send();
+        }
+        var qry = "UPDATE home_group SET ";
+        var f = true;
+        var vals = [];
+        for (var p in req.body) {
+            if(acceptedGroupVars.indexOf(p) < 0) {
+                console.log("hadehade");
+                res.status(400).send("Bad request (bad variable: '" + p + "')");
+                return;
             }
-            if(result.length == 0 || result[0].role_id != 2) {
-                connection.release();
-                return res.status(400).send();
-            }
-            var qry = "UPDATE home_group SET ";
-            var f = true;
-            var vals = [];
-            for (var p in req.body) {
-                if (req.body.hasOwnProperty(p)) {
-                    if(acceptedGroupVars.indexOf(p) < 0) {
-                        connection.release();
-                        res.status(400).send("Bad request (bad variable: '" + p + "')");
-                        return;
-                    }
-                    if (!f)
-                        qry += ", ";
-                    qry += p + " = ?";
-                    f = false;
-                    vals.push(req.body[p]);
-                }
-            }
-            vals.push(req.params.group_id);
-            qry += " WHERE group_name = ?";
-            connection.query(qry, vals, function (err, result) {
-                connection.release();
-                return (err) ? (res.status(400).send(err.code + "\n" + err.sqlMessage)) : (res.status(200).json(result));
-            });
+            if (!f)
+                qry += ", ";
+            qry += p + " = ?";
+            f = false;
+            vals.push(req.body[p]);
+        }
+        vals.push(req.params.group_id);
+        qry += " WHERE group_id = ?";
+        console.log(qry);
+        console.log(vals);
+        pool.query(qry, vals, function (err, result) {
+            console.log("gååleggdeg");
+            return (err) ? (res.status(400).send(err.code + "\n" + err.sqlMessage)) : (res.status(200).json(result));
         });
     });
 });

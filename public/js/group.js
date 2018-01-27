@@ -3,7 +3,7 @@ var stTransparent = "0.5",
 	statColours = [["(0, 30, 170, " + stTransparent + ")", "(0, 0, 132, 1)"], ["(170, 30, 0, " + stTransparent + ")", "(132, 0, 0, 1)"]],
 	statLabels = ["Income", "Expenses"];
 const MILLIS_DAY = 86400000;
-var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone, popupAssign;
+var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone, popupAssign, listMemebers, listMemebersAdmin, adminView, adminViewSimple;
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
 var generalLabels;
 
@@ -113,7 +113,11 @@ $(function() {
                 'taskItem.html',
                 'taskListGroup.html',
                 'taskItemDone.html',
-                'popupAssign.html'
+                'popupAssign.html',
+                'listMemebers.html',
+                'listMemebersAdmin.html',
+                'adminView.html',
+                'adminViewSimple.html'
             ]
         },
         success: function (data){
@@ -127,6 +131,10 @@ $(function() {
             taskListGroup = Handlebars.compile(data['taskListGroup.html']);
             taskItemDone = Handlebars.compile(data['taskItemDone.html']);
             popupAssign = Handlebars.compile(data['popupAssign.html']);
+            listMemebers = Handlebars.compile(data['listMemebers.html']);
+            listMemebersAdmin = Handlebars.compile(data['listMemebersAdmin.html']);
+            adminView = Handlebars.compile(data['adminView.html']);
+            adminViewSimple = Handlebars.compile(data['adminViewSimple.html']);
         }
     });
 
@@ -149,6 +157,7 @@ $(function() {
                 if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
                     $("html, body").animate({ scrollTop: $(document).height() }, "slow");
                 }
+                $("#oda").html("<div id='calendar'></div>");
 			    $('#groupwindowStart').hide();
                 $(".group").removeClass("aktiv");
                 $(this).addClass("aktiv");
@@ -232,8 +241,97 @@ function changeTab(name) {
 		$("#date_start").datepicker({startDate: '-10d'});
 		$("#date_end").datepicker();
     }
+    else if (activeTab == 'leave')
+        adminChange();
     else if(activeTab == 'food')
         getCalendar();
+}
+
+
+function adminChange() {
+    console.log(currentGroup.group_name);
+    console.log(currentGroup.group_id);
+    $('#changegroup-NameButton').click(function () {
+        $.ajax({
+            url: '/api/group/' + currentGroup.group_id,
+            method: 'PUT',
+            data: {
+                group_name: $('#changegroup_Name').val()
+            },
+            success: function () {
+                console.log("hei")
+                location.reload();
+            },
+            error: console.error()
+        });
+    });
+
+
+    $.ajax({
+        url: '/api/group/' + currentGroup.group_id + '/me/privileges',
+        method: 'GET',
+        success: function (priv) {
+            $.ajax({
+                url: '/api/group/' + currentGroup.group_id + '/privileges',
+                method: 'GET',
+                success: function (datz) {
+                    for( var j = 0; j < datz.length; j++){
+                        var privz = [];
+                        privz.push(datz[j])
+                    }
+                    $.ajax({
+                        url: '/api/group/' + currentGroup.group_id + '/users',
+                        method: 'GET',
+                        success: function (data) {
+                            if(priv)
+                                $("#leave").html(adminView());
+                            else
+                                $("#leave").html(adminViewSimple());
+                            for (var i = 0; i < data.length; i++) {
+                                if (priv) {
+                                    $('#list-all-members').append(listMemebersAdmin({
+                                        member_text: data[i].name,
+                                        member_id: data[i].person_id,
+                                    }));
+
+                                } else {
+                                    $('#list-all-members').append(listMemebers({
+                                        member_text: data[i].name,
+                                        member_id: data[i].person_id
+                                    }));
+                                    $('#membersofgroup').css('margin-left', '20%').css('padding', '5%');
+                                }
+
+                            }
+                        }
+                    })
+                }
+
+            })
+        }
+
+    });
+}
+
+/**
+ * Leave the currently selected group.
+ * The page just reloads so that the group is removed from the list.
+ */
+
+
+function leaveGroup() {
+            $.ajax({
+                url: '/api/group/' + currentGroup.group_id,
+                method: 'DELETE',
+                data: {
+                    person_id: localStorage.person_id
+                },
+                success: function () {
+                    location.reload();	// false = from cache, true = from server.
+                },
+                error: console.error
+
+            });
 }
 
 /**
@@ -922,13 +1020,12 @@ function getPost(){
         }
     });
 }
-/**
- * Leave the currently selected group.
- * The page just reloads so that the group is removed from the list.
- */
-function leaveGroup() {
-    $.ajax({url: '/api/group/' + currentGroup.group_id, method: 'DELETE', error: console.error()});
-    location.reload();	// false = from cache, true = from server.
+
+
+function deletegroup() {
+    $.ajax({
+        url: '/api/group'
+    })
 }
 
 /**
@@ -1386,6 +1483,7 @@ $('#group-logoutNavbar').click(function () {
 function getCalendar() {
     var recipeNameChosenGroup = "";
     var recipeTimeChosenGroup = "";
+
     console.log(currentGroup);
     $.ajax({
         url: '/api/recipe/' + currentGroup.group_id,
@@ -1395,19 +1493,18 @@ function getCalendar() {
             for (var i = 0; i < datatFOod.length; i++) {
                 recipeNameChosenGroup = datatFOod[i].recipe_name;
                 recipeTimeChosenGroup = datatFOod[i].meal_datetime.split("T")[0];
-                console.log(recipeNameChosenGroup);
-                console.log(recipeTimeChosenGroup);
                 events.push({
                     title: recipeNameChosenGroup,
                     start: recipeTimeChosenGroup,
                     recipe_id: datatFOod[i].recipe_id
-                })
+                });
             }
             /**
              * This method creates the standard calender.
              */
-            $('#calendar').fullCalendar({
-                height: 630,
+            console.log(events);
+            $('#oda #calendar').fullCalendar({
+                height: 530,
                 header: {
                     left: 'prev,next today',
                     center: 'title',
@@ -1417,7 +1514,8 @@ function getCalendar() {
                 defaultDate: '2018-01-01',
                 navLinks: true, // can click day/week names to navigate views
                 eventLimit: true, // allow "more" link when too many events
-                events: events
+                events: events,
+                cache: false
             });
         },
         error: console.error()
@@ -1577,3 +1675,49 @@ function findMe(){
         }
     });
 }
+
+
+/**
+ * THE ADMIN PAGE
+ */
+
+
+/**
+ * Gets all users in the database
+ */
+var allUsers = [];
+
+$.ajax({
+    url: '/api/user/all',
+    method: 'GET',
+    success: function(data){
+        for(var i = 0; i < data.length; i++) {
+            allUsers.push({
+                id: data.person_id,
+                name: data[i].forename + " " + (data[i].middlename ? data[i].middlename + " " : "") + data[i].lastname,
+                username: data[i].username
+            });
+        }
+    }
+});
+
+
+$('document').ready(function() {
+    /**
+     * This method retrvies information about a user: person_id,forname and lastname
+     */
+    $.ajax({
+        url: '/api/user/getUser',
+        method: 'GET',
+        data: {
+            variables: [
+                'person_id',
+                'forename',
+                'lastname'
+            ]
+        },
+        success: function (data) {
+            me = data[0];
+        }
+    });
+});
