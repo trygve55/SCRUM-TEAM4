@@ -3,93 +3,41 @@ Author: Magnus Eilertsen
  */
 
 describe('Group API', function() {
-    /*describe('/api/group/ POST', function() {
-        it('Should reject bad variable names', function(done) {
-            request.post('/api/group/').send({
-                group_name: "Hackergroup",
-                "; DELETE FROM group; ---": "getRekt"
-            }).expect(400).end(function(res) {
-                console.log(res);
-                done();
+    describe('/api/group/ GET functions', function() {
+        describe('/api/group/:group_id/me/privileges', function() {
+            it('should return true for testnavn being administrator of group 1', function(done) {
+                request.get('/api/group/1/me/privileges').expect('true').expect(200).end(done);
+            });
+            it('should return false for groups you are not in', function(done) {
+                request.get('/api/group/6/me/privileges').expect(200).expect('false').end(done);
             });
         });
-        it("Should create a group on proper request", function(done) {
-            var response;
-            request.post('/api/group/').send({
-                group_name: "The Legion",
-                currency: 87
-            }).expect(200).end();
-            pool.getConnection(function(err, connection) {
-                if(err) throw err;
-                var sql = "SELECT COUNT(*) FROM home_group WHERE group_name = 'The Legion'";
-                connection.query(sql, function(err, res) {
-                    expect(res[0]["COUNT(*)"]).to.equal(1);
-                });
-                connection.release();
-                done();
-            });
-        });
-        after('Deleting test group', function() {
-            pool.getConnection(function(err, connection) {
-                var group_id;
-                if(err) throw err;
-                connection.query("SELECT group_id FROM home_group WHERE group_name = 'The Legion'", function(err, res) {
-                    if(err) throw err;
-                    group_id = res[0].group_id;
-                    connection.query("DELETE FROM group_person WHERE group_id = ?", [group_id], function(err, res) {
-                        if(err) throw err;
-                        connection.query("DELETE FROM home_group WHERE group_id = ?", [group_id], function(err) {
-                            if(err) throw err;
-                            connection.query("DELETE FROM shopping_list WHERE currency_id = 87", function(err) {
-                                if(err) throw err;
-                                connection.release();
-                            });
-                        });
-                    });
+        describe('/api/group/:group_id/users', function() {
+            it('should return all the users for group 1', function(done) {
+                request.get("/api/group/1/users").expect(200).end(function(err, res) {
+                    chai.expect(res.body[0].person_id).to.equal(1);
+                    chai.expect(res.body[1].person_id).to.equal(2);
+                    done();
                 });
             });
         });
-    });*/
-
-    describe('/api/group/name', function() {
-        it('Should tell the group name is in use', function(done) {
-            request.get('/api/group/name').query({
-                group_name: "test group"
-            }).expect(200).expect('false').end(done);
+        describe('/api/group/name', function() {
+            it('should return false if the provided name is not available', function(done) {
+                request.get('/api/group/name').query({group_name: "test group"}).expect(200).expect("false").end(done);
+            });
         });
-    });
-    describe('/api/group/me GET', function() {
-        it('Should return the logged in user\'s groups', function(done) {
-            request.get('/api/group/me')
-                .expect(200)
-                .end(function(err, res) {
+        describe('/api/group/:group_id', function() {
+            it('should get the requested group\'s info', function(done) {
+                request.get('/api/group/1').expect(200).end(function(err, res) {
                     chai.expect(res.body[0].group_name).to.equal("test group");
                     done();
                 });
-        });
-    });
-    describe('/api/group/:group_id GET', function() {
-        it('should get the requested group\'s info', function(done) {
-            request.get('/api/group/1').expect(200).end(function(err, res) {
-                chai.expect(res.body[0].group_name).to.equal("test group");
-                done();
             });
         });
-    });
-    describe('/api/group/ GET', function() {
-        it('should return the specific group\'s info', function(done) {
-            request.get('/api/group/').query({
-                group_name: "test group"
-            }).expect(200).end(function(err, res) {
-                chai.expect(res.body[0].group_name).to.equal("test group");
-                done();
-            });
-        });
-        it("should return all the groups' info", function(done) {
-            request.get('/api/group/').expect(200).end(function(err, result) {
-                pool.getConnection(function(err, connection) {
-                    if(err) throw err;
-                    connection.query("SELECT COUNT(*) FROM home_group", function(err, res) {
+        describe('/api/group/', function() {
+            it("should return all the groups' info", function(done) {
+                request.get('/api/group/').expect(200).end(function(err, result) {
+                    pool.query("SELECT COUNT(*) FROM home_group", function(err, res) {
                         if(err) throw err;
                         chai.expect(res[0]["COUNT(*)"]).to.equal(result.body.length);
                         done();
@@ -98,4 +46,5 @@ describe('Group API', function() {
             });
         });
     });
+
 });

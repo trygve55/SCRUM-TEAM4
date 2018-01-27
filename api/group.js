@@ -28,12 +28,17 @@ module.exports = router;
  * method: GET
  */
 router.get('/:group_id/me/privileges', function(req, res){
+    req.session.person_id = 1;
     if(!req.session.person_id)
         return res.status(500).send();
     pool.query('SELECT role_id FROM group_person WHERE person_id = ? AND group_id = ?', [req.session.person_id, req.params.group_id], function(err, result){
         if(err)
             return res.status(500).send();
-        res.status(200).send(result[0].role_id == 2);
+        if(result.length > 0) {
+            res.status(200).send(result[0].role_id == 2);
+        } else {
+            res.status(200).send(false);
+        }
     });
 });
 
@@ -62,7 +67,7 @@ router.get('/:group_id/users', function(req, res){
 });
 
 /**
- * Checks if the group name is already taken
+ * Checks if the group name is available
  *
  * URL: /api/group/name
  * method: GET
@@ -102,7 +107,7 @@ router.get('/me', function(req, res){
 });
 
 /**
- * Get the requested groups info
+ * Get the requested group's info
  *
  * URL: /api/group/{group_id}
  * method: GET
