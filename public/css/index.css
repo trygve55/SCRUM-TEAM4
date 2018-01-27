@@ -1,4 +1,7 @@
+
+
 .profil{
+    margin-left:3.6%;
     background-color: white;
     border-radius: 10px;
     height: 87vh;
@@ -14,12 +17,23 @@
 }
 
 .newsfeed{
+    margin-left:3.6%;
+    padding:2%;
+    height: 87vh;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    -moz-box-shadow: 0 0 1px grey;
+    -webkit-box-shadow: 0 0 1px grey;
+    box-shadow:  0 0 1px grey;
+    border-radius: 10px;
+    overflow-y: auto;
+    background-color: white;
+}
+
+.newfeed-post{
     padding:2%;
     margin-top: 20px;
     margin-bottom: 20px;
-    min-height:87vh;
-    max-width: 85%;
-    max-height: 90vh;
     -moz-box-shadow: 0 0 1px grey;
     -webkit-box-shadow: 0 0 1px grey;
     box-shadow:  0 0 1px grey;
@@ -37,35 +51,16 @@
 
 body{
     overflow-x: hidden;
-    width: 100%;
     background-color: #7ebccc;
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 992px) {
     .profil{
-
-        min-width: 70%;
         text-align: center;
+
     }
     .newsfeed{
-        padding-left: 2%;
-        padding-right: 2%;
-        min-width: 70%;
-        text-align: center;
-    }
-}
-
-@media screen and (max-width: 375px) {
-    .profil{
-
-        padding-left: 50px;
-        padding-right: 50px ;
-        text-align: center;
-    }
-    .newsfeed{
-
-        padding-left: 50px;
-        padding-right: 50px ;
+        height: 100%;
         text-align: center;
     }
 }

@@ -23,7 +23,7 @@
   "p-savepassword": "Lagre passord",
   "p-saveinfo": "Lagre info",
   "p-changepassword": "Endre passord",
-  "p-changeinfo": "Endre info",
+  "p-changeinfo": "Endre informasjon",
   "p-changephoto": "Bytt bilde",
   "p-gender": "Kjønn",
   "p-genderopt": "< Kjønn (valgfritt) >",
@@ -37,5 +37,6 @@
   "save-password-success": "Ditt passord er endret!",
   "pwbut": "Lagre passord",
   "but": "Lagre info",
-  "profpicsuccess": "Opplasting av profilbilde vellykket!"
+  "profpicsuccess": "Opplasting av profilbilde vellykket!",
+  "profpicfailure": "Mislykket, bildet ble ikke lastet opp"
 }

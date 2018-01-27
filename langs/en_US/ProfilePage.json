@@ -23,7 +23,7 @@
   "p-savepassword": "Save password",
   "p-saveinfo": "Save info",
   "p-changepassword": "Change password",
-  "p-changeinfo": "Change info",
+  "p-changeinfo": "Edit information",
   "p-changephoto": "Change photo",
   "p-gender": "Gender",
   "p-genderopt": "< Gender (optional) >",
@@ -37,6 +37,6 @@
   "save-password-success": "Your password has been changed!",
   "pwbut": "Save password",
   "but": "Save info",
-  "profpicsuccess": "Picture successfully uploaded!"
-
+  "profpicsuccess": "Picture successfully uploaded!",
+  "profpicfailure": "Failure, picture was not uploaded"
 }

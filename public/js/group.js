@@ -3,7 +3,7 @@ var stTransparent = "0.5",
 	statColours = [["(0, 30, 170, " + stTransparent + ")", "(0, 0, 132, 1)"], ["(170, 30, 0, " + stTransparent + ")", "(132, 0, 0, 1)"]],
 	statLabels = ["Income", "Expenses"];
 const MILLIS_DAY = 86400000;
-var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone, popupAssign, listMemebers, listMemebersAdmin;
+var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone, popupAssign, listMemebers, listMemebersAdmin, adminView, adminViewSimple;
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
 var generalLabels;
 
@@ -115,7 +115,9 @@ $(function() {
                 'taskItemDone.html',
                 'popupAssign.html',
                 'listMemebers.html',
-                'listMemebersAdmin.html'
+                'listMemebersAdmin.html',
+                'adminView.html',
+                'adminViewSimple.html'
             ]
         },
         success: function (data){
@@ -131,6 +133,8 @@ $(function() {
             popupAssign = Handlebars.compile(data['popupAssign.html']);
             listMemebers = Handlebars.compile(data['listMemebers.html']);
             listMemebersAdmin = Handlebars.compile(data['listMemebersAdmin.html']);
+            adminView = Handlebars.compile(data['adminView.html']);
+            adminViewSimple = Handlebars.compile(data['adminViewSimple.html']);
         }
     });
 
@@ -153,6 +157,7 @@ $(function() {
                 if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
                     $("html, body").animate({ scrollTop: $(document).height() }, "slow");
                 }
+                $("#oda").html("<div id='calendar'></div>");
 			    $('#groupwindowStart').hide();
                 $(".group").removeClass("aktiv");
                 $(this).addClass("aktiv");
@@ -263,18 +268,51 @@ function adminChange() {
 
 
     $.ajax({
-        url: '/api/group/' + currentGroup.group_id + '/users',
+        url: '/api/group/' + currentGroup.group_id + '/me/privileges',
         method: 'GET',
-        success: function (data) {
-            for(var i = 0; i < data.length; i++) {
-                var namess = data[i].name;
-                $('#list-all-members').append(listMemebersAdmin({
-                    member_text: namess,
-                    member_id: i
-                }));
-            }
+        success: function (priv) {
+            $.ajax({
+                url: '/api/group/' + currentGroup.group_id + '/privileges',
+                method: 'GET',
+                success: function (datz) {
+                    for( var j = 0; j < datz.length; j++){
+                        var privz = [];
+                        privz.push(datz[j])
+                    }
+                    $.ajax({
+                        url: '/api/group/' + currentGroup.group_id + '/users',
+                        method: 'GET',
+                        success: function (data) {
+                            if(priv)
+                                $("#leave").html(adminView());
+                            else
+                                $("#leave").html(adminViewSimple());
+                            for (var i = 0; i < data.length; i++) {
+                                if (priv) {
+                                    $('#list-all-members').append(listMemebersAdmin({
+                                        member_text: data[i].name,
+                                        member_id: data[i].person_id,
+                                    }));
+                                } else {
+                                    $('#list-all-members').append(listMemebers({
+                                        member_text: data[i].name,
+                                        member_id: data[i].person_id
+                                    }));
+                                    $('#membersofgroup').css('margin-left', '20%').css('padding', '5%');
+                                }
+
+                            }
+                        }
+                    })
+                }
+
+            })
         }
     });
+
+
+
+
 }
 
 /**
@@ -1427,6 +1465,7 @@ $('#group-logoutNavbar').click(function () {
 function getCalendar() {
     var recipeNameChosenGroup = "";
     var recipeTimeChosenGroup = "";
+
     console.log(currentGroup);
     $.ajax({
         url: '/api/recipe/' + currentGroup.group_id,
@@ -1436,18 +1475,17 @@ function getCalendar() {
             for (var i = 0; i < datatFOod.length; i++) {
                 recipeNameChosenGroup = datatFOod[i].recipe_name;
                 recipeTimeChosenGroup = datatFOod[i].meal_datetime.split("T")[0];
-                console.log(recipeNameChosenGroup);
-                console.log(recipeTimeChosenGroup);
                 events.push({
                     title: recipeNameChosenGroup,
                     start: recipeTimeChosenGroup,
                     recipe_id: datatFOod[i].recipe_id
-                })
+                });
             }
             /**
              * This method creates the standard calender.
              */
-            $('#calendar').fullCalendar({
+            console.log(events);
+            $('#oda #calendar').fullCalendar({
                 height: 530,
                 header: {
                     left: 'prev,next today',
@@ -1458,7 +1496,8 @@ function getCalendar() {
                 defaultDate: '2018-01-01',
                 navLinks: true, // can click day/week names to navigate views
                 eventLimit: true, // allow "more" link when too many events
-                events: events
+                events: events,
+                cache: false
             });
         },
         error: console.error()

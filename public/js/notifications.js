@@ -14,6 +14,7 @@ socket.on('invite group', function(data){
 });
 
 $(function(){
+
     if(window.innerWidth > 991)
         $(".navbar-nav.ml-auto").prepend("<i style='margin-top: 10px; margin-right: 15px' id='notification-center' class='fa fa-bell' aria-hidden='true'></i>");
     else
@@ -34,6 +35,8 @@ $(function(){
                     for(var i = 0; i < data.length; i++) {
                         notifications = notifications.concat(data[i]);
                     }
+                    notificationColor();
+
                     $("#notification-center").click(function(){
                         if($("#popup").length > 0)
                             return $("#popup").remove();
@@ -59,11 +62,14 @@ $(function(){
                                 });
                             }
                         }
-                        if(notifications.length == null){
+                        if(notifications.length == 0){
                             h += notItem({
-                                text: "You have no notifications" + notifications[i].todo_text
+                                text: "You have no notifications"
                             });
+                        }else{
                         }
+
+                        console.log(h);
 
                         $("#popup").html(h + "</ul>");
                         $("#popup").css({
@@ -85,6 +91,7 @@ $(function(){
                                         for(var i = 0; i < notifications.length; i++){
                                             if(notifications[i].group_id == group_id) {
                                                 notifications.splice(i, 1);
+                                                notificationColor();
                                             }
                                         }
                                         $(li).closest("li").html("Invitation accepted");
@@ -103,6 +110,7 @@ $(function(){
                                         for(var i = 0; i < notifications.length; i++){
                                             if(notifications[i].group_id == group_id) {
                                                 notifications.splice(i, 1);
+                                                notificationColor();
                                             }
                                         }
                                         $(li).closest("li").html("Invitation accepted");
@@ -124,6 +132,7 @@ $(function(){
                                         for(var i = 0; i < notifications.length; i++){
                                             if(notifications[i].group_id == group_id) {
                                                 notifications.splice(i, 1);
+                                                notificationColor();
                                             }
                                         }
                                         $(li).closest("li").html("Invitation declined");
@@ -142,6 +151,7 @@ $(function(){
                                         for(var i = 0; i < notifications.length; i++){
                                             if(notifications[i].shopping_list_id == list_id) {
                                                 notifications.splice(i, 1);
+                                                notificationColor();
                                             }
                                         }
                                         $(li).closest("li").html("Invitation declined");
@@ -162,3 +172,12 @@ $(function(){
         }
     });
 });
+
+function notificationColor() {
+    if(notifications.length != 0){
+        $("#notification-center").css("color", "red");
+    }
+    else{
+        $("#notification-center").css("color", "black");
+    }
+}

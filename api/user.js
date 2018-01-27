@@ -606,7 +606,7 @@ router.post('/picture', function(req, res){
 
         Jimp.read(path, function (err, img) {
             if (err)
-                return res.status(500).json({'Error': err});
+                return res.status(500).json({'Error': "Wrong file format"});
 
             var img_tiny = img.clone();
 

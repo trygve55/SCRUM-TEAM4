@@ -83,19 +83,21 @@
     <img class="flag" id="profile-england" style="position:absolute; right: 40px; margin-top: 1%" src="/img/engelskflagg.png" width="20" height="12">
 </div>
 
-<div class="row" align="center" style="padding-left: 15%; padding-top: 20px">
+<div class="row mainrow" align="center" style=" padding-top: 15px; font-family: 'Trebuchet MS'">
     <div class="col-sm" style="max-width: 20%; min-width: 350px">
-        <div class="leftcontainer leftone">
+        <div class="leftcontainer leftone" style="padding-bottom: 50px">
             <div class="container personaliaborder">
                 <div class="row">
                     <div class="col-sm" align="center">
-                        <img  id="profpic" style="border:none; border-radius: 50%; margin-top: 5px">
+                        <img  id="profpic" style="border:none; border-radius: 50%; margin-top: 20px">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm" align="center">
-                        <i class="fa fa-picture-o" aria-hidden="true"> <text style="font-family: 'Trebuchet MS'; font-size: smaller" id="p-changephoto"></text></i>
+                        <i class="fa fa-picture-o" aria-hidden="true"> <text style="font-family: 'Trebuchet MS';" id="p-changephoto"></text></i>
                         <p id="profpicsuccess" style="color: #3dc63f; font-style: italic; margin: 0; display: none;"></p>
+                        <p id="profpicfailure" style="color: red; font-style: italic; margin: 0; display: none;"></p>
+
                     </div>
                 </div>
                 <div class="row" style="height: 0px">
@@ -160,7 +162,7 @@
     </div>
     <div class="col-sm" style="max-width: 50%;">
         <div class="rightcontainer" style="padding: 20px">
-            <h6 id="p-changeinfo"></h6>
+            <h6 style="font-size: large; padding-bottom: 10px" id="p-changeinfo"></h6>
             <form>
                 <div class="row form-group">
                     <div class="col-4" align="left">
@@ -224,15 +226,15 @@
                     <div class="col-7" align="left">
                         <p id="save-success" style="color: #3dc63f; font-style: italic; margin: 0; display: none;"></p>
                     </div>
-                    <div class="col-5" align="center">
-                        <button type="button" id="but" class="btn btn-default buttonstyle buttonn"></button>
+                    <div class="col-5" align="right">
+                        <button style="background-color: #a3e6f7" type="button" id="but" class="btn btn-default buttonstyle buttonn"></button>
                     </div>
                 </div>
             </form>
 
             <form id="passwordarea">
             <div style="padding-top: 5%">
-                <h6 id="p-changepassword"></h6>
+                <h6 id="p-changepassword" style="font-size: large; padding-bottom: 10px"></h6>
                 <div class="row form-group">
                     <div class="col-4" align="left">
                         <label for="oldpwd" id="p-oldpassword"></label>
@@ -257,7 +259,7 @@
 
                     </div>
                     <div class="col-5" align="right">
-                        <button id="pwbut" type="button" class="btn btn-default buttonstyle buttonn" style="align:right"></button>
+                        <button id="pwbut" type="button" class="btn btn-default buttonstyle buttonn" style="align:right; background-color: #a3e6f7"></button>
                     </div>
                 </div>
             </div>
