@@ -56,7 +56,7 @@ router.get('/repeat/:group_id', function(req, res) {
  * }
 */
 router.post('/person/:todo_id', function(req, res) {
-	var data = req.body.people;
+	var data = req.body.people.split(',');
 	if (data.length < 0) {return res.status(400).send();}
 
 	var resultQuery = multipleRequestSetup(
