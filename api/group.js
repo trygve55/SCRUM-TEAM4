@@ -155,7 +155,7 @@ router.get('/', function(req, res){
  * URL: /api/group/{group_id}/members
  * method: POST
  * data: {
- *      members: [] containing the ids of the members to add
+ *      members[] containing the ids of the members to add
  * }
  */
 router.post('/:group_id/members', function(req, res){
