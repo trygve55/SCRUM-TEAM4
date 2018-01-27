@@ -19,6 +19,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.0/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker3.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
     <script src="https://use.fontawesome.com/dea62227f7.js"></script>
     <script src="/js/handlebars.js"></script>
@@ -32,6 +37,7 @@
     <script src='/js/lib/moment.min.js'></script>
     <script src='/js/lib/jquery-ui.min.js'></script>
     <script src='/js/lib/fullcalendar.min.js'></script>
+
 
 
     <link rel="stylesheet" href="css/common.css">
@@ -87,8 +93,10 @@
                 <input style="width: 80%"  class="form-control" id="meal-filter">
             </div>
             <br>
-            <ul style="height: 68%;" class="list-group recipelist" id="meal-recipe"></ul>
+            <div style="font-size:13px" class="recipe-chose">Velg en oppskrift</div>
+            <ul style="height: 65%;" class="list-group recipelist" id="meal-recipe"></ul>
             <button class="btn " style="background-color: #e4e4e4" id="meal-addRecipe"></button>
+
         </div>
 
         <div id="meal-calendar" class="transparency text-center col-sm-8">

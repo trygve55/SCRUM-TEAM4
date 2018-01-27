@@ -38,13 +38,11 @@
                 <div class="transbox">
                     <br>
                         <h2 id="register-header" style="font-style: inherit; font-size: x-large" align="center" ></h2>
-                    <div style="padding: 35px">
+                    <div style="padding-left: 35px; padding-right: 35px; padding-bottom: 10px; padding-top: 15px">
                         <p id="register-username-error" style="color: red; font-style: italic; margin: 0; display: none;">Invalid username/username already in use (no special characters)</p>
                         <p id="register-password-error" style="color: red; font-style: italic; margin: 0; display: none;">Passwords not matching</p>
                         <p id="register-email-error" style="color: red; font-style: italic; display: none;">Invalid email/email is already in use</p>
                             <input id="register-firstname" type="text" class="form-control" name="msg" >
-                        <br>
-                            <input id="register-middlename" type="text" class="form-control" name="msg" >
                         <br>
                             <input id="register-lastname" type="text" class="form-control" name="msg" >
                         <br>
@@ -57,11 +55,16 @@
                             <input id="register-repeatpassword" type="password" class="form-control" name="msg" >
                         <br>
                             <input id="register-phone" type="text" class="form-control" name="msg">
-                            <h4 style="font-size: small; font-style: oblique" align="left" id="register-fillIn"></h4>
-                        <br>
-                        <a href="login.html">
-                            <i id="register-done" class="fa fa-check-square-o" aria-hidden="true"></i>
-                        </a>
+                                <h4></h4>
+                            <h4 style="font-size: small; font-style: oblique; padding-bottom: 5px" align="left" id="register-fillIn"></h4>
+                        <div class ="row" style="padding-left: 43%; padding-bottom: 10px">
+                            <a href="login.html">
+                                <i id="register-cancel" class="fa fa-chevron-circle-left" aria-hidden="true" style="padding-right: 2px" data-toggle="tooltip" title="Avbryt"></i>
+                            </a>
+                            <a>
+                                <i id="register-done" class="fa fa-check-square-o" aria-hidden="true" style="padding-left: 10px" data-toggle="tooltip" title="Fullfør registrering"></i>
+                            </a>
+                        </div>
                     </div>
             </div>
         </div>

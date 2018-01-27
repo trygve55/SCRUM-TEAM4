@@ -53,11 +53,11 @@ router.get('/me', function(req, res){
  * method: GET
  */
 router.get('/:group_id', function(req, res){
-    pool.query('SELECT recipe_id, recipe_directions, recipe_servings, recipe_time, forename, middlename, lastname, meal_datetime ' +
-        'FROM recipe LEFT JOIN group_recipe USING (recipe_id) '+
-        'LEFT JOIN home_group USING (group_id) ' +
-        'LEFT JOIN person ON (recipe.person_id = person.person_id) ' +
-        'WHERE home_group.group_id = ?',
+    pool.query('SELECT recipe_id, recipe_name, recipe_directions, recipe_servings, recipe_time, forename, middlename, lastname, meal_datetime ' +
+    'FROM recipe LEFT JOIN group_recipe USING (recipe_id) '+
+    'LEFT JOIN home_group USING (group_id) ' +
+    'LEFT JOIN person ON (recipe.person_id = person.person_id) ' +
+    'WHERE home_group.group_id = ?',
         [req.params.group_id], function(err, result){
             if(err)
                 return res.status(500).send(err);
@@ -169,14 +169,14 @@ router.post('/me', function(req, res){
 /**
  * Register recipe for group calendar
  *
- * URL: /api/recipe/{group_id}
+ * URL: /api/recipe
  * method: POST
  * data: {
  *      recipe_id,
  *      meal_datetime
  * }
  */
-router.post('/:group_id', function(req, res){
+router.post('/me', function(req, res){
     if(!req.session.person_id)
         return res.status(500).send();
     if(!req.body.recipe_id || !req.body.meal_datetime)
@@ -247,7 +247,8 @@ router.post('/:group_id', function(req, res){
  * }
  */
 router.post('/', function(req, res){
-    req.body.ingredients.splice(0, 1);
+    req.body.ingredients = JSON.parse(req.body.ingredients);
+    req.body.ingredients.splice(0,1);
     if(!req.session.person_id)
         return res.status(500).send();
     if(!req.body.recipe_name || !req.body.recipe_directions || !req.body.recipe_servings || !req.body.ingredients || !(req.body.ingredients instanceof Array) || req.body.ingredients.length == 0)

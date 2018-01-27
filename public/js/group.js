@@ -1,9 +1,11 @@
+
 var stTransparent = "0.5",
 	statColours = [["(0, 30, 170, " + stTransparent + ")", "(0, 0, 132, 1)"], ["(170, 30, 0, " + stTransparent + ")", "(132, 0, 0, 1)"]],
 	statLabels = ["Income", "Expenses"];
 const MILLIS_DAY = 86400000;
-var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone;
+var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone, popupAssign;
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
+var generalLabels;
 
 socket.on('group post', function(data){
     for(var i = 0; i < data.length; i++) {
@@ -110,7 +112,8 @@ $(function() {
                 'newsfeedPost.html',
                 'taskItem.html',
                 'taskListGroup.html',
-                'taskItemDone.html'
+                'taskItemDone.html',
+                'popupAssign.html'
             ]
         },
         success: function (data){
@@ -123,6 +126,7 @@ $(function() {
             taskItem = Handlebars.compile(data['taskItem.html']);
             taskListGroup = Handlebars.compile(data['taskListGroup.html']);
             taskItemDone = Handlebars.compile(data['taskItemDone.html']);
+            popupAssign = Handlebars.compile(data['popupAssign.html']);
         }
     });
 
@@ -146,6 +150,8 @@ $(function() {
                     $("html, body").animate({ scrollTop: $(document).height() }, "slow");
                 }
 			    $('#groupwindowStart').hide();
+                $(".group").removeClass("aktiv");
+                $(this).addClass("aktiv");
 				$('#groupwindow').show();
 				currentGroup = $(this).data("group-id");
 
@@ -186,6 +192,7 @@ function loadLanguageText() {
                     $("." + p).html(result[p]);
                 }
             }
+            generalLabels = [result["label-party"], result["label-food"], result["label-clean"], result["label-repair"]];
         }
     });
 }
@@ -238,7 +245,8 @@ function addGroupToList(group) {
     for (var i = 0; i < groups.length; i++) {
         if ($(groups[i]).html() == group.group_name) return;
     }
-    $("#groupselection").append('<div style="padding-top: 2px; height: 30px; border-radius: 10px; background-color: white; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class="tablink text-center backvariant group" data-group-id="' + group.group_id + '">' + group.group_name + '</div><h4></h4>');
+    $("#thelistgroup").append('<li class="list-group-item tablink group"  data-group-id="' + group.group_id + '">' + group.group_name + '</li>');
+    //$("#groupselection").append('<div style="padding-top: 2px; height: 30px; border-radius: 10px; background-color: white; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class="tablink text-center backvariant group" data-group-id="' + group.group_id + '">' + group.group_name + '</div><h4></h4>');
 }
 
 /**
@@ -289,14 +297,6 @@ function getShoppinglist() {
  * This function
  */
 function setupClicks(){
-    $(".list-name").unbind("click").click(function(){
-        var listId = $(this).closest("div[data-id]").data("id");
-        var title = $(this).html();
-        $(this).hide();
-        var div = $(this).parent().children(".list-name-div");
-        $(div).show();
-        $(div).children(".list-name-input").val(title).focus();
-    });
 
     $(".list-name-input").unbind("focusout").focusout(function(){
         var text = $(this).val();
@@ -364,55 +364,8 @@ function setupClicks(){
         }).focus();
     });
 
-    $('.pink-select').unbind("click").click(function () {
-        var ls = $(this).closest("div[data-id]");
-        var id = $(ls).css('background-color', $(this).data('color')).data("id");
-        $.ajax({
-            url: '/api/shoppingList/' + id,
-            method: 'PUT',
-            data: {
-                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
-            }
-        });
-    });
 
-    $('.yellow-select').unbind("click").click(function () {
-        var ls = $(this).closest("div[data-id]");
-        var id = $(ls).css('background-color', $(this).data('color')).data("id");
-        $.ajax({
-            url: '/api/shoppingList/' + id,
-            method: 'PUT',
-            data: {
-                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
-            }
-        });
-    });
-
-    $('.green-select').unbind("click").click(function () {
-        var ls = $(this).closest("div[data-id]");
-        var id = $(ls).css('background-color', $(this).data('color')).data("id");
-        $.ajax({
-            url: '/api/shoppingList/' + id,
-            method: 'PUT',
-            data: {
-                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
-            }
-        });
-    });
-
-    $('.white-select').unbind("click").click(function () {
-        var ls = $(this).closest("div[data-id]");
-        var id = $(ls).css('background-color', $(this).data('color')).data("id");
-        $.ajax({
-            url: '/api/shoppingList/' + id,
-            method: 'PUT',
-            data: {
-                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
-            }
-        });
-    });
-
-    $(".fa-money").unbind("click").click(function(){
+    $(".money").unbind("click").click(function(){
         var id = $(this).closest("div[data-id]").data("id");
         $.ajax({
             url: '/api/budget/' + id,
@@ -464,69 +417,250 @@ function setupClicks(){
         });
     });
 
-    $(".fa-shopping-cart").unbind("click").click(function(){
-        var items = $(this).closest("div").find(".list-group-item input:checked").closest('li[data-id]');
+    $(".shopping-cart").unbind("click").click(function(){
+        //Add items to list
+        var items = [];
+        $('li.active').each(function () {
+            items.push($(this));
+            $(this).removeClass('active');
+        });
+        console.log(items);
         if(items.length == 0)
             return;
         var entries = $(items[0]).data("id");
+
         var list = "<li class=\"list-group-item\">" + $(items[0]).html() + "</li>";
         for(var i = 1; i < items.length; i++){
             entries += "," + $(items[i]).data("id");
             list += "<li class=\"list-group-item\">" + $(items[i]).html() + "</li>";
         }
+
+        //Add labels to select-input
+        var lb = '<option id="-2">----</option>';
+        var listid = currentShoppingList.shopping_list_id;
+        var labels=[];
+        $.ajax({
+            url: 'api/budget/entryType',
+            method: 'GET',
+            data: {
+                shopping_list_id: listid
+            },
+            success: function (data) {
+                console.log(data);
+                labels = data.budget_entry_types;
+                for(var i=0; i<labels.length; i++){
+                    lb += '<option>test</option>'
+                }
+            },
+            error: console.error
+        });
+        var found = false;
+        for(var i=0; i<generalLabels.length; i++){
+            for(var j=0; j<labels.length; j++){
+                if(labels[j].budget_entry_type_name == generalLabels[i]){
+                    found = true;
+                }
+            }
+            if(!found){
+                lb += '<option id="0">'+generalLabels[i]+'</option>';
+            }
+        }
+
+        //Add buyers to list
+        var b = '<option>'+lang["shop-all"]+'</option>';
+        b += '<option id="choosemembers">'+lang["shop-select-members"]+'</option>';
+
+        //Add currency to text
+        var c =currentShoppingList.currency_short;
+
+
+        //Opens popup
         $("body").append(popupTextList({
             title: lang["shop-buy-title"],
+            currency: c,
             list: list,
             textfield: lang["shop-buy-text"],
+            textfield_com: lang["shop-register-com"],
+            textfield_label: lang["shop-register-label"],
+            label: lb,
+            byers_label: lang["shop-buyers-label"],
+            byers: b,
+            enter_member: lang["enter-member"],
+            buyers_added: lang["buyers-added"],
+            label_name: lang["label-name"],
+            new_label_color: lang["new-label-color"],
             cancel: lang["shop-cancel"],
             complete: lang["shop-ok"],
             data: "data-id='" + $(this).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
         }));
+        $(".addbyers").hide();
+        $(".newlabel").hide();
 
-        $(".pop").find(".fa-times").remove();
-        $(".pop").find("input[type=checkbox]").remove();
+        var currColor = "#a9d5f2";
+        $(".colorpicker").spectrum({
+            color: "#a9d5f2",
+            change: function (color) {
+                currColor = color.toHexString();
+            }
+        });
+        /*$(".colorpicker").spectrum({
+                color: "#a9d5f2",
+                change: function (color) {
+                    currColor = color.toHexString();
+                }
+            });*/
 
-        $("#popup-cancel").click(function(){
-            $(this).closest(".pop").remove();
+        //If label-input is changed
+        $('select.label-input').change(function () {
+            if($(this).find(":selected").text() == generalLabels[0]){
+                $(".newlabel").show();
+            }else{
+                $(".newlabel").hide();
+            }
+        });
+        var buyers = [];
+        var therealme = findMe();
+        console.log("---me: " + therealme);
+        /*var meInOtherFormat = {
+            email: "",
+            id: therealme.person_id,
+            name: therealme.forename + " " + therealme.lastname
+        };*/
+        //buyers.push(meInOtherFormat);
+
+        //If buyers-input is changed
+        $('select.byers-input').change(function () {
+            var shopid = currentShoppingList.shopping_list_id;
+            if($(this).find(":selected").attr('id')=='choosemembers'){
+                console.log("zero");
+                $(".addbyers").show();
+                $('#scrollable-dropdown-menu2 .typeahead').typeahead({
+                        highlight: true
+                    },
+                    {
+                        name: 'user-names',
+                        display: 'name',
+                        source: new Bloodhound({
+                            datumTokenizer: function(d){
+                                console.log(d);
+                                return Bloodhound.tokenizers.whitespace(d.name).concat([d.email]);
+                            },
+                            queryTokenizer: Bloodhound.tokenizers.whitespace,
+                            prefetch: {
+                                url: '/api/shoppingList/'+shopid+'/users',
+                                cache: false
+                            }
+                        }),
+                        templates: {
+                            empty: [
+                                '<div class="empty-message">',
+                                'No users found',
+                                '</div>'
+                            ].join('\n'),
+                            suggestion: Handlebars.compile('<div>{{name}} – {{email}}</div>')
+                        }
+                    }
+                );
+
+                $(".typeahead").bind('typeahead:select', function(a, data){
+                    if($.inArray(data, buyers) === -1){
+                        buyers.push(data);
+                        $('.membersadded').append(data.forename + " " + data.lastname);
+                    }
+                });
+
+                $(".typeahead").bind('typeahead:close', function(){
+                    $(".typeahead").val("");
+                });
+            }else{
+                $(".addbyers").hide();
+            }
         });
 
-        $("#popup-complete").click(function(){
-            if(isNaN(Number($(this).closest('.pop').find('input').val())))
-                return;
-            var id = $(this).closest("div[data-id]").data("id");
-            var e = $(this).closest("div[data-entries]").data("entries");
-            if(Number(e) !== e)
-                e = e.split(",");
-            else
-                e = [e];
-            $.ajax({
-                url: '/api/budget',
-                method: 'POST',
-                data: {
-                    shopping_list_id: currentShoppingList.shopping_list_id,
-                    amount: Number($(this).closest('.pop').find('input').val()),
-                    text_note: e.join(",")
-                },
-                success: function(data){
-                    for(var i = 0; i < e.length; i++){
-                        $.ajax({
-                            url: '/api/shoppingList/entry/' + e[i],
-                            method: 'PUT',
-                            data: {
-                                shopping_list_id: currentShoppingList.shopping_list_id,
-                                purchased_by_person_id: 2,
-                                budget_entry_id: data.budget_entry_id
-                            },
-                            error: console.error
-                        });
-                    }
-                },
-                error: console.error
-            });
-            for(var i = 0; i < e.length; i++){
-                $(".liste").find('li[data-id=' + e[i] + ']').remove();
-            }
-            $(this).closest(".pop").remove();
+        var entries = $(this).closest("div[data-entries]").data("entries");
+
+        $('#t-popup-complete').unbind("click").click(function () {
+            var shopid = currentShoppingList.shopping_list_id;
+           var price = $('#shop-entry-cost').val();
+           if(isNaN(price)) return;
+           var comment = $('#shop-entry-name').val();
+           if(comment==""){
+               for(var k=0; k<items.length; k++){
+                   comment += items[k].html() + ", ";
+               }
+           }
+           var budgetentrytypeid = 0;
+           var labelvalue = $('select.label-input').find(":selected").attr('id');
+           if(labelvalue==-2){ //without labels
+               budgetentrytypeid = null;
+           }else if(labelvalue==0){ //general labels
+               var name;
+               var colorInt;
+               if($('.newlabel').is(":visible")){
+                   name = $('#new-label-name').val();
+                   colorInt = Number(parseInt(currColor.split("#")[1],16));
+               }else{
+                   name = $('select.label-input').text();
+                   var color = '#a9d5f2';
+                   colorInt = Number(parseInt(color.split("#")[1],16));
+               }
+               console.log("New entrytype: " + name + ", color: "+ colorInt);
+               /*$.ajax({
+                   url: '/api/budget/entryType',
+                   method: 'POST',
+                   data: {
+                       entry_type_name: name,
+                       entry_type_color: colorInt,
+                       shopping_list_id: shopid
+                   },success:function (data) {
+                       budgetentrytypeid = data;
+                   },error:console.error
+               });*/
+           }else { //labels in the DB
+               budgetentrytypeid = labelvalue;
+           }
+
+           var personsids = [];
+           for(var k=0; k<buyers.length; k++){
+               personsids.push(buyers[k].person_id);
+           }
+
+           var slei = entries;
+
+           var inputdata = {};
+           if(budgetentrytypeid==null){
+               inputdata = {
+                   shopping_list_id: shopid,
+                   amount: price,
+                   text_note: comment,
+                   person_ids: personsids,
+                   shopping_list_entry_ids: slei
+               }
+           }else{
+               inputdata = {
+                   shopping_list_id: shopid,
+                   amount: price,
+                   text_note: comment,
+                   person_ids: personsids,
+                   shopping_list_entry_ids: slei,
+                   budget_entry_type_id: budgetentrytypeid
+               }
+           }
+           console.log("sending in: " + shopid + ", " + price + ", " + comment + ", " + personsids + ", " + slei + ", " + budgetentrytypeid);
+           /*$.ajax({
+               url: '/api/budget',
+               method: 'POST',
+               data: inputdata,
+               success: function (data) {
+                   console.log(data);
+                   $('.pop').remove();
+               },
+               error: console.error
+           })*/
+
+        });
+        $('#t-popup-cancel').unbind("click").click(function () {
+           $('.pop').remove();
         });
     });
 
@@ -552,7 +686,12 @@ function setupItemClicks(){
             return;
         else if(!$(e.target).is('input')) {
             e.preventDefault();
-            $(this).find("input[type=checkbox]").prop('checked', $(this).find("input:checked").length == 0);
+            if($(this).hasClass("active")){
+                $(this).removeClass("active");
+            }else{
+                $(this).addClass("active");
+            }
+            //$(this).find("input[type=checkbox]").prop('checked', $(this).find("input:checked").length == 0);
         }
     });
 }
@@ -664,6 +803,8 @@ $(function () {
                     $("#" + p).html(data[p]);
                 }
             }
+            generalLabels = [data["shop-new-label"], data["label-party"], data["label-food"], data["label-clean"], data["label-repair"]];
+
         },
         error: console.error
     });
@@ -694,6 +835,8 @@ $(function () {
                                 $("#" + p).html(data[p]);
                             }
                         }
+                        generalLabels = [data["shop-new-label"], data["label-party"], data["label-food"], data["label-clean"], data["label-repair"]];
+
                     }
                 });
             }
@@ -726,6 +869,7 @@ $(function () {
                                 $("#" + p).html(data[p]);
                             }
                         }
+                        generalLabels = [data["shop-new-label"], data["label-party"], data["label-food"], data["label-clean"], data["label-repair"]];
                     }
                 });
             }
@@ -1239,24 +1383,46 @@ $('#group-logoutNavbar').click(function () {
     });
 });
 
+
+
 function getCalendar() {
-    $('#calendar').fullCalendar({
-        height: 510,
-        header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'month,agendaWeek,agendaDay,listWeek'
-        },
-        defaultDate: '2017-12-12',
-        navLinks: true, // can click day/week names to navigate views
-        editable: true,
-        eventLimit: true, // allow "more" links when too many events
-        events: [
-            {
-                title: 'All Day Event',
-                start: '2017-12-01',
+    var recipeNameChosenGroup = "";
+    var recipeTimeChosenGroup = "";
+    console.log(currentGroup);
+    $.ajax({
+        url: '/api/recipe/' + currentGroup.group_id,
+        method: 'GET',
+        success: function (datatFOod) {
+            var events = [];
+            for (var i = 0; i < datatFOod.length; i++) {
+                recipeNameChosenGroup = datatFOod[i].recipe_name;
+                recipeTimeChosenGroup = datatFOod[i].meal_datetime.split("T")[0];
+                console.log(recipeNameChosenGroup);
+                console.log(recipeTimeChosenGroup);
+                events.push({
+                    title: recipeNameChosenGroup,
+                    start: recipeTimeChosenGroup,
+                    recipe_id: datatFOod[i].recipe_id
+                })
             }
-        ]
+            /**
+             * This method creates the standard calender.
+             */
+            $('#calendar').fullCalendar({
+                height: 630,
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay,listWeek'
+                },
+                eventColor: '#7ebccc',
+                defaultDate: '2018-01-01',
+                navLinks: true, // can click day/week names to navigate views
+                eventLimit: true, // allow "more" link when too many events
+                events: events
+            });
+        },
+        error: console.error()
     });
 }
 
@@ -1332,5 +1498,84 @@ function drawStats() {
 }
 
 function addMembersPopup(){
+    var themember;
+    //Shows suggestions when characters is typed
+    $('#scrollable-dropdown-menu .typeahead').typeahead({
+            highlight: true
+        },
+        {
+            name: 'user-names',
+            display: 'name',
+            source: new Bloodhound({
+                datumTokenizer: function(d){
+                    return Bloodhound.tokenizers.whitespace(d.name).concat([d.email]);
+                },
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                prefetch: {
+                    url: '/api/user/all/' + currentGroup.group_id,
+                    cache: false
+                }
+            }),
+            templates: {
+                empty: [
+                    '<div class="empty-message">',
+                    'No users found',
+                    '</div>'
+                ].join('\n'),
+                suggestion: Handlebars.compile('<div>{{name}} – {{email}}</div>')
+            }
+        });
 
+    //Adds member to list when clicked
+    $(".typeahead").bind('typeahead:select', function(a, data){
+        themember = data;
+        $(".typeahead").val("");
+    });
+
+    //Empty inputfield when its closed
+    $(".typeahead").bind('typeahead:close', function(){
+        $(".typeahead").val("");
+    });
+
+    $('body').append(popupAssign({
+        assign_header: lang["assign-header"],
+        assign_name: lang["assign-name"],
+        assign_ok: lang["assign-ok"],
+        assign_cancel: lang["assign-cancel"]
+    }));
+
+    $('.assignok').unbind("click").click(function () {
+        var personid = '';
+        var personids = [];
+        personids.push(personid);
+        var todoid = $(this).closest('div[data-id]').data('id');
+        $.ajax({
+            url: '/api/tasks/person/'+todoid,
+            method: 'POST',
+            data: {
+                people: personids
+            }
+        })
+    });
+
+    $('.assigncancel').unbind("click").click(function () {
+        $('.pop').remove();
+    });
+}
+function findMe(){
+    $.ajax({
+        url: '/api/user/getUser',
+        method: 'GET',
+        data: {
+            variables: [
+                'person_id',
+                'forename',
+                'lastname'
+            ]
+        },
+        success: function(data){
+            me = data[0];
+            return me;
+        }
+    });
 }

@@ -292,6 +292,8 @@ function prep(){
      */
 
     $('#addlist').click(function () {
+        console.log("new list clicked");
+
         $.ajax({
             url: '/api/shoppingList',
             method: 'POST',
@@ -318,7 +320,15 @@ function prep(){
                             color_hex: (data.color_hex ? data.color_hex.toString(16) : "FFFFFF")
                         }));
                         setupClicks();
-                        $('div[data-id=' + data.shopping_list_id + ']').find("select").val(data.currency_id);
+                        var thisdiv = $('div[data-id=' + data.shopping_list_id + ']');
+                        thisdiv.find("select").val(data.currency_id);
+
+                        var titlediv = thisdiv.find('.list-name');
+                        var title = titlediv.html();
+                        $(titlediv).hide();
+                        var div = thisdiv.find(".list-name-div");
+                        $(div).show();
+                        $(div).children(".list-name-input").val(title).focus();
 
                         setupClicks();
                         setupItemClicks();
@@ -637,7 +647,10 @@ function setupClicks(){
                         return Bloodhound.tokenizers.whitespace(d.name).concat([d.email]);
                     },
                     queryTokenizer: Bloodhound.tokenizers.whitespace,
-                    prefetch: '/api/user/all?slim=1'
+                    prefetch: {
+                        url: '/api/user/all?slim=1',
+                        cache: false
+                    }
                 }),
                 templates: {
                     empty: [
@@ -714,18 +727,18 @@ function setupClicks(){
                 /**
                  * This method adds all budget-entries to the list
                  */
-                for(var i = data.budget_entries.length-1; i >= 0 ; i--){
-                    entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].text_note +"</td><td>" + data.budget_entries[i].amount/100 + " "+sign+"</td>";
+                for(var i = data.budget.length-1; i >= 0 ; i--){
+                    entries += "<tr data-id='" + data.budget[i].budget_entry_id + "'><td>" + data.budget[i].text_note +"</td><td>" + data.budget[i].amount/100 + " "+sign+"</td>";
                 }
 
 
                 var oeM = '';
                 var oeB = '';
-                var balancelist = curBudget.to_pay;
+                var balancelist = curBudget.my_balance;
 
                 for(var i=0; i<balancelist.length; i++){
-                    var name = balancelist[i].person.forename + " " + balancelist[i].person.lastname;
-                    var numb = -(balancelist[i].amount_to_pay/100).toFixed(0);
+                    var name = balancelist[i].forename + " " + balancelist[i].lastname;
+                    var numb = balancelist[i].amount/100;
                     if(numb < 0){
                         oeM += "<tr  class='balancelist minus'><td>" + name +"</td><td>" + numb + " "+sign+"</td>";
                     }else{
@@ -750,18 +763,16 @@ function setupClicks(){
                 $('.balancelist').unbind("click").click(function () {
                     var name = this.innerHTML.split('>')[1].split('<')[0];
                     for(var j=0; j<balancelist.length; j++){
-                        var thefullname = balancelist[j].person.forename + " " + balancelist[j].person.lastname;
-                        var personid = balancelist[j].person.person_id;
+                        var thefullname = balancelist[j].forename + " " + balancelist[j].lastname;
+                        var personid = balancelist[j].person_id;
                         if(thefullname == name){
-                            if(balancelist[j].amount_to_pay <= 0) {
+                            if(balancelist[j].amount <= 0) {
                                 break;
                             }
                             var thelist = balancelist[j];
                             var budgetids = thelist.budget_entry_ids;
-                            var arr=[];
-                            for(var k=0; k<budgetids.length; k++){
-                                arr.push(budgetids[k].budget_entry_id);
-                            }
+                            console.log(budgetids);
+                            var arr = thelist.budget_entry_ids;
                             st = lang["settle-text-one"] + thefullname + lang["settle-text-two"] + this.innerHTML.split(">")[3].split("<")[0].replace("-", "");
                             $('body').append(popupSettle({
                                 settle_text: st,
@@ -769,6 +780,8 @@ function setupClicks(){
                                 settle_no: lang["settle-no"]
                             }));
                             var arrayString = arr.join(",");
+                            console.log(arr);
+                            console.log(arrayString);
                             $('.btn-success').unbind("click").click(function () {
                                 var suc = this;
                                 $.ajax({
@@ -799,14 +812,15 @@ function setupClicks(){
                 $('tr[data-id]').click(function(){
                     var id = $(this).closest("tr[data-id]").data("id");
                     var entry = null;
-                    for(var i = 0; i < curBudget.budget_entries.length; i++){
-                        if(curBudget.budget_entries[i].budget_entry_id == id){
-                            entry = curBudget.budget_entries[i];
+                    for(var i = 0; i < curBudget.budget.length; i++){
+                        if(curBudget.budget[i].budget_entry_id == id){
+                            entry = curBudget.budget[i];
+                            break;
                         }
                     }
                     if(!entry)
                         return;
-                    var entrylist = entry.budget_shopping_list_entries;
+                    var entrylist = entry.shopping_list_entries;
                     var g = "";
                     for(var j=0; j<entrylist.length; j++){
                         g += "<li class='list-group-item'>"+entrylist[j].entry_text+"</li>";
@@ -832,12 +846,12 @@ function setupClicks(){
                     var time = datetime.split("T")[1].split(".")[0]; //09:23:02
                     var timeNsec = time.split(":")[0] + ":" + time.split(":")[1];
                     var formattedDateTime = date + "/" + month + "/" + year + ", " + timeNsec;
-                    var la = entry.budget_entry_type.budget_entry_type_name;
-                    var bc = Number(entry.budget_entry_type.budget_entry_type_color).toString(16);
-                    var lh = '<div style="background-color: #'+bc+'; padding-left: 1vh; padding-top: 0.5vh; padding-bottom: 0.5vh;border-radius: 15px;">'+lang["label-label"]+': '+la+'</div>'
+                    var la = entry.entry_type.entry_type_name;
+                    var bc = Number(entry.entry_type.entry_type_color).toString(16);
+                    var lh = '<div style="background-color: #'+bc+'; padding-left: 1vh; padding-top: 0.5vh; padding-bottom: 0.5vh;border-radius: 15px;">'+lang["label-label"]+': '+(la ? la : lang["label-none"])+'</div>';
                     $("body").append(balanceItem({
                         comment: entry.text_note,
-                        bought_by: entry.added_by.forename + " " + entry.added_by.lastname,
+                        bought_by: (entry.purchased_by.person_id == me.person_id ? lang["me"] : entry.purchased_by.forename + " " + entry.purchased_by.lastname),
                         bought_by_label: lang["bought-by-label"],
                         cost: entry.amount/100 + " " + sign,
                         cost_label: lang["cost-label"],
@@ -858,19 +872,39 @@ function setupClicks(){
                 });
 
                 $('.bal-settle').unbind("click").click(function(){
-                    var cost = "34 kr";
+                    var cost = 0;
+                    var ids = [];
+                    for(var i = 0; i < curBudget.my_balance.length; i++){
+                        if(curBudget.my_balance[i].amount < 0) {
+                            cost += curBudget.my_balance[i].amount / 100;
+                            ids.push(curBudget.my_balance[i].person_id);
+                        }
+                    }
                     $('body').append(settleAll({
                         settle_all: lang["settle-all"],
-                        are_you_sure: lang["are-you-sure"] +cost,
+                        are_you_sure: lang["are-you-sure"] +cost + " " + sign,
                         yes_settle_all: lang["yes-settle-all"],
                         no_settle_all: lang['no-settle-all']
                     }));
+
                     $('.notsettleall').unbind("click").click(function () {
                         $('.pop').remove();
                     });
+
                     $('.settleall').unbind("click").click(function () {
-                        $('.pop-content').append('Not made');
-                    })
+                        $.ajax({
+                            url: 'api/budget/paySpecific',
+                            method: 'PUT',
+                            contentType: 'application/json',
+                            data: JSON.stringify({
+                                person_ids: ids
+                            }),
+                            error: console.error,
+                            success: function (data) {
+                                $('.pop').remove();
+                            }
+                        });
+                    });
                 });
                 
                 $('.bal-complete').unbind("click").click(function(){
@@ -1048,7 +1082,10 @@ function setupClicks(){
                                         return Bloodhound.tokenizers.whitespace(d.name).concat([d.email]);
                                     },
                                     queryTokenizer: Bloodhound.tokenizers.whitespace,
-                                    prefetch: '/api/shoppingList/'+li+'/users'
+                                    prefetch: {
+                                        url: '/api/shoppingList/'+li+'/users',
+                                        cache: false
+                                    }
                                 }),
                                 templates: {
                                     empty: [
@@ -1340,18 +1377,19 @@ function setupClicks(){
                                         /**
                                          * Sets label-id to id of the new label.
                                          */
+                                        console.log(e);
                                         $.ajax({
                                             url: '/api/budget',
                                             method: 'POST',
-                                            dataType : "json",
-                                            data: {
+                                            contentType : "application/json",
+                                            data: JSON.stringify({
                                                 shopping_list_id: id,
                                                 shopping_list_entry_ids: e,
                                                 budget_entry_type_id: data.budget_entry_type_id,
                                                 amount: Number($(theis).closest('.pop').find('input').val())*100,
                                                 text_note: textnote,
                                                 person_ids: therealbuyersids
-                                            },
+                                            }),
                                             success: function (data) {
 
                                                 /**
@@ -1395,7 +1433,6 @@ function setupClicks(){
                             $.ajax({
                                 url: '/api/budget',
                                 method: 'POST',
-                                dataType : "json",
                                 data: {
                                     shopping_list_id: id,
                                     shopping_list_entry_ids: e,

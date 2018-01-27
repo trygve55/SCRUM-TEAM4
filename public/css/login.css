@@ -19,7 +19,7 @@ div.transbox {
 
 .fa.fa-arrow-circle-o-right {
     font-size: 50px;
-    color: #a3e6f7;
+    color: #ff9516;
 }
 
 a:link{
@@ -46,3 +46,6 @@ img{
     cursor: pointer;
 }
 
+.btn{
+    margin: 15px;
+}

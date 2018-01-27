@@ -14,8 +14,18 @@
                     </div>
                     <div class="row labelrow">
                         <div class="col-sm-5" style="text-align: left"> <label>{{textfield_label}}:</label></div>
-                        <div class="col-sm-7 newlabel">
+                        <div class="col-sm-7 ">
                             <select class="form-control label-input" id="labelid" style="color: grey">{{{label}}}</select>
+                        </div>
+                    </div>
+                    <div class="newlabel" style="border: 1px darkgrey solid; border-radius: 5px; margin: 1vh; padding: 1vh;">
+                        <div class="row" style="margin-bottom: 1vh">
+                            <div class="col-sm">{{label_name}}:</div>
+                            <div class="col-sm"><input class="form-control" id="new-label-name"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm">{{new_label_color}}:</div>
+                            <div class="col-sm"><input class='colorpicker'></div>
                         </div>
                     </div>
                     <div class="row byersrow" style="margin-botton: 2vh; margin-top: 2vh">
@@ -24,11 +34,19 @@
                             <select class="form-control byers-input" id="byersid" style="color: grey">{{{byers}}}</select>
                         </div>
                     </div>
-                    <div class="addbyers" style="width: 31vh">
-                        <div id="scrollable-dropdown-menu2">
-                            <input class="typeahead form-control" style="margin-top: 2vh; width: 31vh" placeholder="username">
+                    <div class="addbyers" style="border: 1px darkgrey solid; border-radius: 5px; margin: 1vh; padding: 1vh;">
+                        <div class="row">
+                            <div class="col-sm-4">{{enter_member}}:</div>
+                            <div class="col-sm-8" id="scrollable-dropdown-menu2">
+                                <input class="typeahead form-control">
+                            </div>
                         </div>
-                        <div class="users-entry" style="margin-top: 1vh; padding-top:1vh; padding-left: 1vh; padding-bottom:0; background-color: lightyellow; height: 10vh; overflow-x: scroll; border-radius: 5px; border: outset 2px"></div>
+                        <div class="row" style="margin-top: 1vh;">
+                            <div class="col-sm-4">{{buyers_added}}:</div>
+                            <div class="col-sm-8">
+                                <div class="membersadded" style=" background-color: lightcyan; height: 10vh; border: outset 2px"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

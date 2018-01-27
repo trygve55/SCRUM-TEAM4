@@ -18,8 +18,42 @@ module.exports = router;
  * method: GET
  *
  */
+router.get('/all/:group_id', function(req, res){
+    if(!req.session.person_id)
+        return res.status(403).send();
+    pool.getConnection(function(err, connection){
+        if(err) {
+            connection.release();
+            return res.status(500).send("Error");
+        }
+        connection.query("SELECT person_id, email, forename, middlename, lastname, username FROM person LEFT JOIN group_person USING (person_id) WHERE group_id = ?;", [req.params.group_id], function(err, result){
+            connection.release();
+            if(err)
+                res.status(500).send(err.code);
+            var r = [];
+            for(var i = 0; i < result.length; i++){
+                if(result[i].person_id == req.session.person_id)
+                    continue;
+                r.push({
+                    name: result[i].forename + " " + (result[i].middlename ? result[i].middlename + " " : "") + result[i].lastname,
+                    email: result[i].email,
+                    id: result[i].person_id
+                });
+            }
+            res.status(200).json(r);
+        });
+    });
+});
+
+/**
+ * Get person-info
+ *
+ * URL: /api/user/all
+ * method: GET
+ *
+ */
 router.get('/all', function(req, res){
-   if(!req.session.person_id)
+    if(!req.session.person_id)
         return res.status(403).send();
     pool.getConnection(function(err, connection){
         if(err) {
@@ -59,7 +93,7 @@ router.get('/checkFacebook', function(req, res){
             return res.status(500).json({error: err});
         } else {
             if (result[0].facebook_api_id == null)
-                return res.status(400).json({facebook: false});
+                return res.status(200).json({facebook: false});
             else
                 return res.status(200).json({facebook: true});
         }
@@ -541,6 +575,7 @@ router.put('/', function(req, res) {
 
     pool.query(sqlQuery, values, function (err) {
             if (err) {
+                console.log(err);
                 return res.status(500).send("Internal database error(1)");
             }
             return res.status(200).send("Profile updated");
@@ -680,6 +715,7 @@ router.post('/verifyAccount', function(req, res) {
         }
         pool.query('SELECT verify_token FROM person WHERE person_id = ?', [payload.id], function(err, result) {
             if(err) {
+
                 return res.status(500).send("Internal database error (1)");
             }
             if(result.length < 1) {
