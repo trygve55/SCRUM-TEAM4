@@ -178,8 +178,8 @@ function prep(){
 }
 
 function setupClicks(){
-    console.log("click");
-    $(".list-name").unbind("click").click(function(){
+    $(".list-name").unbind("click").click(function() {
+        console.log("halllo");
         var listId = $(this).closest("div[data-id]").data("id");
         var title = $(this).html();
         $(this).hide();
@@ -201,7 +201,8 @@ function setupClicks(){
             data: {
                 private_list_name: text
             }
-        });});
+        });
+    });
 
     $(".list-name-input").unbind("keypress").keypress(function(e){
         if(e.keyCode != 13 && e.which != 13)
@@ -301,125 +302,24 @@ function setupClicks(){
             }
         });
     });
-/*
-    $(".fa-money").unbind("click").click(function(){
-        var id = $(this).closest("div[data-id]").data("id");
+
+    /**
+     * This method deletes a list.
+     */
+    $(".fa-trash").unbind("click").click(function () {
+        var listid = $(this).parent().attr("data-id");
+        $(this).closest("div[data-id]").remove();
         $.ajax({
-            url: '/api/budget/' + id,
-            method: 'GET',
-            success: function(data){
-                console.log(data);
-                curBudget = data;
-                var entries = "";
-                for(var i = 0; i < data.budget_entries.length; i++){
-                    entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].entry_datetime + "</td><td>" + data.budget_entries[i].amount + "</td>";
-                }
-                $("body").append(balance({
-                    title: lang["shop-balance"],
-                    complete: lang["shop-ok"],
-                    data: "data-id='" + id + "'",
-                    lang_trip: lang["shop-trip"],
-                    lang_price: lang["shop-price"],
-                    budget_entries: entries
-                }));
-
-                $('tr[data-id]').click(function(){
-                    var id = $(this).closest("tr[data-id]").data("id");
-                    var entry = null;
-                    for(var i = 0; i < curBudget.budget_entries.length; i++){
-                        if(curBudget.budget_entries[i].budget_entry_id == id){
-                            entry = curBudget.budget_entries[i];
-                        }
-                    }
-                    if(!entry)
-                        return;
-                    var d = "<li class='list-group-item'>Work in progress (data about a entry)</li>";
-                    $(this).closest(".pop").hide();
-                    $("body").append(balanceItem({
-                        title: entry.entry_datetime,
-                        complete: lang["shop-ok"],
-                        list: d
-                    }));
-                    $("#balance-info-complete").click(function(){
-                        $(this).closest(".pop").remove();
-                        $(".pop").show();
-                    });
-                });
-
-                $('#popup-complete').click(function(){
-                    $(this).closest(".pop").remove();
-                });
+            url: '/api/tasks/private/list/' + listid,
+            method: 'PUT',
+            data: {
+                "is_deactivated": true
             },
             error: console.error
         });
     });
 
-    $(".fa-shopping-cart").unbind("click").click(function(){
-        var items = $(this).closest("div[data-id]").find(".list-group-item input:checked").closest('li[data-id]');
-        if(items.length == 0)
-            return;
-        var entries = $(items[0]).data("id");
-        var list = "<li class=\"list-group-item\">" + $(items[0]).html() + "</li>";
-        for(var i = 1; i < items.length; i++){
-            entries += "," + $(items[i]).data("id");
-            list += "<li class=\"list-group-item\">" + $(items[i]).html() + "</li>";
-        }
-        $("body").append(popupTextList({
-            title: lang["shop-buy-title"],
-            list: list,
-            textfield: lang["shop-buy-text"],
-            cancel: lang["shop-cancel"],
-            complete: lang["shop-ok"],
-            data: "data-id='" + $(this).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
-        }));
-
-        $(".pop").find(".fa-times").remove();
-        $(".pop").find("input[type=checkbox]").remove();
-
-        $("#popup-cancel").click(function(){
-            $(this).closest(".pop").remove();
-        });
-
-        $("#popup-complete").click(function(){
-            if(isNaN(Number($(this).closest('.pop').find('input').val())))
-                return;
-            var id = $(this).closest("div[data-id]").data("id");
-            var e = $(this).closest("div[data-entries]").data("entries");
-            if(Number(e) !== e)
-                e = e.split(",");
-            else
-                e = [e];
-            $.ajax({
-                url: '/api/budget',
-                method: 'POST',
-                data: {
-                    shopping_list_id: id,
-                    amount: Number($(this).closest('.pop').find('input').val()),
-                    text_note: e.join(",")
-                },
-                success: function(data){
-                    for(var i = 0; i < e.length; i++){
-                        $.ajax({
-                            url: '/api/shoppingList/entry/' + e[i],
-                            method: 'PUT',
-                            data: {
-                                shopping_list_id: id,
-                                purchased_by_person_id: 2,
-                                budget_entry_id: data.budget_entry_id
-                            }
-                        });
-                    }
-                }
-            });
-            for(var i = 0; i < e.length; i++){
-                $("div[data-id=" + id + "]").find('li[data-id=' + e[i] + ']').remove();
-            }
-            $(this).closest(".pop").remove();
-        });
-    });
-
     setupItemClicks();
-    */
 }
 
 function setupItemClicks(){
@@ -434,7 +334,7 @@ function setupItemClicks(){
     });
 
     $("li[data-id]").unbind("click").click(function(e) {
-        if($(this).is('.fa-trash'))
+        if($(this).is('.fa-times'))
             return;
         else if(!$(e.target).is('input')) {
             e.preventDefault();
