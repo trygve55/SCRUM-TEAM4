@@ -186,6 +186,8 @@ router.post('/register', function(req, res) {
 
         var user = req.body;
 
+        console.log(user.email);
+
         if (!checkValidUsername(user.username) && !checkValidEmail(user.email)) {
             connection.release();
             res.status(400).json({message:"Syntax-error"})
@@ -367,6 +369,8 @@ router.get('/user', function (req, res) {
  */
 
 router.get('/mail', function (req, res) {
+
+
     pool.getConnection(function (err, connection) {
         if(err) {
             connection.release();
@@ -398,6 +402,7 @@ router.get('/mail', function (req, res) {
  */
 
 function checkValidPhone(phonenumber){
+    return true;
     var phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im; //TODO: find better solution for regex
     return phoneRegex.test(phonenumber);
 }
