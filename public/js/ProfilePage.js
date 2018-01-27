@@ -115,8 +115,12 @@ $(document).ready(function () {
             console.log(data);
             if(data.facebook == true) {
                 $('#passwordarea').hide();
+                $('.leftcontainer').css("height", "75vh");
+                $('.rightcontainer').css("height", "75vh");
+
             }else{
                 $('#passwordarea').show();
+
             }
 
         },
