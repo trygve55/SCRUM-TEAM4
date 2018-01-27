@@ -297,7 +297,6 @@ function getShoppinglist() {
  * This function
  */
 function setupClicks(){
-
     $(".list-name-input").unbind("focusout").focusout(function(){
         var text = $(this).val();
         var id = $(this).closest("div[data-id]").data("id");
@@ -532,8 +531,7 @@ function setupClicks(){
         $('select.byers-input').change(function () {
             var shopid = currentShoppingList.shopping_list_id;
             if($(this).find(":selected").attr('id')=='choosemembers'){
-                console.log("zero");
-                $(".addbyers").show();
+                $('.addbyers').show();
                 $('#scrollable-dropdown-menu2 .typeahead').typeahead({
                         highlight: true
                     },
@@ -547,7 +545,7 @@ function setupClicks(){
                             },
                             queryTokenizer: Bloodhound.tokenizers.whitespace,
                             prefetch: {
-                                url: '/api/shoppingList/'+shopid+'/users',
+                                url: '/api/group/'+currentGroup.group_id+'/users',
                                 cache: false
                             }
                         }),
@@ -565,7 +563,7 @@ function setupClicks(){
                 $(".typeahead").bind('typeahead:select', function(a, data){
                     if($.inArray(data, buyers) === -1){
                         buyers.push(data);
-                        $('.membersadded').append(data.forename + " " + data.lastname);
+                        $('.membersadded').append(data.name);
                     }
                 });
 
@@ -581,7 +579,7 @@ function setupClicks(){
 
         $('#t-popup-complete').unbind("click").click(function () {
             var shopid = currentShoppingList.shopping_list_id;
-           var price = $('#shop-entry-cost').val();
+            var price = $('#shop-entry-cost').val();
            if(isNaN(price)) return;
            var comment = $('#shop-entry-name').val();
            if(comment==""){
@@ -605,7 +603,7 @@ function setupClicks(){
                    colorInt = Number(parseInt(color.split("#")[1],16));
                }
                console.log("New entrytype: " + name + ", color: "+ colorInt);
-               /*$.ajax({
+               $.ajax({
                    url: '/api/budget/entryType',
                    method: 'POST',
                    data: {
@@ -615,7 +613,7 @@ function setupClicks(){
                    },success:function (data) {
                        budgetentrytypeid = data;
                    },error:console.error
-               });*/
+               });
            }else { //labels in the DB
                budgetentrytypeid = labelvalue;
            }
@@ -647,7 +645,7 @@ function setupClicks(){
                }
            }
            console.log("sending in: " + shopid + ", " + price + ", " + comment + ", " + personsids + ", " + slei + ", " + budgetentrytypeid);
-           /*$.ajax({
+           $.ajax({
                url: '/api/budget',
                method: 'POST',
                data: inputdata,
@@ -656,7 +654,7 @@ function setupClicks(){
                    $('.pop').remove();
                },
                error: console.error
-           })*/
+           })
 
         });
         $('#t-popup-cancel').unbind("click").click(function () {
