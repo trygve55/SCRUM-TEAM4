@@ -172,6 +172,32 @@ router.put('/list/:private_todo_list_id', function(req, res){
 
 
 /**
+ * Update a task
+ *
+ * URL: /api/tasks/{todo_id}
+ * method: PUT
+ */
+router.put('/:todo_id/done', function(req, res) {
+    pool.query('UPDATE todo SET datetime_done = CURRENT_TIMESTAMP, done_by_id = ? ' +
+        'WHERE todo_id = ? AND todo_id IN ' +
+        '(SELECT t.todo_id FROM ' +
+        '(SELECT * FROM todo ' +
+        'LEFT JOIN group_person USING (group_id) ' +
+        'WHERE person_id = ?) t)', [req.session.person_id, req.params.todo_id, req.session.person_id], function(err, result) {
+        pool.query('SELECT todo_id, datetime_deadline, datetime_added, datetime_done, forename, middlename, lastname, todo_text, is_deactivated, color_hex, todo.group_id FROM todo LEFT JOIN home_group USING (group_id) LEFT Join person ON done_by_id = person.person_id WHERE todo_id = ?',
+            [req.params.todo_id], function(err, result){
+                if(err)
+                    return res.status(500).send();
+                else if(result.length == 0)
+                    return res.status(500).send();
+                socket.group_data('group task', result[0].group_id, result);
+                return res.status(200).send();
+            });
+    });
+});
+
+
+/**
  * Update shopping list entry
  *
  * URL: /api/tasks/private/entry/{private_todo_entry}

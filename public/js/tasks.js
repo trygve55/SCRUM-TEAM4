@@ -118,7 +118,6 @@ function prep(){
         method: 'GET',
         success: function(data) {
             for(var j = 0; j < data.length; j++) {
-                console.log(data[j]);
                 var d = data[j];
                 var entries = "";
                 for (var i = 0; i < d.private_todo_entries.length; i++) {
@@ -225,6 +224,7 @@ function setupClicks(){
     $(".add-item").unbind("click").click(function(){
         console.log('denna');
         $(this).closest("div").children(".itemlist").append(newListItem());
+        console.log(this);
 
         $("#new-list-item").keypress(function(e){
             if(e.keyCode != 13 && e.which != 13)
@@ -332,6 +332,60 @@ function setupItemClicks(){
         });
         $(this).closest("li[data-id]").remove();
     });
+
+    $(".datepicker").datepicker({
+        //dateFormat: 'DD, mm-y'
+        dateFormat: 'dd/mm/y',
+        onSelect: function() {
+            var d = $(this).val();
+            if(d != ""){
+                d = d.split("/");
+                d = d[2] + "-" + d[1] + "-" + d[0];
+            }
+            $.ajax({
+                url: '/api/tasks/private/entry/' + $(this).closest("li[data-id]").data('id'),
+                method: 'PUT',
+                data: {
+                    datetime_deadline: (d == "" ? "NULL" : d)
+                },
+                error: console.error
+            });
+        }
+    });
+    //Hides elements yet to be shown
+    $('input.datepicker').filter(function() { return this.value === ""; }).hide();
+    $('.checked').hide();
+
+    $('.fa-calendar').unbind('click').click(function () {
+        var datepicker = $(this).parent().find(".datepicker");
+        $(datepicker).css('background-color: white');
+        if(datepicker.is(":visible")){
+            if($(datepicker).val() == "")
+                datepicker.hide();
+            else if(datepicker.is(':focus'))
+                datepicker.blur();
+            else
+                datepicker.focus();
+        }
+        else{
+            datepicker.show();
+            datepicker.focus();
+        }
+    });
+
+    $('li[data-id]').unbind("click").click(function(e){
+        if($(e.target).hasClass("fa") || $(e.target).hasClass("datepicker"))
+            return;
+        var id = $(this).data("id");
+        $.ajax({
+            url: '/api/tasks/' + id + '/done',
+            method: 'PUT'
+        });
+    });
+
+    $('.fa-user').unbind('click').click(addMembersPopup);
+
+
 
     $("li[data-id]").unbind("click").click(function(e) {
         if($(this).is('.fa-times'))
