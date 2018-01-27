@@ -16,7 +16,7 @@ div.container1{
 
     height: 87vh;
     background-color: white;
-    border-radius: 15px;
+    border-radius: 10px;
     overflow: hidden;
     padding-bottom: 2%;
     border-top: #a3e6f7 1vh solid;
@@ -25,7 +25,7 @@ div.container1{
 
 div.leftcontainer{
     background-color: white;
-    border-radius: 15px;
+    border-radius: 10px;
     overflow: hidden;
     border-top: #a3e6f7 1vh solid;
     border-bottom: #a3e6f7 1vh solid;
@@ -33,7 +33,7 @@ div.leftcontainer{
 
 div.rightcontainer{
     background-color: white;
-    border-radius: 15px;
+    border-radius: 10px;
     overflow: hidden;
     border-top: #a3e6f7 1vh solid;
     border-bottom: #a3e6f7 1vh solid;
@@ -47,9 +47,9 @@ div.bordr{
 */
 
 div.changeinfo {
+
     margin-top: 5%;
     padding: 2%;
-    font-size: 90%;
 }
 
 div.textarea{
