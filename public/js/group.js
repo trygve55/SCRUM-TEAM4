@@ -28,7 +28,7 @@ socket.on('group post', function(data){
             rest_text: rest,
             image_url: '/api/user/' + data[i].person_id + '/picture_tiny',
             data: 'data-id="' + data[i].post_id + '"',
-            datetime: testy,
+            datetime: new Date(data[i].posted_datetime).toDateString(),
             lang_read_more: "Read more..."
         }));
         if(k <= length)
@@ -297,7 +297,6 @@ function getShoppinglist() {
  * This function
  */
 function setupClicks(){
-
     $(".list-name-input").unbind("focusout").focusout(function(){
         var text = $(this).val();
         var id = $(this).closest("div[data-id]").data("id");
@@ -532,8 +531,7 @@ function setupClicks(){
         $('select.byers-input').change(function () {
             var shopid = currentShoppingList.shopping_list_id;
             if($(this).find(":selected").attr('id')=='choosemembers'){
-                console.log("zero");
-                $(".addbyers").show();
+                $('.addbyers').show();
                 $('#scrollable-dropdown-menu2 .typeahead').typeahead({
                         highlight: true
                     },
@@ -547,7 +545,7 @@ function setupClicks(){
                             },
                             queryTokenizer: Bloodhound.tokenizers.whitespace,
                             prefetch: {
-                                url: '/api/shoppingList/'+shopid+'/users',
+                                url: '/api/group/'+currentGroup.group_id+'/users',
                                 cache: false
                             }
                         }),
@@ -565,7 +563,7 @@ function setupClicks(){
                 $(".typeahead").bind('typeahead:select', function(a, data){
                     if($.inArray(data, buyers) === -1){
                         buyers.push(data);
-                        $('.membersadded').append(data.forename + " " + data.lastname);
+                        $('.membersadded').append(data.name);
                     }
                 });
 
@@ -581,7 +579,7 @@ function setupClicks(){
 
         $('#t-popup-complete').unbind("click").click(function () {
             var shopid = currentShoppingList.shopping_list_id;
-           var price = $('#shop-entry-cost').val();
+            var price = $('#shop-entry-cost').val();
            if(isNaN(price)) return;
            var comment = $('#shop-entry-name').val();
            if(comment==""){
@@ -605,7 +603,7 @@ function setupClicks(){
                    colorInt = Number(parseInt(color.split("#")[1],16));
                }
                console.log("New entrytype: " + name + ", color: "+ colorInt);
-               /*$.ajax({
+               $.ajax({
                    url: '/api/budget/entryType',
                    method: 'POST',
                    data: {
@@ -615,7 +613,7 @@ function setupClicks(){
                    },success:function (data) {
                        budgetentrytypeid = data;
                    },error:console.error
-               });*/
+               });
            }else { //labels in the DB
                budgetentrytypeid = labelvalue;
            }
@@ -647,7 +645,7 @@ function setupClicks(){
                }
            }
            console.log("sending in: " + shopid + ", " + price + ", " + comment + ", " + personsids + ", " + slei + ", " + budgetentrytypeid);
-           /*$.ajax({
+           $.ajax({
                url: '/api/budget',
                method: 'POST',
                data: inputdata,
@@ -656,7 +654,7 @@ function setupClicks(){
                    $('.pop').remove();
                },
                error: console.error
-           })*/
+           })
 
         });
         $('#t-popup-cancel').unbind("click").click(function () {
@@ -1200,7 +1198,7 @@ function setupClicksTask(){
         }).focus();
     });
 
-    $('.fa-list-ul').unbind('click').click(function(){
+    $('#done-tasks-btn').unbind('click').click(function(){
         showDoneTasks();
     });
     setupTaskClicks();
@@ -1499,6 +1497,12 @@ function drawStats() {
 
 function addMembersPopup(){
     var themember;
+    $('body').append(popupAssign({
+        assign_header: lang["assign-header"],
+        assign_name: lang["assign-name"],
+        assign_ok: lang["assign-ok"],
+        assign_cancel: lang["assign-cancel"]
+    }));
     //Shows suggestions when characters is typed
     $('#scrollable-dropdown-menu .typeahead').typeahead({
             highlight: true
@@ -1508,11 +1512,12 @@ function addMembersPopup(){
             display: 'name',
             source: new Bloodhound({
                 datumTokenizer: function(d){
+                    console.log(d);
                     return Bloodhound.tokenizers.whitespace(d.name).concat([d.email]);
                 },
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
                 prefetch: {
-                    url: '/api/user/all/' + currentGroup.group_id,
+                    url: '/api/group/'+currentGroup.group_id+'/users',
                     cache: false
                 }
             }),
@@ -1536,13 +1541,6 @@ function addMembersPopup(){
     $(".typeahead").bind('typeahead:close', function(){
         $(".typeahead").val("");
     });
-
-    $('body').append(popupAssign({
-        assign_header: lang["assign-header"],
-        assign_name: lang["assign-name"],
-        assign_ok: lang["assign-ok"],
-        assign_cancel: lang["assign-cancel"]
-    }));
 
     $('.assignok').unbind("click").click(function () {
         var personid = '';

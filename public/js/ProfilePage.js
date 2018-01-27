@@ -5,6 +5,10 @@ var testetest;
 var shopid;
 var balance, balanceItem, popupTextList;
 
+socket.on('profile update', function(data){
+    user = data[0];
+    printUserInfo();
+});
 
 $(document).ready(function () {
 
@@ -12,6 +16,8 @@ $(document).ready(function () {
     $('#save-success').hide();
     $('#old-password-error').hide();
     $('#change-password-error').hide();
+    $('#profpicsuccess').hide();
+    $('#profpicfailure').hide();
     $('#profpic').attr("src","api/user/" + localStorage.person_id + "/picture");
 
     /**
@@ -113,8 +119,12 @@ $(document).ready(function () {
             console.log(data);
             if(data.facebook == true) {
                 $('#passwordarea').hide();
+                $('.leftcontainer').css("height", "75vh");
+                $('.rightcontainer').css("height", "75vh");
+
             }else{
                 $('#passwordarea').show();
+
             }
 
         },
@@ -144,43 +154,7 @@ $(document).ready(function () {
         },
         success: function (data) {
             user = data[0];
-            if(data == null){ // ?? sjekk
-                return;
-            }
-
-            testetest = data[0].person_id;
-            shopid = data[0].shopping_list_id;
-
-            console.log(data[0]);
-            var dato = data[0].birth_date;
-
-            $('#profile-name').text(data[0].forename + '  ' + data[0].lastname);
-            $('#p-forenam').val(data[0].forename);
-            $('#p-middlenam').val(data[0].middlename);
-            $('#p-lastnam').val(data[0].lastname);
-            $('#p-usernam').val(data[0].username);
-            $('#p-phonenumb').val(data[0].phone);
-            $('#p-gen').val(data[0].gender);
-            $('#profile-email').text(data[0].email);
-            $('#profile-phone').text(data[0].phone ? data[0].phone : "");
-            $('#profile-username').text(data[0].username == data[0].facebook_api_id ? "" : data[0].username);
-            $('#profile-name2').text(data[0].forename + '  ' + data[0].lastname);
-            $('#profile-email2').text(data[0].email);
-            $('#profile-phone2').text(data[0].phone ? data[0].phone : "");
-            $('#profile-username2').text(data[0].username == data[0].facebook_api_id ? "" : data[0].username);
-            if (data[0].birth_date) {
-                var date = data[0].birth_date;
-                var formattedDate = date.split("T")[0];
-                var nysplitt = formattedDate.split('-');
-                var tallet = parseInt(nysplitt[2]);
-                var tallaaa = tallet+1;
-                var tall = tallaaa.toString();
-                if(tall < 10){
-                    tall = 0 + tall;
-                }
-                var riktigdato = nysplitt[0] + '-' + nysplitt[1] + '-' + tall;
-                $('#datepicker').val(riktigdato);
-            }
+            printUserInfo();
         }
     });
 
@@ -218,6 +192,13 @@ $(document).ready(function () {
                 console.log(data);
                 d = new Date();
                 $('#profpic').attr("src","api/user/" + testetest + "/picture?t="+d.getTime());
+                $('#profpicfailure').hide();
+                $('#profpicsuccess').show();
+
+            },
+            error: function () {
+                $('#profpicsuccess').hide();
+                $('#profpicfailure').show();
             }
         });
     });
@@ -348,6 +329,7 @@ function changePassword() {
                 },
                 success: function (data) {
                     $('#old-password-error').hide();
+                    $('#change-password-error').show();
                     $('#save-password-success').show();
                     console.log(data);
                 },
@@ -359,7 +341,49 @@ function changePassword() {
             });
         },
         error: function () {
+            $('#save-password-success').hide();
+            $('#change-password-error').hide();
             $('#old-password-error').show();
         }
     });
+}
+
+function printUserInfo(){
+    if(user == null){
+        return;
+    }
+
+    testetest = user.person_id;
+    shopid = user.shopping_list_id;
+
+    console.log(user);
+    var dato = user.birth_date;
+
+    $('#profile-name').text(user.forename + '  ' + user.lastname);
+    $('#p-forenam').val(user.forename);
+    $('#p-middlenam').val(user.middlename);
+    $('#p-lastnam').val(user.lastname);
+    $('#p-usernam').val(user.username);
+    $('#p-phonenumb').val(user.phone);
+    $('#p-gen').val(user.gender);
+    $('#profile-email').text(user.email);
+    $('#profile-phone').text(user.phone ? user.phone : "");
+    $('#profile-username').text(user.username == user.facebook_api_id ? "" : user.username);
+    $('#profile-name2').text(user.forename + '  ' + user.lastname);
+    $('#profile-email2').text(user.email);
+    $('#profile-phone2').text(user.phone ? user.phone : "");
+    $('#profile-username2').text(user.username == user.facebook_api_id ? "" : user.username);
+    if (user.birth_date) {
+        var date = user.birth_date;
+        var formattedDate = date.split("T")[0];
+        var nysplitt = formattedDate.split('-');
+        var tallet = parseInt(nysplitt[2]);
+        var tallaaa = tallet+1;
+        var tall = tallaaa.toString();
+        if(tall < 10){
+            tall = 0 + tall;
+        }
+        var riktigdato = nysplitt[0] + '-' + nysplitt[1] + '-' + tall;
+        $('#datepicker').val(riktigdato);
+    }
 }
