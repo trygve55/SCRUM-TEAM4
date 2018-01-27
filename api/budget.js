@@ -18,14 +18,12 @@ router.post('/entryType', function(req, res) {
     var data = req.body;
     pool.query('INSERT INTO budget_entry_type (entry_type_name, entry_type_color, shopping_list_id) SELECT ?, ?, ? ' +
         'FROM shopping_list WHERE shopping_list_id IN ' +
-        '(SELECT shopping_list_id FROM person WHERE person_id = ? ' +
-        'UNION  ' +
-        'SELECT home_group.shopping_list_id FROM person   ' +
+        '(SELECT home_group.shopping_list_id FROM person   ' +
         'LEFT JOIN group_person USING(person_id)  ' +
         'LEFT JOIN home_group USING(group_id)  ' +
         'WHERE person.person_id = ? ' +
         'UNION  ' +
-        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?) LIMIT 1',
+        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ? AND invite_accepted = 1) LIMIT 1',
         [data.entry_type_name, data.entry_type_color, data.shopping_list_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
             if(err) return res.status(500).json({'Error' : err});
             if (result.rowsAffected == 0) return res.status(400).json({success: "false", error: "No access or does not exist"});
@@ -45,14 +43,12 @@ router.post('/entryType', function(req, res) {
 router.get('/entryType', function(req, res) {
     pool.query('SELECT * FROM budget_entry_type ' +
         'WHERE shopping_list_id = ? AND shopping_list_id IN ' +
-        '(SELECT shopping_list_id FROM person WHERE person_id = ? ' +
-        'UNION  ' +
-        'SELECT home_group.shopping_list_id FROM person   ' +
+        '(SELECT home_group.shopping_list_id FROM person   ' +
         'LEFT JOIN group_person USING(person_id)  ' +
         'LEFT JOIN home_group USING(group_id)  ' +
         'WHERE person.person_id = ? ' +
         'UNION  ' +
-        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?)',
+        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ? AND invite_accepted = 1)',
         [req.query.shopping_list_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
             if(err) return res.status(500).json({'Error' : err});
             var budget_entry_types = [];
@@ -86,14 +82,12 @@ router.put('/entryType/:budget_entry_type_id', function(req, res) {
         'WHERE ' +
         'budget_entry_type_id = ? AND ' +
         'shopping_list_id IN ' +
-        '(SELECT shopping_list_id FROM person WHERE person_id = ? ' +
-        'UNION  ' +
-        'SELECT home_group.shopping_list_id FROM person   ' +
+        '(SELECT home_group.shopping_list_id FROM person   ' +
         'LEFT JOIN group_person USING(person_id)  ' +
         'LEFT JOIN home_group USING(group_id)  ' +
         'WHERE person.person_id = ? ' +
         'UNION  ' +
-        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?) LIMIT 1',
+        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ? AND invite_accepted = 1) LIMIT 1',
         [data.entry_type_name, data.entry_type_color, req.params.budget_entry_type_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
             if (err) return res.status(500).json({'Error' : err});
             if (result.rowsAffected == 0) return res.status(400).json({success: "false", error: "No access or does not exist"});
@@ -111,14 +105,12 @@ router.delete('/entryType/:budget_entry_type_id', function(req, res) {
     pool.query('DELETE FROM budget_entry_type ' +
         'WHERE budget_entry_type_id = ? AND ' +
         'shopping_list_id IN ' +
-        '(SELECT shopping_list_id FROM person WHERE person_id = ? ' +
-        'UNION ' +
-        'SELECT home_group.shopping_list_id FROM person ' +
+        '(SELECT home_group.shopping_list_id FROM person ' +
         'LEFT JOIN group_person USING(person_id) ' +
         'LEFT JOIN home_group USING(group_id) ' +
         'WHERE person.person_id = ? ' +
         'UNION ' +
-        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?) LIMIT 1',
+        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?  AND invite_accepted = 1) LIMIT 1',
         [req.params.budget_entry_type_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
             if (err) return res.status(500).json({'Error' : err});
             if (result.rowsAffected == 0) return res.status(400).json({success: "false", error: "No access or does not exist"});
@@ -144,6 +136,7 @@ router.post('/', function(req, res){
     req.body.shopping_list_entry_ids = req.body.shopping_list_entry_ids.split(",");
     req.body.person_ids = req.body.person_ids.split(",");
     console.log(req.body);
+    req.body.text_note = req.body.text_note.substring(0, 254);
     pool.getConnection(function(err, connection) {
         if (err)
             return res.status(500).send();
@@ -293,6 +286,11 @@ router.get('/:shopping_list_id', function(req, res){
         'ORDER BY budget_entry_id ASC', [req.params.shopping_list_id], function(err, result){
             if(err)
                 return res.status(500).send();
+            if(result.length == 0)
+                return res.status(200).json({
+                    my_balance: [],
+                    budget: []
+                });
             var budget = [];
             var qry = 'SELECT budget_entry_id, person_id, datetime_paid, forename, lastname FROM budget_entry LEFT JOIN person_budget_entry USING (budget_entry_id) LEFT JOIN person USING (person_id) WHERE budget_entry_id IN (?';
             var vals = [result[0].budget_entry_id];
@@ -364,7 +362,7 @@ router.get('/:shopping_list_id', function(req, res){
  */
 router.post('/pay/:budget_entry_id', function(req, res) {
     var query = "", queryValues = [], payers = req.body.person_ids, budget_entry_id = req.params.budget_entry_id;
-    if (payers.length === 0) return res.status(400).json({error: "no payers array"})
+    if (payers.length === 0) return res.status(400).json({error: "no payers array"});
     for (var i = 0; i < payers.length;i++) {
         if (i !== 0) query += ", ";
         query += "( ?, ? " + ((req.body.is_paid) ? ',CURRENT_TIMESTAMP)': ',NULL )');

@@ -207,7 +207,7 @@ $('document').ready(function () {
                 "listItem.html",
                 "newListItem.html",
                 "popupList.html",
-                "popupTextfieldList.html",
+                "popupTextfieldList2.html",
                 "listReplace.html",
                 "popupMembers.html",
                 "newlabel.html",
@@ -221,7 +221,7 @@ $('document').ready(function () {
             balance = Handlebars.compile(data["balance.html"]);
             listItem = Handlebars.compile(data["listItem.html"]);
             newListItem = Handlebars.compile(data["newListItem.html"]);
-            popupTextList = Handlebars.compile(data["popupTextfieldList.html"]);
+            popupTextList = Handlebars.compile(data["popupTextfieldList2.html"]);
             popupList = Handlebars.compile(data["popupList.html"]);
             balanceItem = Handlebars.compile(data["balanceItem.html"]);
             listReplace = Handlebars.compile(data["listReplace.html"]);
@@ -871,42 +871,7 @@ function setupClicks(){
                     });
                 });
 
-                $('.bal-settle').unbind("click").click(function(){
-                    var cost = 0;
-                    var ids = [];
-                    for(var i = 0; i < curBudget.my_balance.length; i++){
-                        if(curBudget.my_balance[i].amount < 0) {
-                            cost += curBudget.my_balance[i].amount / 100;
-                            ids.push(curBudget.my_balance[i].person_id);
-                        }
-                    }
-                    $('body').append(settleAll({
-                        settle_all: lang["settle-all"],
-                        are_you_sure: lang["are-you-sure"] +cost + " " + sign,
-                        yes_settle_all: lang["yes-settle-all"],
-                        no_settle_all: lang['no-settle-all']
-                    }));
 
-                    $('.notsettleall').unbind("click").click(function () {
-                        $('.pop').remove();
-                    });
-
-                    $('.settleall').unbind("click").click(function () {
-                        $.ajax({
-                            url: 'api/budget/paySpecific',
-                            method: 'PUT',
-                            contentType: 'application/json',
-                            data: JSON.stringify({
-                                person_ids: ids
-                            }),
-                            error: console.error,
-                            success: function (data) {
-                                $('.pop').remove();
-                            }
-                        });
-                    });
-                });
-                
                 $('.bal-complete').unbind("click").click(function(){
                     var entries = "";
                     for(var j = 0; j < lists.length; j++) {
@@ -1000,7 +965,8 @@ function setupClicks(){
                     found = false;
                 }
 
-                var items = $(mycart).closest("div[data-id]").find(".list-group-item input:checked").closest('li[data-id]');
+                var items = $(mycart).closest("div[data-id]").find(".list-group-item.active");
+                console.log(items);
                 if (items.length == 0)
                     return;
                 var entries = $(items[0]).data("id");
@@ -1496,10 +1462,8 @@ function setupItemClicks(){
     $("li[data-id]").unbind("click").click(function(e){
         if($(this).is('.fa-times'))
             return;
-        else if(!$(e.target).is('input')) {
-            e.preventDefault();
-            $(this).find("input[type=checkbox]").prop('checked', $(this).find("input:checked").length == 0);
-        }
+        e.preventDefault();
+        $(this).toggleClass('active').css('z-index', '0');
     });
 }
 
