@@ -871,42 +871,7 @@ function setupClicks(){
                     });
                 });
 
-                $('.bal-settle').unbind("click").click(function(){
-                    var cost = 0;
-                    var ids = [];
-                    for(var i = 0; i < curBudget.my_balance.length; i++){
-                        if(curBudget.my_balance[i].amount < 0) {
-                            cost += curBudget.my_balance[i].amount / 100;
-                            ids.push(curBudget.my_balance[i].person_id);
-                        }
-                    }
-                    $('body').append(settleAll({
-                        settle_all: lang["settle-all"],
-                        are_you_sure: lang["are-you-sure"] +cost + " " + sign,
-                        yes_settle_all: lang["yes-settle-all"],
-                        no_settle_all: lang['no-settle-all']
-                    }));
 
-                    $('.notsettleall').unbind("click").click(function () {
-                        $('.pop').remove();
-                    });
-
-                    $('.settleall').unbind("click").click(function () {
-                        $.ajax({
-                            url: 'api/budget/paySpecific',
-                            method: 'PUT',
-                            contentType: 'application/json',
-                            data: JSON.stringify({
-                                person_ids: ids
-                            }),
-                            error: console.error,
-                            success: function (data) {
-                                $('.pop').remove();
-                            }
-                        });
-                    });
-                });
-                
                 $('.bal-complete').unbind("click").click(function(){
                     var entries = "";
                     for(var j = 0; j < lists.length; j++) {
