@@ -119,6 +119,18 @@
 	"label-none": "No label",
 	"add-picture": "Add picture",
 	"group-post": "Post",
-	"addGroup-button": "Add group"
+	"addGroup-button": "Add group",
+	"done-tasks-btn":"Finished tasks",
+	"listname": "Tasks",
+	"addTask": "Add task",
+	"changenameofgroup": "Change name on group",
+	"changegroupNameButton": "Change",
+	"memebersofgroup": "Members of group",
+	"deletegroup": "Delete group?",
+	"addmembers": "Add members:",
+	"leaveGroup": "Yes",
+	"memebersogfroup": "Members of group",
+	"leaveinggroup": "Leave group?",
+	"leaveGroupButton": "Yes"
 
 }

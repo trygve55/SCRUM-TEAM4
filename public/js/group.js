@@ -6,6 +6,7 @@ const MILLIS_DAY = 86400000;
 var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone, popupAssign, listMemebers, listMemebersAdmin, adminView, adminViewSimple, groupShopping;
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
 var generalLabels, grouplist;
+var lang;
 
 socket.on('group post', function(data){
     for(var i = 0; i < data.length; i++) {
@@ -298,7 +299,14 @@ function adminChange() {
                         method: 'GET',
                         success: function (data) {
                             if(priv) {
-                                $("#leave").html(adminView());
+                                $("#leave").html(adminView({
+                                    changenameofgroup: lang["changenameofgroup"],
+                                    memebersofgroup: lang["memebersofgroup"],
+                                    changegroupNameButton: lang["changegroupNameButton"],
+                                    addmembers: lang["addmembers"],
+                                    deletegroup: lang["deletegroup"],
+                                    leaveGroup: lang["leaveGroup"]
+                                }));
                                 $("#leaveGroup").click(leaveGroup);
                                 $("#typeing-members .typeahead").typeahead({
                                         highlight: true
@@ -344,7 +352,7 @@ function adminChange() {
                                         success: function(data){
                                             $('#list-all-members').append(listMemebersAdmin({
                                                 member_text: data.forename + " " + data.lastname,
-                                                member_id: data.person_id,
+                                                member_id: data.person_id
                                             }));
                                         },
                                         error: console.error
@@ -358,16 +366,27 @@ function adminChange() {
                                 });
                             }
                             else
-                                $("#leave").html(adminViewSimple());
+                                $("#leave").html(adminViewSimple({
+                                    changenameofgroup: lang["changenameofgroup"],
+                                    memebersofgroup: lang["memebersofgroup"],
+                                    changegroupNameButton: lang["changegroupNameButton"],
+                                    addmembers: lang["addmembers"],
+                                    deletegroup: lang["deletegroup"],
+                                    leaveinggroup: lang["leaveinggroup"],
+                                    leaveGroupButton: lang["leaveGroupButton"],
+                                    leaveGroup: lang["leaveGroup"]
+
+                                }));
                             for (var i = 0; i < data.length; i++) {
                                 if (priv) {
                                     $('#list-all-members').append(listMemebersAdmin({
                                         member_text: data[i].name,
-                                        member_id: data[i].person_id,
+                                        member_id: data[i].person_id
                                     }));
 
                                 } else {
                                     $('#list-all-members').append(listMemebers({
+                                        memebersofgroup: lang["memebersofgroup"],
                                         member_text: data[i].name,
                                         member_id: data[i].person_id
                                     }));
@@ -375,6 +394,7 @@ function adminChange() {
                                 }
 
                             }
+
                         }
                     })
                 }
