@@ -1271,7 +1271,7 @@ function drawChart() {
 	// AJAX get all the budget data for the chart.
 	$.ajax({
 		type:"GET",
-		url:"/api/budget/legacy/" + currentGroup.shopping_list_id,
+		url:"/api/budget/" + currentGroup.shopping_list_id,
 		contentType:"application/json",
 		dataType:"json",
 		error: function(jqXHR, text, error) {
@@ -1279,16 +1279,15 @@ function drawChart() {
 			return;
 		},
 		success:function(result) {
-			console.log(result);
 			if (!result) {
 				hideFirstStat();
 				return;
 			}
-			if (result.length < 1 || !result.budget_entries) {
+			if (result.length < 1) {
 				hideFirstStat();
 				return;
 			}
-			if (result.budget_entries.length < 0) {
+			if (result.budget.length < 0) {
 				hideFirstStat();
 				return;
 			}
@@ -1301,8 +1300,8 @@ function drawChart() {
 				return Array(12).fill(0);
 			});
 			var validAmount = false;
-			for (var i = 0; i < result.budget_entries.length; i++) {
-				var element = result.budget_entries[i];
+			for (var i = 0; i < result.budget.length; i++) {
+				var element = result.budget[i];
 				if (element.entry_datetime != null) {
 					var entryTime = new Date(element.entry_datetime);
 					if (entryTime > minLimit && element.amount != 0) {
@@ -1340,7 +1339,10 @@ function drawLabelChart(start, end, typeName, intervalType) {
 		contentType: "application/json",
 		dataType: "json",
 		error: function(jqXHR, text, error) {
-			if (error == "Bad Request" && jqXHR.responseText == "No data found.") {hideSecondStat();}
+			if (error == "Bad Request" && jqXHR.responseText == "No data found.") {
+				$('#stat0').remove();
+				
+			}
 			return;
 		},
 		success: function(result) {
@@ -1420,7 +1422,7 @@ function addInvertedColour(colour) {
 	if (colour) {
 		rgb = [["(", "("], ["(", "("]];
 		for (var i = 0; i < 6; i += 2) {
-			var colourPart = parseInt(colour.toString(16).slice(i, i + 2), 10);
+			var colourPart = parseInt(colour.toString(16).slice(i, i + 2), 16);
 			var rColourPart = (255 - colourPart) + ", ";
 			rgb[0][0] += colourPart + ", ";
 			rgb[0][1] += colourPart + ", ";
@@ -1785,15 +1787,12 @@ function createLabelOptions() {
 
 function hideFirstStat() {
 	$("#stat0").css('display', 'none');
-	$("#stat_header").css('display', 'none');
 	$('#stat0').remove();
 }
 
 function showFirstStat() {
-	
 	$('#stat_container').append('<canvas id="stat0" class="chart"></canvas>');
 	$("#stat0").css('display', 'block');
-	$("#stat_header").css('display', 'block');
 }
 
 function hideSecondStat() {

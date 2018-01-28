@@ -35,7 +35,7 @@
 	"reg_cost": "Registrer Kostnad",
 	"desc_button0": "Administrer",
 	"desc_button1": "Vis",
-	"stat_header": "Siste 12 måneder",
+	"stat_header": "Her kan du se statistikk for gruppen. Velg kategorier og tidsintervall for å se data. Hvis ingenting vises, mangler det data for valget.",
 	"list-name-task": "Gjøremål",
 	"add-task": " Legg til gjøremål",
 	"food-button": "Rediger måltidsplanlegger",
@@ -134,6 +134,6 @@
 	"add-picture": "Legg til bilde",
 	"group-post": "Post",
 	"addGroup-button": "Legg til gruppe",
-	"entry-ok": "Register"
+	"entry-ok": "Registrer"
 
 }

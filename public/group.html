@@ -199,31 +199,29 @@
 
 				<div id="statistics" class="grouptab text-center">
 					<hr width="90%">
-					<div class='col-sm-3'>
+					<p id="stat_header"></p>
+					<div style="width:50%; margin:auto;" class="form-group">
+						<select id="entry_types" class="selectpicker" data-live-search="true">
+							
+						</select>
+						<select id="time_types" class="selectpicker">
+							<option id="desc_year">Years</option>
+							<option id="desc_month">Months</option>
+							<option id="desc_day">Days</option>
+						</select>
 						<div class="form-group">
-							<select id="entry_types" class="selectpicker" data-live-search="true">
-								
-							</select>
-							<select id="time_types" class="selectpicker">
-								<option id="desc_year">Years</option>
-								<option id="desc_month">Months</option>
-								<option id="desc_day">Days</option>
-							</select>
-							<div class="form-group">
-								<label class="control-label" id="ds_label" for="date_start">Start date: </label>
-								<input class="form-control" id="date_start" name="date_start" placeholder="DD/MM/YYYY" type="text"/>
-							</div>
-							<div class="form-group">
-								<label class="control-label" id="de_label" for="date_end">End date: </label>
-								<input class="form-control" id="date_end" name="date_end" placeholder="DD/MM/YYYY" type="text"/>
-							</div>
-							<button id="showStat" type="button" class="btn btn-primary" onclick="drawStats()">
-								<p class="langtext" id="desc_button1"></p>
-							</button>
+							<label class="control-label" id="ds_label" for="date_start">Start date: </label>
+							<input class="form-control" id="date_start" name="date_start" placeholder="DD/MM/YYYY" type="text"/>
 						</div>
+						<div class="form-group">
+							<label class="control-label" id="de_label" for="date_end">End date: </label>
+							<input class="form-control" id="date_end" name="date_end" placeholder="DD/MM/YYYY" type="text"/>
+						</div>
+						<button id="showStat" type="button" class="btn btn-primary" onclick="drawStats()">
+							<p class="langtext" id="desc_button1"></p>
+						</button>
 					</div>
 					<div id="stat_container">
-						<p id="stat_header"></p>
 						<canvas id="stat0" class="chart"></canvas>
 						<canvas id="stat1" class="chart"></canvas>
 					</div>
