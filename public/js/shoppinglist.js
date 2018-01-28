@@ -12,6 +12,16 @@ var buyers = [];
 
 jQuery.ajaxSettings.traditional = true;
 
+socket.on('shoppinglist list item', function(data){
+
+});
+
+socket.on('shoppinglist list item remove', function(data){
+
+});
+
+socket.on('shoppinglist list item')
+
 $('document').ready(function () {
 
     $('#shop-logout').click(function () {

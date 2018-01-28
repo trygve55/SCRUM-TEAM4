@@ -347,7 +347,7 @@ $(function () {
                     phone: $('#register-phone').val()
                 },
                 success: function (data) {
-                    window.location='/index.html';
+                    window.location='/login.html';
                 },
                 error: function(err){
                     console.error(err);
