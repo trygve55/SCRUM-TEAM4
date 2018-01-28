@@ -3,9 +3,10 @@ var stTransparent = "0.5",
 	statColours = [["(0, 30, 170, " + stTransparent + ")", "(0, 0, 132, 1)"], ["(170, 30, 0, " + stTransparent + ")", "(132, 0, 0, 1)"]],
 	statLabels = ["Income", "Expenses"];
 const MILLIS_DAY = 86400000;
-var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone, popupAssign, listMemebers, listMemebersAdmin, adminView, adminViewSimple, groupShopping;
+var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone, popupAssign, listMemebers, listMemebersAdmin, adminView, adminViewSimple, groupShopping, popupSettle;
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
 var generalLabels, grouplist;
+var lang;
 
 socket.on('group post', function(data){
     for(var i = 0; i < data.length; i++) {
@@ -131,6 +132,7 @@ $(function() {
                 'listMemebers.html',
                 'listMemebersAdmin.html',
                 'adminView.html',
+                "popupSettle.html",
                 'adminViewSimple.html',
                 'groupShopping.html'
             ]
@@ -147,6 +149,7 @@ $(function() {
             taskItemDone = Handlebars.compile(data['taskItemDone.html']);
             popupAssign = Handlebars.compile(data['popupAssign.html']);
             listMemebers = Handlebars.compile(data['listMemebers.html']);
+            popupSettle = Handlebars.compile(data["popupSettle.html"]);
             listMemebersAdmin = Handlebars.compile(data['listMemebersAdmin.html']);
             adminView = Handlebars.compile(data['adminView.html']);
             adminViewSimple = Handlebars.compile(data['adminViewSimple.html']);
@@ -236,7 +239,6 @@ function ClearFields() {
 function changeTab(name) {
 	$('#stat0').remove();
 	$('#stat1').remove();
-    activeTab='feed';
     if(name)
         activeTab = name;
     else
@@ -298,7 +300,14 @@ function adminChange() {
                         method: 'GET',
                         success: function (data) {
                             if(priv) {
-                                $("#leave").html(adminView());
+                                $("#leave").html(adminView({
+                                    changenameofgroup: lang["changenameofgroup"],
+                                    memebersofgroup: lang["memebersofgroup"],
+                                    changegroupNameButton: lang["changegroupNameButton"],
+                                    addmembers: lang["addmembers"],
+                                    deletegroup: lang["deletegroup"],
+                                    leaveGroup: lang["leaveGroup"]
+                                }));
                                 $("#leaveGroup").click(leaveGroup);
                                 $("#typeing-members .typeahead").typeahead({
                                         highlight: true
@@ -344,7 +353,7 @@ function adminChange() {
                                         success: function(data){
                                             $('#list-all-members').append(listMemebersAdmin({
                                                 member_text: data.forename + " " + data.lastname,
-                                                member_id: data.person_id,
+                                                member_id: data.person_id
                                             }));
                                         },
                                         error: console.error
@@ -358,16 +367,27 @@ function adminChange() {
                                 });
                             }
                             else
-                                $("#leave").html(adminViewSimple());
+                                $("#leave").html(adminViewSimple({
+                                    changenameofgroup: lang["changenameofgroup"],
+                                    memebersofgroup: lang["memebersofgroup"],
+                                    changegroupNameButton: lang["changegroupNameButton"],
+                                    addmembers: lang["addmembers"],
+                                    deletegroup: lang["deletegroup"],
+                                    leaveinggroup: lang["leaveinggroup"],
+                                    leaveGroupButton: lang["leaveGroupButton"],
+                                    leaveGroup: lang["leaveGroup"]
+
+                                }));
                             for (var i = 0; i < data.length; i++) {
                                 if (priv) {
                                     $('#list-all-members').append(listMemebersAdmin({
                                         member_text: data[i].name,
-                                        member_id: data[i].person_id,
+                                        member_id: data[i].person_id
                                     }));
 
                                 } else {
                                     $('#list-all-members').append(listMemebers({
+                                        memebersofgroup: lang["memebersofgroup"],
                                         member_text: data[i].name,
                                         member_id: data[i].person_id
                                     }));
@@ -375,6 +395,7 @@ function adminChange() {
                                 }
 
                             }
+
                         }
                     })
                 }
@@ -386,6 +407,34 @@ function adminChange() {
 }
 
 /**
+ * This function allows a admin to delete a group.
+ */
+
+function deleteGroup(){
+    var antUsers = [];
+    $.ajax({
+        url:  '/api/group/' + currentGroup.group_id + '/users',
+        method: 'GET',
+        success: function (data) {
+            for(var i = 0; i < data.length; i++) {
+                antUsers.push(data[i].person_id);
+            }
+            $.ajax({
+                url:'/api/group/' + currentGroup.group_id,
+                method: 'DELETE',
+                data: {
+                  person_id: antUsers
+                },
+                success: function () {
+                    console.log('We gooood');
+                    location.reload();
+                }
+            })
+        }
+    })
+}
+
+/**
  * Leave the currently selected group.
  * The page just reloads so that the group is removed from the list.
  */
@@ -393,8 +442,11 @@ function adminChange() {
 
 function leaveGroup() {
     $.ajax({
-        url: '/api/group/' + currentGroup.group_id + '/group',
+        url: '/api/group/' + currentGroup.group_id,
         method: 'DELETE',
+        data:{
+          person_id: localStorage.person_id
+        },
         success: function () {
             location.reload();
         },
@@ -411,7 +463,7 @@ function addGroupToList(group) {
     for (var i = 0; i < groups.length; i++) {
         if ($(groups[i]).html() == group.group_name) return;
     }
-    $("#thelistgroup").append('<li class="list-group-item tablink group"  data-group-id="' + group.group_id + '">' + group.group_name + '</li>');
+    if (group.invite_accepted) $("#thelistgroup").append('<li class="list-group-item tablink group"  data-group-id="' + group.group_id + '">' + group.group_name + '</li>');
     //$("#groupselection").append('<div style="padding-top: 2px; height: 30px; border-radius: 10px; background-color: white; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class="tablink text-center backvariant group" data-group-id="' + group.group_id + '">' + group.group_name + '</div><h4></h4>');
 }
 
@@ -586,8 +638,9 @@ function setupClicks(){
                 $('.balancelist').unbind("click").click(function () {
                     var name = this.innerHTML.split('>')[1].split('<')[0];
                     for(var j=0; j<balancelist.length; j++){
-                        var thefullname = balancelist[j].forename + " " + balancelist[j].lastname;
-                        var personid = balancelist[j].person_id;
+                        let thefullname = balancelist[j].forename + " " + balancelist[j].lastname;
+                        let personid = balancelist[j].person_id;
+                        let row = $(this);
                         if(thefullname == name){
                             if(balancelist[j].amount <= 0) {
                                 break;
@@ -617,6 +670,7 @@ function setupClicks(){
                                     }),
                                     error: console.error,
                                     success: function (data) {
+                                        row.remove();
                                         $(suc).closest('.pop').remove();
                                     }
                                 })
@@ -935,16 +989,27 @@ function setupClicks(){
                                     }
                                 }
                                 console.log(inputdata);
-                                $.ajax({
-                                    url: '/api/budget',
-                                    method: 'POST',
-                                    data: inputdata,
-                                    success: function (data) {
-                                        console.log(data);
-                                        $('.pop').remove();
-                                    },
-                                    error: console.error
-                                });
+                                if(inputdata.person_ids == ""){
+                                    $.ajax({
+                                        url: '/api/group/' + currentGroup.group_id + '/users',
+                                        method: 'GET',
+                                        success: function (data) {
+                                            console.log(data);
+                                        }
+                                    });
+                                }
+                                else {
+                                    $.ajax({
+                                        url: '/api/budget',
+                                        method: 'POST',
+                                        data: inputdata,
+                                        success: function (data) {
+                                            console.log(data);
+                                            $('.pop').remove();
+                                        },
+                                        error: console.error
+                                    });
+                                }
                             },error:console.error
                         });
                     }else { //labels in the DB
@@ -982,7 +1047,11 @@ function setupClicks(){
                             method: 'POST',
                             data: inputdata,
                             success: function (data) {
-                                console.log(data);
+                                if (slei && (typeof slei) === "string") {
+                                    var ids = slei.split(',');
+                                    for (var i = 0; i < ids.length; i++) $('li[data-id=' + ids[i] + ']').remove();
+                                } else
+                                    $('li[data-id=' + slei + ']').remove();
                                 $('.pop').remove();
                             },
                             error: console.error
@@ -1271,7 +1340,7 @@ function drawChart() {
 	// AJAX get all the budget data for the chart.
 	$.ajax({
 		type:"GET",
-		url:"/api/budget/legacy/" + currentGroup.shopping_list_id,
+		url:"/api/budget/" + currentGroup.shopping_list_id,
 		contentType:"application/json",
 		dataType:"json",
 		error: function(jqXHR, text, error) {
@@ -1279,16 +1348,15 @@ function drawChart() {
 			return;
 		},
 		success:function(result) {
-			console.log(result);
 			if (!result) {
 				hideFirstStat();
 				return;
 			}
-			if (result.length < 1 || !result.budget_entries) {
+			if (result.length < 1) {
 				hideFirstStat();
 				return;
 			}
-			if (result.budget_entries.length < 0) {
+			if (result.budget.length < 0) {
 				hideFirstStat();
 				return;
 			}
@@ -1301,12 +1369,12 @@ function drawChart() {
 				return Array(12).fill(0);
 			});
 			var validAmount = false;
-			for (var i = 0; i < result.budget_entries.length; i++) {
-				var element = result.budget_entries[i];
+			for (var i = 0; i < result.budget.length; i++) {
+				var element = result.budget[i];
 				if (element.entry_datetime != null) {
 					var entryTime = new Date(element.entry_datetime);
 					if (entryTime > minLimit && element.amount != 0) {
-						months[(element.amount > 0) ? 0 : 1][mod(entryTime.getMonth() - monthNow - 1, 12)] += element.amount;
+						months[(element.amount > 0) ? 0 : 1][mod(entryTime.getMonth() - monthNow - 1, 12)] += element.amount/100;
 					}
 					if (element.amount != 0) {validAmount = true;}
 				}
@@ -1340,7 +1408,10 @@ function drawLabelChart(start, end, typeName, intervalType) {
 		contentType: "application/json",
 		dataType: "json",
 		error: function(jqXHR, text, error) {
-			if (error == "Bad Request" && jqXHR.responseText == "No data found.") {hideSecondStat();}
+			if (error == "Bad Request" && jqXHR.responseText == "No data found.") {
+				$('#stat0').remove();
+				
+			}
 			return;
 		},
 		success: function(result) {
@@ -1420,7 +1491,7 @@ function addInvertedColour(colour) {
 	if (colour) {
 		rgb = [["(", "("], ["(", "("]];
 		for (var i = 0; i < 6; i += 2) {
-			var colourPart = parseInt(colour.toString(16).slice(i, i + 2), 10);
+			var colourPart = parseInt(colour.toString(16).slice(i, i + 2), 16);
 			var rColourPart = (255 - colourPart) + ", ";
 			rgb[0][0] += colourPart + ", ";
 			rgb[0][1] += colourPart + ", ";
@@ -1785,15 +1856,12 @@ function createLabelOptions() {
 
 function hideFirstStat() {
 	$("#stat0").css('display', 'none');
-	$("#stat_header").css('display', 'none');
 	$('#stat0').remove();
 }
 
 function showFirstStat() {
-	
 	$('#stat_container').append('<canvas id="stat0" class="chart"></canvas>');
 	$("#stat0").css('display', 'block');
-	$("#stat_header").css('display', 'block');
 }
 
 function hideSecondStat() {
@@ -1844,7 +1912,7 @@ function addMembersPopup(todo){
         assign_name: lang["assign-name"],
         assign_ok: lang["assign-ok"],
         assign_cancel: lang["assign-cancel"],
-        member_task: thememberstring
+        member_task: ((thememberstring) ? "" : thememberstring)
     }));
     //Shows suggestions when characters is typed
     $('#scrollable-dropdown-menu .typeahead').typeahead({
@@ -1881,6 +1949,7 @@ function addMembersPopup(todo){
         personids.push(personid);
         console.log(personids);
         console.log("---");
+        console.log(themember);
         $.ajax({
             url: '/api/tasks/person/'+todo,
             method: 'POST',
@@ -1889,6 +1958,14 @@ function addMembersPopup(todo){
             },
             success: function () {
                 console.log("Todo updated");
+                for (var i = 0; i < dataTask.length;i++) {
+                    if (dataTask[i].todo_id == todo) {
+                        dataTask[i].assigned_to.forename = themember.name;
+                        dataTask[i].assigned_to.middlename = "";
+                        dataTask[i].assigned_to.lastname = " ";
+                    }
+                }
+                showCurTasks();
                 $('.pop').remove();
             },
             error: console.error

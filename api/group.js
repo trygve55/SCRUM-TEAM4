@@ -67,6 +67,7 @@ router.get('/:group_id/users', function(req, res){
     if(!req.session.person_id)
         return res.status(500).send();
     pool.query('SELECT person_id, forename, lastname, email FROM group_person LEFT JOIN person USING (person_id) WHERE group_id = ?', [req.params.group_id], function(err, result){
+        console.error(err);
         if(err)
             return res.status(500).send();
         var ret = [];
@@ -109,15 +110,8 @@ router.get('/name', function(req, res){
 router.get('/me', function(req, res){
     if(!req.session.person_id)
         return res.status(500).send();
-    pool.getConnection(function(err, connection){	// pool.query...
-        if(err) {
-            connection.release();
-            return res.status(500).send();
-        }
-        connection.query('SELECT * FROM home_group WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?)', [req.session.person_id], function(err, result){
-            connection.release();
-            return (err) ? (res.status(500).send()): (res.status(200).json(result));
-        });
+    pool.query('SELECT home_group.*, group_person.invite_accepted FROM home_group LEFT JOIN group_person USING(group_id)  WHERE person_id = ?', [req.session.person_id], function(err, result){
+        return (err) ? (res.status(500).send()): (res.status(200).json(result));
     });
 });
 

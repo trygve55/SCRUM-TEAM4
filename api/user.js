@@ -483,26 +483,29 @@ router.get('/:person_id/picture_tiny', function(req, res){
 
 
 router.put('/', function(req, res) {
-    if(req.session.person_id == null) {
-        return res.status(403).send("Invalid request, you must log in");
-    }
+	var data = req.body;
+    if(req.session.person_id == null) {return res.status(403).send("Invalid request, you must log in");}
+	if (data.username) {if(!checkValidUsername(data.username)) {return res.status(400).send("Bad username");}}
+	if (data.forename) {if(!checkValidForename(data.forename)) {return res.status(400).send("Bad forename");}}
+	if (data.lastname) {if(!checkValidName(data.lastname)) {return res.status(400).send("Bad lastname");}}
+
     var changeableVars = ["username", "forename", "middlename", "lastname", "phone", "gender", "birth_date",
         "profile_pic", "profile_pic_tiny", "last_active", "user_language"];
-    for(var p in req.body) {
+    for(var p in data) {
         if(changeableVars.indexOf(p) < 0) {
             return res.status(400).send("Bad variable: " + p);
         }
     }
     var sqlQuery = "UPDATE person SET ";
-    for(var p in req.body) {
+    for(var p in data) {
         sqlQuery += p + " = ?, "
     }
     sqlQuery = sqlQuery.slice(0,-2);
     sqlQuery += " WHERE person_id = ?";
     var values = [];
     var fields = "person_id";
-    for(var p in req.body) {
-        values.push(req.body[p]);
+    for(var p in data) {
+        values.push(data[p]);
         fields += ", " + p;
     }
     values.push(req.session.person_id);

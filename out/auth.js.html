@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: auth.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: auth.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module User Authentication
+ */
+
+var router = require('express').Router();
+var bcrypt = require('bcrypt');
+var FB = require('fb');
+
+module.exports = router;
+
+/**
+ * Log out the current user
+ *
+ * @name Logout
+ * @route {POST} /api/auth/logout
+ */
+router.post('/logout', function(req, res) {
+    req.session.destroy();
+    res.status(200).json({login: false});
+});
+
+/**
+ * Login the user
+ *
+ * URL: /api/auth/login
+ * method: POST
+ * data: {
+ *      username,
+ *      password
+ * }
+ */
+router.post('/', function(req, res){
+    var loginVariable, username = req.body.username, password = req.body.password;
+    if (!username || !password) {
+        res.status(400).json({login: false, error: "login failed"});
+        return;
+    }
+
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            res.status(500).json({error: "no connection to server"})
+        }
+        else connection.query("SELECT person_id, password_hash FROM person WHERE ?? = ?;",
+            [((username.indexOf("@") == -1) ? 'username' : 'email'), username], function (error, results) {
+            connection.release();
+            if(err)
+                return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+            if(results.length == 0)
+                return res.status(400).json({login: false, error: "login failed"});
+            else bcrypt.compare(password, results[0].password_hash, function(err, hash_res) {
+                if (hash_res) {
+                    req.session.person_id = results[0].person_id;
+                    req.session.save();
+                    res.cookie('person_id', results[0].person_id);
+                    res.status(200).json({login: true, person_id: results[0].person_id});
+                }
+                else { res.status(400).json({login: false, error: "login failed"}); }
+            });
+        });
+    });
+});
+
+/**
+ * Check if the user is logged in
+ *
+ * URL: /api/auth
+ * method: GET
+ */
+router.get('/', function(req, res) {
+    res.status(200).json({login: !!req.session.person_id});
+});
+
+/**
+ * Login and registration with facebook
+ *
+ * URL: /api/auth/facebook
+ * method: POST
+ * data: {
+ *      facebook_api_id,
+ *      forename,
+ *      lastame,
+ *      email
+ * }
+ */
+router.post('/facebook', function(req, res){
+
+    FB.api('me', 'GET', { fields: ['first_name,last_name,id,email'], access_token: req.body.accessToken }, function (fbRes) {
+        if (fbRes.id === null || fbRes.first_name == null) {
+            return res.status(400).json({"Error": "facebook login failed"});
+        }
+
+        pool.getConnection(function (err, connection) {
+            connection.query("SELECT person_id FROM person WHERE facebook_api_id = ?;", [fbRes.id], function (error, results) {
+                if(err) {
+                    connection.release();
+                    res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                } else if (results.length == 1) {
+                    connection.release();
+
+                    req.session.person_id = results[0].person_id;
+                    res.cookie('person_id', results[0].person_id);
+                    req.session.save();
+
+                    res.status(200).json({login: true, person_id: results[0].person_id});
+                } else {
+                    connection.beginTransaction(function(err){
+                        if(err) {
+                            connection.release();
+                            res.status(500).send("Error");
+                        }
+                        else connection.query("INSERT INTO shopping_list (currency_id) VALUES (?)", [100], function(err, result){
+                            if (err) {
+                                connection.release();
+                                res.status(500).json({'error': 'connecting to database'} + err);
+                            }
+                            else {
+                                var values = [
+                                    fbRes.email,
+                                    fbRes.first_name.substring(0, 3) + fbRes.last_name.substring(0, 3) + result.insertId,
+                                    fbRes.first_name,
+                                    fbRes.last_name,
+                                    result.insertId,
+                                    fbRes.id
+                                ];
+
+                                connection.query('INSERT INTO person ' +
+                                    '(email, username, forename, lastname, shopping_list_id, facebook_api_id) ' +
+                                    'VALUES (?,?,?,?,?,?)', values, function(err, result) {
+                                    if(err) {
+                                        connection.release();
+                                        res.status(500).send("Fail");
+                                    }
+                                    else {
+                                        connection.commit(function (err) {
+                                            if (err) {
+                                                connection.rollback(function (err) {
+                                                    connection.release();
+                                                    if (err) console.error(err);
+                                                    res.status(500).send("Transaction fail");
+                                                });
+                                            } else {
+                                                connection.release();
+                                                req.session.person_id = result.insertId;
+                                                req.session.save();
+                                                res.status(200).json({person_id: result.insertId});
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+                }
+            });
+        });
+    });
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-User%2520Authentication.html">User Authentication</a></li></ul><h3>Global</h3><ul><li><a href="global.html#changeAmounts">changeAmounts</a></li><li><a href="global.html#checkConnectionError">checkConnectionError</a></li><li><a href="global.html#checkRange">checkRange</a></li><li><a href="global.html#checkResult">checkResult</a></li><li><a href="global.html#checkValidEmail">checkValidEmail</a></li><li><a href="global.html#checkValidForename">checkValidForename</a></li><li><a href="global.html#checkValidName">checkValidName</a></li><li><a href="global.html#checkValidPassword">checkValidPassword</a></li><li><a href="global.html#checkValidPhone">checkValidPhone</a></li><li><a href="global.html#checkValidUsername">checkValidUsername</a></li><li><a href="global.html#existsInArray">existsInArray</a></li><li><a href="global.html#multipleRequestSetup">multipleRequestSetup</a></li><li><a href="global.html#putRequestSetup">putRequestSetup</a></li><li><a href="global.html#removeDuplicates">removeDuplicates</a></li><li><a href="global.html#rollbackC">rollbackC</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Jan 28 2018 18:06:57 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

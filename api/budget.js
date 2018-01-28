@@ -1,4 +1,6 @@
-
+/**
+ * @module Budget
+ */
 var router = require('express').Router();
 
 module.exports = router;
@@ -6,13 +8,12 @@ module.exports = router;
 /**
  * Adds a new budget entry label for a shopping list
  *
- * URL: /api/budget/entryType
- * method: POST
- * data: {
- *      entry_type_name
- *      entry_type_color,
- *      shopping_list_id
- * }
+ * @name Adds new budget entry label
+ * @route {POST} /api/budget/entryType
+ * @bodyparam {string} entry_type_name
+ * @bodyparam {number} entry_type_color
+ * @bodyparam {number} shopping_list_id
+ *
  */
 router.post('/entryType', function(req, res) {
     var data = req.body;
@@ -35,11 +36,10 @@ router.post('/entryType', function(req, res) {
 /**
  * Returns budget entry labels for a shopping list
  *
- * URL: /api/budget/entryType
- * method: GET
- * data: {
- *      shopping_list_id,
- * }
+ * @name Returns a budget entry labels
+ * @route {GET} /api/budget/entryType
+ * @headerparam {number} shopping_list_id each shoppinglist receives a unique id
+ *
  */
 router.get('/entryType', function(req, res) {
     pool.query('SELECT * FROM budget_entry_type ' +
@@ -67,12 +67,11 @@ router.get('/entryType', function(req, res) {
 /**
  * Edits budget entry label
  *
- * URL: /api/budget/entryType/{budget_entry_type_id}
- * method: PUT
- * data: {
- *      budget_entry_name,
- *      budget_entry_color
- * }
+ * @name Edits budget entry label
+ * @route {PUT} /api/budget/entryType/{budget_entry_type_id}
+ * @bodyparam {string} budget_entry_name
+ * @bodyparam {number} budget_entry_color
+ *
  */
 router.put('/entryType/:budget_entry_type_id', function(req, res) {
     var data = req.body;
@@ -99,8 +98,9 @@ router.put('/entryType/:budget_entry_type_id', function(req, res) {
 /**
  * Removes a budget entry label
  *
- * URL: /api/budget/entryType/{budget_entry_type_id}
- * method: DELETE
+ * @name Removes a budget entry label
+ * @route {DELETE} /api/budget/entryType/{budget_entry_type_id}
+ *
  */
 router.delete('/entryType/:budget_entry_type_id', function(req, res) {
     pool.query('DELETE FROM budget_entry_type ' +
@@ -122,21 +122,23 @@ router.delete('/entryType/:budget_entry_type_id', function(req, res) {
 /**
  * Adds a budget entry to shopping list
  *
- * URL: /api/budget
- * method: POST
- * data: {
- *      shopping_list_id,
- *      amount,
- *      text_note,
- *      budget_entry_type_id,
- *      shopping_list_entry_ids[],
- *      person_ids[]
- * }
+ * @name Adds a budget entry to shopping list
+ * @route {POST} /api/budget
+ * @bodyparam {number} shopping_list_id
+ * @bodyparam {number} amount
+ * @bodyparam {string} text_note
+ * @bodyparam {number} budget_entry_type_id
+ * @bodyparam {array} shopping_list_entry_ids[]
+ * @bodyparam {array} person_ids[]
+ *
  */
 router.post('/', function(req, res){
     console.log(req.body);
     req.body.shopping_list_entry_ids = req.body.shopping_list_entry_ids.split(",");
-    req.body.person_ids = req.body.person_ids.split(",");
+    if (req.body.person_ids)
+        req.body.person_ids = req.body.person_ids.split(",");
+    else
+        req.body.person_ids = [];
     req.body.text_note = req.body.text_note.substring(0, 254);
     pool.getConnection(function(err, connection) {
         if (err)
@@ -197,130 +199,12 @@ router.post('/', function(req, res){
 });
 
 /**
- * Get full budget for a shopping list
- *
- * URL: /api/budget/legacy/{shopping_list_id}
- * method: GET
- */
-router.get('/legacy/:shopping_list_id', function(req, res) {
-    pool.getConnection(function(err, connection) {
-        if (err) {
-            return res.status(500).json({'Error': 'connecting to database: '} + err);
-        }
-        connection.query('SELECT ' +
-            'person.person_id, person.forename, person.middlename, person.lastname, ' +
-            'budget_entry_id, amount, text_note, entry_datetime, added_by_id, ' +
-            'budget_entry_type_id, entry_type_name, entry_type_color, ' +
-            'currency_id, currency_short, currency_long, currency_sign, ' +
-            'shopping_list.shopping_list_id, shopping_list_name, color_hex, ' +
-            'shopping_list_entry_id, entry_text, purchased_by_person_id, ' +
-            'added_by_person_id, cost, datetime_added, datetime_purchased, ' +
-            'person_budget_entry.person_id AS paid_person_id, datetime_paid, ' +
-            'paid_person.forename AS paid_person_forename, ' +
-            'paid_person.middlename AS paid_person_middlename, ' +
-            'paid_person.lastname AS paid_person_lastname ' +
-            'FROM shopping_list ' +
-            'LEFT JOIN budget_entry USING(shopping_list_id) ' +
-            'LEFT JOIN shopping_list_entry USING (budget_entry_id) ' +
-            'LEFT JOIN budget_entry_type USING(budget_entry_type_id) ' +
-            'LEFT JOIN person ON person.person_id = budget_entry.added_by_id ' +
-            'LEFT JOIN currency USING(currency_id) ' +
-            'LEFT JOIN person_budget_entry USING (budget_entry_id) ' +
-            'LEFT JOIN person AS paid_person ON person_budget_entry.person_id = paid_person.person_id ' +
-            'WHERE shopping_list.shopping_list_id = ? AND shopping_list.shopping_list_id IN ' +
-            '(SELECT home_group.shopping_list_id FROM person   ' +
-            'LEFT JOIN group_person USING(person_id)  ' +
-            'LEFT JOIN home_group USING(group_id)  ' +
-            'WHERE person_id = ? ' +
-            'UNION ' +
-            'SELECT shopping_list_person.shopping_list_id FROM shopping_list_person WHERE person_id = ?) ',
-            [req.params.shopping_list_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
-                connection.release();
-                if (err) {
-                    return res.status(500).json({'Error': 'connecting to database: '} + err);
-                }
-                else if (result.length === 0)
-                    res.status(403).json({success: "false", error: "no access5"});
-                else {
-                    var budget_entries = [];
-                    for (var i = 0; i < result.length;i++) {
-                        var current_budget_entry_id = budgetEntryExistsInArray(result[i].budget_entry_id, budget_entries);
-                        if (current_budget_entry_id === -1) {
-                            budget_entries.push({
-                                "budget_entry_id": result[i].budget_entry_id,
-                                "amount": result[i].amount,
-                                "text_note": result[i].text_note,
-                                "entry_datetime": result[i].entry_datetime,
-                                "added_by": {
-                                    "person_id": result[i].added_by_id,
-                                    "forename": result[i].forename,
-                                    "middlename": result[i].middlename,
-                                    "lastname": result[i].lastname
-                                },
-                                "budget_entry_type": {
-                                    "budget_entry_type_id": result[i].budget_entry_type_id,
-                                    "budget_entry_type_name": result[i].entry_type_name,
-                                    "budget_entry_type_color": result[i].entry_type_color,
-                                },
-                                "persons_to_pay": [],
-                                "budget_shopping_list_entries": []
-                            });
-                            current_budget_entry_id = budget_entries.length - 1;
-                        }
-
-                        if (result[i].shopping_list_entry_id && shoppingListEntryExistsInArray(result[i].shopping_list_entry_id, budget_entries[current_budget_entry_id].budget_shopping_list_entries) === -1) budget_entries[current_budget_entry_id].budget_shopping_list_entries.push({
-                            "shopping_list_entry_id": result[i].shopping_list_entry_id,
-                            "entry_text": result[i].entry_text,
-                            "added_by_person_id": result[i].added_by_person_id,
-                            "purchased_by_person_id": result[i].purchased_by_person_id,
-                            "cost": result[i].cost,
-                            "datetime_added": result[i].datetime_added,
-                            "datetime_purchased": result[i].datetime_purchased
-                        });
-
-                        if (result[i].paid_person_id && payPersonExistsInArray(result[i].paid_person_id, budget_entries[current_budget_entry_id].persons_to_pay) === -1) budget_entries[current_budget_entry_id].persons_to_pay.push({
-                            "person_id": result[i].paid_person_id,
-                            "datetime_paid": result[i].datetime_paid,
-                            "forename": result[i].paid_person_forename,
-                            "middlename": result[i].paid_person_middlename,
-                            "lastname": result[i].paid_person_lastname
-                        });
-                    }
-
-                    for (var i = 0;i < budget_entries.length;i++) {
-                        for (var j = 0; j < budget_entries[i].persons_to_pay.length;j++) {
-                            budget_entries[i].persons_to_pay[j].amount_to_pay = budget_entries[i].amount / budget_entries[i].persons_to_pay.length;
-                        }
-                    }
-
-                    res.status(200).json({
-                        shopping_list_id: req.params.shopping_list_id,
-                        shopping_list_name:  result[0].shopping_list_name,
-                        color_hex:  result[0].color_hex,
-                        currency: {
-                            currency_id: result[0].currency_id,
-                            currency_short: result[0].currency_short,
-                            currency_long: result[0].currency_long,
-                            currency_sign: result[0].currency_sign
-                        },
-                        budget_entries: budget_entries
-                    });
-
-                    console.error(budget_entries.length);
-                }
-            });
-    });
-});
-
-/**
  * Get debt between logged in user and anyone else. Returns a json object, where the keys are person_ids, and their value
  * is balance between the user and the person_id.
  *
- * URL: /api/budget/getDebt
- * method: GET
- * data: {
+ * @name Get debt between logged in user and anyone else
+ * @route {GET} /api/budget/getDebt
  *
- * }
  */
 router.get('/getDebt', function(req,res) {
     var person_id = req.session.person_id;
@@ -387,8 +271,9 @@ router.get('/getDebt', function(req,res) {
 /**
  * Get full budget for a shopping list
  *
- * URL: /api/budget/{shopping_list_id}
- * method: GET
+ * @name Get full budget for a shopping list
+ * @route {GET} /api/budget/{shopping_list_id}
+ *
  */
 router.get('/:shopping_list_id', function(req, res){
     if(isNaN(Number(req.params.shopping_list_id)))
@@ -470,12 +355,11 @@ router.get('/:shopping_list_id', function(req, res){
 /**
  * Adds a to pay for a budget entry
  *
- * URL: /api/budget/{budget_entry_id}
- * method: POST
- * data: {
- *      person_ids[],
- *      is_paid
- * }
+ * @name Adds a to pay for a budget entry
+ * @route {POST} /api/budget/{budget_entry_id}
+ * @bodyparam {array} person_ids[] Array of persons ids
+ * @bodyparam {string} is_paid
+ *
  */
 router.post('/pay/:budget_entry_id', function(req, res) {
     var query = "", queryValues = [], payers = req.body.person_ids, budget_entry_id = req.params.budget_entry_id;
@@ -500,12 +384,10 @@ router.post('/pay/:budget_entry_id', function(req, res) {
 /**
  * Sets entries in person_budget_entry to paid, with the current timestamp
  *
- * URL: /api/budget/paySpecific
- * method: PUT
- * data: {
- *      person_ids: "###,###,###,###"
- * }
- * (person_ids is a string, with ids separated by commas. example: "200,390,29")
+ * @name Sets entries in person_budget_entry to paid
+ * @route {PUT} /api/budget/paySpecific
+ * @bodyparam {string} person_ids budget_entry_ids is a string, with ids separated by commas. example: "200,390,29"
+ *
  */
 router.put('/paySpecific', function(req, res) {
     console.log(req.body);
@@ -543,13 +425,11 @@ router.put('/paySpecific', function(req, res) {
 /**
  * Sets entries in person_budget_entry to paid, with the current timestamp
  *
- * URL: /api/budget
- * method: PUT
- * data: {
- *      person_id,
- *      budget_entry_ids: "###,###,###,###"
- * }
- * (budget_entry_ids is a string, with ids separated by commas. example: "200,390,29")
+ * @name Sets entries in person_budget_entry to paid
+ * @route {PUT} /api/budget
+ * @bodyparam {number} person_id A persons unique id
+ * @bodyparam {string} budget_entry_ids: "###,###,###,###" Is a string, with ids separated by commas. example: "200,390,29"
+ *
  */
 router.put('/pay', function(req, res) {
     console.log(req.body);
@@ -588,11 +468,10 @@ router.put('/pay', function(req, res) {
 /**
  * Get all budget entries with their type for a group. Only available to users in the group
  *
- * URL: /api/budget/entries
- * method: GET
- * data: {
- *      group_id
- * }
+ * @name Budget entries with type for a group
+ * @route {GET} /api/budget/entries
+ * @headerparam {number} group_id A groups unique id
+ *
  */
 
 router.get('/', function(req, res) {

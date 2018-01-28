@@ -701,8 +701,23 @@ function setupClicks(){
                         shopping_list_id: li,
                         person_id: newmembers[j].id
                     },
+                    success: function(){
+                        $.ajax({
+                            url: '/api/shoppingList/' + li,
+                            method: 'GET',
+                            success: function(data){
+                                console.log(data);
+                                for(var i = 0; i < lists.length; i++){
+                                    if(lists[i].shopping_list_id == data.shopping_list_id){
+                                        lists[i].persons  = data.persons;
+                                    }
+                                }
+                            },
+                            error: console.error
+                        });
+                    },
                     error: console.error
-                })
+                });
             }
             $(this).closest(".pop").remove();
             newmembers=[];
@@ -771,8 +786,9 @@ function setupClicks(){
                 $('.balancelist').unbind("click").click(function () {
                     var name = this.innerHTML.split('>')[1].split('<')[0];
                     for(var j=0; j<balancelist.length; j++){
-                        var thefullname = balancelist[j].forename + " " + balancelist[j].lastname;
-                        var personid = balancelist[j].person_id;
+                        let thefullname = balancelist[j].forename + " " + balancelist[j].lastname;
+                        let personid = balancelist[j].person_id;
+                        let row = $(this);
                         if(thefullname == name){
                             if(balancelist[j].amount <= 0) {
                                 break;
@@ -802,6 +818,7 @@ function setupClicks(){
                                     }),
                                     error: console.error,
                                     success: function (data) {
+                                        row.remove();
                                         $(suc).closest('.pop').remove();
                                     }
                                 })

@@ -29,7 +29,7 @@
 
     <body>
         <nav style="width: 100%" class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#" style="color: dimgray">
+            <a class="navbar-brand" href="/index.html" style="color: dimgray">
                 <img src="img/logo.svg" width="30" height="30" alt="">
                 Household Manager
             </a>
@@ -38,7 +38,6 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a id="index-homepageNavbar" class="nav-item nav-link active" href="index.html"></a>
                     <a id="index-groupsNavbar" class="nav-item nav-link" href="#" onclick="new function () {
               $.ajax({
                 url: '/api/group/me',
@@ -52,6 +51,8 @@
               });
             }();"></a>
                     <a id="index-shoppinglistsNavbar" class="nav-item nav-link" href="shoppinglist.html"></a>
+                    <a id="index-tasksNavbar" class="nav-item nav-link" href="tasks.html"></a>
+                    <a id="index-mealplanner" class="nav-item nav-link" href="mealPlannerPrivate.html"></a>
                 </div>
                 <div class="navbar-nav ml-auto">
                     <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
@@ -69,19 +70,11 @@
         </div>
 
         <div class="row" align="center">
-            <div class="profil col-sm-11 col-lg-4 col-xl-3" style="height: 87vh; border-bottom: #a3e6f7 1vh solid; border-top: #a3e6f7 1vh solid;">
+            <div class="profil col-sm-11 col-lg-4 col-xl-3" style="height: 50vh; border-bottom: #a3e6f7 1vh solid; border-top: #a3e6f7 1vh solid;">
                 <br>
 
                 <img id="profpic" src="/img/profilpic.svg" style="height: 200px; width: 200px; border-radius: 50%">
                 <div id="index-username" style="font-size: large" ></div>
-                <div id="index-status" style="color: green; font-style: oblique ">online</div>
-
-                <div class ="index-todo" style="border-radius: 15px; padding: 2vh; height: 40vh;">
-                    <h5 id="index-todolist"></h5>
-                    <ul class="list-group" style="border: 1px grey solid; height: 25vh; overflow-x: auto; overflow-y: auto; background-color: white">
-                        <li class="list-group-item">Vaske gulvet</li>
-                    </ul>
-                </div>
 
 
             </div>

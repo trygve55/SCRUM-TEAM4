@@ -30,17 +30,19 @@ router.post('/', function(req, res) {
 
         data.post_text = req.sanitize(data.post_text);
 
+        var path = files.File.path,
+            file_size = files.File.size;
+
         // Check if this request is ok.
-        if(!data.group_id || !data.post_text)
+        if(!data.group_id || (!data.post_text && !files.File))
             return res.status(400).send();
+
+        if (!data.post_text) data.post_text = "";
 
         if(!files.File) {
             data.attachment_type = 0;
             return savePostToDatabase(req, res, data);
         }
-
-        var path = files.File.path,
-            file_size = files.File.size;
 
         if (file_size > 4000000)
             return res.status(400).json({'error': 'image file over 4MB'});
@@ -61,6 +63,7 @@ router.post('/', function(req, res) {
 });
 
 function savePostToDatabase(req, res, data, imgdata) {
+	console.log(data.post_text);
     pool.query(
         'INSERT INTO newsfeed_post (' +
         'group_id, posted_by_id, post_text, attachment_type, attachment_data' +

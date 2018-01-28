@@ -62,10 +62,9 @@ router.get('/', function(req, res) {
         'LEFT JOIN private_todo_entry ' +
         'USING(private_todo_list_id) ' +
         'WHERE person_id = ?;',[p_id], function (err, result) {
+        console.log(arguments);
         if(err)
-            return res.status(500).json({error: err});
-        if(!result.length)
-            return res.status(400).json({error: "the data requested does not exist"});
+            return res.status(400).json({error: "sql-fail"});
 
         var private_todo_lists = [];
 
@@ -177,6 +176,7 @@ router.put('/list/:private_todo_list_id', function(req, res){
  * URL: /api/tasks/{todo_id}
  * method: PUT
  */
+//TODO: is this method necessary? If so, please let me know and I will fix. As of now it is not functional. t. Olav
 router.put('/:todo_id/done', function(req, res) {
     pool.query('UPDATE todo SET datetime_done = CURRENT_TIMESTAMP, done_by_id = ? ' +
         'WHERE todo_id = ? AND todo_id IN ' +

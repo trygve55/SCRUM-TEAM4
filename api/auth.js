@@ -1,3 +1,7 @@
+/**
+ * @module User Authentication
+ */
+
 var router = require('express').Router();
 var bcrypt = require('bcrypt');
 var FB = require('fb');
@@ -7,8 +11,8 @@ module.exports = router;
 /**
  * Log out the current user
  *
- * URL: /api/auth/logout
- * method: POST
+ * @name Logout
+ * @route {POST} /api/auth/logout
  */
 router.post('/logout', function(req, res) {
     req.session.destroy();
@@ -18,11 +22,11 @@ router.post('/logout', function(req, res) {
 /**
  * Login the user
  *
- * URL: /api/auth/login
- * method: POST
- * data: {
- *      username,
- *      password
+ * @name Login
+ * @route {POST} /api/auth/login
+ * @bodyparam {string} username a persons username
+ * @bodyparam {string} password a persons password
+ *
  * }
  */
 router.post('/', function(req, res){
@@ -60,8 +64,12 @@ router.post('/', function(req, res){
 /**
  * Check if the user is logged in
  *
+ * @name checks if user is logged in
+ * @route {GET} /api/auth
  * URL: /api/auth
  * method: GET
+ *
+ * GET = @headerparam {string}
  */
 router.get('/', function(req, res) {
     res.status(200).json({login: !!req.session.person_id});
@@ -70,17 +78,16 @@ router.get('/', function(req, res) {
 /**
  * Login and registration with facebook
  *
- * URL: /api/auth/facebook
- * method: POST
- * data: {
- *      facebook_api_id,
- *      forename,
- *      lastame,
- *      email
+ * @name Login and registration with facebook
+ * @route {POST} /api/auth/facebook
+ * @headerparam {number} facebook_api_id a persons unique facebook id that is received when a person register through facebook
+ * @headerparam {string} forename a persons forename
+ * @headerparam {string} lastname a persons lastname
+ * @headerparam {string} email a persons email address
+ *
  * }
  */
 router.post('/facebook', function(req, res){
-
     FB.api('me', 'GET', { fields: ['first_name,last_name,id,email'], access_token: req.body.accessToken }, function (fbRes) {
         if (fbRes.id === null || fbRes.first_name == null) {
             return res.status(400).json({"Error": "facebook login failed"});
