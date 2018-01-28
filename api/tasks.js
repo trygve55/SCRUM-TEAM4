@@ -66,6 +66,7 @@ router.post('/person/:todo_id', function(req, res) {
 	);
 	
 	pool.query(resultQuery[0], resultQuery[1], function(err) {
+	    console.log(err);
 		return (err) ? (res.status(500).send()) : (res.status(200).send());
 	});
 });

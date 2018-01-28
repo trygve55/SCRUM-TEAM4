@@ -62,10 +62,9 @@ router.get('/', function(req, res) {
         'LEFT JOIN private_todo_entry ' +
         'USING(private_todo_list_id) ' +
         'WHERE person_id = ?;',[p_id], function (err, result) {
+        console.log(arguments);
         if(err)
-            return res.status(500).json({error: err});
-        if(!result.length)
-            return res.status(400).json({error: "the data requested does not exist"});
+            return res.status(400).json({error: "sql-fail"});
 
         var private_todo_lists = [];
 
