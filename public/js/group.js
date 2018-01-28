@@ -1211,6 +1211,10 @@ $(function () {
         });
     });
 
+    $('#file-attachment').change(function () {
+        $('#group-pictureNotify').css("visibility", "visible");
+    });
+
     /**
      * This method calls the language api and sets the standard language as
      * norwegian.
