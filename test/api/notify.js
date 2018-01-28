@@ -1,5 +1,5 @@
 /**
- * Test for the tasks API.
+ * Test for the Notify API.
  * Authors: Andrzej Cabala (main author), Magnus Eilertsen
  */
 describe('Notify API', function() {
