@@ -785,11 +785,12 @@ function setupClicks(){
                     label_name: lang["label-name"],
                     new_label_color: lang["new-label-color"],
                     cancel: lang["shop-cancel"],
-                    complete: lang["shop-ok"],
+                    entry_ok: lang["entry-ok"],
                     data: "data-id='" + $(this).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
                 }));
                 $(".addbyers").hide();
                 $(".newlabel").hide();
+                $(".pop .fa-times").remove();
 
                 var currColor = "#a9d5f2";
                 $(".colorpicker").spectrum({
@@ -815,6 +816,11 @@ function setupClicks(){
                     }
                 });
                 var buyers = [];
+                $("#resetmembers").unbind("click").click(function () {
+
+                    $('.membersadded').html('');
+                    buyers = [];
+                });
 
                 //If buyers-input is changed
                 $('select.byers-input').change(function () {
@@ -853,6 +859,9 @@ function setupClicks(){
                                 $('.membersadded').append(data.name);
                             }
                         });
+
+
+
 
                         $(".typeahead").bind('typeahead:close', function(){
                             $(".typeahead").val("");
@@ -1086,6 +1095,7 @@ $(function () {
      * the method getPost() to post the post to the page then ClearFields()
      * to reset the inputfield.
      */
+
     $('#group-post2').click(function() {
         var formData = new FormData();
         formData.append('File', $("#file-attachment")[0].files[0]);
@@ -1697,7 +1707,7 @@ $('#group-logoutNavbar').click(function () {
         method: 'POST',
         success: function (data) {
             if(!data.login){
-                window.top.location="http://localhost:8000/login.html";
+                window.location="/login.html";
             }
         }
     });
@@ -1865,10 +1875,6 @@ function addMembersPopup(todo){
     //Adds member to list when clicked
     $(".typeahead").bind('typeahead:select', function(a, data){
         themember = data;
-
-    });
-
-    $('.assignok').unbind("click").click(function () {
         var personid = themember.person_id;
         var personids = [];
         personids.push(personid);
@@ -1887,7 +1893,6 @@ function addMembersPopup(todo){
             error: console.error
         })
     });
-
     $('.assigncancel').unbind("click").click(function () {
         $('.pop').remove();
     });

@@ -54,7 +54,6 @@
                 }
               });
             }();"></a>
-            <a id="addgroup-tasks" class="nav-item nav-link" href="tasks.html"></a>
             <a id="addgroup-shoppinglists" class="nav-item nav-link" href="shoppinglist.html"></a>
         </div>
         <div class="navbar-nav ml-auto">
@@ -74,52 +73,54 @@
 </div>
 
 <br>
-<div class="space container" style="background-color: white">
-    <div class="container" align="center"><h2 align="center" id="addgroup-registernewgroup"></h2></div>
-    <br>
-    <div class="row">
-        <div class="col-sm-6">
-            <br>
-            <div class="form-group row">
-                <label id="addgroup-groupname"  class="col-sm-4 col-form-label"></label>
-                <div class="col-sm-6">
-                    <input class="form-control" id="addgroup-groupname-input">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-4 col-form-label" id="addgroup-currency" ></label>
-                <div class="col-sm-4">
-                    <select class="form-control" id="currency-input"></select>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-4 col-form-label" id="addgroup-administrator"></label>
-                <div class="col-sm-8">
-                    <input type="text" readonly class="form-control-plaintext" id="addgroup-adminvalue" value="You">
-                </div>
-            </div>
-            <div class="form-group">
+<div class="row">
+    <div class="space col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2" style="background-color: white">
+        <div class="container" align="center"><h2 align="center" id="addgroup-registernewgroup"></h2></div>
+        <br>
+        <div class="row">
+            <div class="col-sm-6">
                 <br>
-                <label id="addgroup-addmembers" ></label>
-                <div class="row">
-                    <div id="scrollable-dropdown-menu" class="col-sm-8"><input class="typeahead form-control" id="addgroup-member"></div>
-                    <!--<div class="col-sm-1"><button type="button" class="btn btn-info" id="addgroup-adduser" ></button></div>-->
+                <div class="form-group row">
+                    <label id="addgroup-groupname"  class="col-sm-4 col-form-label"></label>
+                    <div class="col-sm-6 col-8">
+                        <input class="form-control" id="addgroup-groupname-input">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label" id="addgroup-currency" ></label>
+                    <div class="col-sm-6 col-8">
+                        <select class="form-control" id="currency-input"></select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label" id="addgroup-administrator"></label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-plaintext" id="addgroup-adminvalue" value="You">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <br>
+                    <label id="addgroup-addmembers" ></label>
+                    <div class="row">
+                        <div id="scrollable-dropdown-menu" class="col-sm-8"><input class="typeahead form-control" id="addgroup-member"></div>
+                        <!--<div class="col-sm-1"><button type="button" class="btn btn-info" id="addgroup-adduser" ></button></div>-->
+                    </div>
                 </div>
             </div>
+            <div class="col-sm-1" style="border-left: 1px solid grey;"></div>
+            <div class="col-sm-4 maxh" style="overflow-y: auto;">
+                <h4 style="font-size: large" id="addgroup-membersadded"></h4>
+                <ul class="list-group" id="memberslist">
+                    <li class="list-group-item">You (administrator)</li>
+                </ul>
+            </div>
         </div>
-        <div class="col-sm-1" style="border-left: 1px solid grey;"></div>
-        <div class="col-sm-4 maxh" style="overflow-y: scroll;">
-            <h4 style="font-size: large" id="addgroup-membersadded"></h4>
-            <ul class="list-group" id="memberslist">
-                <li class="list-group-item">You (administrator)</li>
-            </ul>
+        <br>
+        <div class="container" align="center">
+            <i class="fa fa-check-circle fa-3x" aria-hidden="true" style="color: #a3e6f7" id="addgroup-checkbutton"></i>
         </div>
-    </div>
-    <br>
-    <div class="container" align="center">
-        <i class="fa fa-check-circle fa-3x" aria-hidden="true" style="color: #a3e6f7" id="addgroup-checkbutton"></i>
-    </div>
 
+    </div>
 </div>
 <br>
 <br>

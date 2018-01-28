@@ -452,7 +452,7 @@ $('#shop-logout').click(function () {
         method: 'POST',
         success: function (data) {
             if(!data.login){
-                window.top.location="http://localhost:8000/login.html";
+                window.location="/login.html";
             }
         }
     });

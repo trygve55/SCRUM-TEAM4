@@ -8,6 +8,11 @@
 	"desc_title6": "Group Tasks",
 	"desc_title7": "Administrate",
 	"desc_title8": "Meal Planner",
+	"desc_year": "Years",
+	"desc_month": "Months",
+	"desc_day": "Days",
+	"ds_label": "Start date: ",
+	"de_label": "End date: ",
 	"group-homepageNavbar": "Home",
 	"group-groupsNavbar": "Groups",
 	"group-tasksNavbar": "Tasks",
@@ -119,6 +124,7 @@
 	"label-none": "No label",
 	"add-picture": "Add picture",
 	"group-post": "Post",
-	"addGroup-button": "Add group"
+	"addGroup-button": "Add group",
+	"entry-ok": "Register"
 
 }

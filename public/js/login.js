@@ -200,7 +200,7 @@ $(function () {
                     "border": "1px solid red",
                     "background": "#FFCECE"
                 });
-                $("#ifwrong").html("<div style='color: red'>Username and/or password is incorrect</div>");
+                $("#wrong-password").show();
             }
         });
     });
