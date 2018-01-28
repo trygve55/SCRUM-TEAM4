@@ -56,7 +56,6 @@ router.get('/all/:group_id', function(req, res){
 router.get('/all', function(req, res){
     pool.getConnection(function(err, connection){
         if(err) {
-            connection.release();
             return res.status(500).send("Error");
         }
         connection.query("SELECT person_id, email, forename, middlename, lastname, username FROM person;", function(err, result){

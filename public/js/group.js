@@ -825,6 +825,7 @@ function setupClicks(){
         var lb = '<option id="-2">----</option><option id="0">'+generalLabels[0]+'</option>';
         var listid = currentShoppingList.shopping_list_id;
         var labels=[];
+        var memberss = [];
         $.ajax({
             url: 'api/budget/entryType',
             method: 'GET',
@@ -957,8 +958,11 @@ function setupClicks(){
                     }
                 });
 
+
+
                 $('#t-popup-complete').unbind("click").click(function () {
                     var entries = $('.pop').find('[data-entries]').data("entries");
+                    var slei = entries;
                     var shopid = currentShoppingList.shopping_list_id;
                     var price = Number($('#shop-entry-cost').val()) * 100;
                     if(isNaN(price)) return;
@@ -969,118 +973,284 @@ function setupClicks(){
                         }
                     }
                     var budgetentrytypeid = 0;
-                    var labelvalue = $('select.label-input').find(":selected").attr('id');
-                    if(labelvalue==-2){ //without labels
-                        console.log('no label');
-                        budgetentrytypeid = null;
-                    }else if(labelvalue==0){ //general labels
-                        console.log("general label");
-                        var name;
-                        var colorInt;
-                        if($('.newlabel').is(":visible")){
-                            name = $('#new-label-name').val();
-                            colorInt = Number(parseInt(currColor.split("#")[1],16));
-                        }else{
-                            name = $('select.label-input').val();
-                            var color = '#a9d5f2';
-                            colorInt = Number(parseInt(color.split("#")[1],16));
-                        }
-                        $.ajax({
-                            url: '/api/budget/entryType',
-                            method: 'POST',
-                            data: {
-                                entry_type_name: name,
-                                entry_type_color: colorInt,
-                                shopping_list_id: shopid
-                            },success:function (data) {
-                                budgetentrytypeid = data;
-                                var personsids = [];
-                                for(var k=0; k<buyers.length; k++){
-                                    personsids.push(buyers[k].person_id);
-                                }
 
-                                var slei = entries;
-
-                                var inputdata = {};
-                                if(budgetentrytypeid==null){
-                                    inputdata = {
-                                        shopping_list_id: shopid,
-                                        amount: price,
-                                        text_note: comment,
-                                        person_ids: personsids.join(','),
-                                        shopping_list_entry_ids: slei
-                                    }
-                                }else{
-                                    inputdata = {
-                                        shopping_list_id: shopid,
-                                        amount: price,
-                                        text_note: comment,
-                                        person_ids: personsids.join(','),
-                                        shopping_list_entry_ids: slei,
-                                        budget_entry_type_id: budgetentrytypeid
-                                    }
-                                }
-                                console.log(inputdata);
-                                $.ajax({
-                                    url: '/api/budget',
-                                    method: 'POST',
-                                    data: inputdata,
-                                    success: function (data) {
-                                        console.log(data);
-                                        if (slei && (typeof slei) === "string") {
-                                            var ids = slei.split(',');
-                                            for (var i = 0; i < ids.length; i++) $('li[data-id=' + ids[i] + ']').remove();
-                                        } else
-                                            $('li[data-id=' + slei + ']').remove();
-                                        $('.pop').remove();
-                                    },
-                                    error: console.error
-                                });
-                            },error:console.error
-                        });
-                    }else { //labels in the DB
-                        console.log("premade label");
-                        budgetentrytypeid = labelvalue;
-                        var personsids = [];
+                    if($('select.byers-input').find(":selected").attr('id')=='choosemembers'){
                         for(var k=0; k<buyers.length; k++){
-                            personsids.push(buyers[k].person_id);
+                            memberss.push(buyers[k].person_id);
                         }
-
-                        var slei = entries;
-
-                        var inputdata = {};
-                        if(budgetentrytypeid==null){
+                        var labelvalue = $('select.label-input').find(":selected").attr('id');
+                        if(labelvalue==-2){ //without labels
+                            console.log('no label');
+                            budgetentrytypeid = null;
                             inputdata = {
                                 shopping_list_id: shopid,
                                 amount: price,
                                 text_note: comment,
-                                person_ids: personsids.join(','),
+                                person_ids: memberss.join(','),
                                 shopping_list_entry_ids: slei
+                            };
+                            $.ajax({
+                                url: '/api/budget',
+                                method: 'POST',
+                                data: inputdata,
+                                success: function (data) {
+
+                                },
+                                error: console.error
+                            });
+                        }else if(labelvalue==0){ //general labels
+                            console.log("general label");
+                            var name;
+                            var colorInt;
+                            if($('.newlabel').is(":visible")){
+                                name = $('#new-label-name').val();
+                                colorInt = Number(parseInt(currColor.split("#")[1],16));
+                            }else{
+                                name = $('select.label-input').val();
+                                var color = '#a9d5f2';
+                                colorInt = Number(parseInt(color.split("#")[1],16));
                             }
-                        }else{
-                            inputdata = {
-                                shopping_list_id: shopid,
-                                amount: price,
-                                text_note: comment,
-                                person_ids: personsids.join(','),
-                                shopping_list_entry_ids: slei,
-                                budget_entry_type_id: budgetentrytypeid
+                            $.ajax({
+                                url: '/api/budget/entryType',
+                                method: 'POST',
+                                data: {
+                                    entry_type_name: name,
+                                    entry_type_color: colorInt,
+                                    shopping_list_id: shopid
+                                },success:function (data) {
+                                    budgetentrytypeid = data;
+
+
+                                    var slei = entries;
+
+                                    var inputdata = {};
+                                    if(budgetentrytypeid==null){
+                                        inputdata = {
+                                            shopping_list_id: shopid,
+                                            amount: price,
+                                            text_note: comment,
+                                            person_ids: memberss.join(','),
+                                            shopping_list_entry_ids: slei
+                                        }
+                                    }else{
+                                        inputdata = {
+                                            shopping_list_id: shopid,
+                                            amount: price,
+                                            text_note: comment,
+                                            person_ids: memberss.join(','),
+                                            shopping_list_entry_ids: slei,
+                                            budget_entry_type_id: budgetentrytypeid
+                                        }
+                                    }
+                                    console.log(inputdata);
+                                    $.ajax({
+                                        url: '/api/budget',
+                                        method: 'POST',
+                                        data: inputdata,
+                                        success: function (data) {
+                                            console.log(data);
+                                            if (slei && (typeof slei) === "string") {
+                                                var ids = slei.split(',');
+                                                for (var i = 0; i < ids.length; i++) $('li[data-id=' + ids[i] + ']').remove();
+                                            } else
+                                                $('li[data-id=' + slei + ']').remove();
+                                            $('.pop').remove();
+                                        },
+                                        error: console.error
+                                    });
+                                },error:console.error
+                            });
+                        }else { //labels in the DB
+                            console.log("premade label");
+                            budgetentrytypeid = labelvalue;
+
+                            for(var k=0; k<buyers.length; k++){
+                                console.log(buyers[k].person_id);
+                                memberss.push(buyers[k].person_id);
                             }
+
+                            var slei = entries;
+
+                            var inputdata = {};
+                            if(budgetentrytypeid==null){
+                                inputdata = {
+                                    shopping_list_id: shopid,
+                                    amount: price,
+                                    text_note: comment,
+                                    person_ids: memberss.join(','),
+                                    shopping_list_entry_ids: slei
+                                }
+                            }else{
+                                inputdata = {
+                                    shopping_list_id: shopid,
+                                    amount: price,
+                                    text_note: comment,
+                                    person_ids: memberss.join(','),
+                                    shopping_list_entry_ids: slei,
+                                    budget_entry_type_id: budgetentrytypeid
+                                }
+                            }
+                            console.log(inputdata);
+                            $.ajax({
+                                url: '/api/budget',
+                                method: 'POST',
+                                data: inputdata,
+                                success: function (data) {
+                                    if (slei && (typeof slei) === "string") {
+                                        var ids = slei.split(',');
+                                        for (var i = 0; i < ids.length; i++) $('li[data-id=' + ids[i] + ']').remove();
+                                    } else
+                                        $('li[data-id=' + slei + ']').remove();
+                                    $('.pop').remove();
+                                },
+                                error: console.error
+                            });
                         }
-                        console.log(inputdata);
+                    }else{
                         $.ajax({
-                            url: '/api/budget',
-                            method: 'POST',
-                            data: inputdata,
+                            url: '/api/group/'+currentGroup.group_id+'/users',
+                            method: 'GET',
                             success: function (data) {
-                                if (slei && (typeof slei) === "string") {
-                                    var ids = slei.split(',');
-                                    for (var i = 0; i < ids.length; i++) $('li[data-id=' + ids[i] + ']').remove();
-                                } else
-                                    $('li[data-id=' + slei + ']').remove();
-                                $('.pop').remove();
-                            },
-                            error: console.error
+                                var memberss = [];
+                                var slei = entries;
+                                console.log(data);
+                                for(var i=0; i<data.length; i++){
+                                    memberss.push(data[i].person_id);
+                                }
+                                console.log(memberss);
+                                var labelvalue = $('select.label-input').find(":selected").attr('id');
+                                if(labelvalue==-2){ //without labels
+                                    console.log('no label');
+                                    budgetentrytypeid = null;
+                                    inputdata = {
+                                        shopping_list_id: shopid,
+                                        amount: price,
+                                        text_note: comment,
+                                        person_ids: memberss.join(','),
+                                        shopping_list_entry_ids: slei
+                                    };
+                                    $.ajax({
+                                        url: '/api/budget',
+                                        method: 'POST',
+                                        data: inputdata,
+                                        success: function (data) {
+                                            if (slei && (typeof slei) === "string") {
+                                                var ids = slei.split(',');
+                                                for (var i = 0; i < ids.length; i++) $('li[data-id=' + ids[i] + ']').remove();
+                                            } else
+                                                $('li[data-id=' + slei + ']').remove();
+                                            $('.pop').remove();
+                                        },
+                                        error: console.error
+                                    });
+                                }else if(labelvalue==0){ //general labels
+                                    console.log("general label");
+                                    var name;
+                                    var colorInt;
+                                    if($('.newlabel').is(":visible")){
+                                        name = $('#new-label-name').val();
+                                        colorInt = Number(parseInt(currColor.split("#")[1],16));
+                                    }else{
+                                        name = $('select.label-input').val();
+                                        var color = '#a9d5f2';
+                                        colorInt = Number(parseInt(color.split("#")[1],16));
+                                    }
+                                    $.ajax({
+                                        url: '/api/budget/entryType',
+                                        method: 'POST',
+                                        data: {
+                                            entry_type_name: name,
+                                            entry_type_color: colorInt,
+                                            shopping_list_id: shopid
+                                        },success:function (data) {
+                                            budgetentrytypeid = data;
+
+
+                                            var slei = entries;
+
+                                            var inputdata = {};
+                                            if(budgetentrytypeid==null){
+                                                inputdata = {
+                                                    shopping_list_id: shopid,
+                                                    amount: price,
+                                                    text_note: comment,
+                                                    person_ids: memberss.join(','),
+                                                    shopping_list_entry_ids: slei
+                                                }
+                                            }else{
+                                                inputdata = {
+                                                    shopping_list_id: shopid,
+                                                    amount: price,
+                                                    text_note: comment,
+                                                    person_ids: memberss.join(','),
+                                                    shopping_list_entry_ids: slei,
+                                                    budget_entry_type_id: budgetentrytypeid
+                                                }
+                                            }
+                                            console.log(inputdata);
+                                            $.ajax({
+                                                url: '/api/budget',
+                                                method: 'POST',
+                                                data: inputdata,
+                                                success: function (data) {
+                                                    console.log(data);
+                                                    if (slei && (typeof slei) === "string") {
+                                                        var ids = slei.split(',');
+                                                        for (var i = 0; i < ids.length; i++) $('li[data-id=' + ids[i] + ']').remove();
+                                                    } else
+                                                        $('li[data-id=' + slei + ']').remove();
+                                                    $('.pop').remove();
+                                                },
+                                                error: console.error
+                                            });
+                                        },error:console.error
+                                    });
+                                }else { //labels in the DB
+                                    console.log("premade label");
+                                    budgetentrytypeid = labelvalue;
+                                    var memberss = [];
+                                    for(var k=0; k<buyers.length; k++){
+                                        memberss.push(buyers[k].person_id);
+                                    }
+
+                                    var slei = entries;
+
+                                    var inputdata = {};
+                                    if(budgetentrytypeid==null){
+                                        inputdata = {
+                                            shopping_list_id: shopid,
+                                            amount: price,
+                                            text_note: comment,
+                                            person_ids: memberss.join(','),
+                                            shopping_list_entry_ids: slei
+                                        }
+                                    }else{
+                                        inputdata = {
+                                            shopping_list_id: shopid,
+                                            amount: price,
+                                            text_note: comment,
+                                            person_ids: memberss.join(','),
+                                            shopping_list_entry_ids: slei,
+                                            budget_entry_type_id: budgetentrytypeid
+                                        }
+                                    }
+                                    console.log(inputdata);
+                                    $.ajax({
+                                        url: '/api/budget',
+                                        method: 'POST',
+                                        data: inputdata,
+                                        success: function (data) {
+                                            if (slei && (typeof slei) === "string") {
+                                                var ids = slei.split(',');
+                                                for (var i = 0; i < ids.length; i++) $('li[data-id=' + ids[i] + ']').remove();
+                                            } else
+                                                $('li[data-id=' + slei + ']').remove();
+                                            $('.pop').remove();
+                                        },
+                                        error: console.error
+                                    });
+                                }
+                            }
                         });
                     }
                 });
