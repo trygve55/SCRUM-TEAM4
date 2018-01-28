@@ -1,31 +1,30 @@
 <div id="theAdmin" style="margin: 2vh">
     <div class="row" id="changename-group-admin">
         <div id="changename-Admin" class="offset-1 col-10 col-sm-8 offset-sm-2 col-lg-4 offset-lg-0" style="margin-top: 15px; padding: 2%;border: lightgrey 1px solid; border-radius: 10px; height: 30%; float: left">
-            <h5>Change name on group</h5>
+            <h5 id="changenameofgroup">{{changenameofgroup}}</h5>
             <div class="col-sm">
                 <div class="row">
                     <input id="changegroup_Name" class="form-control">
                 </div>
                 <div class="row">
-                    <div style="background-color: #a3e6f7; margin-top: 5px; padding: 6px; width: 30%; border-radius: 10px; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class=" text-center backvariant" id="changegroup-NameButton">Endre</div>
+                    <div style="background-color: #a3e6f7; margin-top: 5px; padding: 6px; width: 30%; border-radius: 10px; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class=" text-center backvariant" id="changegroupNameButton">{{changegroupNameButton}}</div>
                 </div>
 
             </div>
         </div>
         <div class="offset-1 col-10 col-lg-8 offset-lg-0 " id="membersofgroup" style="max-height: 97%; height: 65vh;">
             <div style="padding: 2vh; max-height: 97%; border: lightgrey 1px solid; border-radius: 10px; margin: 2vh; background-color:#a3e6f7">
-                <h5>Members of group</h5>
+                <h5 id="memebersofgroup">{{memebersofgroup}}</h5>
                 <div style="float: inherit; max-height: 390px; overflow-x:hidden" class="list-group" id="list-all-members"></div>
                 <h4></h4>
                 <div id="removemembers" class="row">
-                    <div class="col-sm-4">Add members:</div>
+                    <div id="addmembers" class="col-sm-4">{{addmembers}}</div>
                     <div class="col-sm-8" id="typeing-members"><input id="addMembers-Admin" class="typeahead form-control"></div>
                 </div>
             </div>
         </div>
     </div>
-    <div id="deletegroup" align="center">
-        Delete group?
-        <button id="leaveGroup" type="button" class="btn btn-danger" style="margin-left:2vh">Yes</button>
+    <div id="deletegroup" align="center">{{deletegroup}}
+        <button id="leaveGroup" type="button" class="btn" style="margin-left:2vh; background-color: darkred">{{leaveGroup}}</button>
     </div>
 </div>
