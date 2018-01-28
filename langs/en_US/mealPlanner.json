@@ -22,5 +22,6 @@
   "cancel-recipe": "Cancel",
   "complete-recipe": "Add to calendar",
   "popup-close-recipe": "Close",
-  "meal-mealplanner": "Mealplanner"
+  "meal-mealplanner": "Mealplanner",
+  "recipe-choose":"Chose a recipe"
 }

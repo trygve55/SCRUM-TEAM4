@@ -139,6 +139,8 @@ router.post('/', function(req, res){
         req.body.person_ids = req.body.person_ids.split(",");
     else
         req.body.person_ids = [];
+    if(req.body.person_ids.length == 0)
+        return res.status(400).send();
     req.body.text_note = req.body.text_note.substring(0, 254);
     pool.getConnection(function(err, connection) {
         if (err)
@@ -154,11 +156,14 @@ router.post('/', function(req, res){
                         });
                     }
                     var qry = 'INSERT INTO person_budget_entry (budget_entry_id, person_id, datetime_paid) VALUES (?, ?, CURRENT_TIMESTAMP)';
-                    var vals = [result.insertId, req.session.person_id];
+                    var vals = [];
                     for (var i = 0; i < req.body.person_ids.length; i++) {
+                        if(vals.length != 0)
+                            qry += ', ';
                         if(req.body.person_ids[i] == req.session.person_id)
-                            continue;
-                        qry += ', (?, ?, NULL)';
+                            qry += '(?, ?, CURRENT_TIMESTAMP)';
+                        else
+                            qry += '(?, ?, NULL)';
                         vals.push(result.insertId, req.body.person_ids[i]);
                     }
                     connection.query(qry, vals, function (err) {
