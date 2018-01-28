@@ -14,5 +14,6 @@
   "tasks-add-item": "Add task",
   "tasks-delete": "Delete list",
   "tasks-done-tasks": "Show done tasks",
-  "tasks-go-back": "Go back"
+  "tasks-go-back": "Go back",
+  "tasks-mealplanner": "Mealplanner"
 }

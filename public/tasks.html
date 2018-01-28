@@ -31,41 +31,40 @@
     <script src="js/redirect.js"></script>
 </head>
 <body background="img/BackgroundImage.png">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="index.html" style="color: dimgray">
-            <img src="img/logo.svg" width="30" height="30" alt="">
-            Household Manager
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-                <a id="tasks-homepage" class="nav-item nav-link" href="index.html"></a>
-                <a id="tasks-groups" class="nav-item nav-link" href="group.html"></a>
-                <a id="tasks-tasks" class="nav-item nav-link  active" href="tasks.html" onclick="new function () {
-                  $.ajax({
-                    url: '/api/group/me',
-                    method: 'GET',
-                    success: function(data){
-                        if(!data.length || data.length == 0)
-                            window.location = '/noGroup.html';
-                        else
-                            window.location = '/group.html';
-                    }
-                  });
-                }();"></a>
-                <a id="tasks-shoppinglists" class="nav-item nav-link" href="shoppinglist.html"></a>
-            </div>
-            <div class="navbar-nav ml-auto">
-                <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
-                <a id="tasks-profile" class="nav-item nav-link" href="ProfilePage.html"></a>
-
-                <i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
-                <a class="nav-item nav-link" href="login.html" id="tasks-logout" href="#"></a>
-            </div>
+<nav style="width: 100%" class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/index.html" style="color: dimgray">
+        <img src="img/logo.svg" width="30" height="30" alt="">
+        Household Manager
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+            <a id="tasks-groups" class="nav-item nav-link" href="#" onclick="new function () {
+              $.ajax({
+                url: '/api/group/me',
+                method: 'GET',
+                success: function(data){
+                    if(!data.length || data.length == 0)
+                        window.location = '/noGroup.html';
+                    else
+                        window.location = '/group.html';
+                }
+              });
+            }();"></a>
+            <a id="tasks-shoppinglists" class="nav-item nav-link" href="shoppinglist.html"></a>
+            <a id="tasks-tasks" class="nav-item nav-link" href="tasks.html"></a>
+            <a id="tasks-mealplanner" class="nav-item nav-link" href="mealPlannerPrivate.html"></a>
         </div>
-    </nav>
+        <div class="navbar-nav ml-auto">
+            <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
+            <a id="tasks-profile" class="nav-item nav-link" href="ProfilePage.html"></a>
+            <i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
+            <a class="nav-item nav-link" id="tasks-logout" href="#"></a>
+        </div>
+    </div>
+</nav>
     <br>
 
     <div class="flag" style="background-color: white">

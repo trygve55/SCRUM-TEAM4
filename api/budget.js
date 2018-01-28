@@ -1,5 +1,5 @@
 /**
- * @module Budget
+ * @module Budget API
  */
 var router = require('express').Router();
 

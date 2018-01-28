@@ -1,5 +1,5 @@
 /**
- * @module User Authentication
+ * @module User Authentication API
  */
 
 var router = require('express').Router();

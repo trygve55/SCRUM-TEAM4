@@ -1,5 +1,5 @@
 /**
- * @module Budget
+ * @module News feed API
  */
 var router = require('express').Router(),
     formidable = require('formidable'),

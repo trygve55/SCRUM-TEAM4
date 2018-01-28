@@ -1,5 +1,5 @@
 /**
- * @module Budget
+ * @module Group API
  */
 /*
 Authors: A.C., Andreas Hammer (main author), Magnus Eilertsen

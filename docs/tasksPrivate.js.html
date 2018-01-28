@@ -26,15 +26,19 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>var router = require('express').Router();
+            <pre class="prettyprint source linenums"><code>/**
+ * @module Personal Task API
+ */
+var router = require('express').Router();
 
 module.exports = router;
 
 /**
  * Registers a new shopping list on current user
  *
- * URL: /api/tasks/private/
- * method: POST
+ * @name Register shopping list on user
+ * @route {POST} /api/tasks/private/
+ *
  */
 
 router.post('/', function (req, res) {
@@ -49,17 +53,15 @@ router.post('/', function (req, res) {
 /**
  * Registers a new shopping list entry only if correct person_id exists
  *
- * URL: /api/tasks/private/entry
- * method: POST
- * data: {
- *      private_todo_list_id
- *      todo_text
- * }
+ * @name New shopping list entry only if correct person exists
+ * @route {POST} /api/tasks/private/entry
+ * @bodyparam {number} private_todo_list_id the todo list id for the private todo list
+ * @bodyparam {string} todo_text what the todo includes
+ *
  */
 
 router.post('/entry', function (req, res) {
-    var data = req.body, p_id = req.session.person_id;
-
+    var data = req.body;
     if (!data.private_todo_list_id || !data.todo_text)
         return res.status(400).send("body error");
 
@@ -79,8 +81,8 @@ router.post('/entry', function (req, res) {
 /**
  *  Gets all shopping lists and entries based on current user
  *
- *  URL: /api/tasks/private/
- *  method: GET
+ * @name Get shopping lists and entries for current user
+ * @route {GET} /api/tasks/private/
  *
  */
 
@@ -90,7 +92,7 @@ router.get('/', function(req, res) {
         'LEFT JOIN private_todo_entry ' +
         'USING(private_todo_list_id) ' +
         'WHERE person_id = ?;',[p_id], function (err, result) {
-        console.log(arguments);
+
         if(err)
             return res.status(400).json({error: "sql-fail"});
 
@@ -126,8 +128,8 @@ router.get('/', function(req, res) {
 /**
  *  Get specific todo_list based on current user and list_id
  *
- *  URL: /api/tasks/private/{private_todo_list_id}
- *  method: GET
+ * @name Get todo list
+ * @route {GET} /api/tasks/private/{private_todo_list_id}
  *
  */
 
@@ -168,13 +170,12 @@ router.get('/:private_todo_list_id', function(req, res) {
 /**
  * Update shopping list
  *
- * URL: /api/tasks/private/entry/{private_todo_entry}
- * method: PUT
- * data {
- *  [private_list_name]
- *  [is_deactivated]
- *  [color_hex]
- * }
+ * @name Update shopping list
+ * @route {PUT} /api/tasks/private/entry/{private_todo_entry}
+ * @bodyparam {array} private_list_name
+ * @bodyparam {array} is_deactivated
+ * @bodyparam {array} color_hex
+ *
  */
 
 
@@ -201,8 +202,9 @@ router.put('/list/:private_todo_list_id', function(req, res){
 /**
  * Update a task
  *
- * URL: /api/tasks/{todo_id}
- * method: PUT
+ * @name Update task
+ * @route {PUT} /api/tasks/{todo_id}
+ *
  */
 //TODO: is this method necessary? If so, please let me know and I will fix. As of now it is not functional. t. Olav
 router.put('/:todo_id/done', function(req, res) {
@@ -226,15 +228,14 @@ router.put('/:todo_id/done', function(req, res) {
 
 
 /**
- * Update shopping list entry
  *
- * URL: /api/tasks/private/entry/{private_todo_entry}
- * method: PUT
- * data {
- *  [todo_text]
- *  [datetime_deadline]
- *  [datetime_done]
- * }
+ *
+ * @name Update entry
+ * @route {PUT} /api/tasks/private/entry/{private_todo_entry}
+ * @bodyparam {array} todo_text what the entry text includes
+ * @bodyparam {array} datetime_deadline the deadline of the shopping list entry
+ * @bodyparam {array} datetime_done when the entry should be done
+ *
  */
 
 
@@ -257,8 +258,9 @@ router.put('/entry/:private_todo_entry', function(req, res) {
 /**
  * Delete shopping list
  *
- * URL: /api/tasks/private/entry/{private_todo_entry_id}
- * method: DELETE
+ * @name Delete shopping list
+ * @route {DELETE} /api/tasks/private/entry/{private_todo_entry_id}
+ *
  */
 
 router.delete('/entry/:private_todo_entry_id', function(req, res) {
@@ -366,13 +368,13 @@ function checkResult(err, result, res) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Budget.html">Budget</a></li><li><a href="module-User%2520Authentication.html">User Authentication</a></li></ul><h3>Global</h3><ul><li><a href="global.html#changeAmounts">changeAmounts</a></li><li><a href="global.html#checkConnectionError">checkConnectionError</a></li><li><a href="global.html#checkRange">checkRange</a></li><li><a href="global.html#checkResult">checkResult</a></li><li><a href="global.html#checkValidEmail">checkValidEmail</a></li><li><a href="global.html#checkValidForename">checkValidForename</a></li><li><a href="global.html#checkValidName">checkValidName</a></li><li><a href="global.html#checkValidPassword">checkValidPassword</a></li><li><a href="global.html#checkValidPhone">checkValidPhone</a></li><li><a href="global.html#checkValidUsername">checkValidUsername</a></li><li><a href="global.html#existsInArray">existsInArray</a></li><li><a href="global.html#multipleRequestSetup">multipleRequestSetup</a></li><li><a href="global.html#putRequestSetup">putRequestSetup</a></li><li><a href="global.html#removeDuplicates">removeDuplicates</a></li><li><a href="global.html#rollbackC">rollbackC</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Budget%2520API.html">Budget API</a></li><li><a href="module-Currency%2520API.html">Currency API</a></li><li><a href="module-Group%2520API.html">Group API</a></li><li><a href="module-Group%2520Task%2520API.html">Group Task API</a></li><li><a href="module-Language%2520API.html">Language API</a></li><li><a href="module-Meal%2520planner%2520API.html">Meal planner API</a></li><li><a href="module-News%2520feed%2520API.html">News feed API</a></li><li><a href="module-Notification%2520center%2520API.html">Notification center API</a></li><li><a href="module-Personal%2520Task%2520API.html">Personal Task API</a></li><li><a href="module-Shopping%2520List%2520API.html">Shopping List API</a></li><li><a href="module-User%2520Authentication%2520API.html">User Authentication API</a></li><li><a href="module-User%2520Information%2520API.html">User Information API</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Jan 28 2018 18:47:55 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Jan 28 2018 21:47:58 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>
