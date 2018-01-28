@@ -114,7 +114,7 @@ $('document').ready(function () {
 
 function prep(){
     $.ajax({
-        url: '/api/private/entry/',
+        url: '/api/tasks/private/entry/',
         method: 'GET',
         success: function(data){
             for(var j = 0; j < data.length; j++) {
@@ -146,32 +146,7 @@ function prep(){
      * the list is then stored to the database.
      */
     $('#addlist').click(function () {
-        $.ajax({
-            url: '/api/shoppingList',
-            method: 'POST',
-            data: {
-                currency_id: 100,
-                shopping_list_name: lang["task-default-name"]
-            },
-            success: function(data){
-                $.ajax({
-                    url: '/api/shoppingList/' + data.shopping_list_id,
-                    method: 'GET',
-                    success: function(data){
-                        $("#addlist").after(tasklist({
-                            shopping_list_id: data.shopping_list_id,
-                            shopping_list_name: data.shopping_list_name,
-                            shopping_list_entries: "",
-                            lang_add_item: lang["task-add-item"],
-                            lang_done_items: lang["task-done-tasks"],
-                            lang_delete: lang["task-delete"],
-                            color_hex: (data.color_hex ? data.color_hex.toString(16) : "FFFFFF")
-                        }));
-                        setupClicks();
-                    }
-                });
-            }
-        });
+
     });
 }
 
