@@ -12,6 +12,16 @@ var buyers = [];
 
 jQuery.ajaxSettings.traditional = true;
 
+socket.on('shoppinglist list item', function(data){
+
+});
+
+socket.on('shoppinglist list item remove', function(data){
+
+});
+
+socket.on('shoppinglist list item')
+
 $('document').ready(function () {
 
     $('#shop-logout').click(function () {
@@ -20,7 +30,7 @@ $('document').ready(function () {
             method: 'POST',
             success: function (data) {
                 if(!data.login){
-                    window.top.location="http://localhost:8000/login.html";
+                    window.location="/login.html";
                 }
             }
         });
@@ -691,8 +701,23 @@ function setupClicks(){
                         shopping_list_id: li,
                         person_id: newmembers[j].id
                     },
+                    success: function(){
+                        $.ajax({
+                            url: '/api/shoppingList/' + li,
+                            method: 'GET',
+                            success: function(data){
+                                console.log(data);
+                                for(var i = 0; i < lists.length; i++){
+                                    if(lists[i].shopping_list_id == data.shopping_list_id){
+                                        lists[i].persons = data.persons;
+                                    }
+                                }
+                            },
+                            error: console.error
+                        });
+                    },
                     error: console.error
-                })
+                });
             }
             $(this).closest(".pop").remove();
             newmembers=[];
@@ -1085,6 +1110,8 @@ function setupClicks(){
                  * Incase labelscrolldown changes value
                  */
 
+                var currColor = "#a9d5f2";
+
                 $("#labelid").change(function () {
 
                     /**
@@ -1095,7 +1122,12 @@ function setupClicks(){
                             "new_label_color": lang["new-label-color"],
                             "new_label_name": lang["new-label-name"]
                         }));
-
+                        $(".colorpicker").spectrum({
+                            color: "#a9d5f2",
+                            change: function (color) {
+                                currColor = color.toHexString();
+                            }
+                        });
 
                         $('#newlabelinput').focus();
                     } else {
@@ -1254,13 +1286,7 @@ function setupClicks(){
                                     $('#newlabelinput').addClass("is-invalid");
                                 } else {
                                     //Add new label to DB
-                                    var colorlab = $('#newlabelcolorinput').val();
-                                    if(colorlab==""){
-                                        colorlab = parseInt('23e05c', 16);
-                                    }else{
-                                        colorlab = parseInt(colorlab, 16);
-                                    }
-                                    console.log(parseInt('23e05c', 16));
+                                    var colorInt = Number(parseInt(currColor.split("#")[1],16));
 
                                     /**
                                      * This method adds a new label to the database.
@@ -1271,7 +1297,7 @@ function setupClicks(){
                                         method: 'POST',
                                         data: {
                                             entry_type_name: l,
-                                            entry_type_color: colorlab,
+                                            entry_type_color: colorInt,
                                             shopping_list_id: id
                                         },
                                         success: function (data) {
@@ -1599,17 +1625,20 @@ function setTableClicks(element){
             $('.labelnew').hide();
 
             var thisid = $(this).attr('id');
+            console.log(thisid);
             var color = "f00";
             var noll = false;
             for (var j = 0; j < data.budget_entry_types.length; j++) {
                 if (data.budget_entry_types[j].budget_entry_type_id == thisid) {
+                    console.log("found match");
                     $('#label-edit-input').val(data.budget_entry_types[j].entry_type_name);
                     if (data.budget_entry_types[j].entry_type_color == null) {
+                        console.log("color null");
                         noll = true;
-                        currColor
                     } else {
                         color = Number(data.budget_entry_types[j].entry_type_color).toString(16);
                         currColor = Number(data.budget_entry_types[j].entry_type_color).toString(16);
+                        console.log("color: " + currColor);
                     }
                 }
             }

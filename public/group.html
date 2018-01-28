@@ -69,7 +69,6 @@
                 }
               });
             }();"></a>
-				<a id="group-tasksNavbar" class="nav-item nav-link" href="tasks.html"></a>
 				<a id="group-shoppinglistsNavbar" class="nav-item nav-link" href="shoppinglist.html"></a>
 			</div>
 			<div class="navbar-nav ml-auto">
@@ -92,15 +91,15 @@
 
 				<h5 class="langtext" id="desc_title0"></h5>
 
-				<ul class="list-group" id="thelistgroup"></ul>
+				<ul class="list-group" id="thelistgroup" style="overflow-y: auto"></ul>
 
 				<div onclick="addGroup()" style="background-color: #a3e6f7; padding: 1vh; margin-top: 2vh; border-radius: 10px; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class="tablink text-center backvariant" id="addGroup-button"></div>
 				<br>
 			</div>
 
 			<br>
-			<div id="groupwindowStart" class="transparency col-sm-11 col-lg-8" style=" border-bottom: #a3e6f7 1vh solid;border-top: #a3e6f7 1vh solid;">
-				<img src="/img/HouseholdManager.png" style="margin-top: 1vh; width: 100% ;height: auto;">
+			<div id="groupwindowStart" class="transparency col-sm-11 col-lg-8" style=" border-bottom: #a3e6f7 1vh solid;border-top: #a3e6f7 1vh solid; ">
+				<img src="/img/HouseholdManager.png" style="margin-top: 1vh; width: 100% ;height: 100%; object-fit: contain;">
 			</div>
 			<div id="groupwindow" class="transparency col-sm-11 col-lg-8" style="border-bottom: #a3e6f7 1vh solid;border-top: #a3e6f7 1vh solid;">
 				<div id="grouptabs">
@@ -200,31 +199,29 @@
 
 				<div id="statistics" class="grouptab text-center">
 					<hr width="90%">
-					<div class='col-sm-3'>
+					<p id="stat_header"></p>
+					<div style="width:50%; margin:auto;" class="form-group">
+						<select id="entry_types" class="selectpicker" data-live-search="true">
+							
+						</select>
+						<select id="time_types" class="selectpicker">
+							<option id="desc_year">Years</option>
+							<option id="desc_month">Months</option>
+							<option id="desc_day">Days</option>
+						</select>
 						<div class="form-group">
-							<select id="entry_types" class="selectpicker" data-live-search="true">
-								
-							</select>
-							<select id="time_types" class="selectpicker">
-								<option>Years</option>
-								<option>Months</option>
-								<option>Days</option>
-							</select>
-							<div class="form-group">
-								<label class="control-label" id="ds_label" for="date_start">Start date: </label>
-								<input class="form-control" id="date_start" name="date_start" placeholder="DD/MM/YYYY" type="text"/>
-							</div>
-							<div class="form-group">
-								<label class="control-label" id="de_label" for="date_end">End date: </label>
-								<input class="form-control" id="date_end" name="date_end" placeholder="DD/MM/YYYY" type="text"/>
-							</div>
-							<button id="showStat" type="button" class="btn btn-primary" onclick="drawStats()">
-								<p class="langtext" id="desc_button1"></p>
-							</button>
+							<label class="control-label" id="ds_label" for="date_start">Start date: </label>
+							<input class="form-control" id="date_start" name="date_start" placeholder="DD/MM/YYYY" type="text"/>
 						</div>
+						<div class="form-group">
+							<label class="control-label" id="de_label" for="date_end">End date: </label>
+							<input class="form-control" id="date_end" name="date_end" placeholder="DD/MM/YYYY" type="text"/>
+						</div>
+						<button id="showStat" type="button" class="btn btn-primary" onclick="drawStats()">
+							<p class="langtext" id="desc_button1"></p>
+						</button>
 					</div>
 					<div id="stat_container">
-						<p id="stat_header"></p>
 						<canvas id="stat0" class="chart"></canvas>
 						<canvas id="stat1" class="chart"></canvas>
 					</div>

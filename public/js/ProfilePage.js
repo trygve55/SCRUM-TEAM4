@@ -146,7 +146,6 @@ $(document).ready(function () {
                 'phone',
                 'username',
                 'facebook_api_id',
-                'shopping_list_id',
                 'person_id',
                 'gender',
                 'birth_date'
@@ -250,7 +249,7 @@ $(document).ready(function () {
             method: 'POST',
             success: function (data) {
                 if(!data.login){
-                    window.top.location="http://localhost:8000/login.html";
+                    window.location="/login.html";
                 }
             }
         });
@@ -354,7 +353,6 @@ function printUserInfo(){
     }
 
     testetest = user.person_id;
-    shopid = user.shopping_list_id;
 
     console.log(user);
     var dato = user.birth_date;

@@ -237,7 +237,6 @@ function ClearFields() {
 function changeTab(name) {
 	$('#stat0').remove();
 	$('#stat1').remove();
-    activeTab='feed';
     if(name)
         activeTab = name;
     else
@@ -431,7 +430,7 @@ function addGroupToList(group) {
     for (var i = 0; i < groups.length; i++) {
         if ($(groups[i]).html() == group.group_name) return;
     }
-    $("#thelistgroup").append('<li class="list-group-item tablink group"  data-group-id="' + group.group_id + '">' + group.group_name + '</li>');
+    if (group.invite_accepted) $("#thelistgroup").append('<li class="list-group-item tablink group"  data-group-id="' + group.group_id + '">' + group.group_name + '</li>');
     //$("#groupselection").append('<div style="padding-top: 2px; height: 30px; border-radius: 10px; background-color: white; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class="tablink text-center backvariant group" data-group-id="' + group.group_id + '">' + group.group_name + '</div><h4></h4>');
 }
 
@@ -805,11 +804,12 @@ function setupClicks(){
                     label_name: lang["label-name"],
                     new_label_color: lang["new-label-color"],
                     cancel: lang["shop-cancel"],
-                    complete: lang["shop-ok"],
+                    entry_ok: lang["entry-ok"],
                     data: "data-id='" + $(this).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
                 }));
                 $(".addbyers").hide();
                 $(".newlabel").hide();
+                $(".pop .fa-times").remove();
 
                 var currColor = "#a9d5f2";
                 $(".colorpicker").spectrum({
@@ -835,6 +835,11 @@ function setupClicks(){
                     }
                 });
                 var buyers = [];
+                $("#resetmembers").unbind("click").click(function () {
+
+                    $('.membersadded').html('');
+                    buyers = [];
+                });
 
                 //If buyers-input is changed
                 $('select.byers-input').change(function () {
@@ -873,6 +878,9 @@ function setupClicks(){
                                 $('.membersadded').append(data.name);
                             }
                         });
+
+
+
 
                         $(".typeahead").bind('typeahead:close', function(){
                             $(".typeahead").val("");
@@ -1106,6 +1114,7 @@ $(function () {
      * the method getPost() to post the post to the page then ClearFields()
      * to reset the inputfield.
      */
+
     $('#group-post2').click(function() {
         var formData = new FormData();
         formData.append('File', $("#file-attachment")[0].files[0]);
@@ -1297,7 +1306,7 @@ function drawChart() {
 				hideFirstStat();
 				return;
 			}
-			if (result.budget_entries.length < 0) {
+			if (result.budget.length < 0) {
 				hideFirstStat();
 				return;
 			}
@@ -1310,8 +1319,8 @@ function drawChart() {
 				return Array(12).fill(0);
 			});
 			var validAmount = false;
-			for (var i = 0; i < result.budget_entries.length; i++) {
-				var element = result.budget_entries[i];
+			for (var i = 0; i < result.budget.length; i++) {
+				var element = result.budget[i];
 				if (element.entry_datetime != null) {
 					var entryTime = new Date(element.entry_datetime);
 					if (entryTime > minLimit && element.amount != 0) {
@@ -1349,7 +1358,10 @@ function drawLabelChart(start, end, typeName, intervalType) {
 		contentType: "application/json",
 		dataType: "json",
 		error: function(jqXHR, text, error) {
-			if (error == "Bad Request" && jqXHR.responseText == "No data found.") {hideSecondStat();}
+			if (error == "Bad Request" && jqXHR.responseText == "No data found.") {
+				$('#stat0').remove();
+				
+			}
 			return;
 		},
 		success: function(result) {
@@ -1429,7 +1441,7 @@ function addInvertedColour(colour) {
 	if (colour) {
 		rgb = [["(", "("], ["(", "("]];
 		for (var i = 0; i < 6; i += 2) {
-			var colourPart = parseInt(colour.toString(16).slice(i, i + 2), 10);
+			var colourPart = parseInt(colour.toString(16).slice(i, i + 2), 16);
 			var rColourPart = (255 - colourPart) + ", ";
 			rgb[0][0] += colourPart + ", ";
 			rgb[0][1] += colourPart + ", ";
@@ -1717,7 +1729,7 @@ $('#group-logoutNavbar').click(function () {
         method: 'POST',
         success: function (data) {
             if(!data.login){
-                window.top.location="http://localhost:8000/login.html";
+                window.location="/login.html";
             }
         }
     });
@@ -1794,15 +1806,12 @@ function createLabelOptions() {
 
 function hideFirstStat() {
 	$("#stat0").css('display', 'none');
-	$("#stat_header").css('display', 'none');
 	$('#stat0').remove();
 }
 
 function showFirstStat() {
-	
 	$('#stat_container').append('<canvas id="stat0" class="chart"></canvas>');
 	$("#stat0").css('display', 'block');
-	$("#stat_header").css('display', 'block');
 }
 
 function hideSecondStat() {
@@ -1885,10 +1894,6 @@ function addMembersPopup(todo){
     //Adds member to list when clicked
     $(".typeahead").bind('typeahead:select', function(a, data){
         themember = data;
-
-    });
-
-    $('.assignok').unbind("click").click(function () {
         var personid = themember.person_id;
         var personids = [];
         personids.push(personid);
@@ -1907,7 +1912,6 @@ function addMembersPopup(todo){
             error: console.error
         })
     });
-
     $('.assigncancel').unbind("click").click(function () {
         $('.pop').remove();
     });
