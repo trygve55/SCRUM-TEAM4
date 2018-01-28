@@ -32,6 +32,11 @@ $(function () {
             $("#lastname").text(data["lastname"]);
             $("#email").text(data["email"]);
             $("#phone").text(data["phone"]);
+
+            $("#popup-title").text(data["popup-title"]);
+            $("#popup-text").text(data["popup-text"]);
+            $("#popup-close").text(data["popup-close"]);
+
         }
 
     });
@@ -76,6 +81,10 @@ $(function () {
                         $("#lastname").text(data["lastname"]);
                         $("#email").text(data["email"]);
                         $("#phone").text(data["phone"]);
+
+                        $("#popup-title").text(data["popup-title"]);
+                        $("#popup-text").text(data["popup-text"]);
+                        $("#popup-close").text(data["popup-close"]);
                     }
                 });
             },
@@ -120,6 +129,10 @@ $(function () {
                         $("#lastname").text(data["lastname"]);
                         $("#email").text(data["email"]);
                         $("#phone").text(data["phone"]);
+
+                        $("#popup-title").text(data["popup-title"]);
+                        $("#popup-text").text(data["popup-text"]);
+                        $("#popup-close").text(data["popup-close"]);
                     }
                 });
             },
@@ -347,7 +360,10 @@ $(function () {
                     phone: $('#register-phone').val()
                 },
                 success: function (data) {
-                    window.location='/login.html';
+                    $("#getCodeModal").modal('show');
+                    $(".modal").on("hidden.bs.modal", function () {
+                        window.location = "/login.html";
+                    });
                 },
                 error: function(err){
                     console.error(err);

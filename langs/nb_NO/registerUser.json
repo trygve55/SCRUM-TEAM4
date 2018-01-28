@@ -14,5 +14,8 @@
   "lastname": "Etternavn:",
   "email": "Epost:",
   "phone": "Telefonnummer:",
-  "register-fillIn": "Vennligst fyll inn hvert felt markert med *"
+  "register-fillIn": "Vennligst fyll inn hvert felt markert med *",
+  "popup-title-modal": "Takk for at du registrerte deg!",
+  "popup-text": "Det har blitt sendt en e-post til din e-postkonto, vennligst verifiser brukeren din ved å gå til e-postkontoen din og trykke på linken.",
+  "popup-close": "Lukk"
 }
