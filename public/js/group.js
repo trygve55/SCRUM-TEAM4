@@ -6,7 +6,7 @@ const MILLIS_DAY = 86400000;
 var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone, popupAssign, listMemebers, listMemebersAdmin, adminView, adminViewSimple, groupShopping, popupSettle;
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
 var generalLabels, grouplist;
-var lang;
+var lang, roles, role_list, previousRoleAdminVal;
 
 socket.on('group post', function(data){
     for(var i = 0; i < data.length; i++) {
@@ -154,6 +154,18 @@ $(function() {
             adminView = Handlebars.compile(data['adminView.html']);
             adminViewSimple = Handlebars.compile(data['adminViewSimple.html']);
             groupShopping = Handlebars.compile(data['groupShopping.html']);
+            $.ajax({
+                url: '/api/group/roles',
+                method: 'GET',
+                success: function(data){
+                    roles = data;
+                    role_list = "";
+                    for(var i = 0; i < roles.length; i++){
+                        role_list += "<option value='" + roles[i].role_id + "'>" + roles[i].role_name + "</option>";
+                    }
+                },
+                error: console.error
+            });
         }
     });
 
@@ -291,10 +303,7 @@ function adminChange() {
                 url: '/api/group/' + currentGroup.group_id + '/privileges',
                 method: 'GET',
                 success: function (datz) {
-                    for( var j = 0; j < datz.length; j++){
-                        var privz = [];
-                        privz.push(datz[j])
-                    }
+                    console.log(datz);
                     $.ajax({
                         url: '/api/group/' + currentGroup.group_id + '/users',
                         method: 'GET',
@@ -341,7 +350,6 @@ function adminChange() {
 
                                 //Adds member to list when clicked
                                 $(".typeahead").bind('typeahead:select', function(a, data){
-                                    console.log(data);
                                     $.ajax({
                                         url: '/api/group/' + currentGroup.group_id + '/members',
                                         method: 'POST',
@@ -353,8 +361,10 @@ function adminChange() {
                                         success: function(data){
                                             $('#list-all-members').append(listMemebersAdmin({
                                                 member_text: data.forename + " " + data.lastname,
-                                                member_id: data.person_id
+                                                member_id: data.person_id,
+                                                options: role_list
                                             }));
+                                            $("li[data-id=" + data.person_id + "]").find('select').val(1);
                                         },
                                         error: console.error
                                     });
@@ -382,8 +392,15 @@ function adminChange() {
                                 if (priv) {
                                     $('#list-all-members').append(listMemebersAdmin({
                                         member_text: data[i].name,
-                                        member_id: data[i].person_id
+                                        member_id: data[i].person_id,
+                                        options: role_list
                                     }));
+                                    for(var j = 0; j < datz.length; j++){
+                                        if(datz[j].person_id == data[i].person_id) {
+                                            $("li[data-id=" + data[i].person_id + "]").find('select').val(datz[j].role_id);
+                                            break;
+                                        }
+                                    }
 
                                 } else {
                                     $('#list-all-members').append(listMemebers({
@@ -396,13 +413,28 @@ function adminChange() {
 
                             }
 
+                            $('#list-all-members select').unbind('change').unbind('focus').on('focus', function(){
+                                previousRoleAdminVal = $(this).val();
+                            }).change(function(e){
+                                console.log(e);
+                                if($(this).closest('li').data('id') == localStorage.person_id){
+                                    if(!confirm(lang['change-yourself']))
+                                        return $(this).val(previousRoleAdminVal);
+                                }
+                                $.ajax({
+                                    url: '/api/group/' + currentGroup.group_id + '/userPrivileges',
+                                    method: 'PUT',
+                                    data: {
+                                        person_id: $(this).closest('li').data('id'),
+                                        role_id: $(this).val()
+                                    }
+                                });
+                            });
                         }
-                    })
+                    });
                 }
-
-            })
+            });
         }
-
     });
 }
 

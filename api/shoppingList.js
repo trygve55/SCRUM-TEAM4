@@ -225,7 +225,7 @@ router.get('/', function(req, res) {
 });
 
 /**
- * Get person-info
+ * Get all users whom have access to the shoppinglist
  *
  * @name Person information
  * @route {GET} /api/user/all

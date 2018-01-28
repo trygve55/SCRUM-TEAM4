@@ -22,8 +22,6 @@ module.exports = router;
  *
  */
 router.get('/all/:group_id', function(req, res){
-    if(!req.session.person_id)
-        return res.status(403).send();
     pool.getConnection(function(err, connection){
         if(err) {
             connection.release();
@@ -56,8 +54,6 @@ router.get('/all/:group_id', function(req, res){
  *
  */
 router.get('/all', function(req, res){
-    if(!req.session.person_id)
-        return res.status(403).send();
     pool.getConnection(function(err, connection){
         if(err) {
             connection.release();
@@ -89,8 +85,6 @@ router.get('/all', function(req, res){
 });
 
 router.get('/checkFacebook', function(req, res){
-    if(!req.session.person_id)
-        return res.status(403).send();
     pool.query('SELECT facebook_api_id FROM person WHERE person_id = ?', [req.session.person_id], function (err, result) {
         if(err) {
             return res.status(500).json({error: err});
@@ -114,9 +108,7 @@ router.get('/checkFacebook', function(req, res){
 
 
 router.post('/checkPassword', function (req, res) {
-   if (req.session.person_id == null) {
-       return res.status(403).send("Invalid request, you must log in");
-   }
+
 
    var user = req.body;
 
@@ -160,10 +152,6 @@ router.post('/checkPassword', function (req, res) {
 
 
 router.put('/password', function (req, res) {
-    if(req.session.person_id == null) {
-        return res.status(403).send("Invalid request, you must log in");
-    }
-
     var user = req.body;
 
     if(!user.password)
@@ -394,8 +382,6 @@ router.get('/user', function (req, res) {
  */
 
 router.get('/mail', function (req, res) {
-
-
     pool.getConnection(function (err, connection) {
         if(err) {
             connection.release();
@@ -492,7 +478,6 @@ router.get('/:person_id/picture_tiny', function(req, res){
 
 router.put('/', function(req, res) {
 	var data = req.body;
-    if(req.session.person_id == null) {return res.status(403).send("Invalid request, you must log in");}
 	if (data.username) {if(!checkValidUsername(data.username)) {return res.status(400).send("Bad username");}}
 	if (data.forename) {if(!checkValidForename(data.forename)) {return res.status(400).send("Bad forename");}}
 	if (data.lastname) {if(!checkValidName(data.lastname)) {return res.status(400).send("Bad lastname");}}
@@ -544,10 +529,6 @@ router.put('/', function(req, res) {
 
 
 router.post('/picture', function(req, res){
-    if(req.session.person_id == null) {
-        return res.status(403).send("Invalid request, you must log in");
-    }
-
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
         if (err) {
@@ -593,9 +574,6 @@ router.post('/picture', function(req, res){
 });
 
 router.delete('/picture', function(req, res) {
-    if(req.session.person_id == null) {
-        return res.status(403).send("Invalid request, you must log in");
-    }
     pool.query("UPDATE person SET profile_pic = NULL, profile_pic_tiny = NULL, has_profile_pic = 0 WHERE person_id = ?;", [data, data_tiny, req.session.person_id], function (err, results, fields) {
         if (err)
             return res.status(500).json({'Error': err});
@@ -841,9 +819,10 @@ function reqForPrivateVars(reqVars) {
 
 
 /**
+ * Fetch all data about the current user
+ *
  * @name Get user information
  * @route {GET} /api/user/
- * 
  */
 router.get('/getUser', function(req, res) {
     if(!req.query.hasOwnProperty('users')) {
