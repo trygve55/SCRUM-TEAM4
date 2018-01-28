@@ -448,13 +448,6 @@ function saveItemToDB(dataid, item, ul, cb){
         url: '/api/tasks/private/entry',
         method: 'POST',
         data: {
-<<<<<<< HEAD
-            private_todo_list_id: id,
-            todo_text: item
-        },
-        success: function(data){
-            $(ul).append(taskItem({todo_id: data.private_todo_list_id, todo_text: data.todo_text}));
-=======
             private_todo_list_id: dataid,
             todo_text: item
         },
@@ -463,7 +456,6 @@ function saveItemToDB(dataid, item, ul, cb){
                 todo_id: data.private_todo_list_id,
                 todo_text: item
             }));
->>>>>>> tasklist
             if(cb)
                 cb();
         },
