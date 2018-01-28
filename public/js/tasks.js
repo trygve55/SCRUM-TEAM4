@@ -148,9 +148,6 @@ function prep(){
      * the list is then stored to the database.
      */
     $('#addlist').click(function () {
-<<<<<<< HEAD
-
-=======
         $.ajax({
             url: '/api/tasks/private/',
             method: 'POST',
@@ -176,7 +173,6 @@ function prep(){
                 });
             }
         });
->>>>>>> 612ee1384890dc5b9896026dbcc4df232e4ef428
     });
 }
 

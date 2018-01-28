@@ -985,16 +985,27 @@ function setupClicks(){
                                     }
                                 }
                                 console.log(inputdata);
-                                $.ajax({
-                                    url: '/api/budget',
-                                    method: 'POST',
-                                    data: inputdata,
-                                    success: function (data) {
-                                        console.log(data);
-                                        $('.pop').remove();
-                                    },
-                                    error: console.error
-                                });
+                                if(inputdata.person_ids == ""){
+                                    $.ajax({
+                                        url: '/api/group/' + currentGroup.group_id + '/users',
+                                        method: 'GET',
+                                        success: function (data) {
+                                            console.log(data);
+                                        }
+                                    });
+                                }
+                                else {
+                                    $.ajax({
+                                        url: '/api/budget',
+                                        method: 'POST',
+                                        data: inputdata,
+                                        success: function (data) {
+                                            console.log(data);
+                                            $('.pop').remove();
+                                        },
+                                        error: console.error
+                                    });
+                                }
                             },error:console.error
                         });
                     }else { //labels in the DB

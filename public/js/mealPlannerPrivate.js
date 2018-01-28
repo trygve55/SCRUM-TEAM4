@@ -9,10 +9,14 @@ $(function () {
         o[a[0]]=a[1];
     }
 
+    /**
+     * This method gets all the recipes saved on different days in the calender in the database.
+     * @type {string}
+     */
     var recipeNameChosenGroup= "";
     var recipeTimeChosenGroup= "";
     $.ajax({
-        url: '/api/recipe/' + o.group_id,
+        url: '/api/recipe/person/' + localStorage.person_id,
         method: 'GET',
         success: function (datatFOod) {
             var events = [];
@@ -248,8 +252,6 @@ function prep(){
         }
     });
 
-
-
     /**
      * This function creates a popup. Makes it possible for a user to add a recipe to the database.
      */
@@ -430,9 +432,8 @@ function updateList(data){
                 o[a[0]]=a[1];
             }
 
-            console.log(o.group_id);
             $.ajax({
-                url: '/api/recipe/' + o.group_id,
+                url: '/api/recipe/person/' + localStorage.person_id,
                 method: 'POST',
                 data: {
                     recipe_id: idRec,
