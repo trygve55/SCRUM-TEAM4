@@ -1,5 +1,12 @@
+/**
+ * @module Budget
+ */
 var router = require('express').Router();
 
+/**
+ * @name Gets all invitations and notifications on tasks
+ * @route {GET} /api/notify
+ */
 router.get('/', function(req, res){
     var ret = [];
     pool.query('SELECT group_name, group_id FROM group_person ' +

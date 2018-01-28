@@ -10,5 +10,9 @@
   "tasks-share": "Members",
   "tasks-addmemberstolist": "Members",
   "tasks-cancel": "Close",
-  "tasks-adduser": "Add user"
+  "tasks-adduser": "Add user",
+  "tasks-add-item": "Add task",
+  "tasks-delete": "Delete list",
+  "tasks-done-tasks": "Show done tasks",
+  "tasks-go-back": "Go back"
 }

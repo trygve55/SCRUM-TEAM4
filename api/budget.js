@@ -1,18 +1,19 @@
-
+/**
+ * @module Budget
+ */
 var router = require('express').Router();
 
 module.exports = router;
 
 /**
- * Adds a new budget entry label
+ * Adds a new budget entry label for a shopping list
  *
- * URL: /api/budget/entryType
- * method: POST
- * data: {
- *      entry_type_name
- *      entry_type_color,
- *      shopping_list_id
- * }
+ * @name Adds new budget entry label
+ * @route {POST} /api/budget/entryType
+ * @bodyparam {string} entry_type_name
+ * @bodyparam {number} entry_type_color
+ * @bodyparam {number} shopping_list_id
+ *
  */
 router.post('/entryType', function(req, res) {
     var data = req.body;
@@ -33,13 +34,12 @@ router.post('/entryType', function(req, res) {
 });
 
 /**
- * Returns a budget entry labels
+ * Returns budget entry labels for a shopping list
  *
- * URL: /api/budget/entryType
- * method: GET
- * data: {
- *      shopping_list_id,
- * }
+ * @name Returns a budget entry labels
+ * @route {GET} /api/budget/entryType
+ * @headerparam {number} shopping_list_id each shoppinglist receives a unique id
+ *
  */
 router.get('/entryType', function(req, res) {
     pool.query('SELECT * FROM budget_entry_type ' +
@@ -67,12 +67,11 @@ router.get('/entryType', function(req, res) {
 /**
  * Edits budget entry label
  *
- * URL: /api/budget/entryType/{budget_entry_type_id}
- * method: PUT
- * data: {
- *      budget_entry_name,
- *      budget_entry_color
- * }
+ * @name Edits budget entry label
+ * @route {PUT} /api/budget/entryType/{budget_entry_type_id}
+ * @bodyparam {string} budget_entry_name
+ * @bodyparam {number} budget_entry_color
+ *
  */
 router.put('/entryType/:budget_entry_type_id', function(req, res) {
     var data = req.body;
@@ -99,8 +98,9 @@ router.put('/entryType/:budget_entry_type_id', function(req, res) {
 /**
  * Removes a budget entry label
  *
- * URL: /api/budget/entryType/{budget_entry_type_id}
- * method: DELETE
+ * @name Removes a budget entry label
+ * @route {DELETE} /api/budget/entryType/{budget_entry_type_id}
+ *
  */
 router.delete('/entryType/:budget_entry_type_id', function(req, res) {
     pool.query('DELETE FROM budget_entry_type ' +
@@ -122,21 +122,23 @@ router.delete('/entryType/:budget_entry_type_id', function(req, res) {
 /**
  * Adds a budget entry to shopping list
  *
- * URL: /api/budget
- * method: POST
- * data: {
- *      shopping_list_id,
- *      amount,
- *      text_note,
- *      budget_entry_type_id,
- *      shopping_list_entry_ids[],
- *      person_ids[]
- * }
+ * @name Adds a budget entry to shopping list
+ * @route {POST} /api/budget
+ * @bodyparam {number} shopping_list_id
+ * @bodyparam {number} amount
+ * @bodyparam {string} text_note
+ * @bodyparam {number} budget_entry_type_id
+ * @bodyparam {array} shopping_list_entry_ids[]
+ * @bodyparam {array} person_ids[]
+ *
  */
 router.post('/', function(req, res){
     console.log(req.body);
     req.body.shopping_list_entry_ids = req.body.shopping_list_entry_ids.split(",");
-    req.body.person_ids = req.body.person_ids.split(",");
+    if (req.body.person_ids)
+        req.body.person_ids = req.body.person_ids.split(",");
+    else
+        req.body.person_ids = [];
     req.body.text_note = req.body.text_note.substring(0, 254);
     pool.getConnection(function(err, connection) {
         if (err)
@@ -200,14 +202,12 @@ router.post('/', function(req, res){
  * Get debt between logged in user and anyone else. Returns a json object, where the keys are person_ids, and their value
  * is balance between the user and the person_id.
  *
- * URL: /api/budget/getDebt
- * method: GET
- * data: {
+ * @name Get debt between logged in user and anyone else
+ * @route {GET} /api/budget/getDebt
  *
- * }
  */
 router.get('/getDebt', function(req,res) {
-    var person_id = 6//req.session.person_id;
+    var person_id = req.session.person_id;
     var sqlQuery = "SELECT amount, person_id, be.budget_entry_id, datetime_paid FROM budget_entry be " +
         "RIGHT JOIN person_budget_entry pbe USING (budget_entry_id) " +
         "WHERE added_by_id = ? AND be.added_by_id != pbe.person_id;";
@@ -271,8 +271,9 @@ router.get('/getDebt', function(req,res) {
 /**
  * Get full budget for a shopping list
  *
- * URL: /api/budget/{shopping_list_id}
- * method: GET
+ * @name Get full budget for a shopping list
+ * @route {GET} /api/budget/{shopping_list_id}
+ *
  */
 router.get('/:shopping_list_id', function(req, res){
     if(isNaN(Number(req.params.shopping_list_id)))
@@ -354,12 +355,11 @@ router.get('/:shopping_list_id', function(req, res){
 /**
  * Adds a to pay for a budget entry
  *
- * URL: /api/budget/{budget_entry_id}
- * method: POST
- * data: {
- *      person_ids[],
- *      is_paid
- * }
+ * @name Adds a to pay for a budget entry
+ * @route {POST} /api/budget/{budget_entry_id}
+ * @bodyparam {array} person_ids[] Array of persons ids
+ * @bodyparam {string} is_paid
+ *
  */
 router.post('/pay/:budget_entry_id', function(req, res) {
     var query = "", queryValues = [], payers = req.body.person_ids, budget_entry_id = req.params.budget_entry_id;
@@ -384,12 +384,10 @@ router.post('/pay/:budget_entry_id', function(req, res) {
 /**
  * Sets entries in person_budget_entry to paid, with the current timestamp
  *
- * URL: /api/budget/paySpecific
- * method: PUT
- * data: {
- *      person_ids: "###,###,###,###"
- * }
- * (budget_entry_ids is a string, with ids separated by commas. example: "200,390,29")
+ * @name Sets entries in person_budget_entry to paid
+ * @route {PUT} /api/budget/paySpecific
+ * @bodyparam {string} person_ids budget_entry_ids is a string, with ids separated by commas. example: "200,390,29"
+ *
  */
 router.put('/paySpecific', function(req, res) {
     console.log(req.body);
@@ -416,10 +414,7 @@ router.put('/paySpecific', function(req, res) {
     "added_by_id IN " + p + " AND " +
     "datetime_paid IS NULL) t)";
     ids = ids.concat(ids);
-    console.log(sqlQuery);
-    console.log(ids);
     pool.query(sqlQuery,ids,function(err) {
-        console.log(err);
         if(err) {
             return res.status(500).send("Internal database error");
         }
@@ -430,13 +425,11 @@ router.put('/paySpecific', function(req, res) {
 /**
  * Sets entries in person_budget_entry to paid, with the current timestamp
  *
- * URL: /api/budget
- * method: PUT
- * data: {
- *      person_id,
- *      budget_entry_ids: "###,###,###,###"
- * }
- * (budget_entry_ids is a string, with ids separated by commas. example: "200,390,29")
+ * @name Sets entries in person_budget_entry to paid
+ * @route {PUT} /api/budget
+ * @bodyparam {number} person_id A persons unique id
+ * @bodyparam {string} budget_entry_ids: "###,###,###,###" Is a string, with ids separated by commas. example: "200,390,29"
+ *
  */
 router.put('/pay', function(req, res) {
     console.log(req.body);
@@ -464,10 +457,7 @@ router.put('/pay', function(req, res) {
     sqlQuery += ") OR (person_id = ? AND added_by_id = ?)) AND datetime_paid IS NULL) t)";
     ids.unshift(req.body.person_id);
     ids.push(req.session.person_id, req.body.person_id);
-    console.log(sqlQuery);
-    console.log(ids);
     pool.query(sqlQuery,ids,function(err) {
-        console.log(err);
         if(err) {
             return res.status(500).send("Internal database error");
         }
@@ -478,11 +468,10 @@ router.put('/pay', function(req, res) {
 /**
  * Get all budget entries with their type for a group. Only available to users in the group
  *
- * URL: /api/budget/entries
- * method: GET
- * data: {
- *      group_id
- * }
+ * @name Budget entries with type for a group
+ * @route {GET} /api/budget/entries
+ * @headerparam {number} group_id A groups unique id
+ *
  */
 
 router.get('/', function(req, res) {

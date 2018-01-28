@@ -1,3 +1,6 @@
+/**
+ * @module Budget
+ */
 var router = require('express').Router();
 var path = require('path');
 var fs = require('fs');
@@ -5,8 +8,9 @@ var fs = require('fs');
 /**
  * Read correct json file in langs and return it the data
  *
- * URL: /api/language
- * method: GET
+ * @name Read correct json file in langs
+ * @route {GET} /api/language
+ *
  */
 router.get('/', function(req, res){
     console.log(req.query);
@@ -52,11 +56,10 @@ var langs = [
 /**
  * Set the current users language preferences
  *
- * URL: /api/language
- * method: POST,
- * data: {
- *      lang - the new language to set for the user
- * }
+ * @name Set the current users language preferences
+ * @route {POST} /api/language
+ * @bodyparam {string} lang the new language to set for the user
+ *
  */
 router.post('/', function(req, res){
     var lang = req.body.lang;

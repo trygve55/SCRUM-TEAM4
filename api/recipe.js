@@ -1,10 +1,14 @@
+/**
+ * @module Budget
+ */
 var router = require('express').Router();
 
 /**
- * Get all the recipes a group has currently planned
+ * Get all the recipes current user has planned
  *
- * URL: /api/recipe/me
- * method: GET
+ * @name Get all recipes user has planned
+ * @route {GET} /api/recipe/me
+ *
  */
 router.get('/me', function(req, res){
     pool.query('SELECT recipe_id, recipe_directions, recipe_servings, recipe_time, forename, middlename, lastname, meal_datetime ' +
@@ -49,15 +53,16 @@ router.get('/me', function(req, res){
 /**
  * Get all the recipes a group has currently planned
  *
- * URL: /api/recipe/{group_id}
- * method: GET
+ * @name Get all recipes group has planned
+ * @route {GET} /api/recipe/{group_id}
+ *
  */
 router.get('/:group_id', function(req, res){
     pool.query('SELECT recipe_id, recipe_name, recipe_directions, recipe_servings, recipe_time, forename, middlename, lastname, meal_datetime ' +
-    'FROM recipe LEFT JOIN group_recipe USING (recipe_id) '+
-    'LEFT JOIN home_group USING (group_id) ' +
-    'LEFT JOIN person ON (recipe.person_id = person.person_id) ' +
-    'WHERE home_group.group_id = ?',
+        'FROM recipe LEFT JOIN group_recipe USING (recipe_id) '+
+        'LEFT JOIN home_group USING (group_id) ' +
+        'LEFT JOIN person ON (recipe.person_id = person.person_id) ' +
+        'WHERE home_group.group_id = ?',
         [req.params.group_id], function(err, result){
             if(err)
                 return res.status(500).send(err);
@@ -97,8 +102,9 @@ router.get('/:group_id', function(req, res){
 /**
  * Get all recipes in database
  *
- * URL: /api/recipe
- * method: GET
+ * @name Get all recipes
+ * @route {GET} /api/recipe
+ *
  */
 router.get('/', function(req, res){
     pool.query('SELECT recipe_name, recipe_id, recipe_directions, recipe_servings, recipe_time, forename, middlename, lastname ' +
@@ -139,14 +145,13 @@ router.get('/', function(req, res){
 });
 
 /**
- * Register recipe for group calendar
+ * Register recipe for personal calendar
  *
- * URL: /api/recipe/me
- * method: POST
- * data: {
- *      recipe_id,
- *      meal_datetime
- * }
+ * @name Register recipe
+ * @route {POST} /api/recipe/me
+ * @bodyparam {number} recipe_id the unique id for a recipe
+ * @bodyparam {number} meal_datetime the planned time for a meal
+ *
  */
 router.post('/me', function(req, res){
     if(!req.session.person_id)
@@ -169,40 +174,11 @@ router.post('/me', function(req, res){
 /**
  * Register recipe for group calendar
  *
- * URL: /api/recipe
- * method: POST
- * data: {
- *      recipe_id,
- *      meal_datetime
- * }
- */
-router.post('/me', function(req, res){
-    if(!req.session.person_id)
-        return res.status(500).send();
-    if(!req.body.recipe_id || !req.body.meal_datetime)
-        return res.status(400).send();
-    req.body.meal_datetime = new Date(req.body.meal_datetime);
-    req.body.meal_datetime.setHours(1);
-    req.body.meal_datetime.setMinutes(0);
-    req.body.meal_datetime.setSeconds(0);
-    req.body.meal_datetime = req.body.meal_datetime.toISOString().split('T')[0];
-    pool.query('INSERT INTO person_recipe (recipe_id, person_id, meal_datetime) VALUES (?, ?, ?)',
-        [req.body.recipe_id, req.session.person_id, req.body.meal_datetime], function(err, result){
-            if(err)
-                return res.status(500).send(err);
-            res.status(200).send(result);
-        });
-});
-
-/**
- * Register recipe for group calendar
+ * @name Register recipe for group calendar
+ * @route {POST} /api/recipe/{group_id}
+ * @bodyparam {number} recipe_id the unique id for a recipe
+ * @bodyparam {number} meal_datetime planned time for a meal for a group
  *
- * URL: /api/recipe/{group_id}
- * method: POST
- * data: {
- *      recipe_id,
- *      meal_datetime
- * }
  */
 router.post('/:group_id', function(req, res){
     if(!req.session.person_id)
@@ -225,26 +201,14 @@ router.post('/:group_id', function(req, res){
 /**
  * Add new recipe to the database
  *
- * URL: /api/recipe
- * method: POST
- * data: {
- *      recipe_name,
- *      recipe_directions,
- *      recipe_time,
- *      ingredients [
- *          {
- *              ingredient_amount,
- *              ingredient_unit,
- *              ingredient_name,
+ * @name Add recipe
+ * @route {POST} /api/recipe
+ * @bodyparam {string} recipe_name the name of the recipe
+ * @bodyparam {string} recipe_directions directions for how to make the recipe
+ * @bodyparam {number} recipe_time how long time it takes to make a recipe
+ * @bodyparam {array} ingredients an array of ingredient_amount, ingredient_unit and ingredient_name
+ * @bodyparam {number} recipe_servings number of servings a recipe is made for
  *
- *              Optional:
- *              ingredient_optional
- *          }
- *      ]
- *
- *      Optional:
- *      recipe_servings
- * }
  */
 router.post('/', function(req, res){
     req.body.ingredients = JSON.parse(req.body.ingredients);
@@ -276,13 +240,12 @@ router.post('/', function(req, res){
 /**
  * Move recipe to date
  *
- * URL: /api/recipe/{group_id}/date
- * method: PUT
- * data: {
- *      todo_id,
- *      originalDate,
- *      newDate
- * }
+ * @name Move recipe to date
+ * @route {PUT} /api/recipe/{group_id}/date
+ * @bodyparam {number} todo_id the todo id
+ * @bodyparam {number} originalDate the original date for the planned meal
+ * @bodyparam {number} newDate the new date for the planned meal
+ *
  */
 router.put('/:group_id/date', function(req, res){
     pool.query('UPDATE group_recipe SET meal_datetime = ? WHERE recipe_id = ? AND group_id = ? AND meal_datetime = ?',
@@ -296,12 +259,11 @@ router.put('/:group_id/date', function(req, res){
 /**
  * Delete recipe at date, group id and recipe id
  *
- * URL: /api/recipe/{group_id}/date
- * method: DELETE
- * data: {
- *      todo_id,
- *      originalDate
- * }
+ * @name Delete recipe
+ * @route {DELETE} /api/recipe/{group_id}/date
+ * @bodyparam {number} todo_id the todo id
+ * @bodyparam {number} the original date for a planned meal
+ *
  */
 router.delete('/:group_id/date', function(req, res){
     pool.query('DELETE group_recipe WHERE recipe_id = ? AND group_id = ? AND meal_datetime = ?',

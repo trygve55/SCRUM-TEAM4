@@ -1,3 +1,6 @@
+/**
+ * @module Budget
+ */
 var router = require('express').Router(),
     formidable = require('formidable'),
     Jimp = require("jimp");
@@ -7,16 +10,13 @@ module.exports = router;
 /**
  * Add new post to the group.
  *
- * URL: /api/news
- * method: POST
- * data: {
- *      group_id,
- *      post_text
+ * @name Add newfeed post to group
+ * @route {POST} /api/news
+ * @bodyparam {number} group_id the group id where the post will be posted
+ * @bodyparam {string} post_text what the newsfeed post contains
+ * @bodyparam {string} attachment_type if the user wants to post a picture as well (Optional)
+ * @bodyparam {string} attachment_data the picture a user wants to post (Optional)
  *
- *      Optional:
- *      attachment_type,
- *      attachment_data
- * }
 */
 router.post('/', function(req, res) {
 
@@ -30,17 +30,19 @@ router.post('/', function(req, res) {
 
         data.post_text = req.sanitize(data.post_text);
 
+        var path = files.File.path,
+            file_size = files.File.size;
+
         // Check if this request is ok.
-        if(!data.group_id || !data.post_text)
+        if(!data.group_id || (!data.post_text && !files.File))
             return res.status(400).send();
+
+        if (!data.post_text) data.post_text = "";
 
         if(!files.File) {
             data.attachment_type = 0;
             return savePostToDatabase(req, res, data);
         }
-
-        var path = files.File.path,
-            file_size = files.File.size;
 
         if (file_size > 4000000)
             return res.status(400).json({'error': 'image file over 4MB'});
@@ -61,6 +63,7 @@ router.post('/', function(req, res) {
 });
 
 function savePostToDatabase(req, res, data, imgdata) {
+	console.log(data.post_text);
     pool.query(
         'INSERT INTO newsfeed_post (' +
         'group_id, posted_by_id, post_text, attachment_type, attachment_data' +
@@ -95,8 +98,9 @@ router.get('/data/:post_id', function(req, res){
 /**
  * Get the posts for a group.
  *
- * URL: /api/news/{group_id}
- * method: GET
+ * @name Get posts for group
+ * @route {GET} /api/news/{group_id}
+ *
 */
 router.get('/:group_id', function(req, res) {
     pool.query('SELECT ' +
@@ -129,8 +133,9 @@ router.get('/:group_id', function(req, res) {
 /**
  * Get the posts for a user.
  *
- * URL: /api/news/
- * method: GET
+ * @name Get posts for a user
+ * @route {GET} /api/news
+ *
 */
 router.get('/', function(req, res) {
 	pool.query('SELECT post_id, post_text, attachment_type, posted_datetime, person.forename, person.middlename, person.lastname, home_group.group_name, person.person_id FROM newsfeed_post LEFT JOIN person ON (person.person_id = newsfeed_post.posted_by_id) LEFT JOIN home_group USING (group_id) WHERE group_id IN (SELECT group_id FROM group_person WHERE person_id = ?) ORDER BY posted_datetime DESC;',
@@ -142,11 +147,10 @@ router.get('/', function(req, res) {
 /**
  * Update a post.
  *
- * URL: /api/news/{post_id}
- * method: PUT
- * data: {
- *      sql attribute style parameters to set value
- * }
+ * @name Update post
+ * @route {PUT} /api/news/{post_id}
+ * @bodyparams {SQL} sql sql attribute style parameters to set value
+ *
 */
 router.put('/:post_id', function(req, res) {
     var query = putRequestSetup(req.params.post_id, req.body, "newsfeed_post", "post");
@@ -159,8 +163,9 @@ router.put('/:post_id', function(req, res) {
 /**
  * Delete this post.
  *
- * URL: /api/news/{post_id}
- * method: DELETE
+ * @name Delete post
+ * @route {DELETE} /api/news/{post_id}
+ *
 */
 router.delete('/:post_id', function(req, res) {
     pool.query('DELETE FROM newsfeed_post WHERE post_id = ?',
