@@ -1,4 +1,14 @@
 {
-  "navbar-HM": "Household manager"
+  "navbar-HM": "Household manager",
+  "signup": "Sign up",
+  "login": "Log in",
+  "logo": "HOUSEHOLD MANAGER",
+  "logo-text": "Organize Your Life",
+  "header1": "Everything you need...",
+  "underliner1": "Plan a meal with our meal planner with integrated calendar. Make your own recipes and share them with others, or choose between over 100 different recipes already made! See live updates in the shared household calendar.",
+  "header2": "Plan shoppingtrips ...",
+  "underliner2": "with our live shoppinglist! Add merchandise to the household's shoppinglist. With just a few clicks you can settle the cost of your shoppingtrip with every member, or just a few of them.",
+  "header3": "And allocate tasks!",
+  "underliner3": "Tired of reminding everyone to help out at home? Make everything easier with the shared tasklist. You can assign tasks and set the due date! The assignee will automatically receive an alert in our notificationcenter when the due date is near."
 
 }

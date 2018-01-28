@@ -4,11 +4,10 @@ $(document).ready(function() {
      * norwegian.
      */
     $.ajax({
-        url: '../api/language/Landing',
+        url: '/api/language',
         method: 'GET',
         data: {
-            lang: 'nb_NO',
-            path: window.location.pathname
+            path: '/Landing/index.html'
         },
         success: function (data) {
             lang = data;
@@ -26,8 +25,9 @@ $(document).ready(function() {
      * if the user clicks on the norwegian flag.
      */
     $('#landing-norway').click(function () {
+        console.log('hei');
         $.ajax({
-            url: '/api/language/Landing',
+            url: '/api/language',
             method: 'POST',
             data: {
                 lang: 'nb_NO'
@@ -37,8 +37,7 @@ $(document).ready(function() {
                     url: '/api/language',
                     method: 'GET',
                     data: {
-                        lang: 'nb_NO',
-                        path: window.location.pathname
+                        path: '/Landing/index.html'
                     },
                     success: function (data) {
                         lang = data;
@@ -47,44 +46,42 @@ $(document).ready(function() {
                                 $("#" + p).html(data[p]);
                             }
                         }
-                        generalLabels = [data["shop-new-label"], data["label-party"], data["label-food"], data["label-clean"], data["label-repairs"]];
 
                     }
                 });
             }
         });
     });
-});
 
-/**
- * This method calls the language api and sets the language to english
- * if the user clicks on the british flag.
- */
-$('#landing-england').click(function () {
-    $.ajax({
-        url: '/api/language/Landing',
-        method: 'POST',
-        data: {
-            lang: 'en_US'
-        },
-        success: function () {
-            $.ajax({
-                url: '/api/language',
-                method: 'GET',
-                data: {
-                    lang: 'en_US',
-                    path: window.location.pathname
-                },
-                success: function (data) {
-                    lang = data;
-                    for (var p in data) {
-                        if (data.hasOwnProperty(p)) {
-                            $("#" + p).html(data[p]);
+    /**
+     * This method calls the language api and sets the language to english
+     * if the user clicks on the british flag.
+     */
+    $('#landing-england').click(function () {
+        console.log('hade');
+        $.ajax({
+            url: '/api/language',
+            method: 'POST',
+            data: {
+                lang: 'en_US'
+            },
+            success: function () {
+                $.ajax({
+                    url: '/api/language',
+                    method: 'GET',
+                    data: {
+                        path: '/Landing/index.html'
+                    },
+                    success: function (data) {
+                        lang = data;
+                        for (var p in data) {
+                            if (data.hasOwnProperty(p)) {
+                                $("#" + p).html(data[p]);
+                            }
                         }
                     }
-                    generalLabels = [data["shop-new-label"], data["label-party"], data["label-food"], data["label-clean"], data["label-repairs"]];
-                }
-            });
-        }
+                });
+            }
+        });
     });
 });

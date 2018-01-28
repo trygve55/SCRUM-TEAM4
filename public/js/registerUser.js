@@ -362,7 +362,7 @@ $(function () {
                 success: function (data) {
                     $("#getCodeModal").modal('show');
                     $(".modal").on("hidden.bs.modal", function () {
-                        window.location = "/login.html";
+                        window.location = "login.html"
                     });
                 },
                 error: function(err){
@@ -377,6 +377,10 @@ $(function () {
     });
 
     $('[data-toggle="tooltip"]').tooltip();
+
+    $('#register-cancel').click(function () {
+        window.history.back();
+    })
 });
 
 

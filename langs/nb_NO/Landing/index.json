@@ -1,4 +1,13 @@
 {
-  "navbar-HM": "Household manager"
-
+  "navbar-HM": "Household manager",
+  "signup": "Registrer",
+  "login": "Logg inn",
+  "logo": "HOUSEHOLD MANAGER",
+  "logo-text": "Organiser livet ditt",
+  "header1": "Alt en trenger...",
+  "underliner1": "Planlegg et måltid med vår måltidsplanlegger og integrer den i kalenderen din. Lag dine egne oppskrifter og del de med andre, eller velg mellom over 100 forskjellige oppskrifter! Se live oppdateringer i den delte husholdningskalenderen",
+  "header2": "Planlegg handleturer ...",
+  "underliner2":"Med vår live handleliste! Legg til varer i husholdningens handleliste. Med kun noen få klikk kan en dele kostnaden på en handletur med alle medlemmer, eller kun noen utvalgte.",
+  "header3": "Og allokere gjøremål!",
+  "underliner3":"Lei av å minne alle på å hjelpe til hjemme? Gjør det enklere med den delte gjøremålslisten. Du kan tildele oppgaver og angi forfallsdato! Oppdragsgiveren vil automatisk bli varslet i vårt varslingssenter når forfallsdatoen er nær."
 }

@@ -13,6 +13,9 @@
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" ></script>
+
     <!-- Custom fonts for this template -->
     <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
@@ -35,27 +38,21 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link" href="../registerUser.html">Sign Up</a>
+              <a id="signup" class="nav-link" href="../registerUser.html"></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="../login.html">Log In</a>
+              <a id="login" class="nav-link" href="../login.html"></a>
             </li>
           </ul>
         </div>
       </div>
     </nav>
 
-  <div class="flag" style="background-color: white">
-    <img id="landing-norway" style="position:absolute; right:15px; margin-top: 1%" src="../img/norwegianflag.jpg" width="20" height="12">
-    <img id="landing-england" style="position:absolute; right: 40px; margin-top: 1%" src="../img/engelskflagg.png" width="20" height="12">
-  </div>
-
-
   <header class="masthead text-center text-white">
       <div class="masthead-content">
         <div class="container">
-          <h1 class="masthead-heading mb-0" style="font-family: 'Roboto', sans-serif;">HOUSEHOLD MANAGER</h1>
-          <h2 class="masthead-subheading mb-0" style="font-family: 'Roboto', sans-serif;">Organize Your Life </h2>
+          <h1 id="logo" class="masthead-heading mb-0" style="font-family: 'Roboto', sans-serif;"></h1>
+          <h2 id="logo-text" class="masthead-subheading mb-0" style="font-family: 'Roboto', sans-serif;"></h2>
         </div>
       </div>
       <div class="bg-circle-1 bg-circle"></div>
@@ -74,9 +71,8 @@
           </div>
           <div class="col-lg-6 order-lg-1">
             <div class="p-5">
-              <h2 class="display-4">Everything you need...</h2>
-              <p>Plan a meal with our meal planner with integrated calendar. Make your own recipes and share them with others, or choose between over 100 different recipes already made!
-              See live updates in the shared household calendar.</p>
+              <h2 id="header1" class="display-4"></h2>
+              <p id="underliner1"></p>
             </div>
           </div>
         </div>
@@ -93,8 +89,8 @@
           </div>
           <div class="col-lg-6">
             <div class="p-5">
-              <h2 class="display-4">Plan shoppingtrips ...</h2>
-              <p>with our live shoppinglist! Add merchandise to the household's shoppinglist. With just a few clicks you can settle the cost of your shoppingtrip with every member, or just a few of them.  </p>
+              <h2 id="header2" class="display-4"></h2>
+              <p id="underliner2"></p>
             </div>
           </div>
         </div>
@@ -111,8 +107,8 @@
           </div>
           <div class="col-lg-6 order-lg-1">
             <div class="p-5">
-              <h2 class="display-4">And allocate tasks!</h2>
-              <p>Tired of reminding everyone to help out at home? Make everything easier with the shared tasklist. You can assign tasks and set the due date! The assignee will automatically receive an alert in our notificationcenter when the due date is near.</p>
+              <h2 id="header3" class="display-4"></h2>
+              <p id="underliner3"></p>
             </div>
           </div>
         </div>
@@ -123,9 +119,15 @@
     <footer class="py-5 bg-black">
       <div class="container">
         <p class="m-0 text-center text-white small">Copyright &copy; Household Manager 2018</p>
+        <div  class="flags" align="center">
+          <img id="landing-norway" style="  margin-top: 1%" src="../img/norwegianflag.jpg" width="20" height="12">
+          <img id="landing-england" style=" margin-top: 1%" src="../img/engelskflagg.png" width="20" height="12">
+        </div>
       </div>
       <!-- /.container -->
     </footer>
+
+
 
     <!-- Bootstrap core JavaScript -->
     <script src="vendor/jquery/jquery.min.js"></script>
