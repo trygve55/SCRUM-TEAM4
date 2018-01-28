@@ -1,4 +1,6 @@
-
+/**
+ * @module Budget
+ */
 var router = require('express').Router();
 var fx = require('money');
 
@@ -6,12 +8,11 @@ module.exports = router;
 /**
  * Generate a new shopping list for the current user
  *
- * URL: /api/shoppingList
- * method: POST
- * data: {
- *      currency_id,
- *      shopping_list_name
- * }
+ * @name Create new shopping list
+ * @route {POST} /api/shoppingList
+ * @bodyparam {number} currency_id the chosen currency id
+ * @bodyparam {string} shopping_list_name the name of the shoppinglist
+ *
  */
 router.post('/', function(req, res) {
     if(!req.body.currency_id || !req.body.shopping_list_name)
@@ -46,12 +47,11 @@ router.post('/', function(req, res) {
 /**
  * Invite person to shopping list
  *
- * URL: /api/shoppingList/invite
- * method: POST
- * data: {
- *      shopping_list_id,
- *      person_id - person to invite
- * }
+ * @name Invite person to shopping list
+ * @route {POST} /api/shoppingList/invite
+ * @bodyparam {number} shopping_list_id the shopping list id
+ * @bodyparam {number} person_id the person to invite
+ *
  */
 router.post('/invite', function(req, res) {
     if(!req.body.shopping_list_id || !req.body.person_id)
@@ -70,12 +70,10 @@ router.post('/invite', function(req, res) {
 /**
  * Update shopping list entry
  *
- * URL: /api/shoppintList/entry/{shopping_list_entry_id}
- * method: PUT
- * data: {
- *      shopping_list_id,
- *      other sql attributes you want to change
- * }
+ * @name Update shopping list entry
+ * @route {PUT} /api/shoppintList/entry/{shopping_list_entry_id}
+ * @bodyparam {number} shopping_list_id the id of the chosen shopping list
+ *
  */
 router.put('/entry/:shopping_list_entry_id', function(req, res) {
     if(!req.params.shopping_list_entry_id)
@@ -90,8 +88,9 @@ router.put('/entry/:shopping_list_entry_id', function(req, res) {
 /**
  * Remove a shopping list entry
  *
- * URL: /api/shoppingList/entry/{shopping_list_entry_id}
- * method: DELETE
+ * @name Remove entry
+ * @route {DELETE} /api/shoppingList/entry/{shopping_list_entry_id}
+ *
  */
 router.delete('/entry/:shopping_list_entry_id', function(req, res) {
     pool.query(
@@ -111,11 +110,10 @@ router.delete('/entry/:shopping_list_entry_id', function(req, res) {
 /**
  * Update shopping list person info
  *
- * URL: /api/shoppingList/person/{shopping_list_entry_id}
- * method: PUT
- * data: {
- *      other sql attributes you want to change
- * }
+ * @name Update shopping list person information
+ * @route {PUT} /api/shoppingList/person/{shopping_list_entry_id}
+ * @bodyparam {SQL} sql other sql attributes you want to change
+ *
  */
 router.put('/info/:shopping_list_id', function(req, res) {
     if(!req.params.shopping_list_id)
@@ -153,8 +151,9 @@ router.put('/info/:shopping_list_id', function(req, res) {
 /**
  * Return the shopping list current user has access to
  *
- * URL: /api/shoppingList
- * method: GET
+ * @name Shopping list current user has access to
+ * @route {GET} /api/shoppingList
+ *
  */
 router.get('/', function(req, res) {
     var p_id = req.session.person_id;
@@ -228,8 +227,8 @@ router.get('/', function(req, res) {
 /**
  * Get person-info
  *
- * URL: /api/user/all
- * method: GET
+ * @name Person information
+ * @route {GET} /api/user/all
  *
  */
 router.get('/:shopping_list_id/users', function(req, res){
@@ -258,8 +257,9 @@ router.get('/:shopping_list_id/users', function(req, res){
 /**
  * Get all info about one shoppinglist
  *
- * URL: /api/shoppingList/{shopping_list_id}
- * method: GET
+ * @name Info about a shoppinglist
+ * @route {GET} /api/shoppingList/{shopping_list_id}
+ *
  */
 router.get('/:shopping_list_id', function(req, res) {
     var p_id = req.session.person_id;
@@ -323,10 +323,12 @@ router.get('/:shopping_list_id', function(req, res) {
 /**
  * Get all entries with a label in a time interval for a group.
  *
- * URL: /api/shoppingList/statistic/{entry_type_name}
- * method: GET
- * data: group_id, start, end
- * }
+ * @name Get all entries with label in time interval for a group
+ * @route {GET} /api/shoppingList/statistic/{entry_type_name}
+ * @headerparam {number} group_id chosen group id for a group
+ * @headerparam {number} start the start of the time interval for a group
+ * @headerparam {number} end the end of the time interval for a group
+ *
  */
 router.get('/statistic/:entry_type_name', function(req, res) {
 	var data = req.query;
@@ -359,15 +361,14 @@ router.get('/statistic/:entry_type_name', function(req, res) {
 /**
  * Add entry to shopping_list
  *
- * URL: /api/shoppingList/entry
- * method: POST
- * data: {
- *      shopping_list_id,
- *      entry_text,
- *      purchased_by_person_id,
- *      cost,
- *      datetime_purchased
- * }
+ * @name Add entry
+ * @route {POST} /api/shoppingList/entry
+ * @bodyparam {number} shopping_list_id the chosen shopping list id
+ * @bodyparam {string} entry_text what the user wants to add to the shopping list
+ * @bodyparam {number} purchased_by_person_id the id of the person who purchased the item
+ * @bodyparam {number} cost the cost of the item
+ * @bodyparam {number} datetime_purchased the date of the purchase
+ *
  */
 router.post('/entry', function(req, res) {
     var data = req.body, p_id = req.session.person_id;
@@ -425,11 +426,10 @@ router.post('/entry', function(req, res) {
 /**
  * Update shopping list info
  *
- * URL: /api/shoppingList/{shopping_list_id}
- * method: PUT
- * data: {
- *      data to change sql attributes
- * }
+ * @name Update shopping list info
+ * @route {PUT} /api/shoppingList/{shopping_list_id}
+ * @bodyparam {SQL} sql data to change sql attributes
+ *
  */
 router.put('/:shopping_list_id', function(req, res) {
     var query = putRequestSetup(req.params.shopping_list_id , req, "shopping_list");

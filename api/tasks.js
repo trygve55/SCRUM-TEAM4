@@ -1,3 +1,6 @@
+/**
+ * @module Budget
+ */
 var router = require('express').Router();
 
 /* 
@@ -11,7 +14,9 @@ module.exports = router;
 /**
  * Get all tasks to be notified about.
  *
- * URL: /api/tasks/notify/
+ * @name Get all tasks to be notified about
+ * @route {GET} /api/tasks/notify/
+ *
 */
 router.get('/notify', function(req, res) {
 	pool.query(
@@ -31,8 +36,9 @@ router.get('/notify', function(req, res) {
 /**
  * Get the data for all tasks that repeat.
  *
- * URL: /api/tasks/repeat/{group_id}
- * method: GET
+ * @name Get data for all tasks that repeat
+ * @route {GET} /api/tasks/repeat/{group_id}
+ *
 */
 router.get('/repeat/:group_id', function(req, res) {
 	pool.query(
@@ -49,11 +55,10 @@ router.get('/repeat/:group_id', function(req, res) {
 /**
  * Add a person to a task
  *
- * URL: /api/tasks/person/{todo_id}
- * method: POST
- * data: {
- *      people[] - contains an array of "person_id"-s.
- * }
+ * @name Add person to task
+ * @route {POST} /api/tasks/person/{todo_id}
+ * @bodyparam {array} people contains an array of "person_id"-s.
+ *
 */
 router.post('/person/:todo_id', function(req, res) {
 	var data = req.body.people.split(',');
@@ -81,8 +86,9 @@ router.post('/person/:todo_id', function(req, res) {
 /**
  * Get the data about a private task
  *
- * URL: /api/tasks/private/{todo_id}
- * method: GET
+ * @name Get data about private task
+ * @route {GET} /api/tasks/private/{todo_id}
+ *
  */
 router.get('/private/:todo_id', function(req, res) {
     pool.query(
@@ -107,10 +113,11 @@ router.get('/private/:todo_id', function(req, res) {
 });
 
 /**
- * Get all tasks for a user
+ * The GET request for all tasks for a user.
  *
- * URL: /api/tasks/person
-* The GET request for all tasks for a user.
+ * @name Get tasks for user
+ * @route {GET} /api/tasks/person
+ *
 */
 router.get('/person/:person_id?*', function(req, res) { // TODO FIX THIS
 	if(!req.params.person_id)
@@ -135,8 +142,9 @@ router.get('/person/:person_id?*', function(req, res) { // TODO FIX THIS
 /**
  * Get all tasks for a user
  *
- * URL: /api/person/
- * The GET request for all tasks for a user.
+ * @name Tasks for user
+ * @route {GET} /api/person/
+ *
 */
 router.get('/person/:person_id', function(req, res) {
 	pool.query(
@@ -161,8 +169,9 @@ router.get('/person/:person_id', function(req, res) {
 /**
  * Set a task as completed
  *
- * URL: /api/tasks/{todo_id}
- * method: PUT
+ * @name Set task as completed
+ * @route {PUT} /api/tasks/{todo_id}
+ *
  */
 router.put('/:todo_id/done', function(req, res) {
     pool.query('UPDATE todo SET datetime_done = CURRENT_TIMESTAMP, done_by_id = ? ' +
@@ -186,8 +195,9 @@ router.put('/:todo_id/done', function(req, res) {
 /**
  * Set a task that is done to be not done after all
  *
- * URL: /api/tasks/{todo_id}
- * method: PUT
+ * @name Set tasks that is done to be not done after all
+ * @route {PUT} /api/tasks/{todo_id}
+ *
  */
 router.put('/:todo_id/undo', function(req, res) {
     pool.query('UPDATE todo SET datetime_done = NULL, done_by_id = NULL ' +
@@ -211,11 +221,10 @@ router.put('/:todo_id/undo', function(req, res) {
 /**
  * Update a task with the provided data
  *
- * URL: /api/tasks/{todo_id}
- * method: PUT
- * data: {
- *      sql attribute style parameters to set value
- * }
+ * @name Update task
+ * @route {PUT} /api/tasks/{todo_id}
+ * @bodyparam {SQL} sql attribute style parameters to set value
+ *
  */
 router.put('/:todo_id', function(req, res) {
     console.log(req.body);
@@ -236,11 +245,10 @@ router.put('/:todo_id', function(req, res) {
 /**
  * Remove a person from task
  *
- * URL: /api/tasks/person/{todo_id}
- * method: DELETE
- * data: {
- *      people[] - contains an array of "person_id"-s.
- * }
+ * @name Remove person from task
+ * @route {DELETE} /api/tasks/person/{todo_id}
+ * @bodyparam {array} people contains an array of "person_id"-s.
+ *
 */
 router.delete('/person/:todo_id', function(req, res) {
     var data = req.body.people, todo = checkRange(req.params.todo_id, 1, null);
@@ -256,8 +264,9 @@ router.delete('/person/:todo_id', function(req, res) {
 /**
  * Get the data about a task
  *
- * URL: /api/tasks/todo/{todo_id}
- * method: GET
+ * @name Get data about task
+ * @route {GET} /api/tasks/todo/{todo_id}
+ *
  */
 router.get('/todo/:todo_id', function(req, res) {
 	pool.query('SELECT * FROM todo LEFT JOIN todo_person USING(todo_id) WHERE todo.todo_id = ?',
@@ -280,8 +289,9 @@ router.get('/todo/:todo_id', function(req, res) {
 /**
  * Delete the todo item
  *
- * URL: /api/tasks/todo/{todo_id}
- * method: DELETE
+ * @name Delete todo item
+ * @route {DELETE} /api/tasks/todo/{todo_id}
+ *
  */
 router.delete('/todo/:todo_id', function(req, res){
     pool.query('SELECT group_id FROM todo WHERE todo_id = ?', [req.params.todo_id], function(err, result){
@@ -299,8 +309,9 @@ router.delete('/todo/:todo_id', function(req, res){
 /**
  * Get all tasks for a group
  *
- * URL: /api/tasks/{group_id}
- * method: GET
+ * @name Tasks for group
+ * @route {GET} /api/tasks/{group_id}
+ *
  */
 router.get('/:group_id', function(req, res) {
 	console.log(req.params.group_id);
@@ -343,17 +354,14 @@ router.get('/:group_id', function(req, res) {
  * The task will be made a repeating if time_interval is specified and > 0.
  * It will repeat until the date specified as deadline.
  *
- * URL: /api/tasks
- * method: POST
- * data: {
- *      group_id,
- *      todo_text
+ * @name New task to group task list
+ * @route {POST} /api/tasks
+ * @bodyparam {number} group_id the groups id
+ * @bodyparam {string} todo_text what the task involves
+ * @bodyparam {number} datetime_deadline set deadline for task (Optional)
+ * @bodyparam {number} datetime_done when task is done (Optional)
+ * @bodyparam {number} time_interval number of days
  *
- *      Optional:
- *      datetime_deadline,
- *		datetime_done,
- *      time_interval	// days
- * }
  */
 router.post('/', function(req, res) {
     var data = req.body, input = [];
