@@ -25,6 +25,20 @@ var router = require('express').Router(),
 module.exports = router;
 
 /**
+ * Fetch all the different group role types
+ *
+ * @name Get role types
+ * @route {GET} /api/group/roles
+ */
+router.get('/roles', function(req, res){
+    pool.query('SELECT * FROM home_role', function(err, result){
+        if(err)
+            return res.status(500).send();
+        return res.status(200).json(result);
+    });
+});
+
+/**
  * Check if you have administrator privileges for a group
  *
  * @name Check if you have administrator privileges
@@ -341,12 +355,25 @@ router.put('/:group_id/userPrivileges', function(req, res){
         return res.status(400).send();
     pool.getConnection(function(err, connection){
         if (!checkConnectionError(err, connection, res)) {return;}
-        connection.query("SELECT role_id FROM group_person WHERE person_id = ? AND group_id = ?", [req.session.person_id, req.params.group_id], function(err, result){
+        connection.query("SELECT person_id FROM group_person WHERE role_id = 2 AND group_id = ?", [req.params.group_id], function(err, result){
             if(err) {
                 connection.release();
                 return res.status(500).send();
             }
-            else if(result.length == 0 || result[0].role_id != 2){
+            console.log(result);
+            if(result.length == 1 && req.session.person_id == req.body.person_id){
+                console.log("length");
+                connection.release();
+                return res.status(400).send();
+            }
+            var f = false;
+            for(var i = 0; i < result.length; i++){
+                if(result[i].person_id == req.session.person_id) {
+                    f = true;
+                }
+            }
+            if(!f){
+                console.log("found");
                 connection.release();
                 return res.status(400).send();
             }

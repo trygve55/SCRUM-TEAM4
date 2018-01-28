@@ -51,6 +51,20 @@ describe('User API', function() {
           .expect({password: true, message: "password do match"})
           .end(done);
        });
+       it('should return no data', function (done) {
+           request.post('/api/user/checkPassword')
+               .expect(400)
+               .expect("No data")
+               .end(done);
+       });
+        it('Should return password does not match', function (done) {
+            request.post('/api/user/checkPassword').send({
+                password: "testewer"
+            })
+                .expect(400)
+                .expect({password: false, message: "password does not match"})
+                .end(done);
+        });
     });
 
     describe('/api/user/user GET', function () {
