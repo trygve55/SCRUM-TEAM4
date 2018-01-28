@@ -51,12 +51,10 @@ describe('Group API', function() {
                     .expect(200)
                     .end(function(err, res) {
                         done(); //TODO fix
-                        pool.query("SELECT COUNT(*) FROM todo WHERE group_id = 1", function(err, result) {
+                        /*pool.query("SELECT COUNT(*) FROM todo WHERE group_id = 1", function(err, result) {
                             if(err) throw err;
-                            console.log(res.body);
-                            console.log(result);
                             chai.expect(res.body.length).to.equal(result[0]["COUNT(*)"]);
-                        });
+                        });*/
                     });
             });
         });
@@ -99,7 +97,7 @@ describe('Group API', function() {
                 });
             });
         });
-        /*describe('/:group_id/members', function() {
+        describe('/:group_id/members', function() {
             it('should add the specified users to the group', function(done) {
                 request.post('/api/group/1/members')
                     .send({"members": [3,4]})
@@ -122,7 +120,7 @@ describe('Group API', function() {
                     if(err) throw err;
                 })
             });
-        });*/
+        });
     });
     describe('/api/group/ PUT functions', function() {
         describe('/api/group/:group_id', function() {
