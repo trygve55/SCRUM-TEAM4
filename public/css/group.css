@@ -74,7 +74,7 @@
 }
 .fa-shopping-cart:hover, .fa-users:hover, .fa-trash:hover, .fa-money:hover, .fa-list:hover{
 	filter: brightness(70%);
-	text-shadow: 0px 0px 0px #ccc;
+	text-shadow: 0 0 0 #ccc;
 }
 a.selected {
 	background-color:#1F75CC;
@@ -375,14 +375,14 @@ div.grouptablink.backvariant{
 
 @media screen and (max-width: 576px) {
 	#groupselection {
-		margin-left: 0%;
+		margin-left: 0;
 		height: 100%;
 	}
 	#groupwindowStart{
 		visibility: hidden;
 	}
 	#groupwindow{
-		margin-left: 0%;
+		margin-left: 0;
 		height: 100%;
 		text-align: center;
 	}

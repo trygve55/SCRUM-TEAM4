@@ -56,7 +56,7 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
 			<div class="navbar-nav">
-				<a id="group-groupsNavbar" class="nav-item nav-link" href="#" onclick="new function () {
+				<a id="group-groupsNavbar" class="nav-item nav-link active" href="#" onclick="new function () {
               $.ajax({
                 url: '/api/group/me',
                 method: 'GET',
@@ -184,11 +184,12 @@
 
 					<div id="done-tasks" style="display: none;">
 						<div class="row">
-							<div class="col-sm listeTask" style="background-color: #{{color_hex}}; width: 90%">
+							<div class="col-sm listeTask" style="background-color: #{{color_hex}}; width: 90%;">
                                 <h4 class="list-name-task"></h4>
 								<ul class="list-group itemlist-task"></ul>
 							</div>
 						</div>
+						<h5></h5>
 						<button type="button" class="btn btn-success"><i class="fa fa-list-ul" aria-hidden="true">&nbsp;Tilbake</i></button>
 					</div>
 					</div>
