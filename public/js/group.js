@@ -1821,10 +1821,9 @@ function addMembersPopup(todo){
 
     for(var i=0; i<dataTask.length; i++){
         if(dataTask[i].todo_id==todo){
-            if(dataTask[i].assigned_to.forename ==null) thememberstring = null;
+            if(!dataTask[i].assigned_to && !dataTask[i].assigned_to.forename) thememberstring = null;
             else{
                 thememberstring = dataTask[i].assigned_to.forename + " " + dataTask[i].assigned_to.lastname;
-
             }
         }
     }
