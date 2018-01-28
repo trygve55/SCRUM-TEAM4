@@ -366,7 +366,7 @@ router.get('/user', function (req, res) {
         connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?;', [username], function (err, result){
             connection.release();
             if(result[0].counted === 1) {
-                return res.status(200).json({message:"Username already exists"});
+                return res.status(200).json({message:"Username already exists", inUse: true});
             }
             res.status(200).json({message:"Username valid"});
         });
@@ -399,7 +399,7 @@ router.get('/mail', function (req, res) {
         connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?;', [email], function (err, result){
             connection.release();
             if(result[0].counted === 1) {
-                return res.status(200).json({message:'E-mail already exists'});
+                return res.status(200).json({message:'E-mail already exists', inUse: true});
             }
             res.status(200).json({message:'E-mail valid'});
         });
