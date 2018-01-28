@@ -176,6 +176,7 @@ router.put('/list/:private_todo_list_id', function(req, res){
  * URL: /api/tasks/{todo_id}
  * method: PUT
  */
+//TODO: is this method necessary? If so, please let me know and I will fix. As of now it is not functional. t. Olav
 router.put('/:todo_id/done', function(req, res) {
     pool.query('UPDATE todo SET datetime_done = CURRENT_TIMESTAMP, done_by_id = ? ' +
         'WHERE todo_id = ? AND todo_id IN ' +
