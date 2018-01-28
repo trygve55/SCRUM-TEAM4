@@ -228,14 +228,12 @@ router.get('/legacy/:shopping_list_id', function(req, res) {
             'LEFT JOIN person_budget_entry USING (budget_entry_id) ' +
             'LEFT JOIN person AS paid_person ON person_budget_entry.person_id = paid_person.person_id ' +
             'WHERE shopping_list.shopping_list_id = ? AND shopping_list.shopping_list_id IN ' +
-            '(SELECT shopping_list_id FROM person WHERE person_id = ? ' +
-            'UNION  ' +
-            'SELECT home_group.shopping_list_id FROM person   ' +
+            '(SELECT home_group.shopping_list_id FROM person   ' +
             'LEFT JOIN group_person USING(person_id)  ' +
             'LEFT JOIN home_group USING(group_id)  ' +
             'WHERE person_id = ? ' +
             'UNION ' +
-            'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = ?) ',
+            'SELECT shopping_list_person.shopping_list_id FROM shopping_list_person WHERE person_id = ?) ',
             [req.params.shopping_list_id, req.session.person_id, req.session.person_id, req.session.person_id], function(err, result) {
                 connection.release();
                 if (err) {
