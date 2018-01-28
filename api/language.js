@@ -14,6 +14,8 @@ router.get('/', function(req, res){
     if(!req.query.path && !req.header('referer'))
         return res.status(400).send();
     var pth = req.query.path || req.header('referer').split(":8000")[1];
+    if(pth == '/')
+        path = '/index.html';
 	
     if(!lang){
         req.session.lang = "nb_NO";
@@ -24,7 +26,8 @@ router.get('/', function(req, res){
     if(!pth)
         return res.status(400).send("Bad request");
     pth = pth.split('.')[0];
-    var p = path.join(__dirname, '../langs/' + lang + pth + '.json');
+    console.log(__dirname);
+    var p = __dirname + '/../langs/' + lang + pth + '.json';
 
     if(!fs.existsSync(p)){
         res.status(400).send("Non existing translation");
