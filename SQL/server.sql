@@ -48,7 +48,7 @@ CREATE TABLE person (
     person_id INTEGER NOT NULL AUTO_INCREMENT,
     email VARCHAR(255) UNIQUE NOT NULL,
     username VARCHAR(20) UNIQUE NOT NULL,
-    password_hash CHAR(60),
+    password_hash CHAR(60), 
     forename NVARCHAR(255) NOT NULL,
     middlename NVARCHAR(255),
     lastname NVARCHAR(255) NOT NULL,
@@ -61,11 +61,9 @@ CREATE TABLE person (
     has_profile_pic BIT NOT NULL DEFAULT 0,
     last_active TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     reset_password_token VARCHAR(255),
-    shopping_list_id INTEGER NOT NULL UNIQUE,
     user_language VARCHAR(5) NOT NULL DEFAULT 'nb_NO',
     user_deactivated BIT NOT NULL DEFAULT 0,
     facebook_api_id BIGINT UNIQUE,
-    CONSTRAINT person_shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT person_pk PRIMARY KEY(person_id)
 );
 
@@ -80,6 +78,7 @@ CREATE TABLE home_group (
     has_group_pic BIT NOT NULL DEFAULT 0,
     default_currency_id INTEGER NOT NULL,
     shopping_list_id INTEGER NOT NULL,
+    group_deactivated BIT NOT NULL DEFAULT 0,
     CONSTRAINT group_currency_fk FOREIGN KEY(default_currency_id) REFERENCES currency(currency_id),
     CONSTRAINT group_shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT group_pk PRIMARY KEY(group_id)
@@ -119,7 +118,7 @@ CREATE TABLE shopping_list_person (
 CREATE TABLE budget_entry_type ( 
     budget_entry_type_id INTEGER NOT NULL AUTO_INCREMENT,
     shopping_list_id INTEGER NOT NULL,
-    entry_type_name NVARCHAR(20) NOT NULL,
+    entry_type_name NVARCHAR(255) NOT NULL,
     entry_type_color INTEGER,
     CONSTRAINT budget_entry_type_shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT budget_entry_type_pk PRIMARY KEY(budget_entry_type_id)
@@ -254,34 +253,34 @@ CREATE TABLE person_budget_entry (
 );
 
 CREATE TABLE recipe (
-	recipe_id INTEGER NOT NULL AUTO_INCREMENT,
-	recipe_name NVARCHAR(255),
-	recipe_directions NVARCHAR(10000),
-	recipe_servings INTEGER,
-	recipe_time INTEGER,
-	person_id INTEGER NOT NULL,
-	CONSTRAINT recipe_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
-	CONSTRAINT pecipe_pk PRIMARY KEY(recipe_id)
+    recipe_id INTEGER NOT NULL AUTO_INCREMENT,
+    recipe_name NVARCHAR(255),
+    recipe_directions NVARCHAR(10000),
+    recipe_servings INTEGER,
+    recipe_time INTEGER,
+    person_id INTEGER NOT NULL,
+    CONSTRAINT recipe_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
+    CONSTRAINT pecipe_pk PRIMARY KEY(recipe_id)
 );
 
 CREATE TABLE recipe_ingredient (
-	ingredient_id INTEGER NOT NULL AUTO_INCREMENT,
-	ingredient_amount FLOAT,
-	ingredient_unit NVARCHAR(20),
-	ingredient_name NVARCHAR(255),
-	ingredient_optional BIT NOT NULL,
-	recipe_id INTEGER NOT NULL,
-	CONSTRAINT recipe_ingredient_fk FOREIGN KEY(recipe_id) REFERENCES recipe(recipe_id),
-	CONSTRAINT recipe_ingredient_pk PRIMARY KEY(ingredient_id)
+    ingredient_id INTEGER NOT NULL AUTO_INCREMENT,
+    ingredient_amount FLOAT,
+    ingredient_unit NVARCHAR(20),
+    ingredient_name NVARCHAR(255),
+    ingredient_optional BIT NOT NULL,
+    recipe_id INTEGER NOT NULL,
+    CONSTRAINT recipe_ingredient_fk FOREIGN KEY(recipe_id) REFERENCES recipe(recipe_id),
+    CONSTRAINT recipe_ingredient_pk PRIMARY KEY(ingredient_id)
 );
 
 CREATE TABLE group_recipe (
-	recipe_id INTEGER NOT NULL,
-	group_id INTEGER NOT NULL,
-	meal_datetime DATE NOT NULL,
-	CONSTRAINT group_recipe_fk FOREIGN KEY(recipe_id) REFERENCES recipe(recipe_id),
-	CONSTRAINT home_group_recipe_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
-	CONSTRAINT group_recipe_pk PRIMARY KEY(recipe_id, group_id, meal_datetime)
+    recipe_id INTEGER NOT NULL,
+    group_id INTEGER NOT NULL,
+    meal_datetime DATE NOT NULL,
+    CONSTRAINT group_recipe_fk FOREIGN KEY(recipe_id) REFERENCES recipe(recipe_id),
+    CONSTRAINT home_group_recipe_fk FOREIGN KEY(group_id) REFERENCES home_group(group_id),
+    CONSTRAINT group_recipe_pk PRIMARY KEY(recipe_id, group_id, meal_datetime)
 );
 
 CREATE TABLE person_recipe (

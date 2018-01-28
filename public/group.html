@@ -12,16 +12,14 @@
 		<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
 
-
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
-		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
 		<script src="https://use.fontawesome.com/dea62227f7.js"></script>
 		<script src="/js/handlebars.js"></script>
@@ -38,7 +36,6 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
 
-		<script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
 		<script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
 
 		<script src="/js/group.js"></script>
@@ -150,10 +147,10 @@
 						</div>
 						<div class="row">
 							<div id="group-picturePost" class="col-2" style="margin-left: 5%" >
-								<button type="button" class="btn btn-info"><i  class="fa fa-camera" aria-hidden="true"> Add picture</i></button>
+								<button type="button" class="btn btn-info"><i  class="fa fa-camera" aria-hidden="true"> <text id="add-picture" style="font-family: 'Trebuchet MS';"></text> </i></button>
 							</div>
 							<div  id="group-post2" class="col-2 offset-6" style="margin-right: 3%">
-								<button type="button" class="btn btn-info"><i class="fa fa-sticky-note" aria-hidden="true">  Post</i></button>
+								<button type="button" class="btn btn-info"><i class="fa fa-sticky-note" aria-hidden="true"> <text id="group-post" style="font-family: 'Trebuchet MS';"></text></i></button>
 							</div>
 						</div>
 
@@ -198,26 +195,7 @@
 				</div>
 
 				<div id="shopping" class="grouptab">
-					<div style="width: 80%; margin-top: 2vh; border: 1px solid lightgrey; border-radius: 15px; padding: 2vh; background-color: #a3e6f7;">
-						<h4 id="lang-shoppinglist" style="margin-bottom: 1vh"></h4>
-						<ul style="overflow-y: auto; max-height: 37vh;"class="list-group itemlist"></ul>
-						<ul class="list-group" style="overflow-y: visible;">
-							<li class="list-group-item add-item" >
-								<i class="fa fa-plus-circle" aria-hidden="true" id="add-item-text"></i>
-							</li>
-						</ul>
-						<div style="margin-top: 2vh" class="row">
-							<div class="col-sm">
-
-							</div>
-							<div class="col-sm">
-								<button class="btn btn-success shopping-cart" style="margin-right: 1vh" id="buy-selected">Buy selected</button>
-							</div>
-							<div class="col-sm" align="right">
-								<button class="btn money" id="settlement">Settlement</button>
-							</div>
-						</div>
-					</div>
+					<div style="width: 80%; margin-top: 2vh; border: 1px solid lightgrey; border-radius: 15px; padding: 2vh; background-color: #a3e6f7;"></div>
 				</div>
 
 				<div id="statistics" class="grouptab text-center">
