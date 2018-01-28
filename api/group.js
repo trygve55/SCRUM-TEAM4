@@ -175,8 +175,11 @@ router.get('/', function(req, res){
  * }
  */
 router.post('/:group_id/members', function(req, res){
+    console.log(req.body);
     if(!req.session.person_id)
         return res.status(500).send("Person_id");
+    if(!req.body['members[]'] && !req.body.members)
+        return res.status(400).send("Members");
     if(!(req.body.members instanceof Array)){
         req.body.members = req.body['members[]'];
         delete req.body['members[]'];
@@ -241,7 +244,13 @@ router.post('/:group_id/members', function(req, res){
                                     }
                                 });
                             connection.release();
-                            res.status(200).json(result);
+                            pool.query('SELECT forename, lastname, person_id FROM person WHERE person_id = ?', [req.body.members[0]], function(err, result){
+                                if(err){
+                                    console.error(err);
+                                    return res.status(500).send();
+                                }
+                                res.status(200).json(result[0]);
+                            });
                         });
                     });
                 });
