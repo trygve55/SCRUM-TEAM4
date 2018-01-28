@@ -1086,6 +1086,7 @@ $(function () {
      * the method getPost() to post the post to the page then ClearFields()
      * to reset the inputfield.
      */
+
     $('#group-post2').click(function() {
         var formData = new FormData();
         formData.append('File', $("#file-attachment")[0].files[0]);
@@ -1697,7 +1698,7 @@ $('#group-logoutNavbar').click(function () {
         method: 'POST',
         success: function (data) {
             if(!data.login){
-                window.top.location="http://localhost:8000/login.html";
+                window.location="/login.html";
             }
         }
     });
@@ -1865,10 +1866,6 @@ function addMembersPopup(todo){
     //Adds member to list when clicked
     $(".typeahead").bind('typeahead:select', function(a, data){
         themember = data;
-
-    });
-
-    $('.assignok').unbind("click").click(function () {
         var personid = themember.person_id;
         var personids = [];
         personids.push(personid);
@@ -1887,7 +1884,6 @@ function addMembersPopup(todo){
             error: console.error
         })
     });
-
     $('.assigncancel').unbind("click").click(function () {
         $('.pop').remove();
     });
