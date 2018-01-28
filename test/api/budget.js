@@ -23,19 +23,22 @@ describe('Budget API', function() {
                 }).expect(200).end(done);
             });
         });
-        describe('/', function() {
+        /*describe('/', function() {
             it('should add a budget entry to a shopping list', function(done) {
                 request.post('/api/budget/')
                     .send({
                         "shopping_list_id": 1,
                         "amount": "20",
                         "text_note": "DELETE THIS PLEASE IT SHOULD NOT BE",
-                        "budget_entry_type_id": 1,
+                        "budget_entry_type_id": typeId,
                         "shopping_list_entry_ids": "1,2",
                         "person_ids": "1,2"
                     }).expect(200).end(done);
             });
-        });
+            after('remove test data', function(done) {
+                pool.query("DELETE FROM ")
+            });
+        });*/
         describe('/pay/:budget_entry_id', function() {
             it('should add a entry to person_budget_entry ', function(done) {
                 request.post('/api/budget/pay/' + budgetId).send({

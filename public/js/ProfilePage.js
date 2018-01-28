@@ -328,7 +328,7 @@ function changePassword() {
                 },
                 success: function (data) {
                     $('#old-password-error').hide();
-                    $('#change-password-error').show();
+                    $('#change-password-error').hide();
                     $('#save-password-success').show();
                     console.log(data);
                 },
