@@ -474,7 +474,7 @@ router.put('/pay', function(req, res) {
  * @name Budget entries with type for a group
  * @route {GET} /api/budget/entries
  * @headerparam {number} group_id A groups unique id
- * 
+ *
  */
 
 router.get('/', function(req, res) {

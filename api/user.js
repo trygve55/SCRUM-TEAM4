@@ -1,3 +1,6 @@
+/**
+ * @module Budget
+ */
 var router = require('express').Router(),
     auth = require('../auth'),
     router = require('express').Router(),
@@ -14,8 +17,8 @@ module.exports = router;
 /**
  * Get person-info
  *
- * URL: /api/user/all
- * method: GET
+ * @name Get person information
+ * @route {GET} /api/user/all
  *
  */
 router.get('/all/:group_id', function(req, res){
@@ -48,8 +51,8 @@ router.get('/all/:group_id', function(req, res){
 /**
  * Get person-info
  *
- * URL: /api/user/all
- * method: GET
+ * @name Get person information
+ * @route {GET} /api/user/all
  *
  */
 router.get('/all', function(req, res){
@@ -103,11 +106,10 @@ router.get('/checkFacebook', function(req, res){
 /**
  * Check password
  *
- * URL: /api/user/checkPassword
- * method: POST
- * data: {
- *      password
- * }
+ * @name Check password
+ * @route {POST} /api/user/checkPassword
+ * @bodyparam {string} password the password that should be checked
+ *
  */
 
 
@@ -150,11 +152,10 @@ router.post('/checkPassword', function (req, res) {
 /**
  * Change password for the currently logged in user
  *
- * URL: /api/user/password
- * method: PUT
- * data: {
- *      password
- * }
+ * @name Change password
+ * @route {PUT} /api/user/password
+ * @bodyparam {string} password the password that will be change
+ *
  */
 
 
@@ -197,17 +198,16 @@ router.put('/password', function (req, res) {
 /**
  * Register a new user
  *
- * URL: /api/user/register
- * method: POST
- * data: {
- *      forename,
- *      lastname,
- *      username,
- *      email,
- *      password,
- *      [phone],
- *      [lang]
- * }
+ * @name Register user
+ * @route {POST} /api/user/register
+ * @bodyparam {string} forename the persons forename
+ * @bodyparam {string} lastname the persons lastname
+ * @bodyparam {string} username the persons username
+ * @bodyparam {string} email the persons email
+ * @bodyparam {string} password the persons password
+ * @bodyparam {array} phone the persons phone
+ * @bodyparam {array} lang array with the different languages, norwegian and english
+ *
  */
 
 router.post('/register', function(req, res) {
@@ -355,8 +355,8 @@ router.post('/register', function(req, res) {
 /**
  * Check username syntax/availability
  *
- * URL: /api/user/user
- * method: GET
+ * @name Check username
+ * @route {GET} /api/user/user
  *
  */
 
@@ -388,8 +388,8 @@ router.get('/user', function (req, res) {
 /**
  * Check email syntax/availability
  *
- * URL: /api/user/email
- * method: GET
+ * @name Check email
+ * @route {GET} /api/user/email
  *
  */
 
@@ -423,7 +423,9 @@ router.get('/mail', function (req, res) {
 
 /**
  *
- *
+ * @name Get users picture
+ * @route {GET} /api/person/{person_id}/picture
+ * @headerparam {number} person_id the current users id
  *
  */
 
@@ -471,14 +473,20 @@ router.get('/:person_id/picture_tiny', function(req, res){
 /**
  * Update profile
  *
- * URL: /api/user/
- * method: PUT
- * data (body) {
- *      [username], [forename], [middlename],
- *      [lastname], [phone], [gender], [birth_date],
- *      [profile_pic], [profile_pic_tiny], [last_active],
- *      [user_language]
- * }
+ * @name Update profile
+ * @route {PUT} /api/user
+ * @bodyparam {array} username the persons username
+ * @bodyparam {array} forename the persons forename
+ * @bodyparam {array} middlename the persons middlename
+ * @bodyparam {array} lastname the persons lastname
+ * @bodyparam {array} phone the persons phone number
+ * @bodyparam {array} gender the persons gender
+ * @bodyparam {array} birth_date the persons birth date
+ * @bodyparam {array} profile_pic the persons profile picture
+ * @bodyparam {array} profile_pic_tiny the persons profile picture
+ * @bodyparam {array} last_active the last time the person was active
+ * @bodyparam {array} user_language the persons preferred language
+ *
  */
 
 
@@ -528,11 +536,10 @@ router.put('/', function(req, res) {
 /**
  * Updates profile picture
  *
- * URL: /api/user/picture
- * method: POST
- * data (FORM) {
- *      File
- * }
+ * @name Update profile picture
+ * @route {POST} /api/user/picture
+ * @bodyparam {form} file chosen file
+ *
  */
 
 
@@ -647,11 +654,9 @@ var transporter = nodemailer.createTransport({
 /**
  * Verify account with token from email
  *
- * URL: /api/user/verifyAccount
- * method: POST
- * data: {
- *      token
- * }
+ * @name Verify account
+ * @route {POST} /api/user/verifyAccount
+ * @bodyparam {number} token vertify token
  *
  */
 router.post('/verifyAccount', function(req, res) {
@@ -696,12 +701,11 @@ router.post('/verifyAccount', function(req, res) {
  * Send an email with a link to change a forgotten password. By default, the response is in English, but you can also
  * provide a lang attribute to specify the language of the email.
  *
- * URL: /api/user/forgottenPasswordEmail
- * method: POST
- * data: {
- *      email,
- *      [lang]
- * }
+ * @name Link for forgotten password
+ * @route {POST} /api/user/forgottenPasswordEmail
+ * @bodyparam {string} email the users email
+ * @bodyparam {array} lang the users preferred language
+ *
  */
 
 router.post('/forgottenPasswordEmail', function(req,res) {
@@ -752,12 +756,11 @@ router.post('/forgottenPasswordEmail', function(req,res) {
 /**
  * Set new password with a JWT acquired from an email
  *
- * URL: /api/user/forgottenPasswordReset
- * method: POST
- * data: {
- *      new_password,
- *      token
- * }
+ * @name Set new password through email
+ * @route {POST} /api/user/forgottenPasswordReset
+ * @bodyparam {string} new_password the users new password
+ * @bodyparam {number} token vertification token
+ *
  */
 
 router.post('/forgottenPasswordReset', function(req, res) {
@@ -837,7 +840,11 @@ function reqForPrivateVars(reqVars) {
 }
 
 
-
+/**
+ * @name Get user information
+ * @route {GET} /api/user/
+ * 
+ */
 router.get('/getUser', function(req, res) {
     if(!req.query.hasOwnProperty('users')) {
         req.query.users = [req.session.person_id];
