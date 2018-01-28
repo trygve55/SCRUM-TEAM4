@@ -236,7 +236,6 @@ function ClearFields() {
 function changeTab(name) {
 	$('#stat0').remove();
 	$('#stat1').remove();
-    activeTab='feed';
     if(name)
         activeTab = name;
     else
