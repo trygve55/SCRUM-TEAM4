@@ -819,7 +819,7 @@ Request URL : /api/user/getUser?variables=email&variables=phone&variables=user_l
 
 var publicVars = ['username', 'forename', 'middlename', 'lastname', 'gender', 'profile_pic',
     'profile_pic_tiny', 'last_active'];
-var privateVars = ['email', 'phone', 'birth_date', 'is_verified', 'shopping_list_id', 'user_language',
+var privateVars = ['email', 'phone', 'birth_date', 'is_verified', 'user_language',
     'user_deactivated', 'facebook_api_id'];
 
 function reqForPrivateVars(reqVars) {
@@ -863,7 +863,7 @@ router.get('/getUser', function(req, res) {
         sqlQuery = sqlQuery.slice(0,-3);
         pool.query(sqlQuery, function(err, result) {
             if(err) {
-                res.status(500).send("Error in SQL query");
+                res.status(500).send(err);
                 return;
             }
             res.status(200).send(result);
@@ -875,7 +875,7 @@ function checkRequestArray(variables, users) {
         'forename', 'middlename',
         'lastname', 'phone', 'birth_date', 'is_verified',
         'gender', 'profile_pic', 'profile_pic_tiny',
-        'last_active', 'shopping_list_id',
+        'last_active',
         'user_language', 'user_deactivated', 'facebook_api_id'];
     var errors = 0;
     variables.forEach(function(element) {
