@@ -35,7 +35,7 @@
 	"reg_cost": "Register Expense",
 	"desc_button0": "Administrate",
 	"desc_button1": "Show",
-	"stat_header": "Last 12 months",
+	"stat_header": "Here you can view statistics for the group. Select categories and time intervals to see the data for them. If nothing appears, there is no data for the seelction.",
 	"list-name-task": "Tasks",
 	"add-task": "Add task",
 	"food-button": "Edit meal planner",
@@ -125,6 +125,17 @@
 	"add-picture": "Add picture",
 	"group-post": "Post",
 	"addGroup-button": "Add group",
+	"done-tasks-btn":"Finished tasks",
+	"listname": "Tasks",
+	"addTask": "Add task",
+	"changenameofgroup": "Change name on group",
+	"changegroupNameButton": "Change",
+	"memebersofgroup": "Members of group",
+	"deletegroup": "Delete group?",
+	"addmembers": "Add members:",
+	"leaveGroup": "Yes",
+	"memebersogfroup": "Members of group",
+	"leaveinggroup": "Leave group?",
+	"leaveGroupButton": "Yes",
 	"entry-ok": "Register"
-
 }

@@ -12,6 +12,16 @@ var buyers = [];
 
 jQuery.ajaxSettings.traditional = true;
 
+socket.on('shoppinglist list item', function(data){
+
+});
+
+socket.on('shoppinglist list item remove', function(data){
+
+});
+
+socket.on('shoppinglist list item')
+
 $('document').ready(function () {
 
     $('#shop-logout').click(function () {
@@ -691,8 +701,23 @@ function setupClicks(){
                         shopping_list_id: li,
                         person_id: newmembers[j].id
                     },
+                    success: function(){
+                        $.ajax({
+                            url: '/api/shoppingList/' + li,
+                            method: 'GET',
+                            success: function(data){
+                                console.log(data);
+                                for(var i = 0; i < lists.length; i++){
+                                    if(lists[i].shopping_list_id == data.shopping_list_id){
+                                        lists[i].persons = data.persons;
+                                    }
+                                }
+                            },
+                            error: console.error
+                        });
+                    },
                     error: console.error
-                })
+                });
             }
             $(this).closest(".pop").remove();
             newmembers=[];

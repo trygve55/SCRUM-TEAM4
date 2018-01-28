@@ -6,6 +6,7 @@ const MILLIS_DAY = 86400000;
 var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone, popupAssign, listMemebers, listMemebersAdmin, adminView, adminViewSimple, groupShopping;
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
 var generalLabels, grouplist;
+var lang;
 
 socket.on('group post', function(data){
     for(var i = 0; i < data.length; i++) {
@@ -236,7 +237,6 @@ function ClearFields() {
 function changeTab(name) {
 	$('#stat0').remove();
 	$('#stat1').remove();
-    activeTab='feed';
     if(name)
         activeTab = name;
     else
@@ -298,7 +298,14 @@ function adminChange() {
                         method: 'GET',
                         success: function (data) {
                             if(priv) {
-                                $("#leave").html(adminView());
+                                $("#leave").html(adminView({
+                                    changenameofgroup: lang["changenameofgroup"],
+                                    memebersofgroup: lang["memebersofgroup"],
+                                    changegroupNameButton: lang["changegroupNameButton"],
+                                    addmembers: lang["addmembers"],
+                                    deletegroup: lang["deletegroup"],
+                                    leaveGroup: lang["leaveGroup"]
+                                }));
                                 $("#leaveGroup").click(leaveGroup);
                                 $("#typeing-members .typeahead").typeahead({
                                         highlight: true
@@ -344,7 +351,7 @@ function adminChange() {
                                         success: function(data){
                                             $('#list-all-members').append(listMemebersAdmin({
                                                 member_text: data.forename + " " + data.lastname,
-                                                member_id: data.person_id,
+                                                member_id: data.person_id
                                             }));
                                         },
                                         error: console.error
@@ -358,16 +365,27 @@ function adminChange() {
                                 });
                             }
                             else
-                                $("#leave").html(adminViewSimple());
+                                $("#leave").html(adminViewSimple({
+                                    changenameofgroup: lang["changenameofgroup"],
+                                    memebersofgroup: lang["memebersofgroup"],
+                                    changegroupNameButton: lang["changegroupNameButton"],
+                                    addmembers: lang["addmembers"],
+                                    deletegroup: lang["deletegroup"],
+                                    leaveinggroup: lang["leaveinggroup"],
+                                    leaveGroupButton: lang["leaveGroupButton"],
+                                    leaveGroup: lang["leaveGroup"]
+
+                                }));
                             for (var i = 0; i < data.length; i++) {
                                 if (priv) {
                                     $('#list-all-members').append(listMemebersAdmin({
                                         member_text: data[i].name,
-                                        member_id: data[i].person_id,
+                                        member_id: data[i].person_id
                                     }));
 
                                 } else {
                                     $('#list-all-members').append(listMemebers({
+                                        memebersofgroup: lang["memebersofgroup"],
                                         member_text: data[i].name,
                                         member_id: data[i].person_id
                                     }));
@@ -375,6 +393,7 @@ function adminChange() {
                                 }
 
                             }
+
                         }
                     })
                 }
@@ -411,7 +430,7 @@ function addGroupToList(group) {
     for (var i = 0; i < groups.length; i++) {
         if ($(groups[i]).html() == group.group_name) return;
     }
-    $("#thelistgroup").append('<li class="list-group-item tablink group"  data-group-id="' + group.group_id + '">' + group.group_name + '</li>');
+    if (group.invite_accepted) $("#thelistgroup").append('<li class="list-group-item tablink group"  data-group-id="' + group.group_id + '">' + group.group_name + '</li>');
     //$("#groupselection").append('<div style="padding-top: 2px; height: 30px; border-radius: 10px; background-color: white; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class="tablink text-center backvariant group" data-group-id="' + group.group_id + '">' + group.group_name + '</div><h4></h4>');
 }
 
@@ -1287,7 +1306,7 @@ function drawChart() {
 				hideFirstStat();
 				return;
 			}
-			if (result.budget_entries.length < 0) {
+			if (result.budget.length < 0) {
 				hideFirstStat();
 				return;
 			}
@@ -1300,8 +1319,8 @@ function drawChart() {
 				return Array(12).fill(0);
 			});
 			var validAmount = false;
-			for (var i = 0; i < result.budget_entries.length; i++) {
-				var element = result.budget_entries[i];
+			for (var i = 0; i < result.budget.length; i++) {
+				var element = result.budget[i];
 				if (element.entry_datetime != null) {
 					var entryTime = new Date(element.entry_datetime);
 					if (entryTime > minLimit && element.amount != 0) {
@@ -1339,7 +1358,10 @@ function drawLabelChart(start, end, typeName, intervalType) {
 		contentType: "application/json",
 		dataType: "json",
 		error: function(jqXHR, text, error) {
-			if (error == "Bad Request" && jqXHR.responseText == "No data found.") {hideSecondStat();}
+			if (error == "Bad Request" && jqXHR.responseText == "No data found.") {
+				$('#stat0').remove();
+				
+			}
 			return;
 		},
 		success: function(result) {
@@ -1419,7 +1441,7 @@ function addInvertedColour(colour) {
 	if (colour) {
 		rgb = [["(", "("], ["(", "("]];
 		for (var i = 0; i < 6; i += 2) {
-			var colourPart = parseInt(colour.toString(16).slice(i, i + 2), 10);
+			var colourPart = parseInt(colour.toString(16).slice(i, i + 2), 16);
 			var rColourPart = (255 - colourPart) + ", ";
 			rgb[0][0] += colourPart + ", ";
 			rgb[0][1] += colourPart + ", ";
@@ -1784,15 +1806,12 @@ function createLabelOptions() {
 
 function hideFirstStat() {
 	$("#stat0").css('display', 'none');
-	$("#stat_header").css('display', 'none');
 	$('#stat0').remove();
 }
 
 function showFirstStat() {
-	
 	$('#stat_container').append('<canvas id="stat0" class="chart"></canvas>');
 	$("#stat0").css('display', 'block');
-	$("#stat_header").css('display', 'block');
 }
 
 function hideSecondStat() {

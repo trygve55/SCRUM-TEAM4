@@ -66,6 +66,7 @@ router.post('/person/:todo_id', function(req, res) {
 	);
 	
 	pool.query(resultQuery[0], resultQuery[1], function(err) {
+	    console.log(err);
 		return (err) ? (res.status(500).send()) : (res.status(200).send());
 	});
 });
@@ -151,7 +152,7 @@ router.get('/person/:person_id', function(req, res) {
 });
 
 /**
- * Update a task
+ * Set a task as completed
  *
  * URL: /api/tasks/{todo_id}
  * method: PUT
@@ -176,7 +177,7 @@ router.put('/:todo_id/done', function(req, res) {
 });
 
 /**
- * Update a task
+ * Set a task that is done to be not done after all
  *
  * URL: /api/tasks/{todo_id}
  * method: PUT
@@ -201,7 +202,7 @@ router.put('/:todo_id/undo', function(req, res) {
 });
 
 /**
- * Update a task
+ * Update a task with the provided data
  *
  * URL: /api/tasks/{todo_id}
  * method: PUT
@@ -267,21 +268,6 @@ router.get('/todo/:todo_id', function(req, res) {
             return res.status(200).json(values);
 		}
 	);
-});
-
-router.delete(':group_id/todo/:todo_id', function(req, res){
-    pool.query('DELETE FROM todo WHERE todo.todo_id = ?',
-        [req.params.todo_id], function(err, result) {
-            pool.query('SELECT todo_id, datetime_deadline, datetime_added, datetime_done, forename, middlename, lastname, todo_text, is_deactivated, color_hex, todo.group_id FROM todo LEFT JOIN home_group USING (group_id) LEFT Join person ON done_by_id = person.person_id WHERE todo_id = ?',
-                [req.params.todo_id], function(err, result){
-                    if(err)
-                        return res.status(500).send();
-                    else if(result.length == 0)
-                        return res.status(500).send();
-                    socket.group_data('group task remove', req.params.group_id, req.params.todo_id);
-                    return res.status(200).send();
-                });
-        });
 });
 
 /**
@@ -364,7 +350,6 @@ router.get('/:group_id', function(req, res) {
  */
 router.post('/', function(req, res) {
     var data = req.body, input = [];
-    console.log(data);
     var query = "INSERT INTO todo (datetime_deadline, group_id, todo_text, datetime_done, created_by_id, done_by_id, autogen_id) VALUES ";
     if (data.time_interval > 0) {
         // Find the maximum autogen_id and increment it. This ensures that it will be unique.

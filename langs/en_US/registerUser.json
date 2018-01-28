@@ -14,5 +14,8 @@
   "lastname": "Lastname:",
   "email": "Email:",
   "phone": "Phone number:",
-  "register-fillIn": "Please fill in each field marked with *"
+  "register-fillIn": "Please fill in each field marked with *",
+  "popup-title-modal": "Thank you for registering!",
+  "popup-text": "An e-mail has been sent to your e-mail account, please verify your account by going to your e-mail account then click the link provided.",
+  "popup-close": "Close"
 }

@@ -91,15 +91,15 @@
 
 				<h5 class="langtext" id="desc_title0"></h5>
 
-				<ul class="list-group" id="thelistgroup"></ul>
+				<ul class="list-group" id="thelistgroup" style="overflow-y: auto"></ul>
 
 				<div onclick="addGroup()" style="background-color: #a3e6f7; padding: 1vh; margin-top: 2vh; border-radius: 10px; -moz-box-shadow: inset 0 0 3px grey; -webkit-box-shadow: inset 0 0 3px grey; box-shadow: inset 0 0 3px grey;" class="tablink text-center backvariant" id="addGroup-button"></div>
 				<br>
 			</div>
 
 			<br>
-			<div id="groupwindowStart" class="transparency col-sm-11 col-lg-8" style=" border-bottom: #a3e6f7 1vh solid;border-top: #a3e6f7 1vh solid;">
-				<img src="/img/HouseholdManager.png" style="margin-top: 1vh; width: 100% ;height: auto;">
+			<div id="groupwindowStart" class="transparency col-sm-11 col-lg-8" style=" border-bottom: #a3e6f7 1vh solid;border-top: #a3e6f7 1vh solid; ">
+				<img src="/img/HouseholdManager.png" style="margin-top: 1vh; width: 100% ;height: 100%; object-fit: contain;">
 			</div>
 			<div id="groupwindow" class="transparency col-sm-11 col-lg-8" style="border-bottom: #a3e6f7 1vh solid;border-top: #a3e6f7 1vh solid;">
 				<div id="grouptabs">
@@ -167,18 +167,18 @@
 				<div id="tasks" class="grouptab">
 					<div style="width: 80%; margin-top: 2vh; border: 1px solid lightgrey; border-radius: 15px; padding: 2vh; background-color: #a3e6f7;">
 					<div id="cur-tasks">
-						<h4 class="list-name-task"></h4>
+						<h4 id="listname" class="list-name-task"></h4>
 						<div class="row">
 							<div class="col-sm listeTask">
 								<ul class="list-group itemlist-task"></ul>
 								<ul class="list-group" style="overflow-y: visible;">
-									<li class="list-group-item add-task">
+									<li id="addTask" class="list-group-item add-task">
 										<i class="fa fa-plus-circle" aria-hidden="true" id="add-task"></i>
 									</li>
 								</ul>
 							</div>
 						</div>
-						<button type="button" class="btn btn-success" id="done-tasks-btn" style="margin-top: 2vh">Utførte gjøremål</button>
+						<button type="button" class="btn btn-success" id="done-tasks-btn" style="margin-top: 2vh"></button>
 					</div>
 
 					<div id="done-tasks" style="display: none;">
@@ -199,38 +199,37 @@
 
 				<div id="statistics" class="grouptab text-center">
 					<hr width="90%">
-					<div class='col-sm-3'>
+					<p id="stat_header"></p>
+					<div style="width:50%; margin:auto;" class="form-group">
+						<select id="entry_types" class="selectpicker" data-live-search="true">
+							
+						</select>
+						<select id="time_types" class="selectpicker">
+							<option id="desc_year">Years</option>
+							<option id="desc_month">Months</option>
+							<option id="desc_day">Days</option>
+						</select>
 						<div class="form-group">
-							<select id="entry_types" class="selectpicker" data-live-search="true">
-								
-							</select>
-							<select id="time_types" class="selectpicker">
-								<option id="desc_year">Years</option>
-								<option id="desc_month">Months</option>
-								<option id="desc_day">Days</option>
-							</select>
-							<div class="form-group">
-								<label class="control-label" id="ds_label" for="date_start">Start date: </label>
-								<input class="form-control" id="date_start" name="date_start" placeholder="DD/MM/YYYY" type="text"/>
-							</div>
-							<div class="form-group">
-								<label class="control-label" id="de_label" for="date_end">End date: </label>
-								<input class="form-control" id="date_end" name="date_end" placeholder="DD/MM/YYYY" type="text"/>
-							</div>
-							<button id="showStat" type="button" class="btn btn-primary" onclick="drawStats()">
-								<p class="langtext" id="desc_button1"></p>
-							</button>
+							<label class="control-label" id="ds_label" for="date_start">Start date: </label>
+							<input class="form-control" id="date_start" name="date_start" placeholder="DD/MM/YYYY" type="text"/>
 						</div>
+						<div class="form-group">
+							<label class="control-label" id="de_label" for="date_end">End date: </label>
+							<input class="form-control" id="date_end" name="date_end" placeholder="DD/MM/YYYY" type="text"/>
+						</div>
+						<button id="showStat" type="button" class="btn btn-primary" onclick="drawStats()">
+							<p class="langtext" id="desc_button1"></p>
+						</button>
 					</div>
 					<div id="stat_container">
-						<p id="stat_header"></p>
 						<canvas id="stat0" class="chart"></canvas>
 						<canvas id="stat1" class="chart"></canvas>
 					</div>
 				</div>
-				<div id="leave" class="grouptab text-center">
 
+				<div id="leave" class="grouptab text-center">
 				</div>
+
 				<div id="food" class="grouptab">
 					<br>
 						<div id="oda"><div id='calendar'></div></div>

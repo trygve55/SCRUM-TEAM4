@@ -27,6 +27,9 @@
 
 <body>
 
+
+
+
 <div class="flag" style="background-color: white">
     <img id="register-norway" style="position:absolute; right:15px; margin-top: 1%" src="/img/norwegianflag.jpg" width="20" height="12">
     <img id="register-england" style="position:absolute; right: 40px; margin-top: 1%" src="/img/engelskflagg.png" width="20" height="12">
@@ -92,5 +95,27 @@
         </div>
     </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="getCodeModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="popup-title-modal"></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body" id="popup-text" style="overflow-x: scroll;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="popup-close"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
 </body>
 </html>
