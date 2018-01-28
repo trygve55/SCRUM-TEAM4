@@ -11,7 +11,7 @@ var router = require('express').Router();
  *
  */
 router.get('/me', function(req, res){
-    pool.query('SELECT recipe_id, recipe_directions, recipe_servings, recipe_time, forename, middlename, lastname, meal_datetime ' +
+    pool.query('SELECT recipe_name, recipe_id, recipe_directions, recipe_servings, recipe_time, forename, middlename, lastname, meal_datetime ' +
         'FROM recipe LEFT JOIN person_recipe USING (recipe_id) '+
         'LEFT JOIN person ON (recipe.person_id = person.person_id) ' +
         'WHERE person_recipe.person_id = ?',
