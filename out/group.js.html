@@ -1,4 +1,32 @@
-/*
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: group.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: group.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
 Authors: A.C., Andreas Hammer (main author), Magnus Eilertsen
 
     home_group columns:
@@ -71,7 +99,7 @@ router.get('/:group_id/users', function(req, res){
         if(err)
             return res.status(500).send();
         var ret = [];
-        for(var i = 0; i < result.length; i++){
+        for(var i = 0; i &lt; result.length; i++){
             ret.push({
                 person_id: result[i].person_id,
                 name: result[i].forename + " " + result[i].lastname,
@@ -175,7 +203,7 @@ router.get('/', function(req, res){
 router.post('/:group_id/members', function(req, res){
     if(!req.session.person_id)
         return res.status(500).send("Person_id");
-    if(!req.body['members[]'] && !req.body.members)
+    if(!req.body['members[]'] &amp;&amp; !req.body.members)
         return res.status(400).send("Members");
     if(!(req.body.members instanceof Array)){
         if(!req.body.members) {
@@ -212,7 +240,7 @@ router.post('/:group_id/members', function(req, res){
                 var qry = "INSERT INTO group_person (person_id, group_id, was_invited) VALUES (?, ?, ?)";
                 var vals = [req.body.members[0], req.params.group_id, 1];
                 socket.person_data('invite group', req.body.members[0], group);
-                for (var i = 1; i < req.body.members.length; i++) {
+                for (var i = 1; i &lt; req.body.members.length; i++) {
                     qry += ", (?, ?, ?)";
                     vals.push(req.body.members[i], req.params.group_id, 1);
                     socket.person_data('invite group', req.body.members[i], group);
@@ -544,7 +572,7 @@ router.get('/:group_id/todo', function(req, res) {
 					return res.status(500).send();
 				if (result) {
 					var people = [];
-					for (i = 0; i < result.length; i++) {people.push({"person_id":result[i].person_id});}
+					for (i = 0; i &lt; result.length; i++) {people.push({"person_id":result[i].person_id});}
 					var values = {};
 					for (var p in result[0]) {values[p] = result[0][p];}
 					delete values.person_id;
@@ -587,7 +615,7 @@ router.put('/:group_id', function(req, res){
         var f = true;
         var vals = [];
         for (var p in req.body) {
-            if(acceptedGroupVars.indexOf(p) < 0)
+            if(acceptedGroupVars.indexOf(p) &lt; 0)
                 return res.status(400).send("Bad request (bad variable: '" + p + "')");
             if (!f)
                 qry += ", ";
@@ -616,7 +644,7 @@ router.put('/:group_id', function(req, res){
 router.post('/', function(req, res){
     var acceptedGroupVars = ["group_name", "currency"];
     for(var p in req.body) {
-        if(acceptedGroupVars.indexOf(p) < 0) return res.status(400).send("Bad variable: " + p);
+        if(acceptedGroupVars.indexOf(p) &lt; 0) return res.status(400).send("Bad variable: " + p);
     }
     if(!req.body.group_name) return res.status(400).send("Missing variable: group_name");
     if(!req.body.currency) return res.status(400).send("Missing variable: currency");
@@ -689,3 +717,26 @@ function checkConnectionError(err, connection, res) {
 	}
 	return true;
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-User%2520Authentication.html">User Authentication</a></li></ul><h3>Global</h3><ul><li><a href="global.html#changeAmounts">changeAmounts</a></li><li><a href="global.html#checkConnectionError">checkConnectionError</a></li><li><a href="global.html#checkRange">checkRange</a></li><li><a href="global.html#checkResult">checkResult</a></li><li><a href="global.html#checkValidEmail">checkValidEmail</a></li><li><a href="global.html#checkValidForename">checkValidForename</a></li><li><a href="global.html#checkValidName">checkValidName</a></li><li><a href="global.html#checkValidPassword">checkValidPassword</a></li><li><a href="global.html#checkValidPhone">checkValidPhone</a></li><li><a href="global.html#checkValidUsername">checkValidUsername</a></li><li><a href="global.html#existsInArray">existsInArray</a></li><li><a href="global.html#multipleRequestSetup">multipleRequestSetup</a></li><li><a href="global.html#putRequestSetup">putRequestSetup</a></li><li><a href="global.html#removeDuplicates">removeDuplicates</a></li><li><a href="global.html#rollbackC">rollbackC</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Jan 28 2018 18:06:57 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
