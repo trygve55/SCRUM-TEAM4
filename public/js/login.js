@@ -20,7 +20,6 @@ window.fbAsyncInit = function() {
                 method: "GET",
                 success: function(data){
                     if(data.login) {
-
                         window.location = "/index.html";
                     }
                 },
@@ -229,6 +228,7 @@ $(function () {
             success: function (data) {
                 console.log(data);
                 if(data.login)
+                    localStorage.person_id = data.person_id;
                     window.location = '/index.html';
             },
             error: function (data) {
