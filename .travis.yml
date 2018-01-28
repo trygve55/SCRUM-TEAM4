@@ -11,10 +11,10 @@ branches:
   - master
 
 script:
-  - npm tst
+  - npm test
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - codecov
 
 services:
   - mysql
