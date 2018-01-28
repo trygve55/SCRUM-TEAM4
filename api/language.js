@@ -1,5 +1,5 @@
 /**
- * @module Budget
+ * @module Language API
  */
 var router = require('express').Router();
 var path = require('path');

@@ -1,5 +1,5 @@
 /**
- * @module Budget
+ * @module Group Task API
  */
 var router = require('express').Router();
 

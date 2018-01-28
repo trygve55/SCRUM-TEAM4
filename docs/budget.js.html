@@ -27,14 +27,14 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * @module Budget
+ * @module Budget API
  */
 var router = require('express').Router();
 
 module.exports = router;
 
 /**
- * Adds a new budget entry label
+ * Adds a new budget entry label for a shopping list
  *
  * @name Adds new budget entry label
  * @route {POST} /api/budget/entryType
@@ -62,7 +62,7 @@ router.post('/entryType', function(req, res) {
 });
 
 /**
- * Returns a budget entry labels
+ * Returns budget entry labels for a shopping list
  *
  * @name Returns a budget entry labels
  * @route {GET} /api/budget/entryType
@@ -163,7 +163,10 @@ router.delete('/entryType/:budget_entry_type_id', function(req, res) {
 router.post('/', function(req, res){
     console.log(req.body);
     req.body.shopping_list_entry_ids = req.body.shopping_list_entry_ids.split(",");
-    req.body.person_ids = req.body.person_ids.split(",");
+    if (req.body.person_ids)
+        req.body.person_ids = req.body.person_ids.split(",");
+    else
+        req.body.person_ids = [];
     req.body.text_note = req.body.text_note.substring(0, 254);
     pool.getConnection(function(err, connection) {
         if (err)
@@ -232,7 +235,7 @@ router.post('/', function(req, res){
  *
  */
 router.get('/getDebt', function(req,res) {
-    var person_id = 6//req.session.person_id;
+    var person_id = req.session.person_id;
     var sqlQuery = "SELECT amount, person_id, be.budget_entry_id, datetime_paid FROM budget_entry be " +
         "RIGHT JOIN person_budget_entry pbe USING (budget_entry_id) " +
         "WHERE added_by_id = ? AND be.added_by_id != pbe.person_id;";
@@ -439,10 +442,7 @@ router.put('/paySpecific', function(req, res) {
     "added_by_id IN " + p + " AND " +
     "datetime_paid IS NULL) t)";
     ids = ids.concat(ids);
-    console.log(sqlQuery);
-    console.log(ids);
     pool.query(sqlQuery,ids,function(err) {
-        console.log(err);
         if(err) {
             return res.status(500).send("Internal database error");
         }
@@ -485,10 +485,7 @@ router.put('/pay', function(req, res) {
     sqlQuery += ") OR (person_id = ? AND added_by_id = ?)) AND datetime_paid IS NULL) t)";
     ids.unshift(req.body.person_id);
     ids.push(req.session.person_id, req.body.person_id);
-    console.log(sqlQuery);
-    console.log(ids);
     pool.query(sqlQuery,ids,function(err) {
-        console.log(err);
         if(err) {
             return res.status(500).send("Internal database error");
         }
@@ -502,7 +499,7 @@ router.put('/pay', function(req, res) {
  * @name Budget entries with type for a group
  * @route {GET} /api/budget/entries
  * @headerparam {number} group_id A groups unique id
- * 
+ *
  */
 
 router.get('/', function(req, res) {
@@ -618,13 +615,13 @@ function inArray(arr, token, param){
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Budget.html">Budget</a></li><li><a href="module-User%2520Authentication.html">User Authentication</a></li></ul><h3>Global</h3><ul><li><a href="global.html#changeAmounts">changeAmounts</a></li><li><a href="global.html#checkConnectionError">checkConnectionError</a></li><li><a href="global.html#checkRange">checkRange</a></li><li><a href="global.html#checkResult">checkResult</a></li><li><a href="global.html#checkValidEmail">checkValidEmail</a></li><li><a href="global.html#checkValidForename">checkValidForename</a></li><li><a href="global.html#checkValidName">checkValidName</a></li><li><a href="global.html#checkValidPassword">checkValidPassword</a></li><li><a href="global.html#checkValidPhone">checkValidPhone</a></li><li><a href="global.html#checkValidUsername">checkValidUsername</a></li><li><a href="global.html#existsInArray">existsInArray</a></li><li><a href="global.html#multipleRequestSetup">multipleRequestSetup</a></li><li><a href="global.html#putRequestSetup">putRequestSetup</a></li><li><a href="global.html#removeDuplicates">removeDuplicates</a></li><li><a href="global.html#rollbackC">rollbackC</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Budget%2520API.html">Budget API</a></li><li><a href="module-Currency%2520API.html">Currency API</a></li><li><a href="module-Group%2520API.html">Group API</a></li><li><a href="module-Group%2520Task%2520API.html">Group Task API</a></li><li><a href="module-Language%2520API.html">Language API</a></li><li><a href="module-Meal%2520planner%2520API.html">Meal planner API</a></li><li><a href="module-News%2520feed%2520API.html">News feed API</a></li><li><a href="module-Notification%2520center%2520API.html">Notification center API</a></li><li><a href="module-Personal%2520Task%2520API.html">Personal Task API</a></li><li><a href="module-Shopping%2520List%2520API.html">Shopping List API</a></li><li><a href="module-User%2520Authentication%2520API.html">User Authentication API</a></li><li><a href="module-User%2520Information%2520API.html">User Information API</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Jan 28 2018 18:47:55 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Jan 28 2018 21:47:58 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>

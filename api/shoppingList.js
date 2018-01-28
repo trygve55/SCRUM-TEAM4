@@ -1,5 +1,5 @@
 /**
- * @module Budget
+ * @module Shopping List API
  */
 var router = require('express').Router();
 var fx = require('money');
