@@ -34,6 +34,7 @@
     "mysql": "^2.15.0",
     "net": "^1.0.2",
     "nodemailer": "^4.4.1",
+    "nyc": "^11.4.1",
     "open-exchange-rates": "^0.3.0",
     "package.json": "^2.0.1",
     "path": "^0.12.7",

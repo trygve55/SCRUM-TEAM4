@@ -5,6 +5,7 @@ Cookies = null;
 
 chai = require('chai');
 request = require('supertest-session')(app);
+require('./sockets')(request.agent.app);
 
 pool = mysql.createPool({
     connectionLimit : 2,

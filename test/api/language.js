@@ -2,6 +2,10 @@
  * Prepare server for test language
  */
 
+socket = {person_data: function() {},
+    group_data: function() {},
+    shopping_list_data: function() {}};
+
 before("Create session (log in)", function(done){
     request.post('/api/auth')
         .send({
