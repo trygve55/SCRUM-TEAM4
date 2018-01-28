@@ -43,7 +43,18 @@
             <div class="navbar-nav">
                 <a id="tasks-homepage" class="nav-item nav-link" href="index.html"></a>
                 <a id="tasks-groups" class="nav-item nav-link" href="group.html"></a>
-                <a id="tasks-tasks" class="nav-item nav-link  active" href="tasks.html"></a>
+                <a id="tasks-tasks" class="nav-item nav-link  active" href="tasks.html" onclick="new function () {
+                  $.ajax({
+                    url: '/api/group/me',
+                    method: 'GET',
+                    success: function(data){
+                        if(!data.length || data.length == 0)
+                            window.location = '/noGroup.html';
+                        else
+                            window.location = '/group.html';
+                    }
+                  });
+                }();"></a>
                 <a id="tasks-shoppinglists" class="nav-item nav-link" href="shoppinglist.html"></a>
             </div>
             <div class="navbar-nav ml-auto">

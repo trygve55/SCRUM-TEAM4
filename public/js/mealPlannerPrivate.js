@@ -16,9 +16,10 @@ $(function () {
     var recipeNameChosenGroup= "";
     var recipeTimeChosenGroup= "";
     $.ajax({
-        url: '/api/recipe/person/' + localStorage.person_id,
+        url: '/api/recipe/me',
         method: 'GET',
         success: function (datatFOod) {
+            console.log(datatFOod);
             var events = [];
             for(var i = 0; i <datatFOod.length; i++){
                 recipeNameChosenGroup = datatFOod[i].recipe_name;
@@ -413,7 +414,7 @@ function updateList(data){
         $("#from-datepicker").datepicker({
             dateFormat: 'dd-mm-yy',
             altField: '#from-datepicker',
-            altFormat: 'yy-mm-dd',
+            altFormat: 'yy-mm-dd'
         });
 
 
@@ -433,7 +434,7 @@ function updateList(data){
             }
 
             $.ajax({
-                url: '/api/recipe/person/' + localStorage.person_id,
+                url: '/api/recipe/me',
                 method: 'POST',
                 data: {
                     recipe_id: idRec,

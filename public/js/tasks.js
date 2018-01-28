@@ -187,7 +187,7 @@ function prep(){
            method: 'POST',
            success: function (data) {
                $('#addlist').after(tasklist({
-                   task_list_id: data.success.insertId,
+                   task_list_id: data.private_todo_list_id,
                    lang_add_item: lang["tasks-add-item"],
                    lang_done_items: lang["tasks-done-tasks"],
                    lang_delete: lang["tasks-delete"]

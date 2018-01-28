@@ -1,5 +1,6 @@
 {
   "forgotpassword": "Verify Account",
   "resetbut": "Verify Account now!",
-  "forgot-email-success": "The account have now been verified."
+  "forgot-email-success": "The account have now been verified. YOu will soon be sent to the login page.",
+  "forgot-email-error": "Link invalid or user already verified."
 }
