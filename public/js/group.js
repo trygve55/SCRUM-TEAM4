@@ -1865,10 +1865,6 @@ function addMembersPopup(todo){
     //Adds member to list when clicked
     $(".typeahead").bind('typeahead:select', function(a, data){
         themember = data;
-
-    });
-
-    $('.assignok').unbind("click").click(function () {
         var personid = themember.person_id;
         var personids = [];
         personids.push(personid);
@@ -1887,7 +1883,6 @@ function addMembersPopup(todo){
             error: console.error
         })
     });
-
     $('.assigncancel').unbind("click").click(function () {
         $('.pop').remove();
     });
