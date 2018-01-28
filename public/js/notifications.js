@@ -199,6 +199,7 @@ $(function(){
                                             }
                                         }
                                         $(li).closest("li").html(langNotification["n-accept-inv"]);
+                                        indow.location.reload();
                                     },
                                     error: console.error
                                 });
