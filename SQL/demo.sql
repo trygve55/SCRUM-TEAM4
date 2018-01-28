@@ -1,6 +1,12 @@
 INSERT INTO person(email, username, password_hash, forename, middlename, lastname, phone, birth_date, verify_token, gender, profile_pic, last_active, reset_password_token, shopping_list_id, user_language)
 	VALUES ('mail@example.com', 'demo', x'$2a$10$YpC8y4SbkZ7YT6fTyyA9F.BvDmwpmSEkPYSAyZGH4bmT2CxQlxQ6q', 'Ola', NULL, 'Normann', '12345678', '1990-01-01', true, 0, NULL, DEFAULT, NULL, 1, DEFAULT);
 
+INSERT INTO person(email, username, password_hash, forename, middlename, lastname, phone, birth_date, verify_token, gender, profile_pic, last_active, reset_password_token, shopping_list_id, user_language)
+    VALUES ('test@test.com', 'testnavn', x'243261243130244c6b3943524f466835467471577158506756766c772e586b473269397a653473336d5a667a6a502e545131545162793945676b3647', 'test', NULL, 'test', '23456', CURRENT_DATE, true, 0, NULL, DEFAULT, NULL, 1, DEFAULT);
+
+INSERT INTO person(email, username, password_hash, forename, middlename, lastname, phone, birth_date, verify_token, gender, profile_pic, last_active, reset_password_token, shopping_list_id, user_language)
+	VALUES ('mail@example.com', 'demo', x'$2a$10$YpC8y4SbkZ7YT6fTyyA9F.BvDmwpmSEkPYSAyZGH4bmT2CxQlxQ6q', 'Ola', NULL, 'Normann', '12345678', '1990-01-01', true, 0, NULL, DEFAULT, NULL, 1, DEFAULT);
+
 INSERT INTO person (email, username, password_hash, forename, middlename, lastname, phone, birth_date, verify_token, gender, profile_pic, last_active, reset_password_token, shopping_list_id, user_language, user_deactivated, facebook_api_id)
 	VALUES ('facebook@test.com', 'facebook', NULL, 'test', NULL, 'test', '', CURRENT_DATE, DEFAULT, DEFAULT, NULL, DEFAULT, NULL, 2, DEFAULT, DEFAULT, 123456);
 
