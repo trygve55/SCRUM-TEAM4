@@ -240,7 +240,7 @@ CREATE TABLE todo_person (
     person_id INTEGER NOT NULL,
     CONSTRAINT todo_fk FOREIGN KEY(todo_id) REFERENCES todo(todo_id),
     CONSTRAINT todo_person_fk FOREIGN KEY(person_id) REFERENCES person(person_id),
-    CONSTRAINT todo_pk PRIMARY KEY(todo_id, person_id)
+    CONSTRAINT todo_pk PRIMARY KEY(todo_id)
 );
 
 CREATE TABLE person_budget_entry (

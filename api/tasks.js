@@ -66,7 +66,14 @@ router.post('/person/:todo_id', function(req, res) {
 	);
 	
 	pool.query(resultQuery[0], resultQuery[1], function(err) {
-	    console.log(err);
+	    if (err.code == 'ER_DUP_ENTRY') return pool.query(
+            'UPDATE todo_person SET person_id = ? WHERE todo_id = ?',
+	        [data, req.params.todo_id],
+	        function (err) {
+                console.log(err);
+                return (err) ? (res.status(500).send()) : (res.status(200).send());
+        });
+        console.log(err);
 		return (err) ? (res.status(500).send()) : (res.status(200).send());
 	});
 });
