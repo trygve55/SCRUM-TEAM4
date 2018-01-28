@@ -11,10 +11,11 @@ branches:
   - master
 
 script:
-  - npm test
+  - npm run coverage
+  - npm run coverage:remap
 
 after_success:
-  - codecov
+  - npm run codecov
 
 services:
   - mysql

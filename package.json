@@ -5,7 +5,9 @@
     "start": "node server.js",
     "debug": "nodemon --ignore public/ server.js",
     "test": "istanbul test node_modules/mocha/bin/_mocha",
-    "tst": "istanbul cover node_modules/mocha/bin/_mocha && codecov"
+    "tst": "istanbul cover node_modules/mocha/bin/_mocha && codecov",
+    "coverage": "istanbul cover node_modules/mocha/bin/_mocha -- -r ts-node/register test/**/*.spec.ts --exit",
+    "coverage:remap": "remap-istanbul -i coverage/coverage.json -o coverage/coverage.json"
   },
   "dependencies": {
     "bcrypt": "^1.0.3",
