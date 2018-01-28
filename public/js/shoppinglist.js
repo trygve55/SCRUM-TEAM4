@@ -730,18 +730,18 @@ function setupClicks(){
      * This method opens settlement box when money-button is clicked.
      */
     $(".fa-money").unbind("click").click(function(){
-        var id = $(this).closest("div[data-id]").data("id");
+        var theid = $(this).closest("div[data-id]").data("id");
         var sign = "";
         var place = -1;
         for(var j=0; j<lists.length; j++){
-            if(lists[j].shopping_list_id==id){
+            if(lists[j].shopping_list_id==theid){
                 sign = lists[j].currency_sign;
                 place=j;
             }
         }
         var mbutton = this;
         $.ajax({
-            url: '/api/budget/' + id,
+            url: '/api/budget/' + theid,
             method: 'GET',
             success: function(data){
                 curBudget = data;
@@ -784,11 +784,12 @@ function setupClicks(){
 
 
                 $('.balancelist').unbind("click").click(function () {
+                    console.log("clicjed");
                     var name = this.innerHTML.split('>')[1].split('<')[0];
                     for(var j=0; j<balancelist.length; j++){
-                        let thefullname = balancelist[j].forename + " " + balancelist[j].lastname;
-                        let personid = balancelist[j].person_id;
-                        let row = $(this);
+                        var thefullname = balancelist[j].forename + " " + balancelist[j].lastname;
+                        var personid = balancelist[j].person_id;
+                        var row = $(this);
                         if(thefullname == name){
                             if(balancelist[j].amount <= 0) {
                                 break;
@@ -835,64 +836,78 @@ function setupClicks(){
                  * This method opens a popup when a budget-entry is clicked.
                  */
                 $('tr[data-id]').click(function(){
-                    var id = $(this).closest("tr[data-id]").data("id");
-                    var entry = null;
-                    for(var i = 0; i < curBudget.budget.length; i++){
-                        if(curBudget.budget[i].budget_entry_id == id){
-                            entry = curBudget.budget[i];
-                            break;
+                    var dataid = $(this).closest("tr[data-id]").data("id");
+                    for(var j=0; j<lists.length; j++){
+                        if(lists[j].shopping_list_id==dataid){
+                            sign = lists[j].currency_sign;
+                            place=j;
                         }
                     }
-                    if(!entry)
-                        return;
-                    var entrylist = entry.shopping_list_entries;
-                    var g = "";
-                    for(var j=0; j<entrylist.length; j++){
-                        g += "<li class='list-group-item'>"+entrylist[j].entry_text+"</li>";
-                    }
-                    var p = "";
-                    var payerlist = entry.persons_to_pay;
-                    for(var k=0; k<payerlist.length; k++){
-                        var temp = '';
-                        if(payerlist[k].datetime_paid!=null){
-                            temp = '<i class="fa fa-check" aria-hidden="true"></i>';
+                    $.ajax({
+                        url: '/api/budget/' + theid,
+                        method: 'GET',
+                        success: function (data) {
+                            curBudget = data;
+                            var entries = "";
+                            var entry = null;
+                            for (var i = 0; i < curBudget.budget.length; i++) {
+                                if (curBudget.budget[i].budget_entry_id == dataid) {
+                                    entry = curBudget.budget[i];
+                                    break;
+                                }
+                            }
+                            if (!entry)
+                                return;
+                            var entrylist = entry.shopping_list_entries;
+                            var g = "";
+                            for (var j = 0; j < entrylist.length; j++) {
+                                g += "<li class='list-group-item'>" + entrylist[j].entry_text + "</li>";
+                            }
+                            var p = "";
+                            var payerlist = entry.persons_to_pay;
+                            for (var k = 0; k < payerlist.length; k++) {
+                                var temp = '';
+                                if (payerlist[k].datetime_paid != null) {
+                                    temp = '<i class="fa fa-check" aria-hidden="true"></i>';
+                                }
+                                if (payerlist[k].person_id == me.person_id) {
+                                    p += "<tr><td>" + lang["me"] + "</td><td style='text-align: center'>" + temp + "</td></tr>";
+                                } else {
+                                    p += "<tr><td>" + payerlist[k].forename + " " + payerlist[k].lastname + "</td><td>" + temp + "</td></tr>";
+                                }
+                            }
+                            $(this).closest(".pop").hide();
+                            var datetime = entry.entry_datetime;
+                            var year = datetime.split("-")[0]; //2018
+                            var month = datetime.split("-")[1]; //01
+                            var date = datetime.split("-")[2].split("T")[0]; //23
+                            var time = datetime.split("T")[1].split(".")[0]; //09:23:02
+                            var timeNsec = time.split(":")[0] + ":" + time.split(":")[1];
+                            var formattedDateTime = date + "/" + month + "/" + year + ", " + timeNsec;
+                            var la = entry.entry_type.entry_type_name;
+                            var bc = Number(entry.entry_type.entry_type_color).toString(16);
+                            var lh = '<div style="background-color: #' + bc + '; padding-left: 1vh; padding-top: 0.5vh; padding-bottom: 0.5vh;border-radius: 15px;">' + lang["label-label"] + ': ' + (la ? la : lang["label-none"]) + '</div>';
+                            $("body").append(balanceItem({
+                                comment: entry.text_note,
+                                bought_by: (entry.purchased_by.person_id == me.person_id ? lang["me"] : entry.purchased_by.forename + " " + entry.purchased_by.lastname),
+                                bought_by_label: lang["bought-by-label"],
+                                cost: entry.amount / 100 + " " + sign,
+                                cost_label: lang["cost-label"],
+                                payers: p,
+                                labelhtml: lh,
+                                lang_payers: lang["lang-payers"],
+                                lang_payed: lang["lang-payed"],
+                                goods: g,
+                                goods_label: lang["goods-label"],
+                                time: formattedDateTime,
+                                time_label: lang["time-label"],
+                                shop_complete: lang["shop-complete"]
+                            }));
+                            $("#balance-info-complete").unbind("click").click(function () {
+                                $(this).closest(".pop").remove();
+                                $(".pop").show();
+                            });
                         }
-                        if(payerlist[k].person_id == me.person_id){
-                            p += "<tr><td>"+lang["me"]+"</td><td style='text-align: center'>"+temp+"</td></tr>";
-                        }else{
-                            p += "<tr><td>"+payerlist[k].forename+" "+payerlist[k].lastname+"</td><td>"+temp+"</td></tr>";
-                        }
-                    }
-                    $(this).closest(".pop").hide();
-                    var datetime = entry.entry_datetime;
-                    var year = datetime.split("-")[0]; //2018
-                    var month = datetime.split("-")[1]; //01
-                    var date = datetime.split("-")[2].split("T")[0]; //23
-                    var time = datetime.split("T")[1].split(".")[0]; //09:23:02
-                    var timeNsec = time.split(":")[0] + ":" + time.split(":")[1];
-                    var formattedDateTime = date + "/" + month + "/" + year + ", " + timeNsec;
-                    var la = entry.entry_type.entry_type_name;
-                    var bc = Number(entry.entry_type.entry_type_color).toString(16);
-                    var lh = '<div style="background-color: #'+bc+'; padding-left: 1vh; padding-top: 0.5vh; padding-bottom: 0.5vh;border-radius: 15px;">'+lang["label-label"]+': '+(la ? la : lang["label-none"])+'</div>';
-                    $("body").append(balanceItem({
-                        comment: entry.text_note,
-                        bought_by: (entry.purchased_by.person_id == me.person_id ? lang["me"] : entry.purchased_by.forename + " " + entry.purchased_by.lastname),
-                        bought_by_label: lang["bought-by-label"],
-                        cost: entry.amount/100 + " " + sign,
-                        cost_label: lang["cost-label"],
-                        payers: p,
-                        labelhtml: lh,
-                        lang_payers: lang["lang-payers"],
-                        lang_payed: lang["lang-payed"],
-                        goods: g,
-                        goods_label: lang["goods-label"],
-                        time: formattedDateTime,
-                        time_label: lang["time-label"],
-                        shop_complete: lang["shop-complete"]
-                    }));
-                    $("#balance-info-complete").click(function(){
-                        $(this).closest(".pop").remove();
-                        $(".pop").show();
                     });
                 });
 
@@ -1191,8 +1206,11 @@ function setupClicks(){
                      */
                     if (comment == "") {
                         textnote = theitemss;
+                        console.log("comment is empty");
                     } else {
                         textnote = comment;
+                        console.log("comment isnt empty");
+
                     }
                     if (Number(e) !== e)
                         e = e.split(",");
