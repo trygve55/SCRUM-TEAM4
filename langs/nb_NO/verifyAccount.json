@@ -1,0 +1,6 @@
+{
+  "forgotpassword": "Verifiser bruker",
+  "resetbut": "Verifiser bruker nå!",
+  "forgot-email-success": "Vellyket! Brukeren din har nå blitt verifisert. Du vil snart bli sendt til innloggingssiden",
+  "forgot-email-error": "Ugyldig lenke eller så er bruker allerede verifisert."
+}

@@ -1,3 +1,6 @@
+/**
+ * @module Personal Task API
+ */
 var router = require('express').Router();
 
 module.exports = router;
@@ -5,8 +8,9 @@ module.exports = router;
 /**
  * Registers a new shopping list on current user
  *
- * URL: /api/tasks/private/
- * method: POST
+ * @name Register shopping list on user
+ * @route {POST} /api/tasks/private/
+ *
  */
 
 router.post('/', function (req, res) {
@@ -21,17 +25,15 @@ router.post('/', function (req, res) {
 /**
  * Registers a new shopping list entry only if correct person_id exists
  *
- * URL: /api/tasks/private/entry
- * method: POST
- * data: {
- *      private_todo_list_id
- *      todo_text
- * }
+ * @name New shopping list entry only if correct person exists
+ * @route {POST} /api/tasks/private/entry
+ * @bodyparam {number} private_todo_list_id the todo list id for the private todo list
+ * @bodyparam {string} todo_text what the todo includes
+ *
  */
 
 router.post('/entry', function (req, res) {
-    var data = req.body, p_id = req.session.person_id;
-
+    var data = req.body;
     if (!data.private_todo_list_id || !data.todo_text)
         return res.status(400).send("body error");
 
@@ -51,8 +53,8 @@ router.post('/entry', function (req, res) {
 /**
  *  Gets all shopping lists and entries based on current user
  *
- *  URL: /api/tasks/private/
- *  method: GET
+ * @name Get shopping lists and entries for current user
+ * @route {GET} /api/tasks/private/
  *
  */
 
@@ -62,7 +64,7 @@ router.get('/', function(req, res) {
         'LEFT JOIN private_todo_entry ' +
         'USING(private_todo_list_id) ' +
         'WHERE person_id = ?;',[p_id], function (err, result) {
-        console.log(arguments);
+
         if(err)
             return res.status(400).json({error: "sql-fail"});
 
@@ -98,8 +100,8 @@ router.get('/', function(req, res) {
 /**
  *  Get specific todo_list based on current user and list_id
  *
- *  URL: /api/tasks/private/{private_todo_list_id}
- *  method: GET
+ * @name Get todo list
+ * @route {GET} /api/tasks/private/{private_todo_list_id}
  *
  */
 
@@ -140,13 +142,12 @@ router.get('/:private_todo_list_id', function(req, res) {
 /**
  * Update shopping list
  *
- * URL: /api/tasks/private/entry/{private_todo_entry}
- * method: PUT
- * data {
- *  [private_list_name]
- *  [is_deactivated]
- *  [color_hex]
- * }
+ * @name Update shopping list
+ * @route {PUT} /api/tasks/private/entry/{private_todo_entry}
+ * @bodyparam {array} private_list_name
+ * @bodyparam {array} is_deactivated
+ * @bodyparam {array} color_hex
+ *
  */
 
 
@@ -173,8 +174,9 @@ router.put('/list/:private_todo_list_id', function(req, res){
 /**
  * Update a task
  *
- * URL: /api/tasks/{todo_id}
- * method: PUT
+ * @name Update task
+ * @route {PUT} /api/tasks/{todo_id}
+ *
  */
 //TODO: is this method necessary? If so, please let me know and I will fix. As of now it is not functional. t. Olav
 router.put('/:todo_id/done', function(req, res) {
@@ -198,15 +200,14 @@ router.put('/:todo_id/done', function(req, res) {
 
 
 /**
- * Update shopping list entry
  *
- * URL: /api/tasks/private/entry/{private_todo_entry}
- * method: PUT
- * data {
- *  [todo_text]
- *  [datetime_deadline]
- *  [datetime_done]
- * }
+ *
+ * @name Update entry
+ * @route {PUT} /api/tasks/private/entry/{private_todo_entry}
+ * @bodyparam {array} todo_text what the entry text includes
+ * @bodyparam {array} datetime_deadline the deadline of the shopping list entry
+ * @bodyparam {array} datetime_done when the entry should be done
+ *
  */
 
 
@@ -229,8 +230,9 @@ router.put('/entry/:private_todo_entry', function(req, res) {
 /**
  * Delete shopping list
  *
- * URL: /api/tasks/private/entry/{private_todo_entry_id}
- * method: DELETE
+ * @name Delete shopping list
+ * @route {DELETE} /api/tasks/private/entry/{private_todo_entry_id}
+ *
  */
 
 router.delete('/entry/:private_todo_entry_id', function(req, res) {

@@ -38,5 +38,6 @@
   "pwbut": "Save password",
   "but": "Save info",
   "profpicsuccess": "Picture successfully uploaded!",
-  "profpicfailure": "Failure, picture was not uploaded"
+  "profpicfailure": "Failure, picture was not uploaded",
+  "profile-mealplanner": "Mealplanner"
 }

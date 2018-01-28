@@ -137,5 +137,7 @@
 	"memebersogfroup": "Members of group",
 	"leaveinggroup": "Leave group?",
 	"leaveGroupButton": "Yes",
-	"entry-ok": "Register"
+	"entry-ok": "Register",
+	"group-mealplanner": "Mealplanner",
+	"change-yourself": "Are you sure you want to relieve yourself of admin privileges?"
 }

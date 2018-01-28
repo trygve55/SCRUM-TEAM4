@@ -67,7 +67,14 @@ function login() {
                             localStorage.person_id=data.person_id;
                             window.location = "/index.html";
                         },
-                        error: console.error
+                        error: function (data) {
+                            console.log(data);
+                            if (data.notVerified) {
+
+                            } else {
+
+                            }
+                        }
                     });
                 }
             } );

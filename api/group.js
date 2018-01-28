@@ -1,3 +1,6 @@
+/**
+ * @module Group API
+ */
 /*
 Authors: A.C., Andreas Hammer (main author), Magnus Eilertsen
 
@@ -22,10 +25,25 @@ var router = require('express').Router(),
 module.exports = router;
 
 /**
+ * Fetch all the different group role types
+ *
+ * @name Get role types
+ * @route {GET} /api/group/roles
+ */
+router.get('/roles', function(req, res){
+    pool.query('SELECT * FROM home_role', function(err, result){
+        if(err)
+            return res.status(500).send();
+        return res.status(200).json(result);
+    });
+});
+
+/**
  * Check if you have administrator privileges for a group
  *
- * URL: /api/group/{group_id}/me/privileges
- * method: GET
+ * @name Check if you have administrator privileges
+ * @route {GET} /api/group/{group_id}/me/privileges
+ *
  */
 router.get('/:group_id/me/privileges', function(req, res){
     if(!req.session.person_id)
@@ -44,8 +62,9 @@ router.get('/:group_id/me/privileges', function(req, res){
 /**
  * Get group members privileges
  *
- * URL: /api/group/{group_id}/privileges
- * method: GET
+ * @name Get members privileges
+ * @route {GET} /api/group/{group_id}/privileges
+ *
  */
 router.get('/:group_id/privileges', function(req, res){
     if(!req.session.person_id)
@@ -60,8 +79,9 @@ router.get('/:group_id/privileges', function(req, res){
 /**
  * Get all users for a group
  *
- * URL: /api/group/{group_id}/users
- * method: GET
+ * @name Get all users for a group
+ * @route {GET} /api/group/{group_id}/users
+ *
  */
 router.get('/:group_id/users', function(req, res){
     if(!req.session.person_id)
@@ -85,11 +105,10 @@ router.get('/:group_id/users', function(req, res){
 /**
  * Checks if the group name is available
  *
- * URL: /api/group/name
- * method: GET
- * data: {
- *      group_name
- * }
+ * @name Check if group name i available
+ * @route {GET} /api/group/name
+ * @headerparam {string} group_name A groups unique name
+ *
  */
 router.get('/name', function(req, res){
     if(!req.session.person_id)
@@ -104,8 +123,9 @@ router.get('/name', function(req, res){
 /**
  * Get the group info for groups the current user inhabit
  *
- * URL: /api/group/me
- * method: GET
+ * @name Get group info for all groups current user inhabit
+ * @route {GET} /api/group/me
+ *
  */
 router.get('/me', function(req, res){
     if(!req.session.person_id)
@@ -118,8 +138,9 @@ router.get('/me', function(req, res){
 /**
  * Get the requested group's info
  *
- * URL: /api/group/{group_id}
- * method: GET
+ * @name Get group information
+ * @route {GET} /api/group/{group_id}
+ *
  */
 router.get('/:group_id', function(req, res){
     if(!req.session.person_id)
@@ -139,11 +160,10 @@ router.get('/:group_id', function(req, res){
 /**
  * Get all groups info/get info about group_name
  *
- * URL: /api/group/
- * method: GET
- * data: {
- *      group_name - Optional
- * }
+ * @name Get all group information
+ * @route {GET} /api/group
+ * @headerparam {string} group_name A groups unique name (Optional)
+ *
  */
 router.get('/', function(req, res){
     if(!req.session.person_id)
@@ -166,11 +186,10 @@ router.get('/', function(req, res){
 /**
  * Add members to the specified group
  *
- * URL: /api/group/{group_id}/members
- * method: POST
- * data: {
- *      members[] containing the ids of the members to add
- * }
+ * @name Add member to group
+ * @route {POST} /api/group/{group_id}/members
+ * @bodyparam {array} members[] array containing the ids of the members to add
+ *
  */
 router.post('/:group_id/members', function(req, res){
     if(!req.session.person_id)
@@ -261,11 +280,11 @@ router.post('/:group_id/members', function(req, res){
 /**
  * "Deletes" (deactivates) a group
  *
- * URL: /api/group/{group_id}
- * method: DELETE
- * data: {
- *      person_id, person to delete
- * }
+ * @name Deactivates group
+ * @route {DELETE} /api/group/{group_id}
+ * @bodyparam {number} person_id the persons to delete
+ *
+ *
  */
 router.delete('/:group_id/group', function(req, res){
     if(!req.session.person_id)
@@ -285,11 +304,10 @@ router.delete('/:group_id/group', function(req, res){
 /**
  * Removes a user's access to the group. If no person_id is provided, the logged in user is removed from the group
  *
- * URL: /api/group/{group_id}
- * method: DELETE
- * data: {
- *      [person_id]
- * }
+ * @name Removes user's access to group
+ * @route {DELETE} /api/group/{group_id}
+ * @bodyparam {number} person_id a persons unique id
+ *
  */
 router.delete('/:group_id', function(req, res){
     if(!req.params.group_id)
@@ -326,24 +344,36 @@ router.delete('/:group_id', function(req, res){
 /**
  * Change the provided users privileges in the group
  *
- * URL: /api/group/{group_id}/userPrivileges
- * method: PUT
- * data: {
- *      person_id, the user to change privileges for
- *      role_id new role
- * }
+ * @name Change users privileges in group
+ * @route {PUT} /api/group/{group_id}/userPrivileges
+ * @bodyparam {number} person_id the user to change privileges
+ * @bodyparam {number} role_id the new role
+ *
  */
 router.put('/:group_id/userPrivileges', function(req, res){
     if(!req.body.person_id || !req.body.role_id)
         return res.status(400).send();
     pool.getConnection(function(err, connection){
         if (!checkConnectionError(err, connection, res)) {return;}
-        connection.query("SELECT role_id FROM group_person WHERE person_id = ? AND group_id = ?", [req.session.person_id, req.params.group_id], function(err, result){
+        connection.query("SELECT person_id FROM group_person WHERE role_id = 2 AND group_id = ?", [req.params.group_id], function(err, result){
             if(err) {
                 connection.release();
                 return res.status(500).send();
             }
-            else if(result.length == 0 || result[0].role_id != 2){
+            console.log(result);
+            if(result.length == 1 && req.session.person_id == req.body.person_id){
+                console.log("length");
+                connection.release();
+                return res.status(400).send();
+            }
+            var f = false;
+            for(var i = 0; i < result.length; i++){
+                if(result[i].person_id == req.session.person_id) {
+                    f = true;
+                }
+            }
+            if(!f){
+                console.log("found");
                 connection.release();
                 return res.status(400).send();
             }
@@ -360,9 +390,10 @@ router.put('/:group_id/userPrivileges', function(req, res){
 /**
  * Update the groups profile picture
  *
- * URL: /api/group/{group_id}/picture
- * method: POST
- * data: new FormData().append('file', $('input#file.findDocumentOnboarding')[0].files[0])
+ * @name Update groups profile picture
+ * @route {POST} /api/group/{group_id}/picture
+ * @bodyparam {FormData} file new FormData().append('file', $('input#file.findDocumentOnboarding')[0].files[0])
+ *
  */
 router.post('/:group_id/picture', function(req, res){
     var form = new formidable.IncomingForm();
@@ -434,8 +465,9 @@ router.post('/:group_id/picture', function(req, res){
 /**
  * Return the groups picture
  *
- * URL: /api/group/{group_id}/picture
- * method: POST
+ * @name Return groups picture
+ * @route {POST} /api/group/{group_id}/picture
+ *
  */
 router.get('/:group_id/picture', function(req, res){
     pool.query("SELECT group_pic, has_group_pic FROM home_group WHERE group_id = ?;", [req.params.group_id], function (err, results, fields) {
@@ -452,8 +484,9 @@ router.get('/:group_id/picture', function(req, res){
 /**
  * Get tiny group picture
  *
- * URL: /api/group/{group_id}/picture_tiny
- * method: GET
+ * @name Get tiny group picture
+ * @route {GET} /api/group/{group_id}/picture_tiny
+ *
  */
 router.get('/:group_id/picture_tiny', function(req, res){
     pool.getConnection(function (err, connection) {
@@ -475,8 +508,9 @@ router.get('/:group_id/picture_tiny', function(req, res){
 /**
  * Remove the image for a group.
  *
- * URL: /api/group/{group_id}/picture
- * method: DELETE
+ * @name Remove image for group
+ * @route {DELETE} /api/group/{group_id}/picture
+ *
  */
 router.delete('/:group_id/picture', function(req, res){
 
@@ -495,8 +529,9 @@ router.delete('/:group_id/picture', function(req, res){
 /**
  * Accept invitation to group
  *
- * URL: /api/group/{group_id}/invite
- * method: POST
+ * @name Accept invitation to group
+ * @route {POST} /api/group/{group_id}/invite
+ *
  */
 router.post('/:group_id/invite', function(req, res){
     if(!req.session.person_id)
@@ -512,8 +547,9 @@ router.post('/:group_id/invite', function(req, res){
 /**
  * Decline invitation to group
  *
- * URL: /api/group/{group_id}/invite
- * method: DELETE
+ * @name Decline invitation to group
+ * @route {DELETE} /api/group/{group_id}/invite
+ *
  */
 router.delete('/:group_id/invite', function(req, res){
     if(!req.session.person_id)
@@ -529,8 +565,9 @@ router.delete('/:group_id/invite', function(req, res){
 /**
  * The GET request for getting the task details for all tasks in this group.
  *
- * URL: /api/group/{group_id}/todo
- * method: GET
+ * @name Getting task details for tasks in group
+ * @route {GET} /api/group/{group_id}/todo
+ *
 */
 router.get('/:group_id/todo', function(req, res) {
     pool.getConnection(function(err, connection) {
@@ -559,11 +596,10 @@ router.get('/:group_id/todo', function(req, res) {
 /**
  * Update the group info
  *
- * URL: /api/group/{group_id}
- * method: PUT
- * data: {
- *      The SQL table attributes with the new data
- * }
+ * @name Update group information
+ * @route {PUT}  /api/group/{group_id}
+ * @bodyparam {SQL} sql all table attributes with new data
+ *
  */
 router.put('/:group_id', function(req, res){
     var acceptedGroupVars= [
@@ -606,12 +642,11 @@ router.put('/:group_id', function(req, res){
 /**
  * Create a new group
  *
- * URL: /api/group
- * method: POST
- * data: {
- *      group_name,
- *      currency
- * }
+ * @name Create new group
+ * @route {POST} /api/group
+ * @bodyparam {string} group_name the new groups name
+ * @bodyparam {string} currency the new groups chosen currency
+ *
  */
 router.post('/', function(req, res){
     var acceptedGroupVars = ["group_name", "currency"];

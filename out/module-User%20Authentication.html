@@ -58,6 +58,282 @@
 
         
             
+<h4 class="name" id="checksifuserisloggedin"><span class="type-signature">(route) </span>checks if user is logged in<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/api/auth</td>
+                            </tr>
+                            </table>
+                            Check if the user is logged in
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="auth.js.html">auth.js</a>, <a href="auth.js.html#line64">line 64</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Login"><span class="type-signature">(route) </span>Login<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">POST</td>
+                            <td class="name last">/api/auth/login</td>
+                            </tr>
+                            </table>
+                            Login the user
+                            <h5>Body Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">username</td>
+            <td class="type">string</td>
+            
+            
+            <td class="description last">a persons username</td>
+          </tr><tr>
+            <td class="name">password</td>
+            <td class="type">string</td>
+            
+            
+            <td class="description last">a persons password
+
+}</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="auth.js.html">auth.js</a>, <a href="auth.js.html#line22">line 22</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Loginandregistrationwithfacebook"><span class="type-signature">(route) </span>Login and registration with facebook<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">POST</td>
+                            <td class="name last">/api/auth/facebook</td>
+                            </tr>
+                            </table>
+                            Login and registration with facebook
+                            <h5>Header Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">facebook_api_id</td>
+            <td class="type">number</td>
+            
+            
+            <td class="description last">a persons unique facebook id that is received when a person register through facebook</td>
+          </tr><tr>
+            <td class="name">forename</td>
+            <td class="type">string</td>
+            
+            
+            <td class="description last">a persons forename</td>
+          </tr><tr>
+            <td class="name">lastname</td>
+            <td class="type">string</td>
+            
+            
+            <td class="description last">a persons lastname</td>
+          </tr><tr>
+            <td class="name">email</td>
+            <td class="type">string</td>
+            
+            
+            <td class="description last">a persons email address
+
+}</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="auth.js.html">auth.js</a>, <a href="auth.js.html#line74">line 74</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
 <h4 class="name" id="Logout"><span class="type-signature">(route) </span>Logout<span class="type-signature"></span></h4>
 
 
@@ -144,13 +420,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-User%2520Authentication.html">User Authentication</a></li></ul><h3>Global</h3><ul><li><a href="global.html#changeAmounts">changeAmounts</a></li><li><a href="global.html#checkConnectionError">checkConnectionError</a></li><li><a href="global.html#checkRange">checkRange</a></li><li><a href="global.html#checkResult">checkResult</a></li><li><a href="global.html#checkValidEmail">checkValidEmail</a></li><li><a href="global.html#checkValidForename">checkValidForename</a></li><li><a href="global.html#checkValidName">checkValidName</a></li><li><a href="global.html#checkValidPassword">checkValidPassword</a></li><li><a href="global.html#checkValidPhone">checkValidPhone</a></li><li><a href="global.html#checkValidUsername">checkValidUsername</a></li><li><a href="global.html#existsInArray">existsInArray</a></li><li><a href="global.html#multipleRequestSetup">multipleRequestSetup</a></li><li><a href="global.html#putRequestSetup">putRequestSetup</a></li><li><a href="global.html#removeDuplicates">removeDuplicates</a></li><li><a href="global.html#rollbackC">rollbackC</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Budget.html">Budget</a></li><li><a href="module-User%2520Authentication.html">User Authentication</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Jan 28 2018 18:06:57 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Jan 28 2018 21:44:55 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>
