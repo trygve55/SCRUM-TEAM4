@@ -16,7 +16,7 @@ script:
   - npm run coverage:remap
 
 after_success:
-  - npm run codecov
+  - codecov
 
 services:
   - mysql
