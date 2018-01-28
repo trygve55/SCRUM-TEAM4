@@ -114,27 +114,29 @@ $('document').ready(function () {
 
 function prep(){
     $.ajax({
-        url: '/api/private/entry/',
+        url: '/api/tasks/private/',
         method: 'GET',
-        success: function(data){
+        success: function(data) {
             for(var j = 0; j < data.length; j++) {
                 var d = data[j];
                 var entries = "";
-                for (var i = 0; i < d.shopping_list_entries.length; i++) {
+                for (var i = 0; i < d.private_todo_entries.length; i++) {
                     entries += taskItem({
-                        entry_text: d.private_todo_entries[i].todo_text,
-                        entry_id: d.private_todo_entries[i].private_todo_entry_id
+                        todo_id: d.private_todo_entries[i].private_todo_entry_id,
+                        todo_text: d.private_todo_entries[i].todo_text
                     });
                 }
-                $("#addlist").after(tasklist({
-                    task_list_id: d.shopping_list_id,
-                    task_list_name: (d.shopping_list_name == "" ? lang["task-default-name"] : d.shopping_list_name),
-                    task_list_entries: entries,
-                    lang_add_item: lang["task-add-item"],
-                    lang_done_items: lang["task-done-tasks"],
-                    lang_delete: lang["task-delete"],
-                    color_hex: (d.color_hex ? d.color_hex.toString(16) : "FFFFFF")
-                }));
+                if (!d.is_deactivated) {
+                    $("#addlist").after(tasklist({
+                        task_list_id: d.private_todo_list_id,
+                        task_list_name: (d.private_todo_list_name == "" ? lang["task-default-name"] : d.private_todo_list_name),
+                        task_list_entries: entries,
+                        lang_add_item: lang["task-add-item"],
+                        lang_done_items: lang["task-done-tasks"],
+                        lang_delete: lang["task-delete"],
+                        color_hex: (d.color_hex ? d.color_hex.toString(16) : "FFFFFF")
+                    }));
+                }
             }
             setupClicks();
         }
@@ -147,21 +149,20 @@ function prep(){
      */
     $('#addlist').click(function () {
         $.ajax({
-            url: '/api/shoppingList',
+            url: '/api/tasks/private/',
             method: 'POST',
             data: {
-                currency_id: 100,
-                shopping_list_name: lang["task-default-name"]
+                private_todo_list_name: lang["task-default-name"]
             },
-            success: function(data){
+            success: function(data) {
                 $.ajax({
-                    url: '/api/shoppingList/' + data.shopping_list_id,
+                    url: '/api/tasks/private/' + data.private_todo_list_id,
                     method: 'GET',
-                    success: function(data){
+                    success: function(data) {
                         $("#addlist").after(tasklist({
-                            shopping_list_id: data.shopping_list_id,
-                            shopping_list_name: data.shopping_list_name,
-                            shopping_list_entries: "",
+                            task_list_id: data.private_todo_list_id,
+                            task_list_name: data.private_todo_list_name,
+                            task_list_entries:"",
                             lang_add_item: lang["task-add-item"],
                             lang_done_items: lang["task-done-tasks"],
                             lang_delete: lang["task-delete"],
@@ -176,7 +177,8 @@ function prep(){
 }
 
 function setupClicks(){
-    $(".list-name").unbind("click").click(function(){
+    $(".list-name").unbind("click").click(function() {
+        console.log("halllo");
         var listId = $(this).closest("div[data-id]").data("id");
         var title = $(this).html();
         $(this).hide();
@@ -193,12 +195,13 @@ function setupClicks(){
         $(this).parent().hide();
         $(h4).show();
         $.ajax({
-            url: '/api/shoppingList/' + id,
+            url: '/api/tasks/private/entry/' + id,
             method: 'PUT',
             data: {
-                shopping_list_name: text
+                private_list_name: text
             }
-        });});
+        });
+    });
 
     $(".list-name-input").unbind("keypress").keypress(function(e){
         if(e.keyCode != 13 && e.which != 13)
@@ -210,7 +213,7 @@ function setupClicks(){
         $(this).parent().hide();
         $(h4).show();
         $.ajax({
-            url: '/api/shoppingList/' + id,
+            url: '/api/tasks/private/list/' + id,
             method: 'PUT',
             data: {
                 shopping_list_name: text
@@ -219,7 +222,9 @@ function setupClicks(){
     });
 
     $(".add-item").unbind("click").click(function(){
+        console.log('denna');
         $(this).closest("div").children(".itemlist").append(newListItem());
+        console.log(this);
 
         $("#new-list-item").keypress(function(e){
             if(e.keyCode != 13 && e.which != 13)
@@ -254,7 +259,7 @@ function setupClicks(){
         var ls = $(this).closest("div[data-id]");
         var id = $(ls).css('background-color', $(this).data('color')).data("id");
         $.ajax({
-            url: '/api/shoppingList/' + id,
+            url: '/api/tasks/private/list/' + id,
             method: 'PUT',
             data: {
                 color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
@@ -266,7 +271,7 @@ function setupClicks(){
         var ls = $(this).closest("div[data-id]");
         var id = $(ls).css('background-color', $(this).data('color')).data("id");
         $.ajax({
-            url: '/api/shoppingList/' + id,
+            url: '/api/tasks/private/list/' + id,
             method: 'PUT',
             data: {
                 color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
@@ -278,7 +283,7 @@ function setupClicks(){
         var ls = $(this).closest("div[data-id]");
         var id = $(ls).css('background-color', $(this).data('color')).data("id");
         $.ajax({
-            url: '/api/shoppingList/' + id,
+            url: '/api/tasks/private/list/' + id,
             method: 'PUT',
             data: {
                 color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
@@ -290,7 +295,7 @@ function setupClicks(){
         var ls = $(this).closest("div[data-id]");
         var id = $(ls).css('background-color', $(this).data('color')).data("id");
         $.ajax({
-            url: '/api/shoppingList/' + id,
+            url: '/api/tasks/private/list/' + id,
             method: 'PUT',
             data: {
                 color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
@@ -298,119 +303,19 @@ function setupClicks(){
         });
     });
 
-    $(".fa-money").unbind("click").click(function(){
-        var id = $(this).closest("div[data-id]").data("id");
+    /**
+     * This method deletes a list.
+     */
+    $(".fa-trash").unbind("click").click(function () {
+        var listid = $(this).parent().attr("data-id");
+        $(this).closest("div[data-id]").remove();
         $.ajax({
-            url: '/api/budget/' + id,
-            method: 'GET',
-            success: function(data){
-                console.log(data);
-                curBudget = data;
-                var entries = "";
-                for(var i = 0; i < data.budget_entries.length; i++){
-                    entries += "<tr data-id='" + data.budget_entries[i].budget_entry_id + "'><td>" + data.budget_entries[i].entry_datetime + "</td><td>" + data.budget_entries[i].amount + "</td>";
-                }
-                $("body").append(balance({
-                    title: lang["shop-balance"],
-                    complete: lang["shop-ok"],
-                    data: "data-id='" + id + "'",
-                    lang_trip: lang["shop-trip"],
-                    lang_price: lang["shop-price"],
-                    budget_entries: entries
-                }));
-
-                $('tr[data-id]').click(function(){
-                    var id = $(this).closest("tr[data-id]").data("id");
-                    var entry = null;
-                    for(var i = 0; i < curBudget.budget_entries.length; i++){
-                        if(curBudget.budget_entries[i].budget_entry_id == id){
-                            entry = curBudget.budget_entries[i];
-                        }
-                    }
-                    if(!entry)
-                        return;
-                    var d = "<li class='list-group-item'>Work in progress (data about a entry)</li>";
-                    $(this).closest(".pop").hide();
-                    $("body").append(balanceItem({
-                        title: entry.entry_datetime,
-                        complete: lang["shop-ok"],
-                        list: d
-                    }));
-                    $("#balance-info-complete").click(function(){
-                        $(this).closest(".pop").remove();
-                        $(".pop").show();
-                    });
-                });
-
-                $('#popup-complete').click(function(){
-                    $(this).closest(".pop").remove();
-                });
+            url: '/api/tasks/private/list/' + listid,
+            method: 'PUT',
+            data: {
+                "is_deactivated": true
             },
             error: console.error
-        });
-    });
-
-    $(".fa-shopping-cart").unbind("click").click(function(){
-        var items = $(this).closest("div[data-id]").find(".list-group-item input:checked").closest('li[data-id]');
-        if(items.length == 0)
-            return;
-        var entries = $(items[0]).data("id");
-        var list = "<li class=\"list-group-item\">" + $(items[0]).html() + "</li>";
-        for(var i = 1; i < items.length; i++){
-            entries += "," + $(items[i]).data("id");
-            list += "<li class=\"list-group-item\">" + $(items[i]).html() + "</li>";
-        }
-        $("body").append(popupTextList({
-            title: lang["shop-buy-title"],
-            list: list,
-            textfield: lang["shop-buy-text"],
-            cancel: lang["shop-cancel"],
-            complete: lang["shop-ok"],
-            data: "data-id='" + $(this).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
-        }));
-
-        $(".pop").find(".fa-times").remove();
-        $(".pop").find("input[type=checkbox]").remove();
-
-        $("#popup-cancel").click(function(){
-            $(this).closest(".pop").remove();
-        });
-
-        $("#popup-complete").click(function(){
-            if(isNaN(Number($(this).closest('.pop').find('input').val())))
-                return;
-            var id = $(this).closest("div[data-id]").data("id");
-            var e = $(this).closest("div[data-entries]").data("entries");
-            if(Number(e) !== e)
-                e = e.split(",");
-            else
-                e = [e];
-            $.ajax({
-                url: '/api/budget',
-                method: 'POST',
-                data: {
-                    shopping_list_id: id,
-                    amount: Number($(this).closest('.pop').find('input').val()),
-                    text_note: e.join(",")
-                },
-                success: function(data){
-                    for(var i = 0; i < e.length; i++){
-                        $.ajax({
-                            url: '/api/shoppingList/entry/' + e[i],
-                            method: 'PUT',
-                            data: {
-                                shopping_list_id: id,
-                                purchased_by_person_id: 2,
-                                budget_entry_id: data.budget_entry_id
-                            }
-                        });
-                    }
-                }
-            });
-            for(var i = 0; i < e.length; i++){
-                $("div[data-id=" + id + "]").find('li[data-id=' + e[i] + ']').remove();
-            }
-            $(this).closest(".pop").remove();
         });
     });
 
@@ -421,14 +326,68 @@ function setupItemClicks(){
     $(".fa-times").unbind("click").click(function(){
         var entry_id = $(this).closest("li[data-id]").data("id");
         $.ajax({
-            url: '/api/shoppingList/entry/' + entry_id,
+            url: '/api/tasks/private/entry/' + entry_id,
             method: 'DELETE',
             error: console.error
         });
         $(this).closest("li[data-id]").remove();
     });
 
-    $("li[data-id]").unbind("click").click(function(e){
+    $(".datepicker").datepicker({
+        //dateFormat: 'DD, mm-y'
+        dateFormat: 'dd/mm/y',
+        onSelect: function() {
+            var d = $(this).val();
+            if(d != ""){
+                d = d.split("/");
+                d = d[2] + "-" + d[1] + "-" + d[0];
+            }
+            $.ajax({
+                url: '/api/tasks/private/entry/' + $(this).closest("li[data-id]").data('id'),
+                method: 'PUT',
+                data: {
+                    datetime_deadline: (d == "" ? "NULL" : d)
+                },
+                error: console.error
+            });
+        }
+    });
+    //Hides elements yet to be shown
+    $('input.datepicker').filter(function() { return this.value === ""; }).hide();
+    $('.checked').hide();
+
+    $('.fa-calendar').unbind('click').click(function () {
+        var datepicker = $(this).parent().find(".datepicker");
+        $(datepicker).css('background-color: white');
+        if(datepicker.is(":visible")){
+            if($(datepicker).val() == "")
+                datepicker.hide();
+            else if(datepicker.is(':focus'))
+                datepicker.blur();
+            else
+                datepicker.focus();
+        }
+        else{
+            datepicker.show();
+            datepicker.focus();
+        }
+    });
+
+    $('li[data-id]').unbind("click").click(function(e){
+        if($(e.target).hasClass("fa") || $(e.target).hasClass("datepicker"))
+            return;
+        var id = $(this).data("id");
+        $.ajax({
+            url: '/api/tasks/' + id + '/done',
+            method: 'PUT'
+        });
+    });
+
+    $('.fa-user').unbind('click').click(addMembersPopup);
+
+
+
+    $("li[data-id]").unbind("click").click(function(e) {
         if($(this).is('.fa-times'))
             return;
         else if(!$(e.target).is('input')) {
@@ -439,6 +398,7 @@ function setupItemClicks(){
 }
 
 function addNewItem(ul){
+    console.log(this);
     $(ul).append(newListItem());
 
     $("#new-list-item").keypress(function(e){
@@ -472,14 +432,14 @@ function addNewItem(ul){
 
 function saveItemToDB(id, item, ul, cb){
     $.ajax({
-        url: '/api/shoppingList/entry',
+        url: '/api/tasks/private/entry',
         method: 'POST',
         data: {
-            shopping_list_id: id,
-            entry_text: item
+            private_todo_list_id: id,
+            todo_text: item
         },
         success: function(data){
-            $(ul).append(taskItem({entry_text: item, entry_id: data.shopping_cart_entry_id}));
+            $(ul).append(taskItem({todo_id: data.private_todo_list_id, todo_text: data.todo_text}));
             if(cb)
                 cb();
         }
@@ -492,7 +452,7 @@ $('#shop-logout').click(function () {
         method: 'POST',
         success: function (data) {
             if(!data.login){
-                window.top.location="http://localhost:8000/login.html";
+                window.location="/login.html";
             }
         }
     });

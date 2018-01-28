@@ -53,7 +53,7 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
             <a id="profile-homepage" class="nav-item nav-link" href="index.html"></a>
-            <a id="profile-groups" class="nav-item nav-link active" href="#" onclick="new function () {
+            <a id="profile-groups" class="nav-item nav-link" href="#" onclick="new function () {
               $.ajax({
                 url: '/api/group/me',
                 method: 'GET',
@@ -65,7 +65,6 @@
                 }
               });
             }();"></a>
-            <a id="profile-tasks" class="nav-item nav-link" href="tasks.html"></a>
             <a id="profile-shoppinglists" class="nav-item nav-link" href="shoppinglist.html"></a>
         </div>
         <div class="navbar-nav ml-auto">

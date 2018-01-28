@@ -28,8 +28,8 @@
 .list-group{
 	text-align: left;
 	margin-inside: 4%;
-	max-height: 450px;
-	overflow-y: scroll;
+	max-height: 82%;
+	overflow-y: auto;
 }
 .state-icon {
 	left: -5px;

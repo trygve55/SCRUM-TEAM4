@@ -137,7 +137,7 @@ router.put('/info/:shopping_list_id', function(req, res) {
     }
     request += ' WHERE person_id = ? AND shopping_list_id = ? ' +
         'AND shopping_list_id IN  ' +
-        '(SELECT k.shopping_list_id FROM (SELECT shopping_list_id FROM shopping_list_person) k WHERE person_id = ?  AND invite_accepted = 1) LIMIT 1';
+        '(SELECT k.shopping_list_id FROM (SELECT shopping_list_id FROM shopping_list_person) k WHERE person_id = ?) LIMIT 1';
 
     parameters.push(req.session.person_id);
     parameters.push(req.params.shopping_list_id);

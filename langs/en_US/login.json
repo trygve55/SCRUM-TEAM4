@@ -4,5 +4,7 @@
   "login-password": "Password",
   "login-forgotpassword": "Forgot password?",
   "login-registerNewUser": "Register new user",
-  "login-facebook": "Log in with Facebook"
+  "login-facebook": "Log in with Facebook",
+  "login-button": "Log in",
+  "wrong-password": "Username and/or password is incorrect"
 }

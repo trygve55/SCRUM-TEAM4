@@ -40,7 +40,7 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
                 <a id="nogroup-homepageNavbar" class="nav-item nav-link" href="index.html"></a>
-                <a id="nogroup-groupsNavbar" class="nav-item nav-link" href="#" onclick="new function () {
+                <a id="nogroup-groupsNavbar" class="nav-item nav-link active" href="#" onclick="new function () {
               $.ajax({
                 url: '/api/group/me',
                 method: 'GET',
@@ -52,7 +52,6 @@
                 }
               });
             }();"></a>
-                <a id="nogroup-tasksNavbar" class="nav-item nav-link" href="tasks.html"></a>
                 <a id="nogroup-shoppinglistsNavbar" class="nav-item nav-link" href="shoppinglist.html"></a>
             </div>
             <div class="navbar-nav ml-auto">

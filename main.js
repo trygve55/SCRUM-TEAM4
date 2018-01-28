@@ -29,7 +29,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(expressSanitizer());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     secret: "OX8SNj1mj0MtlEkW0pyP",
     resave: true,
@@ -41,6 +40,14 @@ app.use(session({
 
 app.use('/api', require('./api'));
 app.use('/template', require('./template'));
+
+app.get('/', function(req, res, next){
+    if(!req.session.person_id)
+        return res.redirect(307, '/landing/index.html');
+    next();
+});
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get("*", function(req, res){
     res.status(404).send("Page not found");
