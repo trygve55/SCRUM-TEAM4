@@ -1070,7 +1070,7 @@ $(function () {
      * the method getPost() to post the post to the page then ClearFields()
      * to reset the inputfield.
      */
-    $('#group-post2').click(function() {
+    $('#group-post21').click(function() {
 
 
 
