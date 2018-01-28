@@ -66,10 +66,6 @@ router.post('/', function(req, res){
  *
  * @name checks if user is logged in
  * @route {GET} /api/auth
- * URL: /api/auth
- * method: GET
- *
- * GET = @headerparam {string}
  */
 router.get('/', function(req, res) {
     res.status(200).json({login: !!req.session.person_id});
