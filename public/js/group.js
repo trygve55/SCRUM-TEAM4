@@ -1271,7 +1271,7 @@ function drawChart() {
 	// AJAX get all the budget data for the chart.
 	$.ajax({
 		type:"GET",
-		url:"/api/budget/" + currentGroup.shopping_list_id,
+		url:"/api/budget/legacy/" + currentGroup.shopping_list_id,
 		contentType:"application/json",
 		dataType:"json",
 		error: function(jqXHR, text, error) {
@@ -1279,11 +1279,12 @@ function drawChart() {
 			return;
 		},
 		success:function(result) {
+			console.log(result);
 			if (!result) {
 				hideFirstStat();
 				return;
 			}
-			if (result.length < 1) {
+			if (result.length < 1 || !result.budget_entries) {
 				hideFirstStat();
 				return;
 			}
