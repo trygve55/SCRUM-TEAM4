@@ -581,7 +581,7 @@ router.get('/:group_id/todo', function(req, res) {
 					return res.status(500).send();
 				if (result) {
 					var people = [];
-					for (i = 0; i < result.length; i++) {people.push({"person_id":result[i].person_id});}
+					for (var i = 0; i < result.length; i++) {people.push({"person_id":result[i].person_id});}
 					var values = {};
 					for (var p in result[0]) {values[p] = result[0][p];}
 					delete values.person_id;

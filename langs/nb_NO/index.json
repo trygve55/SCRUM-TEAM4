@@ -7,5 +7,6 @@
   "index-profileNavbar": "Profil",
   "index-todolist": "IDAG",
   "index-logout": "Logg ut",
-  "index-logoutNavbar":"Logg ut"
+  "index-logoutNavbar":"Logg ut",
+  "nothingHereFeed": "Ingenting her, legg til en gruppe for å fylle opp feeden. :)"
 }

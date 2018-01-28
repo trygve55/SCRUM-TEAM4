@@ -185,7 +185,6 @@ router.get('/', function(req, res) {
                         "currency_long":result[i].currency_long,
                         "currency_sign":result[i].currency_sign,
                         "currency_major":result[i].currency_major,
-                        "currency_long":result[i].currency_long,
                         "shopping_list_entries": [],
                         "persons": []
                     });
@@ -312,7 +311,6 @@ router.get('/:shopping_list_id', function(req, res) {
                 "currency_long":result[0].currency_long,
                 "currency_sign":result[0].currency_sign,
                 "currency_major":result[0].currency_major,
-                "currency_long":result[0].currency_long,
                 "shopping_list_entries": removeDuplicates(entries),
                 "persons": removeDuplicates(persons)
             });
@@ -530,7 +528,9 @@ function checkRange(value, min, max) {
 * Make sure the array only contains unique elements.
 */
 function removeDuplicates(arr) {
-    var added_ids = [], unique_array = arr.filter(function(elem, index, self) {
+    var added_ids = [];
+
+    return arr.filter(function(elem, index, self) {
         if (elem.person_id) {
             if (added_ids.indexOf(elem.person_id) == -1) {
                 added_ids.push(elem.person_id);
@@ -549,7 +549,6 @@ function removeDuplicates(arr) {
         }
         return index == self.indexOf(elem);
     });
-    return unique_array;
 }
 
 /**

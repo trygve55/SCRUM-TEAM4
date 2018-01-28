@@ -811,7 +811,6 @@ function reqForPrivateVars(reqVars) {
     reqVars.forEach(function(element) {
         if(privateVars.indexOf(element) > -1) {
             result = true;
-            return;
         }
     });
     return result;
