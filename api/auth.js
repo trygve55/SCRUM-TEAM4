@@ -30,35 +30,32 @@ router.post('/logout', function(req, res) {
  * }
  */
 router.post('/', function(req, res){
-    var loginVariable, username = req.body.username, password = req.body.password;
+    var username = req.body.username, password = req.body.password;
     if (!username || !password) {
         res.status(400).json({login: false, error: "login failed"});
         return;
     }
 
-    pool.getConnection(function (err, connection) {
-        if (err) {
-            connection.release();
-            res.status(500).json({error: "no connection to server"})
-        }
-        else connection.query("SELECT person_id, password_hash FROM person WHERE ?? = ?;",
-            [((username.indexOf("@") == -1) ? 'username' : 'email'), username], function (error, results) {
-            connection.release();
-            if(err)
-                return res.status(500).json({'Error' : 'connecting to database: ' } + err);
-            if(results.length == 0)
-                return res.status(400).json({login: false, error: "login failed"});
-            else bcrypt.compare(password, results[0].password_hash, function(err, hash_res) {
-                if (hash_res) {
-                    req.session.person_id = results[0].person_id;
-                    req.session.save();
-                    res.cookie('person_id', results[0].person_id);
-                    res.status(200).json({login: true, person_id: results[0].person_id});
-                }
-                else { res.status(400).json({login: false, error: "login failed"}); }
+    setTimeout(function () {
+        pool.query("SELECT person_id, password_hash, verify_token FROM person WHERE ?? = ?;",
+            [((username.indexOf("@") == -1) ? 'username' : 'email'), username], function (err, results) {
+                if(err)
+                    return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+                if(results.length == 0)
+                    return res.status(400).json({login: false, error: "login failed"});
+                if(results[0].verify_token !== null)
+                    return res.status(403).json({login: false, error: "user not verified", notVerified: true});
+                else bcrypt.compare(password, results[0].password_hash, function(err, hash_res) {
+                    if (hash_res) {
+                        req.session.person_id = results[0].person_id;
+                        req.session.save();
+                        res.cookie('person_id', results[0].person_id);
+                        res.status(200).json({login: true, person_id: results[0].person_id});
+                    }
+                    else { res.status(400).json({login: false, error: "login failed"}); }
+                });
             });
-        });
-    });
+    }, 300);
 });
 
 /**

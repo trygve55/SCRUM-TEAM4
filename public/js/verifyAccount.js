@@ -93,6 +93,9 @@ $('document').ready(function () {
                 $('#forgot-email-error').hide();
                 $('#forgot-email-success').show();
                 console.log(data)
+                setTimeout(function () {
+                    window.location.pathname='/login.html';
+                }, 5000)
             },
             error: function () {
                 $('#forgot-email-error').show();
