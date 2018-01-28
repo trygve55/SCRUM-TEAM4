@@ -30,10 +30,13 @@ describe('Budget API', function() {
                         "shopping_list_id": 1,
                         "amount": "20",
                         "text_note": "DELETE THIS PLEASE IT SHOULD NOT BE",
-                        "budget_entry_type_id": 1,
+                        "budget_entry_type_id": typeId,
                         "shopping_list_entry_ids": "1,2",
                         "person_ids": "1,2"
                     }).expect(200).end(done);
+            });
+            after('remove test data', function(done) {
+                pool.query("DELETE FROM ")
             });
         });*/
         describe('/pay/:budget_entry_id', function() {
