@@ -23,7 +23,7 @@ describe('Budget API', function() {
                 }).expect(200).end(done);
             });
         });
-        describe('/', function() {
+        /*describe('/', function() {
             it('should add a budget entry to a shopping list', function(done) {
                 request.post('/api/budget/')
                     .send({
@@ -35,7 +35,7 @@ describe('Budget API', function() {
                         "person_ids": "1,2"
                     }).expect(200).end(done);
             });
-        });
+        });*/
         describe('/pay/:budget_entry_id', function() {
             it('should add a entry to person_budget_entry ', function(done) {
                 request.post('/api/budget/pay/' + budgetId).send({
