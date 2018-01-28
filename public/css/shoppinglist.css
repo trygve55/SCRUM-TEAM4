@@ -207,13 +207,13 @@ label {
 }
 .minus{
     background-color: lightcoral;
+    color: grey
 }
-.minus:hover{
-    background-color: #f96666;
+.plus:hover{
+    background-color: green;
 }
 .plus{
     background-color: lightgreen;
-    color: grey
 }
 .activ{
     filter: brightness(85%);

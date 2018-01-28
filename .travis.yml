@@ -11,10 +11,12 @@ branches:
   - master
 
 script:
-  - npm tst
+  - npm run coverage
+  - cat coverage/coverage.json
+  - npm run coverage:remap
 
 after_success:
-  - codecov
+  - npm run codecov
 
 services:
   - mysql
@@ -24,3 +26,4 @@ before_install:
   - mysql -u root test < SQL/server.sql
   - mysql -u root test < SQL/demo.sql
   - npm install -g codecov
+  - npm install -g remap-istanbul

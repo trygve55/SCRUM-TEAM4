@@ -34,6 +34,7 @@ router.post('/', function (req, res) {
 
 router.post('/entry', function (req, res) {
     var data = req.body;
+    var p_id = req.session.person_id;
     if (!data.private_todo_list_id || !data.todo_text)
         return res.status(400).send("body error");
 

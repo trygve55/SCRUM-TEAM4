@@ -139,5 +139,6 @@
 	"leaveGroupButton": "Yes",
 	"entry-ok": "Register",
 	"group-mealplanner": "Mealplanner",
-	"change-yourself": "Are you sure you want to relieve yourself of admin privileges?"
+	"change-yourself": "Are you sure you want to relieve yourself of admin privileges?",
+	"group-mealplanner": "Mealplanner"
 }
