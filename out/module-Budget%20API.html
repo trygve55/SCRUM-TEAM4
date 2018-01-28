@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Module: Budget API</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Module: Budget API</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="Addsabudgetentrytoshoppinglist"><span class="type-signature">(route) </span>Adds a budget entry to shopping list<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">POST</td>
+                            <td class="name last">/api/budget</td>
+                            </tr>
+                            </table>
+                            Adds a budget entry to shopping list
+                            <h5>Body Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">shopping_list_id</td>
+            <td class="type">number</td>
+            
+            
+            <td class="description last"></td>
+          </tr><tr>
+            <td class="name">amount</td>
+            <td class="type">number</td>
+            
+            
+            <td class="description last"></td>
+          </tr><tr>
+            <td class="name">text_note</td>
+            <td class="type">string</td>
+            
+            
+            <td class="description last"></td>
+          </tr><tr>
+            <td class="name">budget_entry_type_id</td>
+            <td class="type">number</td>
+            
+            
+            <td class="description last"></td>
+          </tr><tr>
+            <td class="name">shopping_list_entry_ids[</td>
+            <td class="type">array</td>
+            
+            
+            <td class="description last"></td>
+          </tr><tr>
+            <td class="name">person_ids[</td>
+            <td class="type">array</td>
+            
+            
+            <td class="description last"></td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="budget.js.html">budget.js</a>, <a href="budget.js.html#line122">line 122</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Addsatopayforabudgetentry"><span class="type-signature">(route) </span>Adds a to pay for a budget entry<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">POST</td>
+                            <td class="name last">/api/budget/{budget_entry_id}</td>
+                            </tr>
+                            </table>
+                            Adds a to pay for a budget entry
+                            <h5>Body Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">person_ids[</td>
+            <td class="type">array</td>
+            
+            
+            <td class="description last">Array of persons ids</td>
+          </tr><tr>
+            <td class="name">is_paid</td>
+            <td class="type">string</td>
+            
+            
+            <td class="description last"></td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="budget.js.html">budget.js</a>, <a href="budget.js.html#line355">line 355</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Addsnewbudgetentrylabel"><span class="type-signature">(route) </span>Adds new budget entry label<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">POST</td>
+                            <td class="name last">/api/budget/entryType</td>
+                            </tr>
+                            </table>
+                            Adds a new budget entry label for a shopping list
+                            <h5>Body Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">entry_type_name</td>
+            <td class="type">string</td>
+            
+            
+            <td class="description last"></td>
+          </tr><tr>
+            <td class="name">entry_type_color</td>
+            <td class="type">number</td>
+            
+            
+            <td class="description last"></td>
+          </tr><tr>
+            <td class="name">shopping_list_id</td>
+            <td class="type">number</td>
+            
+            
+            <td class="description last"></td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="budget.js.html">budget.js</a>, <a href="budget.js.html#line8">line 8</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Budgetentrieswithtypeforagroup"><span class="type-signature">(route) </span>Budget entries with type for a group<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/api/budget/entries</td>
+                            </tr>
+                            </table>
+                            Get all budget entries with their type for a group. Only available to users in the group
+                            <h5>Header Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">group_id</td>
+            <td class="type">number</td>
+            
+            
+            <td class="description last">A groups unique id</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="budget.js.html">budget.js</a>, <a href="budget.js.html#line468">line 468</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Editsbudgetentrylabel"><span class="type-signature">(route) </span>Edits budget entry label<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">PUT</td>
+                            <td class="name last">/api/budget/entryType/{budget_entry_type_id}</td>
+                            </tr>
+                            </table>
+                            Edits budget entry label
+                            <h5>Body Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">budget_entry_name</td>
+            <td class="type">string</td>
+            
+            
+            <td class="description last"></td>
+          </tr><tr>
+            <td class="name">budget_entry_color</td>
+            <td class="type">number</td>
+            
+            
+            <td class="description last"></td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="budget.js.html">budget.js</a>, <a href="budget.js.html#line67">line 67</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Getdebtbetweenloggedinuserandanyoneelse"><span class="type-signature">(route) </span>Get debt between logged in user and anyone else<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/api/budget/getDebt</td>
+                            </tr>
+                            </table>
+                            Get debt between logged in user and anyone else. Returns a json object, where the keys are person_ids, and their value
+is balance between the user and the person_id.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="budget.js.html">budget.js</a>, <a href="budget.js.html#line201">line 201</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Getfullbudgetforashoppinglist"><span class="type-signature">(route) </span>Get full budget for a shopping list<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/api/budget/{shopping_list_id}</td>
+                            </tr>
+                            </table>
+                            Get full budget for a shopping list
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="budget.js.html">budget.js</a>, <a href="budget.js.html#line271">line 271</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Removesabudgetentrylabel"><span class="type-signature">(route) </span>Removes a budget entry label<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">DELETE</td>
+                            <td class="name last">/api/budget/entryType/{budget_entry_type_id}</td>
+                            </tr>
+                            </table>
+                            Removes a budget entry label
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="budget.js.html">budget.js</a>, <a href="budget.js.html#line98">line 98</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Returnsabudgetentrylabels"><span class="type-signature">(route) </span>Returns a budget entry labels<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/api/budget/entryType</td>
+                            </tr>
+                            </table>
+                            Returns budget entry labels for a shopping list
+                            <h5>Header Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">shopping_list_id</td>
+            <td class="type">number</td>
+            
+            
+            <td class="description last">each shoppinglist receives a unique id</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="budget.js.html">budget.js</a>, <a href="budget.js.html#line36">line 36</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Setsentriesinperson_budget_entrytopaid"><span class="type-signature">(route) </span>Sets entries in person_budget_entry to paid<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">PUT</td>
+                            <td class="name last">/api/budget</td>
+                            </tr>
+                            </table>
+                            Sets entries in person_budget_entry to paid, with the current timestamp
+                            <h5>Body Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">person_id</td>
+            <td class="type">number</td>
+            
+            
+            <td class="description last">A persons unique id</td>
+          </tr><tr>
+            <td class="name">budget_entry_ids:</td>
+            <td class="type">string</td>
+            
+            
+            <td class="description last">"###,###,###,###" Is a string, with ids separated by commas. example: "200,390,29"</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="budget.js.html">budget.js</a>, <a href="budget.js.html#line425">line 425</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Setsentriesinperson_budget_entrytopaid"><span class="type-signature">(route) </span>Sets entries in person_budget_entry to paid<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">PUT</td>
+                            <td class="name last">/api/budget/paySpecific</td>
+                            </tr>
+                            </table>
+                            Sets entries in person_budget_entry to paid, with the current timestamp
+                            <h5>Body Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">person_ids</td>
+            <td class="type">string</td>
+            
+            
+            <td class="description last">budget_entry_ids is a string, with ids separated by commas. example: "200,390,29"</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="budget.js.html">budget.js</a>, <a href="budget.js.html#line384">line 384</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Budget%2520API.html">Budget API</a></li><li><a href="module-Currency%2520API.html">Currency API</a></li><li><a href="module-Group%2520API.html">Group API</a></li><li><a href="module-Group%2520Task%2520API.html">Group Task API</a></li><li><a href="module-Language%2520API.html">Language API</a></li><li><a href="module-Meal%2520planner%2520API.html">Meal planner API</a></li><li><a href="module-News%2520feed%2520API.html">News feed API</a></li><li><a href="module-Notification%2520center%2520API.html">Notification center API</a></li><li><a href="module-Personal%2520Task%2520API.html">Personal Task API</a></li><li><a href="module-Shopping%2520List%2520API.html">Shopping List API</a></li><li><a href="module-User%2520Authentication%2520API.html">User Authentication API</a></li><li><a href="module-User%2520Information%2520API.html">User Information API</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Jan 28 2018 21:47:58 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: currency.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,38 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: currency.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module Currency API
+ */
+var router = require('express').Router();
 
+module.exports = router;
 
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+/**
+ * Get all the currencies correctly sorted
+ *
+ * @name All currencies sorted
+ * @route {GET} /api/currency
+ *
+ */
+router.get('/', function(req, res){
+    pool.query('SELECT * FROM currency ORDER BY currency_major DESC, currency_long ASC;', function(err, result) {
+		if(err)
+			return res.status(500).json({'Error' : 'connecting to database: ' } + err);
+		res.status(200).json(result);
+    });
+});</code></pre>
+        </article>
+    </section>
 
 
 

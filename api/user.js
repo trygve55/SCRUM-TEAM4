@@ -1,5 +1,5 @@
 /**
- * @module Budget
+ * @module User Information API
  */
 var router = require('express').Router(),
     auth = require('../auth'),
