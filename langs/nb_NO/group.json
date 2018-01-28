@@ -132,6 +132,8 @@
 	"shop-complete": "Lukk",
 	"label-none": "Ingen kategori",
 	"add-picture": "Legg til bilde",
-	"group-post": "Skriv",
-	"addGroup-button": "Legg til gruppe"
+	"group-post": "Post",
+	"addGroup-button": "Legg til gruppe",
+	"entry-ok": "Register"
+
 }
