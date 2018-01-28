@@ -70,7 +70,7 @@ CREATE TABLE person (
 CREATE TABLE home_group ( 
     group_id INTEGER NOT NULL AUTO_INCREMENT,
     group_name NVARCHAR(50) NOT NULL,
-    group_desc NVARCHAR(200),
+    group_desc NVARCHAR(1000),
     group_type INTEGER NOT NULL DEFAULT 0,
     created_datetime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     group_pic MEDIUMBLOB,
