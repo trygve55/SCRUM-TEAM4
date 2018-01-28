@@ -701,8 +701,23 @@ function setupClicks(){
                         shopping_list_id: li,
                         person_id: newmembers[j].id
                     },
+                    success: function(){
+                        $.ajax({
+                            url: '/api/shoppingList/' + li,
+                            method: 'GET',
+                            success: function(data){
+                                console.log(data);
+                                for(var i = 0; i < lists.length; i++){
+                                    if(lists[i].shopping_list_id == data.shopping_list_id){
+                                        lists[i].person = data.persons;
+                                    }
+                                }
+                            },
+                            error: console.error
+                        });
+                    },
                     error: console.error
-                })
+                });
             }
             $(this).closest(".pop").remove();
             newmembers=[];
