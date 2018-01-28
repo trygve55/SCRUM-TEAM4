@@ -38,5 +38,6 @@
   "pwbut": "Lagre passord",
   "but": "Lagre info",
   "profpicsuccess": "Opplasting av profilbilde vellykket!",
-  "profpicfailure": "Mislykket, bildet ble ikke lastet opp"
+  "profpicfailure": "Mislykket, bildet ble ikke lastet opp",
+  "profile-mealplanner": "Måltidsplanlegger"
 }

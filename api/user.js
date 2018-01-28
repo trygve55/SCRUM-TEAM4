@@ -843,7 +843,7 @@ function reqForPrivateVars(reqVars) {
 /**
  * @name Get user information
  * @route {GET} /api/user/
- * 
+ *
  */
 router.get('/getUser', function(req, res) {
     if(!req.query.hasOwnProperty('users')) {
