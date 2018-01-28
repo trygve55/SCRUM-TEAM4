@@ -136,7 +136,10 @@ router.delete('/entryType/:budget_entry_type_id', function(req, res) {
 router.post('/', function(req, res){
     console.log(req.body);
     req.body.shopping_list_entry_ids = req.body.shopping_list_entry_ids.split(",");
-    req.body.person_ids = req.body.person_ids.split(",");
+    if (req.body.person_ids)
+        req.body.person_ids = req.body.person_ids.split(",");
+    else
+        req.body.person_ids = [];
     req.body.text_note = req.body.text_note.substring(0, 254);
     pool.getConnection(function(err, connection) {
         if (err)

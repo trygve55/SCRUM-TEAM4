@@ -1032,7 +1032,11 @@ function setupClicks(){
                             method: 'POST',
                             data: inputdata,
                             success: function (data) {
-                                console.log(data);
+                                if (slei && (typeof slei) === "string") {
+                                    var ids = slei.split(',');
+                                    for (var i = 0; i < ids.length; i++) $('li[data-id=' + ids[i] + ']').remove();
+                                } else
+                                    $('li[data-id=' + slei + ']').remove();
                                 $('.pop').remove();
                             },
                             error: console.error
@@ -1355,7 +1359,7 @@ function drawChart() {
 				if (element.entry_datetime != null) {
 					var entryTime = new Date(element.entry_datetime);
 					if (entryTime > minLimit && element.amount != 0) {
-						months[(element.amount > 0) ? 0 : 1][mod(entryTime.getMonth() - monthNow - 1, 12)] += element.amount;
+						months[(element.amount > 0) ? 0 : 1][mod(entryTime.getMonth() - monthNow - 1, 12)] += element.amount/100;
 					}
 					if (element.amount != 0) {validAmount = true;}
 				}
