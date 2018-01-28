@@ -432,7 +432,6 @@ router.put('/paySpecific', function(req, res) {
  *
  */
 router.put('/pay', function(req, res) {
-    console.log(req.body);
     if(req.body.person_id == null || req.body.person_id.isNaN) {
         return res.status(400).send("Bad request, no person_id variable");
     }
@@ -507,34 +506,6 @@ router.get('/', function(req, res) {
         });
     });
 });
-
-function budgetEntryExistsInArray(budget_entry_id, array) {
-    for (var i = 0; i < array.length;i++) {
-        if (array[i].budget_entry_id === budget_entry_id) return i;
-    }
-    return -1;
-}
-
-function shoppingListEntryExistsInArray(shopping_list_entry_id, array) {
-    for (var i = 0; i < array.length;i++) {
-        if (array[i].shopping_list_entry_id === shopping_list_entry_id) return i;
-    }
-    return -1;
-}
-
-function payPersonExistsInArray(person_id, array) {
-    for (var i = 0; i < array.length;i++) {
-        if (array[i].person_id === person_id) return i;
-    }
-    return -1;
-}
-
-function paidPersonExistsInArray(person_id, array) {
-    for (var i = 0; i < array.length;i++) {
-        if (array[i].person.person_id === person_id) return i;
-    }
-    return -1;
-}
 
 function balancedCalculation(budget, person_id){
     var persons = [];
