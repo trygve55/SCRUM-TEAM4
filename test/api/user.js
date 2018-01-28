@@ -2,6 +2,21 @@ var fs = require('fs');
 var jwt = require('jsonwebtoken');
 
 describe('User API', function() {
+    describe('Check requests',function() {
+        it('/ - should return 404', function(done) {
+            request.get('/api/user/all/1').expect(200).end(done);
+        });
+        it('Should return 200', function (done) {
+            request.get('/api/user/all').expect(200).end(done);
+        });
+        it('Should return 200 false', function (done) {
+            request.get('/api/user/checkFacebook').expect(200).expect({facebook: false}).end(done);
+        });
+        it('Should return 400', function (done) {
+            request.get('/api/user/1/picture').expect(200).end(done);
+        })
+    });
+
     describe('/api/user/register POST', function () {
         it("Should register a user", function (done) {
             request.post('/api/user/register')
@@ -25,6 +40,17 @@ describe('User API', function() {
                     });
                 });
         });
+    });
+
+    describe('/api/user/checkPassword POST', function () {
+       it('Should return password does match', function (done) {
+          request.post('/api/user/checkPassword').send({
+              password: "test"
+          })
+          .expect(200)
+          .expect({password: true, message: "password do match"})
+          .end(done);
+       });
     });
 
     describe('/api/user/user GET', function () {
@@ -82,7 +108,7 @@ describe('User API', function() {
             request.post('/api/user/1/picture')
                 .attach('file', 'test/img/test.jpg')
                 .expect(200)
-                .expect(getFileSizeInBytes('test/img/test.jpg')) //TODO: make it return actual size? ish?
+                .expect(getFileSizeInBytes('test/img/test.jpg'))
                 .end(function(){
                     pool.getConnection(function (err, connection) {
                         if (err) throw err;
@@ -98,43 +124,7 @@ describe('User API', function() {
         });
     });
 
-/*
-    describe('/:person_id/picture', function () {
-       it("Should return something", function (done) {
-            request.get('/api/user/1/picture')
-                .send()
-        });
-    });
-*/
 
-/*
-    describe('/api/user/all GET', function () {
-       it("Should return expected values from database", function (done) {
-           request.get('/api/user/all')
-               .expect(200)
-               .expect([
-                   {
-                       "person_id": 1,
-                       "email": "test@test.com",
-                       "forename": "test",
-                       "middlename": null,
-                       "lastname": "test",
-                       "username": "testnavn"
-                   },
-                   {
-                       "person_id": 2,
-                       "email": "facebook@test.com",
-                       "forename": "test",
-                       "middlename": null,
-                       "lastname": "test",
-                       "username": "facebook"
-                   }
-               ])
-               .end(done);
-       });
-    });
-
-*/
     describe('/api/user/getUser GET', function () {
         it("Should return the requested user's data (private)", function (done) {
             request.get('/api/user/getUser').query({

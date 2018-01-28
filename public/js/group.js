@@ -1904,7 +1904,7 @@ function addMembersPopup(todo){
         assign_name: lang["assign-name"],
         assign_ok: lang["assign-ok"],
         assign_cancel: lang["assign-cancel"],
-        member_task: thememberstring
+        member_task: ((thememberstring) ? "" : thememberstring)
     }));
     //Shows suggestions when characters is typed
     $('#scrollable-dropdown-menu .typeahead').typeahead({
@@ -1941,6 +1941,7 @@ function addMembersPopup(todo){
         personids.push(personid);
         console.log(personids);
         console.log("---");
+        console.log(themember);
         $.ajax({
             url: '/api/tasks/person/'+todo,
             method: 'POST',
@@ -1949,6 +1950,14 @@ function addMembersPopup(todo){
             },
             success: function () {
                 console.log("Todo updated");
+                for (var i = 0; i < dataTask.length;i++) {
+                    if (dataTask[i].todo_id == todo) {
+                        dataTask[i].assigned_to.forename = themember.name;
+                        dataTask[i].assigned_to.middlename = "";
+                        dataTask[i].assigned_to.lastname = " ";
+                    }
+                }
+                showCurTasks();
                 $('.pop').remove();
             },
             error: console.error
