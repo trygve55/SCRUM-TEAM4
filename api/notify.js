@@ -1,5 +1,5 @@
 /**
- * @module Budget
+ * @module Notification center API
  */
 var router = require('express').Router();
 

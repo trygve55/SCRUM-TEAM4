@@ -1,5 +1,5 @@
 /**
- * @module Budget
+ * @module User Information API
  */
 var router = require('express').Router(),
     auth = require('../auth'),
@@ -823,6 +823,10 @@ function reqForPrivateVars(reqVars) {
  *
  * @name Get user information
  * @route {GET} /api/user/
+<<<<<<< HEAD
+ *
+=======
+>>>>>>> cfb98e7bcf630937e66f5305cb4deabdc48a4f65
  */
 router.get('/getUser', function(req, res) {
     if(!req.query.hasOwnProperty('users')) {

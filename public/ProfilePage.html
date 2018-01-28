@@ -42,8 +42,8 @@
 </script>
 
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="index.html" style="color: dimgray">
+<nav style="width: 100%" class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/index.html" style="color: dimgray">
         <img src="img/logo.svg" width="30" height="30" alt="">
         Household Manager
     </a>
@@ -52,7 +52,6 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-            <a id="profile-homepage" class="nav-item nav-link" href="index.html"></a>
             <a id="profile-groups" class="nav-item nav-link" href="#" onclick="new function () {
               $.ajax({
                 url: '/api/group/me',
@@ -66,13 +65,14 @@
               });
             }();"></a>
             <a id="profile-shoppinglists" class="nav-item nav-link" href="shoppinglist.html"></a>
+            <a id="profile-tasks" class="nav-item nav-link" href="tasks.html"></a>
+            <a id="profile-mealplanner" class="nav-item nav-link" href="mealPlannerPrivate.html"></a>
         </div>
         <div class="navbar-nav ml-auto">
             <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
             <a id="profile-profile" class="nav-item nav-link" href="ProfilePage.html"></a>
-
             <i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
-            <a class="nav-item nav-link" href="login.html" id="profile-logout" href="#"></a>
+            <a class="nav-item nav-link" id="profile-logout" href="#"></a>
         </div>
     </div>
 </nav>

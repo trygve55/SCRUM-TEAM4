@@ -1,5 +1,5 @@
 /**
- * @module Budget
+ * @module Currency API
  */
 var router = require('express').Router();
 
