@@ -785,11 +785,12 @@ function setupClicks(){
                     label_name: lang["label-name"],
                     new_label_color: lang["new-label-color"],
                     cancel: lang["shop-cancel"],
-                    complete: lang["shop-ok"],
+                    entry_ok: lang["entry-ok"],
                     data: "data-id='" + $(this).closest("div[data-id]").data("id") + "' data-entries='" + entries + "'"
                 }));
                 $(".addbyers").hide();
                 $(".newlabel").hide();
+                $(".pop .fa-times").remove();
 
                 var currColor = "#a9d5f2";
                 $(".colorpicker").spectrum({
@@ -815,6 +816,11 @@ function setupClicks(){
                     }
                 });
                 var buyers = [];
+                $("#resetmembers").unbind("click").click(function () {
+
+                    $('.membersadded').html('');
+                    buyers = [];
+                });
 
                 //If buyers-input is changed
                 $('select.byers-input').change(function () {
@@ -853,6 +859,9 @@ function setupClicks(){
                                 $('.membersadded').append(data.name);
                             }
                         });
+
+
+
 
                         $(".typeahead").bind('typeahead:close', function(){
                             $(".typeahead").val("");
