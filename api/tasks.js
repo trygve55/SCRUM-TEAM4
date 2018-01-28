@@ -321,12 +321,12 @@ router.get('/:group_id', function(req, res) {
 	            return res.status(500).send();
             if(result.length == 0)
                 return res.status(200).json(result);
-	        var qry = "SELECT forename, middlename, lastname, todo_id FROM todo LEFT JOIN todo_person USING (todo_id) LEFT JOIN person USING (person_id) WHERE todo_id IN ("
+	        var qry = "SELECT forename, middlename, lastname, todo_id FROM todo LEFT JOIN todo_person USING (todo_id) LEFT JOIN person USING (person_id) WHERE todo_id IN (";
             var vals = [];
 			for(var i = 0; i < result.length; i++){
 	            if(i != 0)
 	                qry += ", ";
-	            qry += "?"
+	            qry += "?";
                 vals.push(result[i].todo_id);
             }
             qry += ");";

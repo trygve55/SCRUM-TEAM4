@@ -1,4 +1,4 @@
---reporter spec
+-R spec
 --ui bdd
 --recursive
 --require ./test_init.js

@@ -186,7 +186,11 @@ function prep() {
         url: '/api/news/',
         method: 'GET',
         success: function (feed) {
-            $('#newsfeedPost').html("");
+            //$('#newsfeedPost').html("");
+
+            if (feed.length === 0) {
+                $('#nothingHereFeed').css("display", "block")
+            }
 
             for (var i = 0; i < feed.length; i++) {
                 var length = 50;

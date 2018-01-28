@@ -761,14 +761,14 @@ function setupClicks(){
 
                 for(var i=0; i<balancelist.length; i++){
                     var name = balancelist[i].forename + " " + balancelist[i].lastname;
-                    var numb = balancelist[i].amount/100;
+                    var numb = Math.round(balancelist[i].amount/100);
                     if(numb < 0){
                         oeM += "<tr  class='balancelist minus'><td>" + name +"</td><td>" + numb + " "+sign+"</td>";
                     }else{
                         oeB += "<tr class='balancelist plus'><td>" + name +"</td><td>" + numb + " "+sign+"</td>";
                     }
                 }
-                var oe = oeM + oeB;
+                var oe = oeB + oeM ;
 
                 $(mbutton).closest("div[data-id]").html(balance({
                     title: lang["shop-balance"],
@@ -784,7 +784,6 @@ function setupClicks(){
 
 
                 $('.balancelist').unbind("click").click(function () {
-                    console.log("clicjed");
                     var name = this.innerHTML.split('>')[1].split('<')[0];
                     for(var j=0; j<balancelist.length; j++){
                         var thefullname = balancelist[j].forename + " " + balancelist[j].lastname;
@@ -798,7 +797,7 @@ function setupClicks(){
                             var budgetids = thelist.budget_entry_ids;
                             console.log(budgetids);
                             var arr = thelist.budget_entry_ids;
-                            st = lang["settle-text-one"] + thefullname + lang["settle-text-two"] + this.innerHTML.split(">")[3].split("<")[0].replace("-", "");
+                            st = lang["settle-text-one"] + this.innerHTML.split(">")[3].split("<")[0].replace("-", "") + lang["settle-text-two"] + thefullname;
                             $('body').append(popupSettle({
                                 settle_text: st,
                                 settle_yes: lang["settle-yes"],
@@ -887,6 +886,7 @@ function setupClicks(){
                             var la = entry.entry_type.entry_type_name;
                             var bc = Number(entry.entry_type.entry_type_color).toString(16);
                             var lh = '<div style="background-color: #' + bc + '; padding-left: 1vh; padding-top: 0.5vh; padding-bottom: 0.5vh;border-radius: 15px;">' + lang["label-label"] + ': ' + (la ? la : lang["label-none"]) + '</div>';
+
                             $("body").append(balanceItem({
                                 comment: entry.text_note,
                                 bought_by: (entry.purchased_by.person_id == me.person_id ? lang["me"] : entry.purchased_by.forename + " " + entry.purchased_by.lastname),
@@ -913,9 +913,10 @@ function setupClicks(){
 
 
                 $('.bal-complete').unbind("click").click(function(){
+                    var dataid = $(this).closest("div[data-id]").data("id");
                     var entries = "";
                     for(var j = 0; j < lists.length; j++) {
-                        if(lists[j].shopping_list_id != id)
+                        if(lists[j].shopping_list_id != dataid)
                             continue;
                         var d = lists[j];
                         for (var i = 0; i < d.shopping_list_entries.length; i++) {
@@ -940,7 +941,7 @@ function setupClicks(){
                         lang_settlement: lang["shop-balance"],
                         color_hex: (d.color_hex ? d.color_hex.toString(16) : "FFFFFF")
                     }));
-                    $('div[data-id=' + id + ']').find("select").val(d.currency_id);
+                    $('div[data-id=' + dataid+ ']').find("select").val(d.currency_id);
                     setupClicks();
                     colorRefresh();
                 });

@@ -34,6 +34,7 @@ router.post('/', function (req, res) {
 
 router.post('/entry', function (req, res) {
     var data = req.body;
+    var p_id = req.session.person_id;
     if (!data.private_todo_list_id || !data.todo_text)
         return res.status(400).send("body error");
 
@@ -212,6 +213,7 @@ router.put('/:todo_id/done', function(req, res) {
 
 
 router.put('/entry/:private_todo_entry', function(req, res) {
+    // noinspection Annotator
     if(!req.params.private_todo_entry)
         return res.status(400).send();
 
@@ -253,7 +255,9 @@ router.delete('/entry/:private_todo_entry_id', function(req, res) {
  */
 
 function removeDuplicates(arr) {
-    var added_ids = [], unique_array = arr.filter(function(elem, index, self) {
+    var added_ids = [];
+
+    return arr.filter(function(elem, index, self) {
         if (elem.person_id) {
             if (added_ids.indexOf(elem.person_id) == -1) {
                 added_ids.push(elem.person_id);
@@ -272,7 +276,6 @@ function removeDuplicates(arr) {
         }
         return index == self.indexOf(elem);
     });
-    return unique_array;
 }
 
 function putRequestEntry(id, req, tableName) {

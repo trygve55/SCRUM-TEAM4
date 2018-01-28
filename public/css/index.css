@@ -75,10 +75,10 @@ hr {
 
 @media screen and (max-width: 575px) {
     .profil {
-        margin-left: 0%;
+        margin-left: 0;
         height: 100%;
     }
     .newsfeed {
-        margin-left: 0%;
+        margin-left: 0;
     }
 }

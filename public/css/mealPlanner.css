@@ -73,10 +73,10 @@ body{
 
 @media screen and (max-width: 768px) {
     #meal-recipes {
-        margin-left: 0%;
+        margin-left: 0;
         height: 100%;
     }
     #meal-calendar {
-        margin-left: 0%;
+        margin-left: 0;
     }
 }
