@@ -405,6 +405,34 @@ function adminChange() {
 }
 
 /**
+ * This function allows a admin to delete a group.
+ */
+
+function deleteGroup(){
+    var antUsers = [];
+    $.ajax({
+        url:  '/api/group/' + currentGroup.group_id + '/users',
+        method: 'GET',
+        success: function (data) {
+            for(var i = 0; i < data.length; i++) {
+                antUsers.push(data[i].person_id);
+            }
+            $.ajax({
+                url:'/api/group/' + currentGroup.group_id,
+                method: 'DELETE',
+                data: {
+                  person_id: antUsers
+                },
+                success: function () {
+                    console.log('We gooood');
+                    location.reload();
+                }
+            })
+        }
+    })
+}
+
+/**
  * Leave the currently selected group.
  * The page just reloads so that the group is removed from the list.
  */
@@ -412,8 +440,11 @@ function adminChange() {
 
 function leaveGroup() {
     $.ajax({
-        url: '/api/group/' + currentGroup.group_id + '/group',
+        url: '/api/group/' + currentGroup.group_id,
         method: 'DELETE',
+        data:{
+          person_id: localStorage.person_id
+        },
         success: function () {
             location.reload();
         },
