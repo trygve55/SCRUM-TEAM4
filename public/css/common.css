@@ -18,8 +18,8 @@ i {
 .list-group{
     text-align: left;
     margin-inside: 4%;
-    max-height: 60vh;
-    overflow-y: scroll;
+    max-height: 70%;
+    overflow-y: auto;
 }
 .list-group-item{
     padding: -6px;
