@@ -786,8 +786,9 @@ function setupClicks(){
                 $('.balancelist').unbind("click").click(function () {
                     var name = this.innerHTML.split('>')[1].split('<')[0];
                     for(var j=0; j<balancelist.length; j++){
-                        var thefullname = balancelist[j].forename + " " + balancelist[j].lastname;
-                        var personid = balancelist[j].person_id;
+                        let thefullname = balancelist[j].forename + " " + balancelist[j].lastname;
+                        let personid = balancelist[j].person_id;
+                        let row = $(this);
                         if(thefullname == name){
                             if(balancelist[j].amount <= 0) {
                                 break;
@@ -817,6 +818,7 @@ function setupClicks(){
                                     }),
                                     error: console.error,
                                     success: function (data) {
+                                        row.remove();
                                         $(suc).closest('.pop').remove();
                                     }
                                 })
