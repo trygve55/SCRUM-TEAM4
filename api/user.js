@@ -486,8 +486,8 @@ router.put('/', function(req, res) {
 	var data = req.body;
     if(req.session.person_id == null) {return res.status(403).send("Invalid request, you must log in");}
 	if (data.username) {if(!checkValidUsername(data.username)) {return res.status(400).send("Bad username");}}
-	if (data.forename) {if(!checkValidForename((data.forename)) {return res.status(400).send("Bad forename");}}
-	if (data.lastname) {if(!checkValidName((data.lastname)) {return res.status(400).send("Bad lastname");}}
+	if (data.forename) {if(!checkValidForename(data.forename)) {return res.status(400).send("Bad forename");}}
+	if (data.lastname) {if(!checkValidName(data.lastname)) {return res.status(400).send("Bad lastname");}}
 
     var changeableVars = ["username", "forename", "middlename", "lastname", "phone", "gender", "birth_date",
         "profile_pic", "profile_pic_tiny", "last_active", "user_language"];
