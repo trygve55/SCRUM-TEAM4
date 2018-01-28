@@ -67,7 +67,6 @@ router.get('/:group_id', function(req, res){
             if(err)
                 return res.status(500).send(err);
             var recipes = result;
-            console.log(recipes);
             pool.query('SELECT recipe_id, ingredient_id, ingredient_amount, ingredient_unit, ingredient_name, ingredient_optional ' +
                 'FROM recipe_ingredient ' +
                 'LEFT JOIN recipe USING (recipe_id) ' +
@@ -114,7 +113,6 @@ router.get('/', function(req, res){
             if(err)
                 return res.status(500).send(err);
             var recipes = result;
-            console.log(recipes);
             pool.query('SELECT recipe_id, ingredient_id, ingredient_amount, ingredient_unit, ingredient_name, ingredient_optional ' +
                 'FROM recipe_ingredient ' +
                 'LEFT JOIN recipe USING (recipe_id)', [req.params.group_id], function(err, result){

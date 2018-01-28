@@ -185,7 +185,6 @@ router.get('/', function(req, res) {
                         "currency_long":result[i].currency_long,
                         "currency_sign":result[i].currency_sign,
                         "currency_major":result[i].currency_major,
-                        "currency_long":result[i].currency_long,
                         "shopping_list_entries": [],
                         "persons": []
                     });
@@ -312,7 +311,6 @@ router.get('/:shopping_list_id', function(req, res) {
                 "currency_long":result[0].currency_long,
                 "currency_sign":result[0].currency_sign,
                 "currency_major":result[0].currency_major,
-                "currency_long":result[0].currency_long,
                 "shopping_list_entries": removeDuplicates(entries),
                 "persons": removeDuplicates(persons)
             });
@@ -375,45 +373,6 @@ router.post('/entry', function(req, res) {
 
     if (!req.body.entry_text || req.body.entry_text.length === 0)
         return res.status(400).json({"error": "no text note"});
-
-    /*connection.query(
-        'INSERT INTO shopping_list_entry(  ' +
-        'shopping_list_id,  ' +
-        'entry_text,  ' +
-        'added_by_person_id, ' +
-        'purchased_by_person_id,  ' +
-        'cost,  ' +
-        'datetime_purchased) ' +
-        'SELECT 4, \'test\', 2, null, 0, null FROM shopping_list WHERE shopping_list_id IN   ' +
-        '(SELECT shopping_list_id FROM person WHERE person_id = 1 ' +
-        'UNION  ' +
-        'SELECT home_group.shopping_list_id FROM person   ' +
-        'LEFT JOIN group_person USING(person_id)  ' +
-        'LEFT JOIN home_group USING(group_id)  ' +
-        'WHERE person.person_id = 1 ' +
-        'UNION  ' +
-        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = 1) LIMIT 1',
-        [
-            checkRange(data.shopping_list_id, 1, null),
-            data.entry_text,
-            checkRange(p_id, 1, null),
-            data.purchased_by_person_id,
-            data.cost,
-            data.datetime_purchased,
-            data.shopping_list_id,
-            p_id,
-            p_id,
-            p_id
-        ], function(err, result) {
-            connection.release();
-            console.log(result);
-            console.log(err);
-            if (err)
-                return res.status(500).json({error: err});
-            else if (result.insertId == 0)
-                return res.status(400).json({error: "No access/does not exist"});
-            return res.status(200).json({shopping_cart_entry_id: result.insertId});
-        });*/
     pool.query('INSERT INTO shopping_list_entry (shopping_list_id, entry_text, added_by_person_id) VALUES (?, ?, ?)', [req.body.shopping_list_id, req.body.entry_text, req.session.person_id], function(err, result){
         if (err)
             return res.status(500).json({error: err});
@@ -530,7 +489,9 @@ function checkRange(value, min, max) {
 * Make sure the array only contains unique elements.
 */
 function removeDuplicates(arr) {
-    var added_ids = [], unique_array = arr.filter(function(elem, index, self) {
+    var added_ids = [];
+
+    return arr.filter(function(elem, index, self) {
         if (elem.person_id) {
             if (added_ids.indexOf(elem.person_id) == -1) {
                 added_ids.push(elem.person_id);
@@ -549,7 +510,6 @@ function removeDuplicates(arr) {
         }
         return index == self.indexOf(elem);
     });
-    return unique_array;
 }
 
 /**

@@ -206,9 +206,6 @@ router.post('/register', function(req, res) {
         }
 
         var user = req.body;
-
-        console.log(user.email);
-
         if (!checkValidUsername(user.username) && !checkValidEmail(user.email)) {
             connection.release();
             res.status(400).json({message:"Syntax-error"})
@@ -365,7 +362,7 @@ router.get('/user', function (req, res) {
         connection.query('SELECT COUNT(username) AS counted FROM person WHERE username = ?;', [username], function (err, result){
             connection.release();
             if(result[0].counted === 1) {
-                return res.status(200).json({message:"Username already exists"});
+                return res.status(200).json({message:"Username already exists", inUse: true});
             }
             res.status(200).json({message:"Username valid"});
         });
@@ -398,7 +395,7 @@ router.get('/mail', function (req, res) {
         connection.query('SELECT COUNT(email) AS counted FROM person WHERE email = ?;', [email], function (err, result){
             connection.release();
             if(result[0].counted === 1) {
-                return res.status(200).json({message:'E-mail already exists'});
+                return res.status(200).json({message:'E-mail already exists', inUse: true});
             }
             res.status(200).json({message:'E-mail valid'});
         });
@@ -505,7 +502,6 @@ router.put('/', function(req, res) {
 
     pool.query(sqlQuery, values, function (err) {
         if (err) {
-            console.log(err);
             return res.status(500).send("Internal database error(1)");
         }
         res.status(200).send("Profile updated");
@@ -645,8 +641,6 @@ router.post('/verifyAccount', function(req, res) {
         iss: issuer
     }, function(err, payload) {
         if(err) {
-            console.log(token);
-            console.log(err);
             return res.status(400).send("Bad token (1)");
         }
         pool.query('SELECT verify_token FROM person WHERE person_id = ?', [payload.id], function(err, result) {
@@ -658,8 +652,6 @@ router.post('/verifyAccount', function(req, res) {
                 return res.status(400).send("Outdated / faulty token");
             }
             if(result[0].verify_token != token) {
-                console.log(result[0].verify_token);
-                console.log(token);
                 return res.status(400).send("Bad token (2)");
             } else {
                 pool.query("UPDATE person SET verify_token = NULL WHERE person_id = ?", [payload.id], function(err, result) {
@@ -810,7 +802,6 @@ function reqForPrivateVars(reqVars) {
     reqVars.forEach(function(element) {
         if(privateVars.indexOf(element) > -1) {
             result = true;
-            return;
         }
     });
     return result;

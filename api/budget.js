@@ -17,7 +17,6 @@ module.exports = router;
  */
 router.post('/entryType', function(req, res) {
     var data = req.body;
-    console.log(data);
     pool.query('INSERT INTO budget_entry_type (entry_type_name, entry_type_color, shopping_list_id) SELECT ?, ?, ? ' +
         'FROM shopping_list WHERE shopping_list_id IN ' +
         '(SELECT home_group.shopping_list_id FROM person   ' +
@@ -133,12 +132,13 @@ router.delete('/entryType/:budget_entry_type_id', function(req, res) {
  *
  */
 router.post('/', function(req, res){
-    console.log(req.body);
     req.body.shopping_list_entry_ids = req.body.shopping_list_entry_ids.split(",");
     if (req.body.person_ids)
         req.body.person_ids = req.body.person_ids.split(",");
     else
         req.body.person_ids = [];
+    if(req.body.person_ids.length == 0)
+        return res.status(400).send();
     req.body.text_note = req.body.text_note.substring(0, 254);
     pool.getConnection(function(err, connection) {
         if (err)
@@ -154,11 +154,14 @@ router.post('/', function(req, res){
                         });
                     }
                     var qry = 'INSERT INTO person_budget_entry (budget_entry_id, person_id, datetime_paid) VALUES (?, ?, CURRENT_TIMESTAMP)';
-                    var vals = [result.insertId, req.session.person_id];
+                    var vals = [];
                     for (var i = 0; i < req.body.person_ids.length; i++) {
+                        if(vals.length != 0)
+                            qry += ', ';
                         if(req.body.person_ids[i] == req.session.person_id)
-                            continue;
-                        qry += ', (?, ?, NULL)';
+                            qry += '(?, ?, CURRENT_TIMESTAMP)';
+                        else
+                            qry += '(?, ?, NULL)';
                         vals.push(result.insertId, req.body.person_ids[i]);
                     }
                     connection.query(qry, vals, function (err) {
@@ -390,7 +393,6 @@ router.post('/pay/:budget_entry_id', function(req, res) {
  *
  */
 router.put('/paySpecific', function(req, res) {
-    console.log(req.body);
     if(req.body.person_ids == null) {
         return res.status(400).send("Bad request, no person_ids variable");
     }
@@ -432,7 +434,6 @@ router.put('/paySpecific', function(req, res) {
  *
  */
 router.put('/pay', function(req, res) {
-    console.log(req.body);
     if(req.body.person_id == null || req.body.person_id.isNaN) {
         return res.status(400).send("Bad request, no person_id variable");
     }
@@ -508,34 +509,6 @@ router.get('/', function(req, res) {
     });
 });
 
-function budgetEntryExistsInArray(budget_entry_id, array) {
-    for (var i = 0; i < array.length;i++) {
-        if (array[i].budget_entry_id === budget_entry_id) return i;
-    }
-    return -1;
-}
-
-function shoppingListEntryExistsInArray(shopping_list_entry_id, array) {
-    for (var i = 0; i < array.length;i++) {
-        if (array[i].shopping_list_entry_id === shopping_list_entry_id) return i;
-    }
-    return -1;
-}
-
-function payPersonExistsInArray(person_id, array) {
-    for (var i = 0; i < array.length;i++) {
-        if (array[i].person_id === person_id) return i;
-    }
-    return -1;
-}
-
-function paidPersonExistsInArray(person_id, array) {
-    for (var i = 0; i < array.length;i++) {
-        if (array[i].person.person_id === person_id) return i;
-    }
-    return -1;
-}
-
 function balancedCalculation(budget, person_id){
     var persons = [];
     for(var i = 0; i < budget.length; i++){
@@ -543,7 +516,6 @@ function balancedCalculation(budget, person_id){
         if(inArray(entry.persons_to_pay, person_id, 'person_id') == -1 && entry.purchased_by.person_id != person_id)
             continue;
         for(var j = 0; j < entry.persons_to_pay.length; j++){
-            console.log(entry.persons_to_pay[j]);
             if(entry.persons_to_pay[j].datetime_paid)
                 continue;
             var k = inArray(persons, (entry.purchased_by.person_id == person_id ? entry.persons_to_pay[j].person_id : entry.purchased_by.person_id), 'person_id');

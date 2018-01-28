@@ -62,8 +62,7 @@
 .fa-shopping-cart, .fa-users, .fa-trash, .fa-money, .fa-list{
     color: dimgrey;
     text-shadow: 1px 1px 1px #ccc;
-    margin: 2px;
-    margin-top: 10px;
+    margin: 10px 2px 2px;
 }
 .fa-shopping-cart:hover {
     color: green;
@@ -79,7 +78,7 @@
 }
 .fa-shopping-cart:hover, .fa-users:hover, .fa-trash:hover, .fa-money:hover, .fa-list:hover{
     filter: brightness(70%);
-    text-shadow: 0px 0px 0px #ccc;
+    text-shadow: 0 0 0 #ccc;
 }
 a.selected {
     background-color:#1F75CC;

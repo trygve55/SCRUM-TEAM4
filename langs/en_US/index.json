@@ -7,5 +7,6 @@
   "index-profileNavbar": "Profile",
   "index-todolist": "TODAY",
   "index-logout": "Log out",
-  "index-logoutNavbar": "Log out"
+  "index-logoutNavbar": "Log out",
+  "nothingHereFeed": "Nothing here, try to add a group to fill the feed. :)"
 }

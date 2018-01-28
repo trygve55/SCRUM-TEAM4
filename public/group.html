@@ -56,7 +56,7 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
 			<div class="navbar-nav">
-				<a id="group-groupsNavbar" class="nav-item nav-link" href="#" onclick="new function () {
+				<a id="group-groupsNavbar" class="nav-item nav-link active" href="#" onclick="new function () {
               $.ajax({
                 url: '/api/group/me',
                 method: 'GET',
@@ -73,7 +73,7 @@
 				<a id="group-mealplanner" class="nav-item nav-link" href="mealPlannerPrivate.html"></a>
 			</div>
 			<div class="navbar-nav ml-auto">
-				<i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
+				<i style="margin-top: 10px; color: black" class="fa fa-user" aria-hidden="true"></i>
 				<a id="group-profileNavbar" class="nav-item nav-link" href="ProfilePage.html"></a>
 				<i style="margin-top: 10px" class="fa fa-sign-out" aria-hidden="true"></i>
 				<a class="nav-item nav-link" id="group-logoutNavbar" href="#"></a>
@@ -149,7 +149,10 @@
 							<div id="group-picturePost" class="col-2" style="margin-left: 5%" >
 								<button type="button" class="btn btn-info"><i  class="fa fa-camera" aria-hidden="true"> <text id="add-picture" style="font-family: 'Trebuchet MS';"></text> </i></button>
 							</div>
-							<div  id="group-post2" class="col-2 offset-6" style="margin-right: 3%">
+							<div id="group-pictureNotify" class="col-6" style="visibility:hidden">
+
+							</div>
+							<div  id="group-post2" class="col-2" style="margin-right: 3%">
 								<button type="button" class="btn btn-info"><i class="fa fa-sticky-note" aria-hidden="true"> <text id="group-post" style="font-family: 'Trebuchet MS';"></text></i></button>
 							</div>
 						</div>
@@ -184,11 +187,12 @@
 
 					<div id="done-tasks" style="display: none;">
 						<div class="row">
-							<div class="col-sm listeTask" style="background-color: #{{color_hex}}; width: 90%">
+							<div class="col-sm listeTask" style="background-color: #{{color_hex}}; width: 90%;">
                                 <h4 class="list-name-task"></h4>
 								<ul class="list-group itemlist-task"></ul>
 							</div>
 						</div>
+						<h5></h5>
 						<button type="button" class="btn btn-success"><i class="fa fa-list-ul" aria-hidden="true">&nbsp;Tilbake</i></button>
 					</div>
 					</div>
