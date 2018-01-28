@@ -78,11 +78,7 @@ CREATE TABLE home_group (
     has_group_pic BIT NOT NULL DEFAULT 0,
     default_currency_id INTEGER NOT NULL,
     shopping_list_id INTEGER NOT NULL,
-<<<<<<< HEAD
     group_deactivated BIT NOT NULL DEFAULT 0,
-=======
-    is_hidden BIT NOT NULL DEFAULT 0,
->>>>>>> 2a398ce8034ef215c3036e554856f8427242a477
     CONSTRAINT group_currency_fk FOREIGN KEY(default_currency_id) REFERENCES currency(currency_id),
     CONSTRAINT group_shopping_list_fk FOREIGN KEY(shopping_list_id) REFERENCES shopping_list(shopping_list_id),
     CONSTRAINT group_pk PRIMARY KEY(group_id)
