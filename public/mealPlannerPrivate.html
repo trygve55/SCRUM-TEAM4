@@ -55,7 +55,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-            <a id="meal-groups" class="nav-item nav-link" href="#" onclick="new function () {
+            <a id="meal-groups" class="nav-item nav-link active" href="#" onclick="new function () {
               $.ajax({
                 url: '/api/group/me',
                 method: 'GET',
@@ -69,7 +69,7 @@
             }();"></a>
             <a id="meal-shoppinglists" class="nav-item nav-link" href="shoppinglist.html"></a>
             <a id="meal-tasks" class="nav-item nav-link" href="tasks.html"></a>
-            <a id="meal-mealplanner" class="nav-item nav-link" href="mealPlannerPrivate.html"></a>
+            <a id="meal-mealplanner" class="nav-item nav-link active" href="mealPlannerPrivate.html"></a>
         </div>
         <div class="navbar-nav ml-auto">
             <i style="margin-top: 10px" class="fa fa-user" aria-hidden="true"></i>
@@ -95,7 +95,7 @@
             <input style="width: 80%"  class="form-control" id="meal-filter">
         </div>
         <br>
-        <div style="font-size:13px" class="recipe-chose">Velg en oppskrift</div>
+        <div style="font-size:13px" class="recipe-chose" id="recipe-choose"></div>
         <ul style="height: 65%;" class="list-group recipelist" id="meal-recipe"></ul>
         <button class="btn " style="background-color: #e4e4e4" id="meal-addRecipe"></button>
 
