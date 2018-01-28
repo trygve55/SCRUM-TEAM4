@@ -5,6 +5,7 @@ describe('/', function() {
     });
 });
  */
+/*
 describe('News API', function() {
     describe('/api/news/ POST functions', function() {
         describe('/', function() {
@@ -16,4 +17,4 @@ describe('News API', function() {
             });
         });
     });
-});
+});*/
