@@ -3,7 +3,7 @@ var stTransparent = "0.5",
 	statColours = [["(0, 30, 170, " + stTransparent + ")", "(0, 0, 132, 1)"], ["(170, 30, 0, " + stTransparent + ")", "(132, 0, 0, 1)"]],
 	statLabels = ["Income", "Expenses"];
 const MILLIS_DAY = 86400000;
-var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone, popupAssign, listMemebers, listMemebersAdmin, adminView, adminViewSimple, groupShopping;
+var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone, popupAssign, listMemebers, listMemebersAdmin, adminView, adminViewSimple, groupShopping, popupSettle;
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
 var generalLabels, grouplist;
 var lang;
@@ -132,6 +132,7 @@ $(function() {
                 'listMemebers.html',
                 'listMemebersAdmin.html',
                 'adminView.html',
+                "popupSettle.html",
                 'adminViewSimple.html',
                 'groupShopping.html'
             ]
@@ -148,6 +149,7 @@ $(function() {
             taskItemDone = Handlebars.compile(data['taskItemDone.html']);
             popupAssign = Handlebars.compile(data['popupAssign.html']);
             listMemebers = Handlebars.compile(data['listMemebers.html']);
+            popupSettle = Handlebars.compile(data["popupSettle.html"]);
             listMemebersAdmin = Handlebars.compile(data['listMemebersAdmin.html']);
             adminView = Handlebars.compile(data['adminView.html']);
             adminViewSimple = Handlebars.compile(data['adminViewSimple.html']);
@@ -636,8 +638,9 @@ function setupClicks(){
                 $('.balancelist').unbind("click").click(function () {
                     var name = this.innerHTML.split('>')[1].split('<')[0];
                     for(var j=0; j<balancelist.length; j++){
-                        var thefullname = balancelist[j].forename + " " + balancelist[j].lastname;
-                        var personid = balancelist[j].person_id;
+                        let thefullname = balancelist[j].forename + " " + balancelist[j].lastname;
+                        let personid = balancelist[j].person_id;
+                        let row = $(this);
                         if(thefullname == name){
                             if(balancelist[j].amount <= 0) {
                                 break;
@@ -667,6 +670,7 @@ function setupClicks(){
                                     }),
                                     error: console.error,
                                     success: function (data) {
+                                        row.remove();
                                         $(suc).closest('.pop').remove();
                                     }
                                 })
@@ -985,27 +989,21 @@ function setupClicks(){
                                     }
                                 }
                                 console.log(inputdata);
-                                if(inputdata.person_ids == ""){
-                                    $.ajax({
-                                        url: '/api/group/' + currentGroup.group_id + '/users',
-                                        method: 'GET',
-                                        success: function (data) {
-                                            console.log(data);
-                                        }
-                                    });
-                                }
-                                else {
-                                    $.ajax({
-                                        url: '/api/budget',
-                                        method: 'POST',
-                                        data: inputdata,
-                                        success: function (data) {
-                                            console.log(data);
-                                            $('.pop').remove();
-                                        },
-                                        error: console.error
-                                    });
-                                }
+                                $.ajax({
+                                    url: '/api/budget',
+                                    method: 'POST',
+                                    data: inputdata,
+                                    success: function (data) {
+                                        console.log(data);
+                                        if (slei && (typeof slei) === "string") {
+                                            var ids = slei.split(',');
+                                            for (var i = 0; i < ids.length; i++) $('li[data-id=' + ids[i] + ']').remove();
+                                        } else
+                                            $('li[data-id=' + slei + ']').remove();
+                                        $('.pop').remove();
+                                    },
+                                    error: console.error
+                                });
                             },error:console.error
                         });
                     }else { //labels in the DB
@@ -1043,7 +1041,11 @@ function setupClicks(){
                             method: 'POST',
                             data: inputdata,
                             success: function (data) {
-                                console.log(data);
+                                if (slei && (typeof slei) === "string") {
+                                    var ids = slei.split(',');
+                                    for (var i = 0; i < ids.length; i++) $('li[data-id=' + ids[i] + ']').remove();
+                                } else
+                                    $('li[data-id=' + slei + ']').remove();
                                 $('.pop').remove();
                             },
                             error: console.error
@@ -1366,7 +1368,7 @@ function drawChart() {
 				if (element.entry_datetime != null) {
 					var entryTime = new Date(element.entry_datetime);
 					if (entryTime > minLimit && element.amount != 0) {
-						months[(element.amount > 0) ? 0 : 1][mod(entryTime.getMonth() - monthNow - 1, 12)] += element.amount;
+						months[(element.amount > 0) ? 0 : 1][mod(entryTime.getMonth() - monthNow - 1, 12)] += element.amount/100;
 					}
 					if (element.amount != 0) {validAmount = true;}
 				}

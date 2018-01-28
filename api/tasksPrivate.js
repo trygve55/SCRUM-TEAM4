@@ -33,8 +33,7 @@ router.post('/', function (req, res) {
  */
 
 router.post('/entry', function (req, res) {
-    var data = req.body, p_id = req.session.person_id;
-
+    var data = req.body;
     if (!data.private_todo_list_id || !data.todo_text)
         return res.status(400).send("body error");
 
@@ -65,7 +64,7 @@ router.get('/', function(req, res) {
         'LEFT JOIN private_todo_entry ' +
         'USING(private_todo_list_id) ' +
         'WHERE person_id = ?;',[p_id], function (err, result) {
-        console.log(arguments);
+
         if(err)
             return res.status(400).json({error: "sql-fail"});
 
@@ -99,6 +98,7 @@ router.get('/', function(req, res) {
 });
 
 /**
+<<<<<<< HEAD
  *  Get specific todo_list based on current user and list_id
  *
  * @name Get todo list
@@ -142,6 +142,9 @@ router.get('/:private_todo_list_id', function(req, res) {
 
 /**
  * Update shopping list
+=======
+ *
+>>>>>>> tasklist
  *
  * @name Update shopping list
  * @route {PUT} /api/tasks/private/entry/{private_todo_entry}
@@ -201,7 +204,7 @@ router.put('/:todo_id/done', function(req, res) {
 
 
 /**
- * Update shopping list entry
+ *
  *
  * @name Update entry
  * @route {PUT} /api/tasks/private/entry/{private_todo_entry}

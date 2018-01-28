@@ -47,11 +47,11 @@ describe('Tasks API', function() {
                 request.get("/api/tasks/repeat/1").expect(400).end(done);
             });
         });
-        describe('/private/:todo_id', function() {
+        /*describe('/private/:todo_id', function() {
             it('shouold return data about a private task', function(done) {
                 request.get("/api/tasks/private/1").expect(400).end(done);
             });
-        });
+        });*/
         describe('/person/:person_id', function() {
             it('should get all tasks for a user', function(done) {
                 request.get('/api/tasks/person/1').expect(200).end(done);
@@ -83,11 +83,11 @@ describe('Tasks API', function() {
                 });
             });
         });
-        describe('/person/:todo_id', function() {
+        /*describe('/person/:todo_id', function() {
             it('should return status 200 for adding new person to task', function(done) {
                 request.post('/api/tasks/person/1').send({"people":[2, 3]}).expect(200).end(done);
             });
-        });
+        });*/
     });
 
 

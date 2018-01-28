@@ -6,7 +6,7 @@ var router = require('express').Router();
 module.exports = router;
 
 /**
- * Adds a new budget entry label
+ * Adds a new budget entry label for a shopping list
  *
  * @name Adds new budget entry label
  * @route {POST} /api/budget/entryType
@@ -34,7 +34,7 @@ router.post('/entryType', function(req, res) {
 });
 
 /**
- * Returns a budget entry labels
+ * Returns budget entry labels for a shopping list
  *
  * @name Returns a budget entry labels
  * @route {GET} /api/budget/entryType
@@ -135,7 +135,10 @@ router.delete('/entryType/:budget_entry_type_id', function(req, res) {
 router.post('/', function(req, res){
     console.log(req.body);
     req.body.shopping_list_entry_ids = req.body.shopping_list_entry_ids.split(",");
-    req.body.person_ids = req.body.person_ids.split(",");
+    if (req.body.person_ids)
+        req.body.person_ids = req.body.person_ids.split(",");
+    else
+        req.body.person_ids = [];
     req.body.text_note = req.body.text_note.substring(0, 254);
     pool.getConnection(function(err, connection) {
         if (err)
@@ -204,7 +207,7 @@ router.post('/', function(req, res){
  *
  */
 router.get('/getDebt', function(req,res) {
-    var person_id = 6//req.session.person_id;
+    var person_id = req.session.person_id;
     var sqlQuery = "SELECT amount, person_id, be.budget_entry_id, datetime_paid FROM budget_entry be " +
         "RIGHT JOIN person_budget_entry pbe USING (budget_entry_id) " +
         "WHERE added_by_id = ? AND be.added_by_id != pbe.person_id;";
@@ -411,10 +414,7 @@ router.put('/paySpecific', function(req, res) {
     "added_by_id IN " + p + " AND " +
     "datetime_paid IS NULL) t)";
     ids = ids.concat(ids);
-    console.log(sqlQuery);
-    console.log(ids);
     pool.query(sqlQuery,ids,function(err) {
-        console.log(err);
         if(err) {
             return res.status(500).send("Internal database error");
         }
@@ -457,10 +457,7 @@ router.put('/pay', function(req, res) {
     sqlQuery += ") OR (person_id = ? AND added_by_id = ?)) AND datetime_paid IS NULL) t)";
     ids.unshift(req.body.person_id);
     ids.push(req.session.person_id, req.body.person_id);
-    console.log(sqlQuery);
-    console.log(ids);
     pool.query(sqlQuery,ids,function(err) {
-        console.log(err);
         if(err) {
             return res.status(500).send("Internal database error");
         }
