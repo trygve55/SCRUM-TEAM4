@@ -360,9 +360,7 @@ router.put('/:group_id/userPrivileges', function(req, res){
                 connection.release();
                 return res.status(500).send();
             }
-            console.log(result);
             if(result.length == 1 && req.session.person_id == req.body.person_id){
-                console.log("length");
                 connection.release();
                 return res.status(400).send();
             }
@@ -373,7 +371,6 @@ router.put('/:group_id/userPrivileges', function(req, res){
                 }
             }
             if(!f){
-                console.log("found");
                 connection.release();
                 return res.status(400).send();
             }
@@ -414,7 +411,6 @@ router.post('/:group_id/picture', function(req, res){
 
         Jimp.read(path, function (err, img) {
             if (err) {
-                console.log(err);
                 res.status(500).json({'Error': err});
                 return;
             }
@@ -426,8 +422,6 @@ router.post('/:group_id/picture', function(req, res){
                 .quality(70)
                 .getBuffer(Jimp.MIME_JPEG, function (err, data) {
                     if (err) {
-                        console.log(err);
-                        console.log("error 1");
                         res.status(500).json({'Error': err});
                         return;
                     }
@@ -435,21 +429,18 @@ router.post('/:group_id/picture', function(req, res){
                         .quality(60)
                         .getBuffer(Jimp.MIME_JPEG, function (err, data_tiny) {
                             if (err) {
-                                console.log("error 2");
                                 res.status(500).json({'Error': err});
                                 return;
                             }
                             pool.getConnection(function (err, connection) {
                                 if (err) {
                                     connection.release();
-                                    console.log("error 3");
                                     res.status(500).json({'Error': err});
                                     return;
                                 }
                                 connection.query("UPDATE home_group SET group_pic = ?, group_pic_tiny = ?, has_group_pic = 1 WHERE group_id = ?;", [data, data_tiny, req.params.group_id], function (err, results, fields) {
                                     connection.release();
                                     if (err) {
-                                        console.log("error 4");
                                         res.status(500).json({'Error': err});
                                         return;
                                     }
@@ -612,11 +603,9 @@ router.put('/:group_id', function(req, res){
         return res.status(500).send();
     pool.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
         if(err) {
-            console.log(err);
             return res.status(500).send(err);
         }
         if(result.length == 0 || result[0].role_id != 2) {
-            console.log("heihei");
             return res.status(400).send();
         }
         var qry = "UPDATE home_group SET ";
@@ -689,7 +678,6 @@ router.post('/', function(req, res){
                         connection.query('INSERT INTO group_person (person_id, group_id, role_id, invite_accepted) VALUES (?, ?, ?, ?)', [req.session.person_id, group_id, 2, 1], function(err, result) {
                             if(err) {
                                 connection.release();
-                                console.log(err);
                                 return res.status(500).send("Failed to add session user to group");
                             }
                             connection.commit(function (err) {

@@ -373,45 +373,6 @@ router.post('/entry', function(req, res) {
 
     if (!req.body.entry_text || req.body.entry_text.length === 0)
         return res.status(400).json({"error": "no text note"});
-
-    /*connection.query(
-        'INSERT INTO shopping_list_entry(  ' +
-        'shopping_list_id,  ' +
-        'entry_text,  ' +
-        'added_by_person_id, ' +
-        'purchased_by_person_id,  ' +
-        'cost,  ' +
-        'datetime_purchased) ' +
-        'SELECT 4, \'test\', 2, null, 0, null FROM shopping_list WHERE shopping_list_id IN   ' +
-        '(SELECT shopping_list_id FROM person WHERE person_id = 1 ' +
-        'UNION  ' +
-        'SELECT home_group.shopping_list_id FROM person   ' +
-        'LEFT JOIN group_person USING(person_id)  ' +
-        'LEFT JOIN home_group USING(group_id)  ' +
-        'WHERE person.person_id = 1 ' +
-        'UNION  ' +
-        'SELECT shopping_list_id FROM shopping_list_person WHERE person_id = 1) LIMIT 1',
-        [
-            checkRange(data.shopping_list_id, 1, null),
-            data.entry_text,
-            checkRange(p_id, 1, null),
-            data.purchased_by_person_id,
-            data.cost,
-            data.datetime_purchased,
-            data.shopping_list_id,
-            p_id,
-            p_id,
-            p_id
-        ], function(err, result) {
-            connection.release();
-            console.log(result);
-            console.log(err);
-            if (err)
-                return res.status(500).json({error: err});
-            else if (result.insertId == 0)
-                return res.status(400).json({error: "No access/does not exist"});
-            return res.status(200).json({shopping_cart_entry_id: result.insertId});
-        });*/
     pool.query('INSERT INTO shopping_list_entry (shopping_list_id, entry_text, added_by_person_id) VALUES (?, ?, ?)', [req.body.shopping_list_id, req.body.entry_text, req.session.person_id], function(err, result){
         if (err)
             return res.status(500).json({error: err});

@@ -17,7 +17,6 @@ module.exports = router;
  */
 router.post('/entryType', function(req, res) {
     var data = req.body;
-    console.log(data);
     pool.query('INSERT INTO budget_entry_type (entry_type_name, entry_type_color, shopping_list_id) SELECT ?, ?, ? ' +
         'FROM shopping_list WHERE shopping_list_id IN ' +
         '(SELECT home_group.shopping_list_id FROM person   ' +
@@ -133,7 +132,6 @@ router.delete('/entryType/:budget_entry_type_id', function(req, res) {
  *
  */
 router.post('/', function(req, res){
-    console.log(req.body);
     req.body.shopping_list_entry_ids = req.body.shopping_list_entry_ids.split(",");
     if (req.body.person_ids)
         req.body.person_ids = req.body.person_ids.split(",");
@@ -395,7 +393,6 @@ router.post('/pay/:budget_entry_id', function(req, res) {
  *
  */
 router.put('/paySpecific', function(req, res) {
-    console.log(req.body);
     if(req.body.person_ids == null) {
         return res.status(400).send("Bad request, no person_ids variable");
     }
@@ -519,7 +516,6 @@ function balancedCalculation(budget, person_id){
         if(inArray(entry.persons_to_pay, person_id, 'person_id') == -1 && entry.purchased_by.person_id != person_id)
             continue;
         for(var j = 0; j < entry.persons_to_pay.length; j++){
-            console.log(entry.persons_to_pay[j]);
             if(entry.persons_to_pay[j].datetime_paid)
                 continue;
             var k = inArray(persons, (entry.purchased_by.person_id == person_id ? entry.persons_to_pay[j].person_id : entry.purchased_by.person_id), 'person_id');

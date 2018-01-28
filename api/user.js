@@ -207,9 +207,6 @@ router.post('/register', function(req, res) {
         }
 
         var user = req.body;
-
-        console.log(user.email);
-
         if (!checkValidUsername(user.username) && !checkValidEmail(user.email)) {
             connection.release();
             res.status(400).json({message:"Syntax-error"})
@@ -506,7 +503,6 @@ router.put('/', function(req, res) {
 
     pool.query(sqlQuery, values, function (err) {
         if (err) {
-            console.log(err);
             return res.status(500).send("Internal database error(1)");
         }
         res.status(200).send("Profile updated");
@@ -646,8 +642,6 @@ router.post('/verifyAccount', function(req, res) {
         iss: issuer
     }, function(err, payload) {
         if(err) {
-            console.log(token);
-            console.log(err);
             return res.status(400).send("Bad token (1)");
         }
         pool.query('SELECT verify_token FROM person WHERE person_id = ?', [payload.id], function(err, result) {
@@ -659,8 +653,6 @@ router.post('/verifyAccount', function(req, res) {
                 return res.status(400).send("Outdated / faulty token");
             }
             if(result[0].verify_token != token) {
-                console.log(result[0].verify_token);
-                console.log(token);
                 return res.status(400).send("Bad token (2)");
             } else {
                 pool.query("UPDATE person SET verify_token = NULL WHERE person_id = ?", [payload.id], function(err, result) {

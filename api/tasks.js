@@ -75,10 +75,8 @@ router.post('/person/:todo_id', function(req, res) {
             'UPDATE todo_person SET person_id = ? WHERE todo_id = ?',
 	        [data, req.params.todo_id],
 	        function (err) {
-                console.log(err);
                 return (err) ? (res.status(500).send()) : (res.status(200).send());
         });
-        console.log(err);
 		return (err) ? (res.status(500).send()) : (res.status(200).send());
 	});
 });
@@ -227,7 +225,6 @@ router.put('/:todo_id/undo', function(req, res) {
  *
  */
 router.put('/:todo_id', function(req, res) {
-    console.log(req.body);
     var query = putRequestSetup(checkRange(req.params.todo_id, 1, null), req.body, "todo");
     pool.query(query[0], query[1], function(err, result) {
         pool.query('SELECT todo_id, datetime_deadline, datetime_added, datetime_done, forename, middlename, lastname, todo_text, is_deactivated, color_hex, todo.group_id FROM todo LEFT JOIN home_group USING (group_id) LEFT Join person ON done_by_id = person.person_id WHERE todo_id = ?',
@@ -314,7 +311,6 @@ router.delete('/todo/:todo_id', function(req, res){
  *
  */
 router.get('/:group_id', function(req, res) {
-	console.log(req.params.group_id);
 	pool.query('SELECT todo_id, datetime_deadline, datetime_added, datetime_done, forename, middlename, lastname, todo_text, is_deactivated, color_hex FROM todo LEFT JOIN home_group USING (group_id) LEFT Join person ON done_by_id = person.person_id WHERE group_id = ?',
 		[req.params.group_id], function(err, result){
 	        if(err)

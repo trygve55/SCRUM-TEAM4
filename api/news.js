@@ -63,7 +63,6 @@ router.post('/', function(req, res) {
 });
 
 function savePostToDatabase(req, res, data, imgdata) {
-	console.log(data.post_text);
     pool.query(
         'INSERT INTO newsfeed_post (' +
         'group_id, posted_by_id, post_text, attachment_type, attachment_data' +

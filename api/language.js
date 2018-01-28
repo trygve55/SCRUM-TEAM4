@@ -13,7 +13,6 @@ var fs = require('fs');
  *
  */
 router.get('/', function(req, res){
-    console.log(req.query);
     var lang = req.session.lang;
     if(!req.query.path && !req.header('referer'))
         return res.status(400).send();
@@ -30,7 +29,6 @@ router.get('/', function(req, res){
     if(!pth)
         return res.status(400).send("Bad request");
     pth = pth.split('.')[0];
-    console.log(__dirname);
     var p = __dirname + '/../langs/' + lang + pth + '.json';
 
     if(!fs.existsSync(p)){
