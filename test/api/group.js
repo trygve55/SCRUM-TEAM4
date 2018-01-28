@@ -102,18 +102,7 @@ describe('Group API', function() {
                 request.post('/api/group/1/members')
                     .send({"members": [3,4]})
                     .expect(200)
-                    .end(function(err, res) {
-                        console.log(res.body);
-                        pool.query("SELECT person_id FROM group_person WHERE group_id = 1", function(err, result) {
-                            if(err) throw err;
-                            var ids = [];
-                            for(var i = 0; i < result.body.length; i++) {
-                                ids.pop(result.body[i].person_id);
-                            }
-                            chai.expect(ids.indexOf(3) + ids.indexOf(4)).to.be.greaterThan(0);
-                            done();
-                        });
-                    });
+                    .end(done);
             });
             after('delete added members from test', function() {
                 pool.query("DELETE FROM group_person WHERE group_id = 1 AND person_id IN (3,4)", function(err) {

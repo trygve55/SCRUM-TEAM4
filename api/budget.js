@@ -4,7 +4,7 @@ var router = require('express').Router();
 module.exports = router;
 
 /**
- * Adds a new budget entry label
+ * Adds a new budget entry label for a shopping list
  *
  * URL: /api/budget/entryType
  * method: POST
@@ -33,7 +33,7 @@ router.post('/entryType', function(req, res) {
 });
 
 /**
- * Returns a budget entry labels
+ * Returns budget entry labels for a shopping list
  *
  * URL: /api/budget/entryType
  * method: GET
@@ -323,7 +323,7 @@ router.get('/legacy/:shopping_list_id', function(req, res) {
  * }
  */
 router.get('/getDebt', function(req,res) {
-    var person_id = 6//req.session.person_id;
+    var person_id = req.session.person_id;
     var sqlQuery = "SELECT amount, person_id, be.budget_entry_id, datetime_paid FROM budget_entry be " +
         "RIGHT JOIN person_budget_entry pbe USING (budget_entry_id) " +
         "WHERE added_by_id = ? AND be.added_by_id != pbe.person_id;";
@@ -505,7 +505,7 @@ router.post('/pay/:budget_entry_id', function(req, res) {
  * data: {
  *      person_ids: "###,###,###,###"
  * }
- * (budget_entry_ids is a string, with ids separated by commas. example: "200,390,29")
+ * (person_ids is a string, with ids separated by commas. example: "200,390,29")
  */
 router.put('/paySpecific', function(req, res) {
     console.log(req.body);
@@ -532,10 +532,7 @@ router.put('/paySpecific', function(req, res) {
     "added_by_id IN " + p + " AND " +
     "datetime_paid IS NULL) t)";
     ids = ids.concat(ids);
-    console.log(sqlQuery);
-    console.log(ids);
     pool.query(sqlQuery,ids,function(err) {
-        console.log(err);
         if(err) {
             return res.status(500).send("Internal database error");
         }
@@ -580,10 +577,7 @@ router.put('/pay', function(req, res) {
     sqlQuery += ") OR (person_id = ? AND added_by_id = ?)) AND datetime_paid IS NULL) t)";
     ids.unshift(req.body.person_id);
     ids.push(req.session.person_id, req.body.person_id);
-    console.log(sqlQuery);
-    console.log(ids);
     pool.query(sqlQuery,ids,function(err) {
-        console.log(err);
         if(err) {
             return res.status(500).send("Internal database error");
         }
