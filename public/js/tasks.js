@@ -1,8 +1,30 @@
 var lang;
 var itemcount = 0;
-var tasklist, completedList, completedItem, taskItem, newListItem;
+var tasklist, completedList, completedItem, privateTaskItem, newListItem, tasklistDone;
+var mePerson;
 
 $('document').ready(function () {
+    //------------------Setting a variable to the logged in user------------
+
+    /**
+     * This method retrieves information about the user; person_id, forename and lastname.
+     */
+
+    $.ajax({
+        url: '/api/user/getUser',
+        method: 'GET',
+        data: {
+            variables: [
+                'person_id',
+                'forename',
+                'lastname'
+            ]
+        },
+        success: function(data){
+            mePerson = data[0];
+        }
+    });
+
     $.ajax({
         url: '/template',
         method: 'GET',
@@ -11,16 +33,18 @@ $('document').ready(function () {
                 "tasklist.html",
                 "completedTasklist.html",
                 "completedTask.html",
-                "taskItem.html",
-                "newListItem.html"
+                "privateTaskItem.html",
+                "newListItem.html",
+                "tasklistDone.html"
             ]
         },
         success: function(data){
             tasklist = Handlebars.compile(data["tasklist.html"]);
             completedList = Handlebars.compile(data["completedTasklist.html"]);
             completedItem = Handlebars.compile(data["completedTask.html"]);
-            taskItem = Handlebars.compile(data["taskItem.html"]);
+            privateTaskItem = Handlebars.compile(data["privateTaskItem.html"]);
             newListItem = Handlebars.compile(data["newListItem.html"]);
+            tasklistDone = Handlebars.compile(data["tasklistDone.html"]);
             prep();
         }
     });
@@ -116,90 +140,84 @@ function prep(){
     $.ajax({
         url: '/api/tasks/private/',
         method: 'GET',
-        success: function(data) {
-            for(var j = 0; j < data.length; j++) {
-                var d = data[j];
-                var entries = "";
-                for (var i = 0; i < d.private_todo_entries.length; i++) {
-                    entries += taskItem({
-                        todo_id: d.private_todo_entries[i].private_todo_entry_id,
-                        todo_text: d.private_todo_entries[i].todo_text
-                    });
-                }
-                if (!d.is_deactivated) {
-                    $("#addlist").after(tasklist({
-                        task_list_id: d.private_todo_list_id,
-                        task_list_name: (d.private_todo_list_name == "" ? lang["task-default-name"] : d.private_todo_list_name),
-                        task_list_entries: entries,
-                        lang_add_item: lang["task-add-item"],
-                        lang_done_items: lang["task-done-tasks"],
-                        lang_delete: lang["task-delete"],
-                        color_hex: (d.color_hex ? d.color_hex.toString(16) : "FFFFFF")
-                    }));
+        success: function(data){
+            if(data.length!==0){
+                var d = data;
+                for(var i=0; i<d.length; i++){
+
+                    if(!d[i].is_deactivated){
+                        var tasklistentries = "";
+                        var privatetodos = d[i].private_todo_entries;
+                        for(var j=0; j<privatetodos.length; j++){
+                            if(privatetodos[j].datetime_done == null){
+                                tasklistentries += privateTaskItem({
+                                    todo_id: privatetodos[j].private_todo_entry_id,
+                                    todo_text: privatetodos[j].todo_text
+                                });
+                            }
+                        }
+                        $('#addlist').after(tasklist({
+                            task_list_id: d[i].private_todo_list_id,
+                            task_list_name: d[i].private_todo_list_name,
+                            task_list_entries: tasklistentries,
+                            lang_add_item: lang["tasks-add-item"],
+                            lang_done_items: lang["tasks-done-tasks"],
+                            lang_delete: lang["tasks-delete"]
+                        }));
+                        if(d[i].private_todo_list_name != "" && !d[i].private_todo_list_name){
+                            $('div[data-id='+d[i].private_todo_list_id+']').find('.list-name').hide();
+
+                        }else{
+                            $('div[data-id='+d[i].private_todo_list_id+']').find('.list-name-div').hide();
+                        }
+
+                    }
                 }
             }
             setupClicks();
-        }
+            setupItemClicks()
+        },
+        error: console.error
+
     });
 
-
-    /**
-     * This method makes it possible for the user to create a new list. All the information about
-     * the list is then stored to the database.
-     */
     $('#addlist').click(function () {
-        $.ajax({
-            url: '/api/tasks/private/',
-            method: 'POST',
-            data: {
-                private_todo_list_name: lang["task-default-name"]
-            },
-            success: function(data) {
-                $.ajax({
-                    url: '/api/tasks/private/' + data.private_todo_list_id,
-                    method: 'GET',
-                    success: function(data) {
-                        $("#addlist").after(tasklist({
-                            task_list_id: data.private_todo_list_id,
-                            task_list_name: data.private_todo_list_name,
-                            task_list_entries:"",
-                            lang_add_item: lang["task-add-item"],
-                            lang_done_items: lang["task-done-tasks"],
-                            lang_delete: lang["task-delete"],
-                            color_hex: (data.color_hex ? data.color_hex.toString(16) : "FFFFFF")
-                        }));
-                        setupClicks();
-                    }
-                });
-            }
-        });
+       $.ajax({
+           url: '/api/tasks/private/',
+           method: 'POST',
+           success: function (data) {
+               $('#addlist').after(tasklist({
+                   task_list_id: data.success.insertId,
+                   lang_add_item: lang["tasks-add-item"],
+                   lang_done_items: lang["tasks-done-tasks"],
+                   lang_delete: lang["tasks-delete"]
+               }));
+               setupClicks();
+               setupItemClicks()
+           }
+       })
     });
 }
 
 function setupClicks(){
-    $(".list-name").unbind("click").click(function() {
-        console.log("halllo");
-        var listId = $(this).closest("div[data-id]").data("id");
-        var title = $(this).html();
-        $(this).hide();
-        var div = $(this).parent().children(".list-name-div");
-        $(div).show();
-        $(div).children(".list-name-input").val(title).focus();
-    });
-
     $(".list-name-input").unbind("focusout").focusout(function(){
         var text = $(this).val();
         var id = $(this).closest("div[data-id]").data("id");
         var h4 = $(this).parent().parent().children(".list-name");
-        $(h4).html(text);
-        $(this).parent().hide();
-        $(h4).show();
+        var lni = this;
+
         $.ajax({
-            url: '/api/tasks/private/entry/' + id,
+            url: '/api/tasks/private/list/'+id,
             method: 'PUT',
-            data: {
-                private_list_name: text
-            }
+            data:{
+                private_todo_list_name: text
+            },
+            success: function () {
+                $(lni).parent().hide();
+                $(h4).show();
+                $(h4).text(text);
+            },
+            error: console.error
         });
     });
 
@@ -209,20 +227,36 @@ function setupClicks(){
         var text = $(this).val();
         var id = $(this).closest("div[data-id]").data("id");
         var h4 = $(this).parent().parent().children(".list-name");
-        $(h4).html(text);
-        $(this).parent().hide();
-        $(h4).show();
+        var lni = this;
+
         $.ajax({
-            url: '/api/tasks/private/list/' + id,
+            url: '/api/tasks/private/list/'+id,
+
             method: 'PUT',
-            data: {
-                shopping_list_name: text
-            }
+            data:{
+                private_todo_list_name: text
+            },
+            success: function () {
+                $(lni).parent().hide();
+                $(h4).show();
+                $(h4).text(text);
+            },
+            error: console.error
         });
+
+    });
+    $(".list-name").unbind("click").click(function(){
+        var title = $(this).html();
+        var div = $(this).parent().children(".list-name-div");
+        $(div).show();
+        $(div).children(".list-name-input").val(title).focus();
+        $(this).hide();
+
     });
 
+
     $(".add-item").unbind("click").click(function(){
-        console.log('denna');
+
         $(this).closest("div").children(".itemlist").append(newListItem());
         console.log(this);
 
@@ -254,71 +288,92 @@ function setupClicks(){
             $(this).closest("li").remove();
         }).focus();
     });
-
-    $('.pink-select').unbind("click").click(function () {
-        var ls = $(this).closest("div[data-id]");
-        var id = $(ls).css('background-color', $(this).data('color')).data("id");
+    $(".btn-info").unbind("click").click(function(){
+        var listid = $(this).closest('div[data-id]').data("id");
+        var name = $(this).closest('div[data-id]').find('.list-name').text();
+        var thedonetasks = [];
+        var thelist = $(this).closest('div[data-id]');
+        var theresetdonetasks = [];
         $.ajax({
-            url: '/api/tasks/private/list/' + id,
-            method: 'PUT',
-            data: {
-                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
-            }
-        });
-    });
+            url: '/api/tasks/private/',
+            method: 'GET',
+            success: function (data) {
+                for(var i=0; i<data.length; i++){
+                    if(data[i].private_todo_list_id == listid){
+                        var alltasks = data[i].private_todo_entries;
+                        for(var j=0; j<alltasks.length; j++){
 
-    $('.yellow-select').unbind("click").click(function () {
-        var ls = $(this).closest("div[data-id]");
-        var id = $(ls).css('background-color', $(this).data('color')).data("id");
-        $.ajax({
-            url: '/api/tasks/private/list/' + id,
-            method: 'PUT',
-            data: {
-                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
-            }
-        });
-    });
+                            if(alltasks[j].datetime_done != null){
+                                thedonetasks.push(alltasks[j]);
+                            }
+                        }
+                    }
+                }
 
-    $('.green-select').unbind("click").click(function () {
-        var ls = $(this).closest("div[data-id]");
-        var id = $(ls).css('background-color', $(this).data('color')).data("id");
-        $.ajax({
-            url: '/api/tasks/private/list/' + id,
-            method: 'PUT',
-            data: {
-                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
-            }
-        });
-    });
+                if(thedonetasks.length == 0){
+                    return;
+                }
 
-    $('.white-select').unbind("click").click(function () {
-        var ls = $(this).closest("div[data-id]");
-        var id = $(ls).css('background-color', $(this).data('color')).data("id");
-        $.ajax({
-            url: '/api/tasks/private/list/' + id,
-            method: 'PUT',
-            data: {
-                color_hex: parseInt(rgb2hex($(ls).css('background-color')).split("#")[1], 16)
-            }
-        });
-    });
+                var tasklistentries = "";
+                for(var i=0; i<thedonetasks.length; i++){
+                    tasklistentries += "<li class='list-group-item thechecked' id="+thedonetasks[i].private_todo_entry_id+"><i class=\"fa fa-check-circle-o\" aria-hidden=\"true\" style='font-size: 15px;'></i> "+thedonetasks[i].todo_text+"</li>";
+                }
+                var savedList = thelist.html();
+                thelist.html(tasklistDone({
+                    task_list_name: name,
+                    task_list_entries: tasklistentries,
+                    lang_go_back: lang["tasks-go-back"]
+                }));
 
-    /**
-     * This method deletes a list.
-     */
-    $(".fa-trash").unbind("click").click(function () {
-        var listid = $(this).parent().attr("data-id");
-        $(this).closest("div[data-id]").remove();
-        $.ajax({
-            url: '/api/tasks/private/list/' + listid,
-            method: 'PUT',
-            data: {
-                "is_deactivated": true
+                $(".thechecked").unbind("click").click(function () {
+                    var thisid = $(this).attr("id");
+                    var thistext = $(this).text();
+                    var theitem = this;
+                    $.ajax({
+                        url: '/api/tasks/private/entry/'+thisid,
+                        method: 'PUT',
+                        data:{
+                            datetime_done: null
+                        },
+                        success: function(){
+                            $(theitem).remove();
+                            theresetdonetasks.push(privateTaskItem({
+                                todo_id: thisid,
+                                todo_text: thistext
+                            }));
+                        },
+                        error: console.error
+                    });
+
+                });
+                $(".btn-info").unbind("click").click(function () {
+                    thelist.html(savedList);
+                    for(var i=0; i<theresetdonetasks.length; i++){
+                        thelist.children('.itemlist').append(theresetdonetasks[i]);
+                    }
+                    setupClicks();
+                    setupItemClicks();
+                });
             },
             error: console.error
         });
     });
+    $('.btn-danger').unbind("click").click(function () {
+        var listid = $(this).closest("div[data-id]").data("id");
+        var thelist = $(this).closest('div[data-id]');
+        $.ajax({
+            url: '/api/tasks/private/list/'+listid,
+            method: 'PUT',
+            data: {
+                is_deactivated: true
+            },
+            success: function () {
+                $(thelist).remove();
 
+            },
+            error: console.error
+        })
+    });
     setupItemClicks();
 }
 
@@ -332,67 +387,25 @@ function setupItemClicks(){
         });
         $(this).closest("li[data-id]").remove();
     });
-
-    $(".datepicker").datepicker({
-        //dateFormat: 'DD, mm-y'
-        dateFormat: 'dd/mm/y',
-        onSelect: function() {
-            var d = $(this).val();
-            if(d != ""){
-                d = d.split("/");
-                d = d[2] + "-" + d[1] + "-" + d[0];
-            }
-            $.ajax({
-                url: '/api/tasks/private/entry/' + $(this).closest("li[data-id]").data('id'),
-                method: 'PUT',
-                data: {
-                    datetime_deadline: (d == "" ? "NULL" : d)
-                },
-                error: console.error
-            });
-        }
-    });
-    //Hides elements yet to be shown
-    $('input.datepicker').filter(function() { return this.value === ""; }).hide();
-    $('.checked').hide();
-
-    $('.fa-calendar').unbind('click').click(function () {
-        var datepicker = $(this).parent().find(".datepicker");
-        $(datepicker).css('background-color: white');
-        if(datepicker.is(":visible")){
-            if($(datepicker).val() == "")
-                datepicker.hide();
-            else if(datepicker.is(':focus'))
-                datepicker.blur();
-            else
-                datepicker.focus();
-        }
-        else{
-            datepicker.show();
-            datepicker.focus();
-        }
-    });
-
-    $('li[data-id]').unbind("click").click(function(e){
-        if($(e.target).hasClass("fa") || $(e.target).hasClass("datepicker"))
-            return;
-        var id = $(this).data("id");
-        $.ajax({
-            url: '/api/tasks/' + id + '/done',
-            method: 'PUT'
-        });
-    });
-
-    $('.fa-user').unbind('click').click(addMembersPopup);
-
-
-
-    $("li[data-id]").unbind("click").click(function(e) {
+    $("li[data-id]").unbind("click").click(function(e){
+        var thisid = $(this).data("id");
+        var now = new Date().toISOString().replace("T", " ").split(".")[0];
+        var theitem = this;
         if($(this).is('.fa-times'))
             return;
         else if(!$(e.target).is('input')) {
             e.preventDefault();
-            $(this).find("input[type=checkbox]").prop('checked', $(this).find("input:checked").length == 0);
+            $.ajax({
+                url: '/api/tasks/private/entry/'+thisid,
+                method: 'PUT',
+                data:{
+                    datetime_done: now
+                },
+                success: function(){
+                    $(theitem).remove();
+                },
+                error: console.error
+            })
         }
     });
 }
@@ -429,20 +442,32 @@ function addNewItem(ul){
         $(this).closest("li").remove();
     }).focus();
 }
+function saveItemToDB(dataid, item, ul, cb){
 
-function saveItemToDB(id, item, ul, cb){
     $.ajax({
         url: '/api/tasks/private/entry',
         method: 'POST',
         data: {
+<<<<<<< HEAD
             private_todo_list_id: id,
             todo_text: item
         },
         success: function(data){
             $(ul).append(taskItem({todo_id: data.private_todo_list_id, todo_text: data.todo_text}));
+=======
+            private_todo_list_id: dataid,
+            todo_text: item
+        },
+        success: function(data){
+            $(ul).append(privateTaskItem({
+                todo_id: data.private_todo_list_id,
+                todo_text: item
+            }));
+>>>>>>> tasklist
             if(cb)
                 cb();
-        }
+        },
+        error: console.error
     });
 }
 
