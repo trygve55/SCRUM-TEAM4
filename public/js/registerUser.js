@@ -240,12 +240,20 @@ $(function () {
             data: {
                 username: $(this).val()
             },
-            success: function (){
+            success: function (data){
                 $("#register-username-error").hide();
                 $("#register-username").css({
                     "border": "1px solid #ced4da",
                     "background": "white"
                 });
+
+                if (data.inUse) {
+                    $('#register-username').css({
+                        "border": "1px solid red",
+                        "background": "#FFCECE"
+                    });
+                    $("#register-username-error").show();
+                }
             },
             error: function (){
 
@@ -278,12 +286,20 @@ $(function () {
             data: {
                 email: $(this).val()
             },
-            success: function (){
+            success: function (data){
                 $("#register-email-error").hide();
                 $("#register-email").css({
                     "border": "1px solid #ced4da",
                     "background": "white"
                 });
+
+                if (data.inUse) {
+                    $('#register-email').css({
+                        "border": "1px solid red",
+                        "background": "#FFCECE"
+                    });
+                    $("#register-email-error").show();
+                }
             },
             error: function (){
                 $('#register-email').css({
