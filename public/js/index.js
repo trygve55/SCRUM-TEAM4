@@ -17,7 +17,7 @@ socket.on('group post', function(data){
         testy = a.toDateString();
         $('#newsfeedPost').prepend(homeFeedPost({
             name: data[i].forename + (data[i].middlename ? ' ' + data[i].middlename : '') + ' ' + data[i].lastname,
-            payload: '',
+            payload: ((feed[i].attachment_type === 1) ? '/api/news/data/' + feed[i].post_id : ''),
             groupname: data[i].group_name,
             text: short,
             rest_text: rest,
@@ -151,7 +151,7 @@ $(function () {
             method: 'POST',
             success: function (data) {
                 if(!data.login){
-                    window.top.location="http://localhost:8000/login.html";
+                    window.location="/login.html";
                 }
             }
         });

@@ -22,7 +22,7 @@ var router = require('express').Router(),
 module.exports = router;
 
 /**
- * Get your privilege
+ * Check if you have administrator privileges for a group
  *
  * URL: /api/group/{group_id}/me/privileges
  * method: GET
@@ -33,7 +33,11 @@ router.get('/:group_id/me/privileges', function(req, res){
     pool.query('SELECT role_id FROM group_person WHERE person_id = ? AND group_id = ?', [req.session.person_id, req.params.group_id], function(err, result){
         if(err)
             return res.status(500).send();
-        res.status(200).send(result[0].role_id == 2);
+        if(result.length > 0) {
+            res.status(200).send(result[0].role_id == 2);
+        } else {
+            res.status(200).send(false);
+        }
     });
 });
 
@@ -78,7 +82,7 @@ router.get('/:group_id/users', function(req, res){
 });
 
 /**
- * Checks if the group name is already taken
+ * Checks if the group name is available
  *
  * URL: /api/group/name
  * method: GET
@@ -118,7 +122,7 @@ router.get('/me', function(req, res){
 });
 
 /**
- * Get the requested groups info
+ * Get the requested group's info
  *
  * URL: /api/group/{group_id}
  * method: GET
@@ -177,8 +181,12 @@ router.get('/', function(req, res){
 router.post('/:group_id/members', function(req, res){
     if(!req.session.person_id)
         return res.status(500).send("Person_id");
+    if(!req.body['members[]'] && !req.body.members)
+        return res.status(400).send("Members");
     if(!(req.body.members instanceof Array)){
-        req.body.members = req.body['members[]'];
+        if(!req.body.members) {
+            req.body.members = req.body['members[]'];
+        }
         delete req.body['members[]'];
         if(!(req.body.members instanceof Array))
             req.body.members = [req.body.members];
@@ -241,7 +249,13 @@ router.post('/:group_id/members', function(req, res){
                                     }
                                 });
                             connection.release();
-                            res.status(200).json(result);
+                            pool.query('SELECT forename, lastname, person_id FROM person WHERE person_id = ?', [req.body.members[0]], function(err, result){
+                                if(err){
+                                    console.error(err);
+                                    return res.status(500).send();
+                                }
+                                res.status(200).json(result[0]);
+                            });
                         });
                     });
                 });
@@ -251,7 +265,7 @@ router.post('/:group_id/members', function(req, res){
 });
 
 /**
- * Removes a users access to the group
+ * "Deletes" (deactivates) a group
  *
  * URL: /api/group/{group_id}
  * method: DELETE
@@ -262,7 +276,7 @@ router.post('/:group_id/members', function(req, res){
 router.delete('/:group_id/group', function(req, res){
     if(!req.session.person_id)
         return res.status(500).send();
-    pool.query('UPDATE home_group SET is_hidden = 1 WHERE group_id IN ' +
+    pool.query('UPDATE home_group SET group_deactivated = 1 WHERE group_id IN ' +
         '(SELECT t.group_id FROM (SELECT group_id FROM home_group ' +
         'LEFT JOIN group_person USING (group_id) ' +
         'WHERE person_id = ? AND role_id = 2 AND group_id = ?) t)', [req.session.person_id, req.params.group_id], function(err, result){
@@ -275,49 +289,44 @@ router.delete('/:group_id/group', function(req, res){
 });
 
 /**
- * Removes a users access to the group
+ * Removes a user's access to the group. If no person_id is provided, the logged in user is removed from the group
  *
  * URL: /api/group/{group_id}
  * method: DELETE
  * data: {
- *      person_id, person to delete
+ *      [person_id]
  * }
  */
 router.delete('/:group_id', function(req, res){
-    // Check if this request is ok.
-    if(!req.session.person_id)
-        return res.status(500).send();
     if(!req.params.group_id)
         return res.status(400).send();
-    pool.getConnection(function(err, connection){
-        if (!checkConnectionError(err, connection, res)) {return;}/*
-        connection.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
-            if(err) {
-                connection.release();
-                return res.status(500).send();
-            }
-            if(req.body.person_id != req.session.person_id || (result.length == 0 || result[0].role_id != 2)) {
-                connection.release();
-                return res.status(400).send();
-            }
-            connection.query("SELECT role_id FROM group_person WHERE group_id = ?", [req.params.group_id], function(err, result) {
-                if(err){
-                    connection.release();
-                    return res.status(500).send();
-                }
-                if(result.length <= 1){
-                    connection.release();
-                    return res.status(400).send();
-                }*/
-        connection.query("DELETE FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function (err, result) {
-            connection.release();
-            if (err)
-                return res.status(500).send();
-            res.status(200).send();
+    if(req.body.person_id == null || req.body.person_id == req.session.person_id) {
+        pool.query("DELETE FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function(err, result) {
+            if(err) return res.status(500).send("Internal database error(3)");
+            return res.status(200).send("You have been removed from the group");
         });
-        //});
-        //});
-    });
+    } else {
+        pool.getConnection(function (err, connection) {
+            if (!checkConnectionError(err, connection, res)) {
+                return;
+            }
+            connection.query("SELECT role_id FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.session.person_id], function (err, result) {
+                if (err) {
+                    connection.release();
+                    return res.status(500).send("Internal database error (1)");
+                }
+                if(!result[0]["role_id"] || result[0].role_id != 2) {
+                    return res.status(403).send("You do not have rights to remove that person");
+                }
+                connection.query("DELETE FROM group_person WHERE group_id = ? AND person_id = ?", [req.params.group_id, req.body.person_id], function (err, result) {
+                    connection.release();
+                    if (err)
+                        return res.status(500).send("Internal database error (2)");
+                    res.status(200).send();
+                });
+            });
+        });
+    }
 });
 
 /**
@@ -546,7 +555,7 @@ router.get('/:group_id/todo', function(req, res) {
 					for (var p in result[0]) {values[p] = result[0][p];}
 					delete values.person_id;
 					values.people = people;
-					res.json(values);
+					res.status(200).json(values);
 				}
 			}
 		);
@@ -584,11 +593,8 @@ router.put('/:group_id', function(req, res){
         var f = true;
         var vals = [];
         for (var p in req.body) {
-            if(acceptedGroupVars.indexOf(p) < 0) {
-                console.log("hadehade");
-                res.status(400).send("Bad request (bad variable: '" + p + "')");
-                return;
-            }
+            if(acceptedGroupVars.indexOf(p) < 0)
+                return res.status(400).send("Bad request (bad variable: '" + p + "')");
             if (!f)
                 qry += ", ";
             qry += p + " = ?";
@@ -597,11 +603,8 @@ router.put('/:group_id', function(req, res){
         }
         vals.push(req.params.group_id);
         qry += " WHERE group_id = ?";
-        console.log(qry);
-        console.log(vals);
         pool.query(qry, vals, function (err, result) {
-            console.log("gååleggdeg");
-            return (err) ? (res.status(400).send(err.code + "\n" + err.sqlMessage)) : (res.status(200).json(result));
+            return (err) ? (res.status(500).send(err.code + "\n" + err.sqlMessage)) : (res.status(200).json(result));
         });
     });
 });
@@ -618,8 +621,6 @@ router.put('/:group_id', function(req, res){
  */
 router.post('/', function(req, res){
     var acceptedGroupVars = ["group_name", "currency"];
-    if(!req.session.person_id)
-        return res.status(403).send("You must log in");
     for(var p in req.body) {
         if(acceptedGroupVars.indexOf(p) < 0) return res.status(400).send("Bad variable: " + p);
     }

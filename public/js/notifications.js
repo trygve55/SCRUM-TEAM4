@@ -98,7 +98,7 @@ $(function(){
     });
 
     if(window.innerWidth > 991)
-        $(".navbar-nav.ml-auto").prepend("<i style='margin-top: 10px; margin-right: 15px' id='notification-center' class='fa fa-bell' aria-hidden='true'></i>");
+        $(".navbar-nav.ml-auto").prepend("<i style='margin-top: 10px; margin-right: 15px' id='notification-center' class='fa fa-bell' aria-hidden='true' data-toggle='tooltip' title='Varsler'></i>");
     else
         $("button[data-target='#navbarNavAltMarkup']").parent().prepend("<i style='margin-top: 10px; margin-right: 15px' id='notification-center' class='fa fa-bell' aria-hidden='true'></i>");
     $.ajax({

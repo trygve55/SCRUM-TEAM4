@@ -4,8 +4,6 @@ router.use('/language', require('./api/language'));
 router.use('/auth', require('./api/auth'));
 
 router.use('*', function(req, res, next){
-    req.session.person_id = 14;
-    req.session.save();
     var excludes = [
         'register',
         'forgottenPasswordEmail',

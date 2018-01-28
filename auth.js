@@ -1,5 +1,4 @@
 var bcrypt = require('bcrypt');
-var mysql = require('mysql');
 
 module.exports = {
 	hashPassword: function (user, cb) {

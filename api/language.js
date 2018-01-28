@@ -9,6 +9,7 @@ var fs = require('fs');
  * method: GET
  */
 router.get('/', function(req, res){
+    console.log(req.query);
     var lang = req.session.lang;
     if(!req.query.path && !req.header('referer'))
         return res.status(400).send();

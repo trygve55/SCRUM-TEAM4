@@ -116,5 +116,9 @@
 	"yes-settle-all": "Yes",
 	"no-settle-all": "No",
 	"shop-complete": "Close",
-	"label-none": "No label"
+	"label-none": "No label",
+	"add-picture": "Add picture",
+	"group-post": "Post",
+	"addGroup-button": "Add group"
+
 }

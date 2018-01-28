@@ -5,7 +5,7 @@ var stTransparent = "0.5",
 const MILLIS_DAY = 86400000;
 var activeTab = "feed", currentGroup, listItem, newListItem, balance, balanceItem, popupTextList, currentShoppingList, feedPost, readMore, taskItem, dataTask = [], taskItemDone, popupAssign, listMemebers, listMemebersAdmin, adminView, adminViewSimple, groupShopping;
 var statColours = [["(0, 30, 170, 0.5)", "(0, 0, 132, 1)"], ["(170, 30, 0, 0.5)", "(132, 0, 0, 1)"]], statLabels = ["Income", "Expenses"];
-var generalLabels;
+var generalLabels, grouplist;
 
 socket.on('group post', function(data){
     for(var i = 0; i < data.length; i++) {
@@ -92,6 +92,14 @@ socket.on('group task remove', function(data){
     }
 });
 
+socket.on('group invite accept', function(data){
+    grouplist.concat(data);
+    for(var i = 0; i < grouplist.length; i++){
+        if(!grouplist[i].group_deactivated)
+        addGroupToList(grouplist[i]);
+    }
+});
+
 function updateLang(){
     for (var p in lang) {
         if (lang.hasOwnProperty(p)) {
@@ -154,8 +162,7 @@ $(function() {
 		url:'/api/group/me',
 		method:'GET',
 		success: function (data) {
-			var grouplist = data;
-
+			grouplist = data;
 
 			currentGroup = data[0];
 			for(var i = 0; i < data.length; i++){
@@ -220,6 +227,7 @@ function loadLanguageText() {
  */
 function ClearFields() {
     document.getElementById("group-newsfeedPost").value = "";
+    $("input[type=file]").val("");
 }
 
 /**
@@ -300,6 +308,10 @@ function adminChange() {
                                         display: 'name',
                                         source: new Bloodhound({
                                             datumTokenizer: function(d){
+                                                for(var i = 0; i < data.length; i++){
+                                                    if(d.id == data[i].person_id)
+                                                        return [];
+                                                }
                                                 return Bloodhound.tokenizers.whitespace(d.name).concat([d.email]);
                                             },
                                             queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -320,16 +332,20 @@ function adminChange() {
 
                                 //Adds member to list when clicked
                                 $(".typeahead").bind('typeahead:select', function(a, data){
+                                    console.log(data);
                                     $.ajax({
                                         url: '/api/group/' + currentGroup.group_id + '/members',
                                         method: 'POST',
                                         data: {
                                             members: [
-                                                data.person_id
+                                                data.id
                                             ]
                                         },
-                                        success: function(){
-                                            console.log("yey");
+                                        success: function(data){
+                                            $('#list-all-members').append(listMemebersAdmin({
+                                                member_text: data.forename + " " + data.lastname,
+                                                member_id: data.person_id,
+                                            }));
                                         },
                                         error: console.error
                                     });
@@ -1070,10 +1086,8 @@ $(function () {
      * the method getPost() to post the post to the page then ClearFields()
      * to reset the inputfield.
      */
-    $('#group-post21').click(function() {
 
-
-
+    $('#group-post2').click(function() {
         var formData = new FormData();
         formData.append('File', $("#file-attachment")[0].files[0]);
         formData.append('post_text', $('#group-newsfeedPost').val());
@@ -1684,7 +1698,7 @@ $('#group-logoutNavbar').click(function () {
         method: 'POST',
         success: function (data) {
             if(!data.login){
-                window.top.location="http://localhost:8000/login.html";
+                window.location="/login.html";
             }
         }
     });
@@ -1808,10 +1822,9 @@ function addMembersPopup(todo){
 
     for(var i=0; i<dataTask.length; i++){
         if(dataTask[i].todo_id==todo){
-            if(dataTask[i].assigned_to.forename ==null) thememberstring = null;
+            if(!dataTask[i].assigned_to && !dataTask[i].assigned_to.forename) thememberstring = null;
             else{
                 thememberstring = dataTask[i].assigned_to.forename + " " + dataTask[i].assigned_to.lastname;
-
             }
         }
     }
@@ -1853,10 +1866,6 @@ function addMembersPopup(todo){
     //Adds member to list when clicked
     $(".typeahead").bind('typeahead:select', function(a, data){
         themember = data;
-
-    });
-
-    $('.assignok').unbind("click").click(function () {
         var personid = themember.person_id;
         var personids = [];
         personids.push(personid);
@@ -1875,7 +1884,6 @@ function addMembersPopup(todo){
             error: console.error
         })
     });
-
     $('.assigncancel').unbind("click").click(function () {
         $('.pop').remove();
     });
