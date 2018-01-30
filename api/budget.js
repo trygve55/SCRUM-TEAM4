@@ -158,7 +158,7 @@ router.post('/', function(req, res){
                     for (var i = 0; i < req.body.person_ids.length; i++) {
                         if(vals.length != 0)
                             qry += ', ';
-                        if(req.body.person_ids[i] !== req.session.person_id) {
+                        if(req.body.person_ids[i] === req.session.person_id) {
                             qry += '(?, ?, CURRENT_TIMESTAMP)';
                         } else {
                             qry += '(?, ?, NULL)';
