@@ -105,46 +105,35 @@ router.post('/facebook', function(req, res){
                             connection.release();
                             res.status(500).send("Error");
                         }
-                        else connection.query("INSERT INTO shopping_list (currency_id) VALUES (?)", [100], function(err, result){
-                            if (err) {
-                                connection.release();
-                                res.status(500).json({'error': 'connecting to database'} + err);
-                            }
-                            else {
-                                var values = [
-                                    fbRes.email,
-                                    fbRes.first_name.substring(0, 3) + fbRes.last_name.substring(0, 3) + result.insertId,
-                                    fbRes.first_name,
-                                    fbRes.last_name,
-                                    result.insertId,
-                                    fbRes.id
-                                ];
+                        var values = [
+                            fbRes.email,
+                            fbRes.first_name.substring(0, ((fbRes.first_name.length >= 3) ? 3: fbRes.first_name.length)) + fbRes.last_name.substring(0, ((fbRes.last_name.length >= 3) ? 3: fbRes.last_name.length)) + Math.random().toString(10).substr(10),
+                            fbRes.first_name,
+                            fbRes.last_name,
+                            fbRes.id
+                        ];
 
-                                connection.query('INSERT INTO person ' +
-                                    '(email, username, forename, lastname, shopping_list_id, facebook_api_id) ' +
-                                    'VALUES (?,?,?,?,?,?)', values, function(err, result) {
-                                    if(err) {
-                                        connection.release();
-                                        res.status(500).send("Fail");
-                                    }
-                                    else {
-                                        connection.commit(function (err) {
-                                            if (err) {
-                                                connection.rollback(function (err) {
-                                                    connection.release();
-                                                    if (err) console.error(err);
-                                                    res.status(500).send("Transaction fail");
-                                                });
-                                            } else {
-                                                connection.release();
-                                                req.session.person_id = result.insertId;
-                                                req.session.save();
-                                                res.status(200).json({person_id: result.insertId});
-                                            }
-                                        });
-                                    }
-                                });
+                        connection.query('INSERT INTO person ' +
+                            '(email, username, forename, lastname, facebook_api_id) ' +
+                            'VALUES (?,?,?,?,?)', values, function(err, result) {
+                            if(err) {
+                                connection.release();
+                                return res.status(500).send(err);
                             }
+                            connection.commit(function (err) {
+                                if (err) {
+                                    connection.rollback(function (err) {
+                                        connection.release();
+                                        if (err) console.error(err);
+                                        res.status(500).send("Transaction fail");
+                                    });
+                                } else {
+                                    connection.release();
+                                    req.session.person_id = result.insertId;
+                                    req.session.save();
+                                    res.status(200).json({person_id: result.insertId});
+                                }
+                            });
                         });
                     });
                 }
