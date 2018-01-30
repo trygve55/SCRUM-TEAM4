@@ -138,40 +138,41 @@ router.post('/', function(req, res){
     else
         req.body.person_ids = [];
     if(req.body.person_ids.length == 0)
-        return res.status(400).send();
+        return res.status(400).json({error: "0"});
     req.body.text_note = req.body.text_note.substring(0, 254);
     pool.getConnection(function(err, connection) {
         if (err)
-            return res.status(500).send();
+            return res.status(500).json({error: "1"});
         connection.beginTransaction(function (err) {
             if (err)
-                return res.status(500).send();
+                return res.status(500).json({error: "2"});
             connection.query('INSERT INTO budget_entry (budget_entry_type_id, shopping_list_id, added_by_id, amount, text_note) VALUES (?, ?, ?, ?, ?)',
                 [req.body.budget_entry_type_id, req.body.shopping_list_id, req.session.person_id, req.body.amount, req.body.text_note], function (err, result) {
                     if (err) {
                         return connection.rollback(function () {
-                            return res.status(500).send();
+                            return res.status(500).json({error: "3"});
                         });
                     }
-                    var qry = 'INSERT INTO person_budget_entry (budget_entry_id, person_id, datetime_paid) VALUES (?, ?, CURRENT_TIMESTAMP)';
+                    var qry = 'INSERT INTO person_budget_entry (budget_entry_id, person_id, datetime_paid) VALUES ';
                     var vals = [];
                     for (var i = 0; i < req.body.person_ids.length; i++) {
                         if(vals.length != 0)
                             qry += ', ';
-                        if(req.body.person_ids[i] == req.session.person_id)
+                        if(req.body.person_ids[i] !== req.session.person_id) {
                             qry += '(?, ?, CURRENT_TIMESTAMP)';
-                        else
+                        } else {
                             qry += '(?, ?, NULL)';
+                        }
                         vals.push(result.insertId, req.body.person_ids[i]);
                     }
                     connection.query(qry, vals, function (err) {
                         if (err) {
                             return connection.rollback(function () {
-                                return res.status(500).send();
+                                return res.status(500).json({error2: "4", error: err});
                             });
                         }
-                        qry = 'UPDATE shopping_list_entry SET budget_entry_id = ?, purchased_by_person_id = ?, datetime_purchased = CURRENT_TIMESTAMP WHERE shopping_list_entry_id IN (';
-                        vals = [result.insertId, req.session.person_id];
+                        var qry = 'UPDATE shopping_list_entry SET budget_entry_id = ?, purchased_by_person_id = ?, datetime_purchased = CURRENT_TIMESTAMP WHERE shopping_list_entry_id IN (';
+                        var vals = [result.insertId, req.session.person_id];
                         for(var i = 0; i < req.body.shopping_list_entry_ids.length; i++){
                             if(i != 0)
                                 qry += ', ';
@@ -182,13 +183,13 @@ router.post('/', function(req, res){
                         connection.query(qry, vals, function(err){
                             if (err) {
                                 return connection.rollback(function () {
-                                    return res.status(500).send();
+                                    return res.status(500).json({error: "5"});
                                 });
                             }
                             connection.commit(function(err){
                                 if (err) {
                                     return connection.rollback(function () {
-                                        return res.status(500).send();
+                                        return res.status(500).json({error: "6"});
                                     });
                                 }
                                 connection.release();

@@ -30,6 +30,11 @@ router.post('/', function(req, res) {
 
         data.post_text = req.sanitize(data.post_text);
 
+        if(!files.File) {
+            data.attachment_type = 0;
+            return savePostToDatabase(req, res, data);
+        }
+
         var path = files.File.path,
             file_size = files.File.size;
 
@@ -38,11 +43,6 @@ router.post('/', function(req, res) {
             return res.status(400).send();
 
         if (!data.post_text) data.post_text = "";
-
-        if(!files.File) {
-            data.attachment_type = 0;
-            return savePostToDatabase(req, res, data);
-        }
 
         if (file_size > 4000000)
             return res.status(400).json({'error': 'image file over 4MB'});
